@@ -17,19 +17,11 @@
 
 public enum AsciiDoctorDocumentIdentifiers implements AsciiDoctorDocumentIdentifier {
 	
-	ASCIIDOCTOR_KEYWORD,
-	
-	ASCIIDOCTOR_SYSTEM_KEYWORD ,
-	
 	COMMENT,
 	
-	SINGLE_STRING,
-	
-	DOUBLE_STRING,
+	HYPERLINK,
 	
 	BACKTICK_STRING,
-	
-	GRADLE_KEYWORD,
 	
 	INCLUDE_KEYWORD,
 	
@@ -39,11 +31,8 @@ public enum AsciiDoctorDocumentIdentifiers implements AsciiDoctorDocumentIdentif
 	
 	VARIABLES,
 	
-	PARAMETER,
+	TEXT_BOLD,
 	
-	HERE_DOCUMENT,
-	
-	HERE_STRING,
 	;
 
 

@@ -19,105 +19,11 @@ package de.jcup.asciidoctoreditor.document.keywords;
 public enum AsciiDoctorLanguageKeyWords implements DocumentKeyWord {
 	/* @formatter:off*/
 	/* ---------------- */
-	/* Reserved words : https://www.gnu.org/software/asciidoctor/manual/html_node/Reserved-Word-Index.html
-	/* ----------------*/
+	/* ---- some keywords for internal eval etc.------------*/
 	
-	/* C */
-	CASE("https://www.gnu.org/software/asciidoctor/manual/html_node/Conditional-Constructs.html#index-case"),
+	IFDEF("https://asciidoctor.org/docs/user-manual/#ifdef-directive"),
+	IFNDEF("https://asciidoctor.org/docs/user-manual/#ifndef-directive"),
 
-	/* D */ 
-	DO("https://www.gnu.org/software/asciidoctor/manual/html_node/Looping-Constructs.html#index-do"),
-	DONE("https://www.gnu.org/software/asciidoctor/manual/html_node/Looping-Constructs.html#index-do","do"),
-
-	/* E */
-	ELIF("https://www.gnu.org/software/asciidoctor/manual/html_node/Conditional-Constructs.html#index-elif","if"),
-	ELSE("https://www.gnu.org/software/asciidoctor/manual/html_node/Conditional-Constructs.html#index-elif","if"),
-	ESAC("https://www.gnu.org/software/asciidoctor/manual/html_node/Conditional-Constructs.html#index-case","case"),
-	
-	/* F */
-	FI("https://www.gnu.org/software/asciidoctor/manual/html_node/Conditional-Constructs.html#index-if","if"),
-	FOR("https://www.gnu.org/software/asciidoctor/manual/html_node/Looping-Constructs.html#index-for"),
-	FUNCTION("https://www.gnu.org/software/asciidoctor/manual/html_node/Shell-Functions.html#index-function"),
-
-	/* I*/
-	IF("https://www.gnu.org/software/asciidoctor/manual/html_node/Conditional-Constructs.html#index-if"),
-	IN("https://www.gnu.org/software/asciidoctor/manual/html_node/Conditional-Constructs.html#index-in","case"),
-
-	/* S */
-	SELECT("https://www.gnu.org/software/asciidoctor/manual/html_node/Conditional-Constructs.html#index-select"),
-	
-	/* T */
-	THEN("https://www.gnu.org/software/asciidoctor/manual/html_node/Conditional-Constructs.html#index-then","if"),
-	TIME("https://www.gnu.org/software/asciidoctor/manual/html_node/Pipelines.html#index-time"),
-
-	/* U */
-	UNTIL("https://www.gnu.org/software/asciidoctor/manual/html_node/Looping-Constructs.html#index-until"),
-	
-	/* W */
-	WHILE("https://www.gnu.org/software/asciidoctor/manual/html_node/Looping-Constructs.html#index-while"),
-
-	
-
-	/* Built in commands */
-	// see https://askubuntu.com/questions/512918/how-do-i-list-all-available-shell-builtin-commands
-	ALIAS                 ("http://tldp.org/LDP/abs/html/aliases.html"),
-	BG                    ("https://www.unix.com/man-page/linux/1/bg/"),
-	BIND                  ("http://man7.org/linux/man-pages/man2/bind.2.html"),
-	BREAK                 ("http://tldp.org/LDP/abs/html/loopcontrol.html"),
-	BUILTIN               ,
-	CALLER                ("http://tldp.org/LDP/abs/html/internal.html#CALLERREF"),
-	CD                    ("http://linuxcommand.org/lc3_man_pages/cdh.html"),
-	COMMAND               ,
-	COMPGEN               ,
-	COMPLETE              ,
-	COMPOPT               ,
-	CONTINUE              ,
-	DECLARE               ,
-	DIRS                  ,
-	DISOWN                ,
-	ECHO                  ("https://www.gnu.org/software/asciidoctor/manual/html_node/AsciiDoctorAccess-Builtins.html"),
-	ENABLE                ,
-	EVAL                  ,
-	EXEC                  ,
-	EXIT                  ("http://tldp.org/LDP/abs/html/exit-status.html"),
-	EXPORT                ,
-	FALSE                 ,
-	FC                    ,
-	FG                    ,
-	GETOPTS               ,
-	HASH                  ("https://www.gnu.org/software/asciidoctor/manual/html_node/Bourne-Shell-Builtins.html"),
-	HELP                  ,
-	HISTORY               ,
-	JOBS                  ,
-	KILL                  ("http://man7.org/linux/man-pages/man1/kill.1.html"),
-	LET                   ,
-	LOCAL                 ,
-	LOGOUT                ,
-	MAPFILE               ,
-	POPD                  ,
-	PRINTF                ,
-	PUSHD                 ,
-	PWD                   ,
-	READ                  ,
-	READARRAY             ,
-	READONLY              ,
-	RETURN                ,
-	SET                   ,
-	SHIFT                 ("http://tldp.org/LDP/AsciiDoctorAccess-Beginners-Guide/html/sect_09_07.html"),
-	SHOPT                 ,
-	SOURCE                ,
-	SUSPEND               ,
-	TEST                  ,
-	TIMES                 ,
-	TRAP                  ("http://tldp.org/LDP/abs/html/debugging.html"),
-	TRUE                  ,
-	TYPE                  ,
-	TYPESET               ,
-	ULIMIT                ("http://tldp.org/LDP/abs/html/system.html"),
-	UMASK                 ,
-	UNALIAS               ,
-	UNSET                 ,
-	WAIT                  ,
 	;
 	/* @formatter:on*/
 

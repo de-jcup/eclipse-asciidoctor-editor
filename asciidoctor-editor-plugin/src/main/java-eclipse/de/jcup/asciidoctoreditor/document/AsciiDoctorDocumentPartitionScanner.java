@@ -22,12 +22,12 @@ import java.util.List;
 
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorGnuCommandKeyWords;
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorIncludeKeyWords;
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorLanguageKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialVariableKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
@@ -38,16 +38,10 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 	private VariableDefKeyWordDetector variableDefKeyWordDetector = new VariableDefKeyWordDetector();
 
 	public AsciiDoctorDocumentPartitionScanner() {
-		IToken hereDocument = createToken(HERE_DOCUMENT);
-		IToken hereString = createToken(HERE_STRING);
-		IToken parameters = createToken(PARAMETER);
+		IToken boldText = createToken(TEXT_BOLD);
+		IToken hyperlink = createToken(HYPERLINK);
 		IToken comment = createToken(COMMENT);
-		IToken simpleString = createToken(SINGLE_STRING);
-		IToken doubleString = createToken(DOUBLE_STRING);
 		IToken backtickString = createToken(BACKTICK_STRING);
-
-		IToken systemKeyword = createToken(ASCIIDOCTOR_SYSTEM_KEYWORD);
-		IToken asciidoctorKeyword = createToken(ASCIIDOCTOR_KEYWORD);
 
 		IToken knownVariables = createToken(KNOWN_VARIABLES);
 		IToken variables = createToken(VARIABLES);
@@ -57,19 +51,23 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		List<IPredicateRule> rules = new ArrayList<>();
 		
 		rules.add(new AsciiDoctorVariableRule(variables));
-		rules.add(new SingleLineRule("#", "", comment, (char) -1, true));
 
-		rules.add(new AsciiDoctorStringRule("\"", "\"", doubleString));
-		rules.add(new AsciiDoctorStringRule("\'", "\'", simpleString));
+		rules.add(new SingleLineRule("http://", " ", hyperlink, (char) -1, true));
+		rules.add(new SingleLineRule("https://", " ", hyperlink, (char) -1, true));
+		
+		rules.add(new SingleLineRule("//", "", comment, (char) -1, true));
+		rules.add(new MultiLineRule("/*", "*/", comment));
+		
 		rules.add(new AsciiDoctorStringRule("`", "`", backtickString));
+		rules.add(new MultiLineRule("----", "----", backtickString));
+		
+		rules.add(new SingleLineRule("**", "**", boldText, (char) -1, true));
+		rules.add(new SingleLineRule("*", "*", boldText, (char) -1, true));
+		
+		rules.add(new SingleLineRule("include::*", "[]", includeKeyword, (char) -1, true));
 
-		rules.add(new CommandParameterRule(parameters));
+		buildWordRules(rules, asciidoctorCommand, AsciiDoctorCommandKeyWords.values());
 
-		buildWordRules(rules, includeKeyword, AsciiDoctorIncludeKeyWords.values());
-		buildWordRules(rules, asciidoctorKeyword, AsciiDoctorLanguageKeyWords.values());
-		buildWordRules(rules, asciidoctorCommand, AsciiDoctorGnuCommandKeyWords.values());
-
-//		buildVarDefRules(rules, knownVariables, AsciiDoctorSpecialVariableKeyWords.values());
 		buildWordRules(rules, knownVariables, AsciiDoctorSpecialVariableKeyWords.values());
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));

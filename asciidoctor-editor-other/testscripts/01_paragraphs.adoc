@@ -1,5 +1,7 @@
 = Document Title
 
+something beyond the title
+
 == subtitle
 
 :icons: font

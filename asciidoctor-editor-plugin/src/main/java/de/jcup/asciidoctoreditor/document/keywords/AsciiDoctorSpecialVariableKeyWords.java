@@ -17,46 +17,7 @@ package de.jcup.asciidoctoreditor.document.keywords;
 
 public enum AsciiDoctorSpecialVariableKeyWords implements DocumentKeyWord {
 
-	// http://tldp.org/LDP/abs/html/internalvariables.html
-	ASCIIDOCTOR,
-
-	ASCIIDOCTOR_ENV,
-
-	ASCIIDOCTOR_SUBSHELL, 
-	
-	ASCIIDOCTORPID, 
-	
-	ASCIIDOCTOR_VERSINFO, 
-	
-	ASCIIDOCTOR_VERSION,
-	
-	CDPATH, 
-	
-	DIRSTACK, 
-	
-	EDITOR, 
-	
-	EUID, 
-	
-	FUNCNAME, 
-	
-	GLOBIGNORE, 
-	
-	GROUPS, 
-	
-	HOME, 
-	
-	HOSTNAME, 
-	
-	HOSTTYPE, 
-	
-	IFS, IGNOREEOF, LC_COLLATE, LC_CTYPE, LINENO, MACHTYPE, 
-	
-	OLDPWD, OSTYPE, PATH, PIPESTATUS, PPID, PROMPT_COMMAND, 
-	
-	PS1, PS2, PS3, PS4, PWD("PWD-variable"), 
-	
-	REPLY, SECONDS, SHELLOPTS, SHLVL, TMOUT, UID,;
+	UID,;
 
 	private String text;
 

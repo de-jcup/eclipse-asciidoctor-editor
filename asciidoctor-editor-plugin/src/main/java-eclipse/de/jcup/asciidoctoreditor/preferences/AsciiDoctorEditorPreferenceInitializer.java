@@ -67,15 +67,15 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		preferences.setDefaultColor(COLOR_NORMAL_STRING, STRING_DEFAULT_BLUE);
 
 		preferences.setDefaultColor(COLOR_GSTRING, ROYALBLUE);
-		preferences.setDefaultColor(COLOR_BSTRING, CADET_BLUE);
+		preferences.setDefaultColor(COLOR_BSTRING, LIGHT_GRAY);
 		preferences.setDefaultColor(COLOR_COMMENT, GREEN_JAVA);
 
 		preferences.setDefaultColor(COLOR_INCLUDE_KEYWORD, LINK_DEFAULT_BLUE);
 
 		preferences.setDefaultColor(COLOR_ASCIIDOCTOR_COMMAND, TASK_DEFAULT_RED);
 		preferences.setDefaultColor(COLOR_KNOWN_VARIABLES, DARK_GRAY);
-		preferences.setDefaultColor(COLOR_PARAMETERS, DARK_BLUE);
-		preferences.setDefaultColor(COLOR_HEREDOCS, GRAY);
+		preferences.setDefaultColor(COLOR_TEXT_BOLD, BLACK);
+		preferences.setDefaultColor(COLOR_HYPERLINK, DARK_BLUE);
 		preferences.setDefaultColor(COLOR_HERESTRINGS, LIGHT_THEME_HERESTRING);
 
 		/* ++++++++++++++ */

@@ -28,8 +28,8 @@ public enum AsciiDoctorEditorSyntaxColorPreferenceConstants implements Preferenc
 	COLOR_INCLUDE_KEYWORD("colorIncludeKeywords","Includes"),
 	COLOR_ASCIIDOCTOR_COMMAND("colorCommands","Commands"),
 	COLOR_KNOWN_VARIABLES("colorKnownVariables","Known variables"),
-	COLOR_PARAMETERS("colorParameters","Parameters"),
-	COLOR_HEREDOCS("colorHereDocs","Here documents"),
+	COLOR_TEXT_BOLD("colorParameters","Parameters"),
+	COLOR_HYPERLINK("colorHyperlink","Hyperlinks"),
 	COLOR_HERESTRINGS("colorHereStrings","Here strings"),
 	
 	;

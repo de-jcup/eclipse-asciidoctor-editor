@@ -42,6 +42,8 @@ import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
@@ -52,6 +54,7 @@ import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
+
 /**
  * 
  * @author Albert Tregnaghi
@@ -67,7 +70,8 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 	private IAdaptable adaptable;
 	private ContentAssistant contentAssistant;
 	private AsciiDoctorEditorSimpleWordContentAssistProcessor contentAssistProcessor;
-	
+	Font mono;
+
 	/**
 	 * Creates configuration by given adaptable
 	 * 
@@ -75,49 +79,60 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 	 *            must provide {@link ColorManager} and {@link IFile}
 	 */
 	public AsciiDoctorSourceViewerConfiguration(IAdaptable adaptable) {
+		mono = new Font(EclipseUtil.getSafeDisplay(), "Monospaced", 10, SWT.NONE);
+
 		IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
 		this.fPreferenceStore = new ChainedPreferenceStore(
 				new IPreferenceStore[] { getPreferences().getPreferenceStore(), generalTextStore });
 
 		Assert.isNotNull(adaptable, "adaptable may not be null!");
 		this.annotationHoover = new AsciiDoctorEditorAnnotationHoover();
-		
+
 		this.contentAssistant = new ContentAssistant();
 		contentAssistProcessor = new AsciiDoctorEditorSimpleWordContentAssistProcessor();
 		contentAssistant.enableColoredLabels(true);
-		
+
 		contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
-		for (AsciiDoctorDocumentIdentifier identifier: AsciiDoctorDocumentIdentifiers.values()){
+		for (AsciiDoctorDocumentIdentifier identifier : AsciiDoctorDocumentIdentifiers.values()) {
 			contentAssistant.setContentAssistProcessor(contentAssistProcessor, identifier.getId());
 		}
-		
+
 		contentAssistant.addCompletionListener(contentAssistProcessor.getCompletionListener());
 
 		this.colorManager = adaptable.getAdapter(ColorManager.class);
 		Assert.isNotNull(colorManager, " adaptable must support color manager");
 		this.defaultTextAttribute = new TextAttribute(
 				colorManager.getColor(getPreferences().getColor(COLOR_NORMAL_TEXT)));
-		this.adaptable=adaptable;
+		this.adaptable = adaptable;
+
 	}
+
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 		return contentAssistant;
 	}
-	
+
 	@Override
 	public IQuickAssistAssistant getQuickAssistAssistant(ISourceViewer sourceViewer) {
-		/* currently we avoid the default quick assistence parts (spell checking etc.)*/
+		/*
+		 * currently we avoid the default quick assistence parts (spell checking
+		 * etc.)
+		 */
 		return null;
 	}
+
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
-		/* currently we avoid the default reconciler mechanism parts (spell checking etc.)*/
+		/*
+		 * currently we avoid the default reconciler mechanism parts (spell
+		 * checking etc.)
+		 */
 		return null;
 	}
-	
+
 	@Override
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
 		return annotationHoover;
 	}
-	
+
 	private class AsciiDoctorEditorAnnotationHoover extends DefaultAnnotationHover {
 		@Override
 		protected boolean isIncluded(Annotation annotation) {
@@ -128,7 +143,7 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 			return false;
 		}
 	}
-	
+
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
 		return new AsciiDoctorTextHover();
@@ -147,35 +162,23 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		if (sourceViewer == null)
 			return null;
 
-		return new IHyperlinkDetector[] { new URLHyperlinkDetector(), new AsciiDoctorEditorHyperlinkDetector(adaptable) };
+		return new IHyperlinkDetector[] { new URLHyperlinkDetector(),
+				new AsciiDoctorEditorHyperlinkDetector(adaptable) };
 	}
-	
+
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
 
 		addDefaultPresentation(reconciler);
-		
-		addPresentation(reconciler, HERE_DOCUMENT.getId(), getPreferences().getColor(COLOR_HEREDOCS),SWT.ITALIC);
-		addPresentation(reconciler, HERE_STRING.getId(), getPreferences().getColor(COLOR_HERESTRINGS),SWT.ITALIC);
-		
-		addPresentation(reconciler, ASCIIDOCTOR_KEYWORD.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_KEYWORD),SWT.BOLD);
-		addPresentation(reconciler, ASCIIDOCTOR_SYSTEM_KEYWORD.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_KEYWORD),SWT.BOLD);
 
-		// Groovy provides different strings: simple and GStrings, so we use separate colors:
-		addPresentation(reconciler, SINGLE_STRING.getId(), getPreferences().getColor(COLOR_NORMAL_STRING),SWT.NONE);
-		addPresentation(reconciler, DOUBLE_STRING.getId(), getPreferences().getColor(COLOR_GSTRING),SWT.NONE);
-		addPresentation(reconciler, BACKTICK_STRING.getId(), getPreferences().getColor(COLOR_BSTRING),SWT.NONE);
-		
-		addPresentation(reconciler, COMMENT.getId(), getPreferences().getColor(COLOR_COMMENT),SWT.NONE);
-		addPresentation(reconciler, PARAMETER.getId(), getPreferences().getColor(COLOR_PARAMETERS),SWT.NONE);
-		addPresentation(reconciler, INCLUDE_KEYWORD.getId(), getPreferences().getColor(COLOR_INCLUDE_KEYWORD),SWT.BOLD);
-		addPresentation(reconciler, ASCIIDOCTOR_COMMAND.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_COMMAND),SWT.BOLD|SWT.NONE);
-		
-		
-		addPresentation(reconciler, VARIABLES.getId(), getPreferences().getColor(COLOR_KNOWN_VARIABLES),SWT.NONE);
-		addPresentation(reconciler, KNOWN_VARIABLES.getId(), getPreferences().getColor(COLOR_KNOWN_VARIABLES),SWT.NONE);
-		
+		addPresentation(reconciler, BACKTICK_STRING.getId(), getPreferences().getColor(COLOR_NORMAL_TEXT), SWT.NONE, mono, getPreferences().getColor(COLOR_BSTRING));
+		addPresentation(reconciler, HYPERLINK.getId(), getPreferences().getColor(COLOR_HYPERLINK), SWT.UNDERLINE_SINGLE);
+		addPresentation(reconciler, TEXT_BOLD.getId(), getPreferences().getColor(COLOR_TEXT_BOLD), SWT.BOLD);
+		addPresentation(reconciler, COMMENT.getId(), getPreferences().getColor(COLOR_COMMENT), SWT.NONE);
+		addPresentation(reconciler, INCLUDE_KEYWORD.getId(), getPreferences().getColor(COLOR_INCLUDE_KEYWORD),
+				SWT.BOLD);
+
 		return reconciler;
 	}
 
@@ -191,8 +194,18 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 	}
 
 	private void addPresentation(PresentationReconciler reconciler, String id, RGB rgb, int style) {
-		TextAttribute textAttribute = new TextAttribute(colorManager.getColor(rgb),
-				defaultTextAttribute.getBackground(), style);
+		addPresentation(reconciler, id, rgb, style, null, null);
+	}
+
+	private void addPresentation(PresentationReconciler reconciler, String id, RGB foreGround, int style, Font font,
+			RGB backGround) {
+		Color backGroundColor = (backGround == null ? defaultTextAttribute.getBackground()
+				: colorManager.getColor(backGround));
+		Color foreGroundColor = (foreGround == null ? defaultTextAttribute.getForeground()
+				: colorManager.getColor(foreGround));
+
+		TextAttribute textAttribute = new TextAttribute(foreGroundColor, backGroundColor, style, font);
+		
 		PresentationSupport presentation = new PresentationSupport(textAttribute);
 		reconciler.setDamager(presentation, id);
 		reconciler.setRepairer(presentation, id);
@@ -213,6 +226,5 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		RGB color = getPreferences().getColor(COLOR_NORMAL_TEXT);
 		gradleScanner.setDefaultReturnToken(createColorToken(color));
 	}
-	
 
 }

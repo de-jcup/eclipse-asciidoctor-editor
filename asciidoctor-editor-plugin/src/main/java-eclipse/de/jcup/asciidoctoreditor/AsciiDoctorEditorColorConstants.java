@@ -91,6 +91,8 @@ public interface AsciiDoctorEditorColorConstants {
 
 	public static final RGB TASK_CYAN = rgb(0,128,128);
 	
+	public static final RGB LIGHT_GRAY = rgb(240,240,240);
+	
 	/**
 	 * A special dark cyan color for here doc on dark themes
 	 */

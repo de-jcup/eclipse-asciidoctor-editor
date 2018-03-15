@@ -13,30 +13,36 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.document.keywords;
+package de.jcup.asciidoctoreditor.document.keywords;
 
-public enum AsciiDoctorIncludeKeyWords implements DocumentKeyWord {
+public enum AsciiDoctorCommandKeyWords implements DocumentKeyWord {
 
-	SOURCE("source"),
-	
+	ICONS(":icons:"),
+
 	;
 
 	private String text;
 
-	private AsciiDoctorIncludeKeyWords(String text) {
-		this.text = text;
+	private AsciiDoctorCommandKeyWords() {
+		this(null);
+	}
+
+	private AsciiDoctorCommandKeyWords(String linkToDocumentation) {
+		this.text = name().toLowerCase();
+		this.tooltip = TooltipTextSupport.getTooltipText(text);
+		this.linkToDocumentation = linkToDocumentation;
 	}
 
 	@Override
 	public String getText() {
 		return text;
 	}
-	
+
 	@Override
 	public boolean isBreakingOnEof() {
 		return true;
 	}
-	
+
 	private String tooltip;
 	private String linkToDocumentation;
 
@@ -44,7 +50,7 @@ public enum AsciiDoctorIncludeKeyWords implements DocumentKeyWord {
 	public String getTooltip() {
 		return tooltip;
 	}
-	
+
 	@Override
 	public String getLinkToDocumentation() {
 		return linkToDocumentation;

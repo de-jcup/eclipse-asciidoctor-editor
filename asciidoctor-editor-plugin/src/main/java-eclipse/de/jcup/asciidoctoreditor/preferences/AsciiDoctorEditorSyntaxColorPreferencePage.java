@@ -71,8 +71,8 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
 				changeColor(editorMap, COLOR_INCLUDE_KEYWORD, AsciiDoctorEditorColorConstants.MIDDLE_BROWN);
 				changeColor(editorMap, COLOR_ASCIIDOCTOR_COMMAND, AsciiDoctorEditorColorConstants.TASK_CYAN);
 				changeColor(editorMap, COLOR_KNOWN_VARIABLES, AsciiDoctorEditorColorConstants.DARK_THEME_GRAY);
-				changeColor(editorMap, COLOR_PARAMETERS, AsciiDoctorEditorColorConstants.BRIGHT_CYAN);
-				changeColor(editorMap, COLOR_HEREDOCS, AsciiDoctorEditorColorConstants.DARK_THEME_HEREDOC);
+				changeColor(editorMap, COLOR_TEXT_BOLD, AsciiDoctorEditorColorConstants.BRIGHT_CYAN);
+				changeColor(editorMap, COLOR_HYPERLINK, AsciiDoctorEditorColorConstants.DARK_THEME_HEREDOC);
 				changeColor(editorMap, COLOR_HERESTRINGS, AsciiDoctorEditorColorConstants.DARK_THEME_HERESTRING);
 				
 			}
