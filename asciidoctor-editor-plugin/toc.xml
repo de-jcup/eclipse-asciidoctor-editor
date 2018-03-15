@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="AsciiDoctor Editor" topic="html/toc.html">
+
+  <topic label="Overview" href="html/toc.html">
+  </topic>
+  <topic href="html/syntax_coloring.html" label="Syntax coloring">
+		</topic>
+  <topic href="html/outline.html" label="Outline">
+  </topic>
+   <topic href="html/quick-outline.html" label="Quick Outline">
+  </topic>
+  <topic href="html/validation.html" label="Validation">
+  </topic>
+  <topic href="html/open-function-reference.html" label="Open referenced function">
+  </topic>
+  <topic href="html/code-assistence.html" label="Code assistence">
+  </topic>
+  <topic href="html/block_commenting.html" label="Block commenting">
+  </topic>
+  <topic href="html/bracket_switching.html" label="Bracket switching">
+  </topic>
+
+</toc>

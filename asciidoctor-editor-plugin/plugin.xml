@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          KEYWORDS                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension point="org.eclipse.ui.keywords">
+     <keyword
+   		id="asciidoctoreditor.preferences.keyword.asciidoctor"
+   		label="asciidoctor">
+     </keyword>
+      <keyword
+   		id="asciidoctoreditor.preferences.keyword.color"
+   		label="color">
+     </keyword>
+     <keyword
+   		id="asciidoctoreditor.preferences.keyword.editor"
+   		label="editor">
+     </keyword>
+     <keyword
+   		id="asciidoctoreditor.preferences.keyword.validation"
+   		label="validation">
+     </keyword>
+    
+   </extension>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          EDITOR                                      -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+      		name="AsciiDoctor Editor"
+            extensions="adoc"
+            icon="icons/asciidoctor-editor.png"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="de.jcup.asciidoctoreditor.AsciiDoctorEditor"
+            id="asciidoctoreditor.editors.AsciiDoctorEditor">
+      </editor>
+   </extension>
+   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--        POPUP                                                         -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   
+    <extension point="org.eclipse.ui.menus">
+        <!-- http://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2Fworkbench_cmd_menus.htm -->
+        <menuContribution locationURI="popup:org.eclipse.ui.popup.any?before=additions">
+                <!-- Detect new root project --> 
+                <command
+            	  commandId="asciidoctoreditor.command.openWithAsciiDoctorEditor"
+                  icon="icons/asciidoctor-editor.png"
+                  id="asciidoctoreditor.maintoolbar.openWithAsciiDoctorEditor"
+                  label="Open with AsciiDoctor Editor"
+                  tooltip="Opens asciidoctor file with AsciiDoctor Editor."
+                  style="push">
+                        <visibleWhen 
+                              checkEnabled="false">
+                              <with
+                                    variable="activeMenuSelection">
+                                    <and>
+				         				<count value="1"/>
+	                                    <iterate ifEmpty="false">
+	                                    	 <adapt type="org.eclipse.core.resources.IFile">
+			         							<test property="de.jcup.asciidoctoreditor.isAsciiDoctorFileWithoutExtension" value="true"/>
+				         					</adapt>
+				         				</iterate>
+                                    </and>
+                              </with>
+                        </visibleWhen>
+                </command>
+                
+        </menuContribution>
+   </extension>
+   
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          MARKER                          			 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
+   <extension 
+   		id="de.jcup.asciidoctoreditor.script.problem"
+    	point="org.eclipse.core.resources.markers"
+    	name="AsciiDoctoreditor script problem">
+        <super type="org.eclipse.core.resources.problemmarker"/>
+        <super type="org.eclipse.core.resources.textmarker"/>
+        <persistent value="false"/>
+    </extension>
+   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          CONTEXT                                     -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension point="org.eclipse.ui.contexts">
+	  <context
+	        name="AsciiDoctor context"
+	        description="Editing asciidoctor files"
+	        parentId="org.eclipse.ui.textEditorScope"
+	        id="asciidoctoreditor.editors.AsciiDoctorEditor.context">
+	        
+	  </context>
+   </extension>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          COMMANDS                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->^
+   
+   <extension point="org.eclipse.ui.commands">
+       <category
+            description="AsciiDoctor editor"
+            id="asciidoctoreditor.commands.category"
+            name="AsciiDoctor editor">
+       </category>
+      
+       <command
+      		name="Open with asciidoctor editor"
+      		description="Open file with asciidoctor editor"
+      		categoryId="asciidoctoreditor.commands.category"
+      		id="asciidoctoreditor.command.openWithAsciiDoctorEditor">
+       </command>
+   	   <command
+            name="Quick outline"
+            description="Show quick outline dialog"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.quickoutline">
+      </command>
+      <command
+            name="Toggle comment"
+            description="Toggle comment in selected line(s)"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.source.toggleComment">
+      </command>
+       <command
+            name="Validate asciidoc file"
+            description="Validate asciidoc file"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.source.validate">
+      </command>
+      <command
+            name="Goto matching bracket"
+            description="Goto matching bracket inside gradle document"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.gotomatchingbracket">
+      </command>
+	</extension>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          HANDLERS                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->^
+	
+	<extension point="org.eclipse.ui.handlers">
+	 <handler
+            commandId="asciidoctoreditor.editor.commands.quickoutline"
+            class="de.jcup.asciidoctoreditor.handlers.OpenQuickOutlineHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.editor.commands.source.toggleComment"
+            class="de.jcup.asciidoctoreditor.handlers.ToggleCommentHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.editor.commands.source.validate"
+            class="de.jcup.asciidoctoreditor.handlers.ValidateHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.editor.commands.gotomatchingbracket"
+            class="de.jcup.asciidoctoreditor.handlers.GotoMatchingBracketHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.command.openWithAsciiDoctorEditor"
+            class="de.jcup.asciidoctoreditor.handlers.OpenWithAsciiDoctorEditor">
+      </handler>
+    </extension> 
+    
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          KEY BINDING                                 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension point="org.eclipse.ui.bindings">
+   		<key
+            sequence="M1+O"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.quickoutline"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+		<key
+            sequence="M1+7"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.source.toggleComment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+		<key
+            sequence="M1+M2+P"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.gotomatchingbracket"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+    </extension> 
+    
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          MENU                                 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <extension point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:asciidoctoreditor.editors.AsciiDoctorEditor.context?after=additions">
+         <command
+               commandId="asciidoctoreditor.editor.commands.source.validate" icon="icons/asciidoctor-editor.png"
+               >
+         <command
+               commandId="asciidoctoreditor.editor.commands.quickoutline"
+               >
+         </command>
+         </command>
+      </menuContribution>
+      
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=edit">
+            
+         <menu
+               id="asciidoctoreditor.editor.menu.sourceMenu"
+               label="Source"
+               mnemonic="S"
+               >
+               <visibleWhen checkEnabled="true">
+                     <with variable="activeEditor">
+                     	<instanceof
+                            value="de.jcup.asciidoctoreditor.AsciiDoctorEditor"/>
+                     </with>
+               </visibleWhen>
+            <command commandId="asciidoctoreditor.editor.commands.source.toggleComment" />
+            <command 
+            	commandId="asciidoctoreditor.editor.commands.source.validate" 
+            	icon="icons/asciidoctor-editor.png">
+            </command>
+         </menu>
+      </menuContribution>
+      
+      </extension> 
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          PREFERENCES                                 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+      point = "org.eclipse.ui.preferencePages">
+      <page
+         id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorEditorPreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferencePage"
+         name="AsciiDoctor Editor"
+         >
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+          <keywordReference
+               id="asciidoctoreditor.preferences.keyword.editor">
+         </keywordReference>
+      </page>
+      <page
+         id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorEditorSyntaxColorPreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferencePage"
+         name="Syntax coloring"
+         category="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorEditorPreferencePage">
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+          <keywordReference
+               id="asciidoctoreditor.preferences.keyword.color">
+         </keywordReference>
+      </page>
+      <page
+         id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorValidationPreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferencePage"
+         name="Validation"
+         category="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorEditorPreferencePage">
+          <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.validation">
+         </keywordReference>
+      </page>
+    </extension>
+    <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceInitializer">
+      </initializer>
+   </extension>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          MARKER                          			 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
+   <extension 
+   		id="de.jcup.asciidoctoreditor.parse.error"
+    	point="org.eclipse.core.resources.markers"
+    	name="AsciiDoctor editor parse error">
+        <super type="org.eclipse.core.resources.problemmarker"/>
+        <super type="org.eclipse.core.resources.textmarker"/>
+        <persistent value="true"/>
+    </extension>
+    
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          HELP                                         -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="toc.xml">
+      </toc>
+      <toc
+            file="EditorToc.xml"
+            primary="true">
+      </toc>
+   </extension>
+   
+</plugin>

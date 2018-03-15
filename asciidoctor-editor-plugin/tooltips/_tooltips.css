@@ -1,0 +1,49 @@
+/*
+ * This is the automatically included part for tooltips provided by asciidoctor editor
+ * 
+ * When adding new html files this is the central point for getting know the supported css
+ * classes.
+ */
+
+/* use this inside pre elements to show them up in code style but with wrapping-
+ * this is automatically used for text only tooltip files 
+ */
+.preWrapEnabled {
+		white-space: pre-wrap;       /* Since CSS 2.1 */
+		white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+		white-space: -pre-wrap;      /* Opera 4-6 */
+		white-space: -o-pre-wrap;    /* Opera 7 */
+		word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+/* Use this inside divs for example code parts - will have automatically borders etc. */
+.example {
+		white-space: pre;
+		font-family: monospace;
+
+		/* the example shall alwas look a little bit like a terminal - in every theme
+		 * so its always black background and green text ...*/		
+		color: #0d9134;
+		background-color: #000000;
+
+		border:1px;
+		border-style:solid;
+		font-size:smaller;
+		
+		padding: 20px;
+}
+table, td, th{
+	border: 1px;
+	border-style: solid;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+th{
+	font-style:bold;
+}
+th, td {
+    text-align: left;
+    padding: 8px;
+}

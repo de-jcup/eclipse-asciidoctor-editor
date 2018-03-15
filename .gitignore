@@ -1,0 +1,19 @@
+.metadata
+.lck
+.gradle/
+.classpath
+.project
+.settings/
+*.class
+build/
+*.jar
+*.log
+*.bak
+# we do not want to have bin or gen folders in any of our projects inside git!
+bin/
+gen/
+src-gen/
+rebel.xml
+# one of the markdown editors does write a html file for previews - prevent this to be added on repo:
+*.md.html
+

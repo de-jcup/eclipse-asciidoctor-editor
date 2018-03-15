@@ -1,0 +1,104 @@
+allprojects{
+	apply from: "${rootProject.projectDir}/libraries.gradle"
+	/* turn off doclint java 8 */
+	if (JavaVersion.current().isJava8Compatible()) {
+	        tasks.withType(Javadoc) {
+	            options.addStringOption('Xdoclint:none', '-quiet')
+	        }
+	}
+	repositories {
+		mavenLocal()
+		mavenCentral()
+    }
+	
+	/* Custimization part - e.g. when you got special repositories
+	 * or an enterprise repo like artifactory or nexus */	 
+	File f = new File(rootProject.projectDir,'custom_allprojects.gradle');
+	if (f.exists()){
+		apply from: "${rootProject.projectDir}/custom_allprojects.gradle"
+	}
+		
+}
+
+def doAutomateEclipseSetup = ['asciidoctor-editor-other'];
+
+subprojects {
+    apply plugin: 'java'
+	
+	if (doAutomateEclipseSetup.contains(project.name)){
+		apply plugin: 'eclipse'
+	}
+	sourceSets {
+			  	main {
+			   		java {
+			    		srcDir 'src/main/java'
+			    		}
+			   }	
+	}
+	apply plugin: "maven"
+		
+	group = "de.jcup.asciidoctoreditor" 
+	version = "0.8.0"
+	def buildNr = System.getenv('ci.buildNumber')
+	// use build number in version
+	if (buildNr != null && ! buildNr.isEmpty()){
+		version= version + "_"+buildNr
+	}
+		
+	/* Setup UTF-8 for compile AND test compilation*/
+	[ compileJava, compileTestJava ]*.options*.encoding = 'UTF-8'
+
+	sourceCompatibility = JavaVersion.VERSION_1_8
+		
+	dependencies{
+			
+		testCompile library.junit
+		testCompile library.mockito_all
+	}
+	
+	 /* per default GRADLE stops the build if one single test fails ...*/
+    test { 
+        ignoreFailures = false 
+    }
+	
+	task sourcesJar(type: Jar, dependsOn:classes) {
+		classifier = 'sources'
+		from sourceSets.main.allSource
+	}
+
+	task javadocJar(type: Jar, dependsOn:javadoc) {
+		classifier = 'javadoc'
+		from javadoc.destinationDir
+	}
+
+	artifacts {
+		archives sourcesJar
+		archives javadocJar
+	}
+
+
+}
+
+def our_group='asciidoctor editor'
+
+/* own task for complete project with sub projects...*/
+task testReportAll(type: TestReport) {
+	description 'Starts all tests for all sub projects and cumulate the results into build folder of root project.'
+	group our_group
+    subprojects {
+        test {
+            /* stops single reports for each project */
+            reports.html.enabled = false
+        }
+    }
+    destinationDir = file("$buildDir/reports/allUnitTests")
+
+    /* report on the results of the subprojects' test task*/
+    reportOn subprojects*.test
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0'
+}
+
+

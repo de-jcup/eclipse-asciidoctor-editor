@@ -1,0 +1,3 @@
+
+include 'asciidoctor-editor-plugin',
+'asciidoctor-editor-other'		

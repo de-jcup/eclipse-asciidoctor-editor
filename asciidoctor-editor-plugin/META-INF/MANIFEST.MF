@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AsciiDoctor Editor
+Bundle-SymbolicName: de.jcup.asciidoctoreditor;singleton:=true
+Bundle-Version: 0.1.0
+Bundle-Activator: de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator
+Bundle-Vendor: Albert Tregnaghi
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.core.filesystem,
+ org.eclipse.text,
+ org.eclipse.jface.text,
+ org.eclipse.ui.views,
+ org.eclipse.ui.workbench,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.core.expressions
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.ui
+Bundle-ClassPath: .,
+ lib/asciidoctorj-1.5.6.jar,
+ lib/asciidoctorj-diagram-1.5.4.1.jar,
+ lib/commons-io-2.4.jar,
+ lib/jcommander-1.35.jar,
+ lib/jruby-complete-1.7.26.jar

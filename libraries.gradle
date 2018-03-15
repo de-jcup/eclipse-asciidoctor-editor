@@ -1,0 +1,18 @@
+ext {
+	
+	library = [
+		
+		junit:							"junit:junit:4.12",
+		slf4j_api:						"org.slf4j:slf4j-api:1.7.10",
+		slf4j_jdk:						"org.slf4j:slf4j-jdk14:1.7.10",
+		slf4j_simple:					"org.slf4j:slf4j-simple:1.7.10",
+		mockito_all:					"org.mockito:mockito-all:1.8.5",
+		commons_lang: 					"org.apache.commons:commons-lang3:3.4",	
+		commons_io:						"commons-io:commons-io:2.2",
+		
+		// https://mvnrepository.com/artifact/antlr/antlr/2.7.7
+		antlr:		 				    "antlr:antlr:2.7.7"
+		
+	]
+	
+}

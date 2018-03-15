@@ -1,0 +1,20 @@
+= Document Title
+
+== subtitle
+
+:icons: font
+
+NOTE: Asciidoctor supports font-based admonition icons, powered by Font Awesome!
+
+
+= Document Title
+
+== subtitle
+
+
+= Document Title
+
+== subtitle
+=== subtitle
+==== subtitle
+== subtitlex

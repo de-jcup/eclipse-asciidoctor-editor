@@ -1,0 +1,46 @@
+[[section-development-servers]]
+== Development setup
+=== Tool suite
+
+==== Java
+Java JDK (http://www.oracle.com/technetwork/java/javase at least JDK 8)
+
+==== IDE
+===== Eclipse
+Download https://www.eclipse.org/downloads/eclipse-packages
+select "Eclipse IDE for Java developers"
+==== GIT 
+Download: https://git-scm.com/download/win
+
+==== Bash
+At windows we just use the bash provided by GIT installation above...
+
+==== CouchDB start
+----
+# a comment
+sudo service couchdb start
+sudo service couchdb status
+
+cd ~/Downloads/xyz
+xyz.py
+----
+
+==== AsciiDoctor
+We use AsciiDoctor for documentation.
+
+===== Quick reference
+Documentation about syntax can be found at:
+`https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/`
+
+===== Tables
+http://mrhaki.blogspot.de/2014/12/awesome-asciidoctor-span-cell-over-rows.html
+
+=== Links
+
+[options="header",cols="1,2,2"]
+|===
+   |Name|Link  | Description
+   |Source     | https://github.com/de-jcup/eclipse-asciidoctor-editor                   | GIT repositories
+   |Wiki       | https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki | Wiki
+                                             |Faraday PROD Server (SSH tunnel for port 5985 necessary)
+|===
