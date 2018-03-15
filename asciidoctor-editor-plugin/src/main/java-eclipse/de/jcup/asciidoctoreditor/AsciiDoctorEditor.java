@@ -16,12 +16,16 @@
 package de.jcup.asciidoctoreditor;
 
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferenceConstants.*;
-import static org.asciidoctor.Asciidoctor.Factory.*;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashMap;
 
-import org.asciidoctor.Asciidoctor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -100,13 +104,20 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private int lastCaretPosition;
 	private AsciiDoctorOSGIWrapper asciidoctor;
 	private Browser browser;
-	
+	private Path tempADFile;
+
 	private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
 
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
 		asciidoctor = new AsciiDoctorOSGIWrapper();
+		try {
+			tempADFile = Files.createTempFile(null, ".html");
+		} catch (IOException e) {
+			/* FIXME ATR, 15.03.2018: handle error */
+			e.printStackTrace();
+		}
 	}
 
 	public void resourceChanged(IResourceChangeEvent event) {
@@ -144,7 +155,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private AsciiDoctorScriptModel buildModelWithoutValidation() {
 		String text = getDocumentText();
-
+		/*
+		 * FIXME ATR, 15.03.2018: clean up this stuff... is this still useful?
+		 */
 		/* for quick outline create own model and ignore any validations */
 		modelBuilder.setIgnoreBlockValidation(true);
 		modelBuilder.setIgnoreDoValidation(true);
@@ -226,7 +239,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	@Override
 	public void createPartControl(Composite c) {
-		
+
 		RGB green = new RGB(0, 255, 0);
 		RGB red = new RGB(255, 0, 0);
 		RGB blue = new RGB(0, 0, 255);
@@ -234,34 +247,25 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		SashForm sashForm = new SashForm(c, SWT.HORIZONTAL);
 		c.setLayout(new FillLayout());
-		
-		Composite parentTextEditor = new Composite(sashForm, SWT.CENTER|SWT.SCROLL_PAGE);
+
+		Composite parentTextEditor = new Composite(sashForm, SWT.CENTER | SWT.SCROLL_PAGE);
 		parentTextEditor.setLayout(new FillLayout());
 		parentTextEditor.setBackground(colorManager.getColor(blue));
-		
-		try {
-			browser = new Browser(sashForm, SWT.CENTER);
-		} catch (SWTError e) {
-			MessageBox messageBox = new MessageBox(EclipseUtil.getActiveWorkbenchShell(), SWT.ICON_ERROR | SWT.OK);
-			messageBox.setMessage("Browser cannot be initialized.");
-			messageBox.setText("Exit");
-			messageBox.open();
-			return;
-		}
-		browser.setText("<html><h1>Hello world</h1></html>");
-		
-		
-//		Composite asciiDoctorOutputView = new Composite(sashForm, SWT.CENTER);
-//		asciiDoctorOutputView.setBackground(colorManager.getColor(red));
-//		Button button = new Button(asciiDoctorOutputView, SWT.PUSH);
-//		asciiDoctorOutputView.setBackground(colorManager.getColor(green));
-//		// register listener for the selection event
-//		button.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				System.out.println("Called!");
-//			}
-//		});
+
+		initBrowser(sashForm);
+
+		// Composite asciiDoctorOutputView = new Composite(sashForm,
+		// SWT.CENTER);
+		// asciiDoctorOutputView.setBackground(colorManager.getColor(red));
+		// Button button = new Button(asciiDoctorOutputView, SWT.PUSH);
+		// asciiDoctorOutputView.setBackground(colorManager.getColor(green));
+		// // register listener for the selection event
+		// button.addSelectionListener(new SelectionAdapter() {
+		// @Override
+		// public void widgetSelected(SelectionEvent e) {
+		// System.out.println("Called!");
+		// }
+		// });
 
 		super.createPartControl(parentTextEditor);
 
@@ -283,6 +287,36 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		setTitleImageInitial();
 		updateAsciiDocView();
+	}
+
+	protected void initBrowser(SashForm sashForm) {
+		try {
+			browser = new Browser(sashForm, SWT.CENTER);
+
+			if (tempADFile == null) {
+				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
+			} else {
+				try {
+					browser.setUrl(tempADFile.toUri().toURL().toString());
+				} catch (MalformedURLException e) {
+					/* FIXME ATR, 15.03.2018: better error handling */
+					e.printStackTrace();
+					browser.setText("URL problems:" + e.getMessage());
+				}
+			}
+
+		} catch (SWTError e) {
+			MessageBox messageBox = new MessageBox(EclipseUtil.getActiveWorkbenchShell(), SWT.ICON_ERROR | SWT.OK);
+			messageBox.setMessage("Browser cannot be initialized.");
+			messageBox.setText("Exit");
+			messageBox.open();
+			return;
+		}
+		if (tempADFile == null) {
+			if (browser != null) {
+				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
+			}
+		}
 	}
 
 	public AsciiDoctorContentOutlinePage getOutlinePage() {
@@ -436,6 +470,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	 * Does rebuild the outline - this is done asynchronous
 	 */
 	public void rebuildOutline() {
+
 		String text = getDocumentText();
 
 		IPreferenceStore store = AsciiDoctorEditorUtil.getPreferences().getPreferenceStore();
@@ -749,20 +784,31 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	public void validate() {
 		rebuildOutline();
-//		http://www.baeldung.com/asciidoctor
-//		http://www.baeldung.com/asciidoctor-book
-//		https://github.com/asciidoctor/asciidoctorj#converting-documents
-		
+		// http://www.baeldung.com/asciidoctor
+		// http://www.baeldung.com/asciidoctor-book
+		// https://github.com/asciidoctor/asciidoctorj#converting-documents
+
 	}
 
 	public void updateAsciiDocView() {
-		if (browser==null){
+		if (browser == null) {
 			return;
 		}
-		if (browser.isDisposed()){
+		if (browser.isDisposed()) {
+			return;
+		}
+		if (tempADFile == null) {
 			return;
 		}
 		String html = asciidoctor.convertToHTML(getDocumentText());
-		browser.setText(html);
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempADFile.toFile()))) {
+			bw.write(html);
+			bw.close();
+			browser.refresh();
+		} catch (IOException e1) {
+			/* FIXME ATR, 15.03.2018: handle error better */
+			e1.printStackTrace();
+			browser.setText("IO problem:" + e1.getMessage());
+		}
 	}
 }

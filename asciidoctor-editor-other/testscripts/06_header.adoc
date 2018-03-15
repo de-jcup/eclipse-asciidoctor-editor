@@ -1,0 +1,15 @@
+= My Document's Title
+
+Doc Writer <doc.writer@asciidoctor.org>
+v1.0, 2014-01-01
+
+My document provides...
+
+= My Document's Title
+Doc Writer <doc.writer@asciidoctor.org>
+v1.0, 2014-01-01
+:toc:
+:imagesdir: assets/images
+:homepage: https://asciidoctor.org
+
+My document provides...

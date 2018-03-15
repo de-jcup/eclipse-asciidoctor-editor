@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
@@ -78,10 +79,17 @@ public class AsciiDoctorOSGIWrapper {
 		
 		sb.append("</style>");
 		try{
-			String myFontAwesomeCssLink = "<link rel=\"stylesheet\" href=\"" + helper.getFileInPlugin("css/font-awesome/css/font-awesome.min.css").getAbsolutePath() + "\">";
-			sb.append(myFontAwesomeCssLink);
-			String myDejavuCssLink = "<link rel=\"stylesheet\" href=\"" + helper.getFileInPlugin("css/dejavu/dejavu.css").getAbsolutePath() + "\">";
-			sb.append(myDejavuCssLink);
+			/* FIXME ATR, 15.03.2018: replacwe the regexp replaceAll with static one (at least) */
+			File fontAwesomeCSSfile = helper.getFileInPlugin("css/font-awesome/css/font-awesome.min.css");
+			String fontAwesomeCssPath = fontAwesomeCSSfile.toURI().toURL().toExternalForm();//fontAwesomeCSSfile.getAbsolutePath().replaceAll("\\\\", "/" );
+			System.out.println(fontAwesomeCssPath);
+			String fontAwesomeCssLink = "<link rel=\"stylesheet\" href=\"" + fontAwesomeCssPath+ "\">";
+			sb.append(fontAwesomeCssLink);
+			
+			File dejavouFile = helper.getFileInPlugin("css/dejavu/dejavu.css");
+			String dejavouPath = dejavouFile.getAbsolutePath().replaceAll("\\\\", "/" );
+			String dejavuCssLink = "<link rel=\"stylesheet\" href=\"" + dejavouPath + "\">";
+			sb.append(dejavuCssLink);
 		}catch(IOException e){
 			/* FIXME ATR, 15.03.2018: handle exception */
 			e.printStackTrace();

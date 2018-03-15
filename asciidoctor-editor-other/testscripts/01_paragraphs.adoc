@@ -6,6 +6,7 @@
 
 NOTE: Asciidoctor supports font-based admonition icons, powered by Font Awesome!
 
+WARNING: Don't do this at home... just kidding
 
 = Document Title
 

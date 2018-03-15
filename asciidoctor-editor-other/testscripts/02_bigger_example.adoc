@@ -6,13 +6,18 @@
 Java JDK (http://www.oracle.com/technetwork/java/javase at least JDK 8)
 
 ==== IDE
+===== IntelliJ
+Do not use it ;-) 
+
 ===== Eclipse
+
 Download https://www.eclipse.org/downloads/eclipse-packages
 select "Eclipse IDE for Java developers"
+
 ==== GIT 
 Download: https://git-scm.com/download/win
 
-==== Bash
+==== Bash2333
 At windows we just use the bash provided by GIT installation above...
 
 ==== CouchDB start
