@@ -2,23 +2,22 @@
 <feature
       id="de.jcup.asciidoctoreditor"
       label="AsciiDoctor Editor"
-      version="0.1.0"
+      version="0.1.0.alpha"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/asciidoctor-editor">
-      AsciiDoctor Editor is a eclipse plugin to edit asciidoc files (.sh)
-
+      AsciiDoctor Editor is a eclipse plugin to edit asciidoc files
+(.sh)
 It supports 
-- Syntax coloring which is customizeable and has additional defaults for dark theme
-- Bracket switching + highlighting
+- Syntax coloring which is customizeable and has additional defaults
+for dark theme
 - Block commenting (CTRL+7)
-- Auto bracket closing for []
 - Validation
 - Outline + Quickoutline
    </description>
 
    <copyright>
-      Copyright 2017 Albert Tregnaghi
+      Copyright 2018 Albert Tregnaghi
 Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
