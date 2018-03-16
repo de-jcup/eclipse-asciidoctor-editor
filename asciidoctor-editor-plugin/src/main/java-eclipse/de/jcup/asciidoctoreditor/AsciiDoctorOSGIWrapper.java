@@ -31,17 +31,20 @@ public class AsciiDoctorOSGIWrapper {
 		helper = EclipseResourceHelper.DEFAULT;
 
 		// https://github.com/asciidoctor/asciidoctorj#using-asciidoctorj-in-an-osgi-environment
-		Bundle bundle = Platform.getBundle("asciidoctor.editor.libs");
-		RubyInstanceConfig config;
+		Bundle bundle = Platform.getBundle("de.jcup.asciidoctoreditor.libs");
+		
+		ClassLoader libsClassLoader;
 		try {
-			Class<RubyInstanceConfig> clazz = (Class<RubyInstanceConfig>) bundle.loadClass(RubyInstanceConfig.class.getName());
-			config = clazz.newInstance();
+			Class<?> clazz = bundle.loadClass(RubyInstanceConfig.class.getName());
+			Object obj = clazz.newInstance();
+			libsClassLoader=obj.getClass().getClassLoader();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("cannot access ruby config!", e);
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException|IllegalAccessException e) {
 			throw new IllegalStateException("cannot access ruby config!", e);
 		}
-		config.setLoader(config.getClass().getClassLoader());
+		RubyInstanceConfig config = new RubyInstanceConfig();
+		config.setLoader(libsClassLoader);
 		/* @formatter:off*/
 		JavaEmbedUtils.initialize(Arrays.asList(
 				"META-INF/jruby.home/lib/ruby/2.0", 
@@ -63,7 +66,7 @@ public class AsciiDoctorOSGIWrapper {
 			/* FIXME ATR, 15.03.2018: handle this exception!!! */
 			e.printStackTrace();
 		}
-		asciidoctor = create(config.getClass().getClassLoader());
+		asciidoctor = create(libsClassLoader);
 	}
 
 	public String convertToHTML(String asciiDoc) {
