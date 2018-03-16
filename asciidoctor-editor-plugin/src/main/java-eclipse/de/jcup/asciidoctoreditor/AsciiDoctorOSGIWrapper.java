@@ -10,15 +10,16 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.SafeMode;
+import org.eclipse.core.runtime.Platform;
 import org.jruby.RubyInstanceConfig;
 import org.jruby.javasupport.JavaEmbedUtils;
+import org.osgi.framework.Bundle;
 
 public class AsciiDoctorOSGIWrapper {
 
@@ -27,11 +28,20 @@ public class AsciiDoctorOSGIWrapper {
 	private EclipseResourceHelper helper;
 
 	public AsciiDoctorOSGIWrapper() {
-		helper=EclipseResourceHelper.DEFAULT;
+		helper = EclipseResourceHelper.DEFAULT;
 
 		// https://github.com/asciidoctor/asciidoctorj#using-asciidoctorj-in-an-osgi-environment
-		RubyInstanceConfig config = new RubyInstanceConfig();
-		config.setLoader(this.getClass().getClassLoader());
+		Bundle bundle = Platform.getBundle("asciidoctor.editor.libs");
+		RubyInstanceConfig config;
+		try {
+			Class<RubyInstanceConfig> clazz = (Class<RubyInstanceConfig>) bundle.loadClass(RubyInstanceConfig.class.getName());
+			config = clazz.newInstance();
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("cannot access ruby config!", e);
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new IllegalStateException("cannot access ruby config!", e);
+		}
+		config.setLoader(config.getClass().getClassLoader());
 		/* @formatter:off*/
 		JavaEmbedUtils.initialize(Arrays.asList(
 				"META-INF/jruby.home/lib/ruby/2.0", 
@@ -53,7 +63,7 @@ public class AsciiDoctorOSGIWrapper {
 			/* FIXME ATR, 15.03.2018: handle this exception!!! */
 			e.printStackTrace();
 		}
-		asciidoctor = create(this.getClass().getClassLoader());
+		asciidoctor = create(config.getClass().getClassLoader());
 	}
 
 	public String convertToHTML(String asciiDoc) {
@@ -61,36 +71,46 @@ public class AsciiDoctorOSGIWrapper {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html>");
 		sb.append("<head>");
-		
+
 		sb.append("<style>");
-		try(FileInputStream defaultFOS=new FileInputStream(helper.getFileInPlugin("css/default.css"));
-				FileInputStream coderayFOS=new FileInputStream(helper.getFileInPlugin("css/coderay.css"))){
-			/* adopted from https://github.com/asciidoctor/asciidoctor-intellij-plugin :*/	
+		try (FileInputStream defaultFOS = new FileInputStream(helper.getFileInPlugin("css/default.css"));
+				FileInputStream coderayFOS = new FileInputStream(helper.getFileInPlugin("css/coderay.css"))) {
+			/*
+			 * adopted from
+			 * https://github.com/asciidoctor/asciidoctor-intellij-plugin :
+			 */
 			String myInlineCss = IOUtils.toString(defaultFOS);
-//	      myInlineCssDarcula = myInlineCss + IOUtils.toString(JavaFxHtmlPanel.class.getResourceAsStream("darcula.css"));
-//	      myInlineCssDarcula += IOUtils.toString(JavaFxHtmlPanel.class.getResourceAsStream("coderay-darcula.css"));
+			// myInlineCssDarcula = myInlineCss +
+			// IOUtils.toString(JavaFxHtmlPanel.class.getResourceAsStream("darcula.css"));
+			// myInlineCssDarcula +=
+			// IOUtils.toString(JavaFxHtmlPanel.class.getResourceAsStream("coderay-darcula.css"));
 			myInlineCss += IOUtils.toString(coderayFOS);
 			sb.append(myInlineCss);
-			
-		}catch(IOException e){
+
+		} catch (IOException e) {
 			/* FIXME ATR, 15.03.2018: handle exception */
 			e.printStackTrace();
 		}
-		
+
 		sb.append("</style>");
-		try{
-			/* FIXME ATR, 15.03.2018: replacwe the regexp replaceAll with static one (at least) */
+		try {
+			/*
+			 * FIXME ATR, 15.03.2018: replacwe the regexp replaceAll with static
+			 * one (at least)
+			 */
 			File fontAwesomeCSSfile = helper.getFileInPlugin("css/font-awesome/css/font-awesome.min.css");
-			String fontAwesomeCssPath = fontAwesomeCSSfile.toURI().toURL().toExternalForm();//fontAwesomeCSSfile.getAbsolutePath().replaceAll("\\\\", "/" );
+			String fontAwesomeCssPath = fontAwesomeCSSfile.toURI().toURL().toExternalForm();// fontAwesomeCSSfile.getAbsolutePath().replaceAll("\\\\",
+																							// "/"
+																							// );
 			System.out.println(fontAwesomeCssPath);
-			String fontAwesomeCssLink = "<link rel=\"stylesheet\" href=\"" + fontAwesomeCssPath+ "\">";
+			String fontAwesomeCssLink = "<link rel=\"stylesheet\" href=\"" + fontAwesomeCssPath + "\">";
 			sb.append(fontAwesomeCssLink);
-			
+
 			File dejavouFile = helper.getFileInPlugin("css/dejavu/dejavu.css");
-			String dejavouPath = dejavouFile.getAbsolutePath().replaceAll("\\\\", "/" );
+			String dejavouPath = dejavouFile.getAbsolutePath().replaceAll("\\\\", "/");
 			String dejavuCssLink = "<link rel=\"stylesheet\" href=\"" + dejavouPath + "\">";
 			sb.append(dejavuCssLink);
-		}catch(IOException e){
+		} catch (IOException e) {
 			/* FIXME ATR, 15.03.2018: handle exception */
 			e.printStackTrace();
 		}
@@ -99,7 +119,7 @@ public class AsciiDoctorOSGIWrapper {
 		sb.append(html);
 		sb.append("</body>");
 		sb.append("</html>");
-		
+
 		return sb.toString();
 	}
 
@@ -107,7 +127,7 @@ public class AsciiDoctorOSGIWrapper {
 		Attributes attrs = AttributesBuilder.attributes().showTitle(true).sourceHighlighter("coderay")
 				.attribute("coderay-css", "style").attribute("env", "eclipse").attribute("env-eclipse").get();
 		if (tempFolder != null) {
-			System.out.println("Tempfolder:"+tempFolder);
+			System.out.println("Tempfolder:" + tempFolder);
 			attrs.setAttribute("outdir", tempFolder.toAbsolutePath().normalize().toString());
 		}
 		OptionsBuilder opts = OptionsBuilder.options().safe(SafeMode.UNSAFE).backend("html5").headerFooter(false)
