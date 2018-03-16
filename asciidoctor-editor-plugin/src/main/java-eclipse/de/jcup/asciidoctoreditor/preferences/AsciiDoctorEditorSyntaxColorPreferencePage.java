@@ -63,17 +63,15 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
 
 				/* editor colors */
 				changeColor(editorMap, COLOR_NORMAL_TEXT, AsciiDoctorEditorColorConstants.GRAY_JAVA);
-				changeColor(editorMap, COLOR_ASCIIDOCTOR_KEYWORD, AsciiDoctorEditorColorConstants.MIDDLE_GREEN);
+				changeColor(editorMap, COLOR_ASCIIDOCTOR_HEADLINES, AsciiDoctorEditorColorConstants.MIDDLE_GREEN);
 				
-				changeColor(editorMap, COLOR_NORMAL_STRING, AsciiDoctorEditorColorConstants.MIDDLE_GRAY);
-				changeColor(editorMap, COLOR_GSTRING, AsciiDoctorEditorColorConstants.MIDDLE_ORANGE);
 				changeColor(editorMap, COLOR_COMMENT, AsciiDoctorEditorColorConstants.GREEN_JAVA);
 				changeColor(editorMap, COLOR_INCLUDE_KEYWORD, AsciiDoctorEditorColorConstants.MIDDLE_BROWN);
 				changeColor(editorMap, COLOR_ASCIIDOCTOR_COMMAND, AsciiDoctorEditorColorConstants.TASK_CYAN);
 				changeColor(editorMap, COLOR_KNOWN_VARIABLES, AsciiDoctorEditorColorConstants.DARK_THEME_GRAY);
 				changeColor(editorMap, COLOR_TEXT_BOLD, AsciiDoctorEditorColorConstants.BRIGHT_CYAN);
-				changeColor(editorMap, COLOR_HYPERLINK, AsciiDoctorEditorColorConstants.DARK_THEME_HEREDOC);
-				changeColor(editorMap, COLOR_HERESTRINGS, AsciiDoctorEditorColorConstants.DARK_THEME_HERESTRING);
+				changeColor(editorMap, COLOR_HYPERLINK, AsciiDoctorEditorColorConstants.DARK_THEME_CYAN);
+				changeColor(editorMap, COLOR_TEXT_ITALIC, AsciiDoctorEditorColorConstants.DARK_THEME_BRIGHT_CYAN);
 				
 			}
 

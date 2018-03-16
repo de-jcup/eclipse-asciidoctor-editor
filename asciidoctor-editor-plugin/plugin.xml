@@ -257,6 +257,7 @@
                id="asciidoctoreditor.preferences.keyword.color">
          </keywordReference>
       </page>
+     <!--
       <page
          id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorValidationPreferencePage"
          class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferencePage"
@@ -269,6 +270,7 @@
                id="asciidoctoreditor.preferences.keyword.validation">
          </keywordReference>
       </page>
+      -->
     </extension>
     <extension
          point="org.eclipse.core.runtime.preferences">

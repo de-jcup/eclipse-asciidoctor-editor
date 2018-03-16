@@ -19,18 +19,16 @@ package de.jcup.asciidoctoreditor.preferences;
  * Constant definitions for plug-in preferences
  */
 public enum AsciiDoctorEditorSyntaxColorPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled{
-	COLOR_NORMAL_TEXT("colorNormalText","Normal text color"),
-	COLOR_ASCIIDOCTOR_KEYWORD("colorAsciiDoctorKeywords", "AsciiDoctorAccess keywords"),
-	COLOR_NORMAL_STRING("colorSingleStrings", "Single quoted strings"),
-	COLOR_GSTRING("colorDoubleStrings", "Double quoted strings"),
-	COLOR_BSTRING("colorBackTickStrings", "Backtick strings"),
-	COLOR_COMMENT("colorComments", "Comment"),
-	COLOR_INCLUDE_KEYWORD("colorIncludeKeywords","Includes"),
-	COLOR_ASCIIDOCTOR_COMMAND("colorCommands","Commands"),
-	COLOR_KNOWN_VARIABLES("colorKnownVariables","Known variables"),
-	COLOR_TEXT_BOLD("colorParameters","Parameters"),
+	COLOR_ASCIIDOCTOR_HEADLINES("colorHeadlines", "Headlines"),
+	COLOR_NORMAL_TEXT("colorNormalText","Normal text"),
+	COLOR_TEXT_BLOCKS("colorTextBlocks", "Text blocks"),
+	COLOR_TEXT_BOLD("colorTextBold","Bold text"),
+	COLOR_TEXT_ITALIC("colorTextItalic","Italic"),
 	COLOR_HYPERLINK("colorHyperlink","Hyperlinks"),
-	COLOR_HERESTRINGS("colorHereStrings","Here strings"),
+	COLOR_COMMENT("colorComments", "Comments"),
+	COLOR_INCLUDE_KEYWORD("colorIncludeKeywords","Includes"),
+	COLOR_ASCIIDOCTOR_COMMAND("colorCommands","Special AsciiDoctor commands"),
+	COLOR_KNOWN_VARIABLES("colorKnownVariables","Known variables"),
 	
 	;
 
