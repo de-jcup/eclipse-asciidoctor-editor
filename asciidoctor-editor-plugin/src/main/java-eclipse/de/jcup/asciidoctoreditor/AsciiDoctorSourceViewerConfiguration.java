@@ -79,7 +79,6 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 	 *            must provide {@link ColorManager} and {@link IFile}
 	 */
 	public AsciiDoctorSourceViewerConfiguration(IAdaptable adaptable) {
-		mono = new Font(EclipseUtil.getSafeDisplay(), "Monospaced", 10, SWT.NONE);
 
 		IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
 		this.fPreferenceStore = new ChainedPreferenceStore(
@@ -101,8 +100,12 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 
 		this.colorManager = adaptable.getAdapter(ColorManager.class);
 		Assert.isNotNull(colorManager, " adaptable must support color manager");
-		this.defaultTextAttribute = new TextAttribute(
+		
+		defaultTextAttribute = new TextAttribute(
 				colorManager.getColor(getPreferences().getColor(COLOR_NORMAL_TEXT)));
+		/* FIXME ATR, 16.03.2018: currently the mono setup is not working! */
+		mono = new Font(EclipseUtil.getSafeDisplay(), "Monospaced", 14, SWT.NONE);
+
 		this.adaptable = adaptable;
 
 	}
@@ -172,7 +175,7 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 
 		addDefaultPresentation(reconciler);
 
-		addPresentation(reconciler, BACKTICK_STRING.getId(), getPreferences().getColor(COLOR_NORMAL_TEXT), SWT.NONE, mono, getPreferences().getColor(COLOR_TEXT_BLOCKS));
+		addPresentation(reconciler, TEXT_BLOCK.getId(), getPreferences().getColor(COLOR_NORMAL_TEXT), SWT.NONE, mono, getPreferences().getColor(COLOR_TEXT_BLOCKS));
 		addPresentation(reconciler, HYPERLINK.getId(), getPreferences().getColor(COLOR_HYPERLINK), SWT.UNDERLINE_SINGLE);
 		addPresentation(reconciler, TEXT_BOLD.getId(), getPreferences().getColor(COLOR_TEXT_BOLD), SWT.BOLD);
 		addPresentation(reconciler, COMMENT.getId(), getPreferences().getColor(COLOR_COMMENT), SWT.NONE);

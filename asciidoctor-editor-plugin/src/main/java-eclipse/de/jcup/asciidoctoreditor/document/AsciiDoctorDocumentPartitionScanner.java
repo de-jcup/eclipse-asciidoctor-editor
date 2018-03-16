@@ -41,7 +41,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		IToken boldText = createToken(TEXT_BOLD);
 		IToken hyperlink = createToken(HYPERLINK);
 		IToken comment = createToken(COMMENT);
-		IToken backtickString = createToken(BACKTICK_STRING);
+		IToken textBlock = createToken(TEXT_BLOCK);
 
 		IToken knownVariables = createToken(KNOWN_VARIABLES);
 		IToken variables = createToken(VARIABLES);
@@ -58,8 +58,8 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new SingleLineRule("//", "", comment, (char) -1, true));
 		rules.add(new MultiLineRule("/*", "*/", comment));
 		
-		rules.add(new AsciiDoctorStringRule("`", "`", backtickString));
-		rules.add(new MultiLineRule("----", "----", backtickString));
+		rules.add(new AsciiDoctorStringRule("`", "`", textBlock));
+		rules.add(new MultiLineRule("----", "----", textBlock));
 		
 		rules.add(new SingleLineRule("**", "**", boldText, (char) -1, true));
 		rules.add(new SingleLineRule("*", "*", boldText, (char) -1, true));

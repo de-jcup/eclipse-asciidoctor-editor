@@ -21,7 +21,7 @@ public enum AsciiDoctorDocumentIdentifiers implements AsciiDoctorDocumentIdentif
 	
 	HYPERLINK,
 	
-	BACKTICK_STRING,
+	TEXT_BLOCK,
 	
 	INCLUDE_KEYWORD,
 	
