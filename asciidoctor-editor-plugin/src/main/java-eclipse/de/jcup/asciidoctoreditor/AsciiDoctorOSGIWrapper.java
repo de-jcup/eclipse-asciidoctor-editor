@@ -45,9 +45,10 @@ public class AsciiDoctorOSGIWrapper {
 		}
 		RubyInstanceConfig config = new RubyInstanceConfig();
 		config.setLoader(libsClassLoader);
+		config.setCurrentDirectory("c:/temp");
 		/* @formatter:off*/
 		JavaEmbedUtils.initialize(Arrays.asList(
-				"META-INF/jruby.home/lib/ruby/2.0", 
+//				"/META-INF/jruby.home/lib/ruby/2.0", 
 				"gems/asciidoctor-1.5.6.1/lib",
 				"gems/coderay-1.1.0/lib",
 				"gems/erubis-2.7.0/lib",
