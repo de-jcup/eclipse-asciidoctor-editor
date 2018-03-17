@@ -60,41 +60,31 @@ public class AsciiDoctorOSGIWrapper {
 		/* load asciidoctor OSGI conform */
 		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
 		String versionName = bundle.getVersion().toString();
-		ClassLoader libsClassLoader;
-		try {
-			Class<?> clazz = bundle.loadClass(RubyInstanceConfig.class.getName());
-			Object obj = clazz.newInstance();
-			libsClassLoader = obj.getClass().getClassLoader();
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("cannot access ruby config!", e);
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new IllegalStateException("cannot access ruby config!", e);
-		}
+		ClassLoader libsClassLoader = fetchClassLoader(bundle);
+		
+		initAscIIDoctor(versionName, libsClassLoader);
+		initTempFolderOrFail();
+		asciidoctor = create(libsClassLoader);
+	}
+
+	protected void initAscIIDoctor(String versionName, ClassLoader libsClassLoader) {
 		// https://github.com/asciidoctor/asciidoctorj#using-asciidoctorj-in-an-osgi-environment
 		RubyInstanceConfig config = new RubyInstanceConfig();
 		config.setLoader(libsClassLoader);
+		initializeRubyConfig(versionName, config);
+	}
 
-		File homeSubFolder = new File(System.getProperty("user.home"), ".eclipse-asciidoctor-editor");
-		File libFolder = new File(homeSubFolder, "libs");
-		
-		File unzippedGEMSfolder = new File(libFolder,versionName);
-		if (!unzippedGEMSfolder.exists()) {
-			unzippedGEMSfolder.mkdirs();
-
-			try {
-				File asciidoctorjJarFile = EclipseResourceHelper.DEFAULT.getFileInPlugin("asciidoctorj-1.5.6.jar",
-						LIBS_PLUGIN_ID);
-				if (!asciidoctorjJarFile.exists()) {
-					throw new IllegalStateException(
-							"file:" + asciidoctorjJarFile.getAbsolutePath() + " does not exist!");
-				}
-				ZipSupport support = new ZipSupport();
-				support.unzip(asciidoctorjJarFile, unzippedGEMSfolder);
-			} catch (IOException e) {
-				throw new IllegalStateException("Unzip problem with asciidcotor", e);
-			}
-
+	protected void initTempFolderOrFail() {
+		try {
+			tempFolder = Files.createTempDirectory("ascii-doctor-eclipse");
+			tempFolder.toFile().deleteOnExit();
+		} catch (IOException e) {
+			throw new IllegalStateException("Not able to provide tempfolder",e);
 		}
+	}
+
+	private void initializeRubyConfig(String versionName, RubyInstanceConfig config) {
+		File unzippedGEMSfolder = ensureUnzippedRubGemsArtefactsAvailable(versionName);
 
 		/* @formatter:off*/
 		/*
@@ -121,14 +111,51 @@ public class AsciiDoctorOSGIWrapper {
 				"gems/tilt-2.0.1/lib"
 		), config);
 		/* @formatter:on*/
+	}
+
+	private ClassLoader fetchClassLoader(Bundle bundle) {
+		ClassLoader libsClassLoader;
 		try {
-			tempFolder = Files.createTempDirectory("ascii-doctor-eclipse");
-			tempFolder.toFile().deleteOnExit();
-		} catch (IOException e) {
-			/* FIXME ATR, 15.03.2018: handle this exception!!! */
-			e.printStackTrace();
+			Class<?> clazz = bundle.loadClass(RubyInstanceConfig.class.getName());
+			Object obj = clazz.newInstance();
+			libsClassLoader = obj.getClass().getClassLoader();
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException("cannot access ruby config!", e);
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new IllegalStateException("cannot access ruby config!", e);
 		}
-		asciidoctor = create(libsClassLoader);
+		return libsClassLoader;
+	}
+
+	private File ensureUnzippedRubGemsArtefactsAvailable(String versionName) {
+		File homeSubFolder = new File(System.getProperty("user.home"), ".eclipse-asciidoctor-editor");
+		File libFolder = new File(homeSubFolder, "libs");
+		
+		File unzippedGEMSfolder = new File(libFolder,versionName);
+		if (!unzippedGEMSfolder.exists()) {
+			unzippedGEMSfolder.mkdirs();
+
+			try {
+				unzipOrFail(unzippedGEMSfolder, "asciidoctorj-1.5.6.jar");
+				unzipOrFail(unzippedGEMSfolder, "asciidoctorj-diagram-1.5.4.1.jar");
+			} catch (IOException e) {
+				throw new IllegalStateException("Unzip problem with asciidcotor", e);
+			}
+
+		}
+		return unzippedGEMSfolder;
+	}
+
+	private void unzipOrFail(File unzippedGEMSfolder, String zipFileName) throws IOException {
+		File zipFile = EclipseResourceHelper.DEFAULT.getFileInPlugin(zipFileName,
+				LIBS_PLUGIN_ID);
+		if (!zipFile.exists()) {
+			throw new IllegalStateException(
+					"file:" + zipFile.getAbsolutePath() + " does not exist!");
+		}
+		
+		ZipSupport support = new ZipSupport();
+		support.unzip(zipFile, unzippedGEMSfolder);
 	}
 
 	public String convertToHTML(String asciiDoc) {
