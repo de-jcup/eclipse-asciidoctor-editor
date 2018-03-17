@@ -23,6 +23,7 @@ import org.osgi.framework.Bundle;
 
 public class AsciiDoctorOSGIWrapper {
 
+	private static final String LIBS_PLUGIN_ID = "de.jcup.asciidoctoreditor.libs";
 	private Asciidoctor asciidoctor;
 	private Path tempFolder;
 	private EclipseResourceHelper helper;
@@ -31,24 +32,54 @@ public class AsciiDoctorOSGIWrapper {
 		helper = EclipseResourceHelper.DEFAULT;
 
 		// https://github.com/asciidoctor/asciidoctorj#using-asciidoctorj-in-an-osgi-environment
-		Bundle bundle = Platform.getBundle("de.jcup.asciidoctoreditor.libs");
-		
+		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
+
 		ClassLoader libsClassLoader;
 		try {
 			Class<?> clazz = bundle.loadClass(RubyInstanceConfig.class.getName());
 			Object obj = clazz.newInstance();
-			libsClassLoader=obj.getClass().getClassLoader();
+			libsClassLoader = obj.getClass().getClassLoader();
 		} catch (ClassNotFoundException e) {
 			throw new IllegalStateException("cannot access ruby config!", e);
-		} catch (InstantiationException|IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			throw new IllegalStateException("cannot access ruby config!", e);
 		}
 		RubyInstanceConfig config = new RubyInstanceConfig();
 		config.setLoader(libsClassLoader);
-		config.setCurrentDirectory("c:/temp");
+
+		File unzippedGEMSfolder = new File(System.getProperty("user.home"), ".eclipse-asciidoctor-editor");
+		if (!unzippedGEMSfolder.exists()) {
+			unzippedGEMSfolder.mkdirs();
+
+			try {
+				File asciidoctorjJarFile = EclipseResourceHelper.DEFAULT.getFileInPlugin("asciidoctorj-1.5.6.jar",
+						LIBS_PLUGIN_ID);
+				if (!asciidoctorjJarFile.exists()) {
+					throw new IllegalStateException(
+							"file:" + asciidoctorjJarFile.getAbsolutePath() + " does not exist!");
+				}
+				ZipSupport support = new ZipSupport();
+				support.unzip(asciidoctorjJarFile, unzippedGEMSfolder);
+			} catch (IOException e) {
+				throw  new IllegalStateException("Unzip problem with asciidcotor",e);
+			}
+
+		}
+
 		/* @formatter:off*/
+		/*
+		 * 
+		 * Workaround: 
+		 * - I always got problems with jruby not finding gems artefacts
+		 * - No way out in OSGI even when using the java embedder utils
+		 * - e.g. coderay duo was always not found
+		 * - But when setting the current directory to a folder where ascidoctorj gems 
+		 *   are extract there the loader does find them !!
+		 * 
+		 */
+		config.setCurrentDirectory(unzippedGEMSfolder.getAbsolutePath());
 		JavaEmbedUtils.initialize(Arrays.asList(
-//				"/META-INF/jruby.home/lib/ruby/2.0", 
+				"META-INF/jruby.home/lib/ruby/2.0", 
 				"gems/asciidoctor-1.5.6.1/lib",
 				"gems/coderay-1.1.0/lib",
 				"gems/erubis-2.7.0/lib",

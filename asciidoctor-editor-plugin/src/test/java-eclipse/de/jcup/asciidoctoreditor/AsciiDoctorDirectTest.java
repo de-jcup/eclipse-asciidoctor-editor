@@ -13,6 +13,21 @@ import org.junit.Test;
 
 public class AsciiDoctorDirectTest {
 
+	/* @formatter:off*/
+	public static final String CODERAY_RUBY_EXAMPLE =
+			"[source,ruby]              \n"+
+			"----                       \n"+
+			"require 'sinatra' // <1>   \n"+
+            "                           \n"+
+			"get '/hi' do // <2>        \n"+
+			"  \"Hello World!\" // <3>    \n"+
+			"end                        \n"+
+			"----                       \n"+
+			"<1> Library import         \n"+
+			"<2> URL mapping            \n"+
+			"<3> HTTP response body     \n";
+   /* @formatter:off*/
+	
 	@Test
 	public void test() {
 		String html = create().convert("= headline", getDefaultOptions());
@@ -21,23 +36,14 @@ public class AsciiDoctorDirectTest {
 
 	@Test
 	public void can_coderay() {
-		/* @formatter:off*/
-		String content =
-				"[source,ruby]              \n"+
-				"----                       \n"+
-				"require 'sinatra' // <1>   \n"+
-                "                           \n"+
-				"get '/hi' do // <2>        \n"+
-				"  \"Hello World!\" // <3>    \n"+
-				"end                        \n"+
-				"----                       \n"+
-				"<1> Library import         \n"+
-				"<2> URL mapping            \n"+
-				"<3> HTTP response body     \n";
-	   /* @formatter:off*/
-		String html = create().convert(content,getDefaultOptions());
+		
+		String html = create().convert(CODERAY_RUBY_EXAMPLE,getDefaultOptions());
 		System.out.println(html);
 	}
+	
+	
+	
+	
 	
 	
 	private Map<String, Object> getDefaultOptions() {
