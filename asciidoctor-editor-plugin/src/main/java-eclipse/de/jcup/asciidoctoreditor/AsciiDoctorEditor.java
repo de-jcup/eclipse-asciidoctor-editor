@@ -111,7 +111,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
-		asciidoctor = new AsciiDoctorOSGIWrapper();
+		asciidoctor = AsciiDoctorOSGIWrapper.INSTANCE;
 		try {
 			tempADFile = Files.createTempFile(null, ".html");
 		} catch (IOException e) {

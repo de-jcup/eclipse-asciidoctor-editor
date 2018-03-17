@@ -21,19 +21,45 @@ import org.jruby.RubyInstanceConfig;
 import org.jruby.javasupport.JavaEmbedUtils;
 import org.osgi.framework.Bundle;
 
+/**
+ * This wrapper is used to have correct access to asciidoctor inside
+ * OSGI/eclipse.<br>
+ * <br>
+ * <u>In a nutshell: </u><br>
+ * <ol>
+ * 	<li>Using the lib plugin</li>
+ *  <li>Handling OSGI issues</li>
+ * </ol>
+ * <br>
+ * <u>Details: </u><br>
+ * <br>
+ * The dependencies (jruby-complete, asciidoctorj etc.) are very,very big. So
+ * decided to put asciidoctor parts into an dedicated plugin which will be kept
+ * stable and does only contain those dependencies (asciidoctor-editor-libs). So
+ * users will only need to download the lib-plugin only one time from
+ * marketplace no matter how much updates the asciidoctor-editor-plugin has...
+ * <br><br>
+ * OSGI makes much problems when using asciidoctorj and ruby.<br>
+ * So we use JavaEmbedUtils inside this wrapper. But even with using JavaEmbedUtils the gems parts -e.g. coderay - 
+ * are still problematic. So we unzip gems parts to a user home sub directory
+ * 
+ * @author Albert Tregnaghi
+ *
+ */
 public class AsciiDoctorOSGIWrapper {
 
 	private static final String LIBS_PLUGIN_ID = "de.jcup.asciidoctoreditor.libs";
+	public static final AsciiDoctorOSGIWrapper INSTANCE = new AsciiDoctorOSGIWrapper();
 	private Asciidoctor asciidoctor;
 	private Path tempFolder;
 	private EclipseResourceHelper helper;
 
-	public AsciiDoctorOSGIWrapper() {
+	private AsciiDoctorOSGIWrapper() {
 		helper = EclipseResourceHelper.DEFAULT;
 
-		// https://github.com/asciidoctor/asciidoctorj#using-asciidoctorj-in-an-osgi-environment
+		/* load asciidoctor OSGI conform */
 		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
-
+		String versionName = bundle.getVersion().toString();
 		ClassLoader libsClassLoader;
 		try {
 			Class<?> clazz = bundle.loadClass(RubyInstanceConfig.class.getName());
@@ -44,10 +70,14 @@ public class AsciiDoctorOSGIWrapper {
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new IllegalStateException("cannot access ruby config!", e);
 		}
+		// https://github.com/asciidoctor/asciidoctorj#using-asciidoctorj-in-an-osgi-environment
 		RubyInstanceConfig config = new RubyInstanceConfig();
 		config.setLoader(libsClassLoader);
 
-		File unzippedGEMSfolder = new File(System.getProperty("user.home"), ".eclipse-asciidoctor-editor");
+		File homeSubFolder = new File(System.getProperty("user.home"), ".eclipse-asciidoctor-editor");
+		File libFolder = new File(homeSubFolder, "libs");
+		
+		File unzippedGEMSfolder = new File(libFolder,versionName);
 		if (!unzippedGEMSfolder.exists()) {
 			unzippedGEMSfolder.mkdirs();
 
@@ -61,7 +91,7 @@ public class AsciiDoctorOSGIWrapper {
 				ZipSupport support = new ZipSupport();
 				support.unzip(asciidoctorjJarFile, unzippedGEMSfolder);
 			} catch (IOException e) {
-				throw  new IllegalStateException("Unzip problem with asciidcotor",e);
+				throw new IllegalStateException("Unzip problem with asciidcotor", e);
 			}
 
 		}
