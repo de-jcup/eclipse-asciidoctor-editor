@@ -238,22 +238,21 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	@Override
-	public void createPartControl(Composite c) {
+	public void createPartControl(Composite parent) {
 
 		RGB green = new RGB(0, 255, 0);
 		RGB red = new RGB(255, 0, 0);
 		RGB blue = new RGB(0, 0, 255);
 		ColorManager colorManager = AsciiDoctorEditorActivator.getDefault().getColorManager();
 
-		SashForm sashForm = new SashForm(c, SWT.HORIZONTAL);
-		c.setLayout(new FillLayout());
+		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
+		parent.setLayout(new FillLayout());
 
-		Composite parentTextEditor = new Composite(sashForm, SWT.CENTER | SWT.SCROLL_PAGE);
-		parentTextEditor.setLayout(new FillLayout());
-		parentTextEditor.setBackground(colorManager.getColor(blue));
+//		Composite parentTextEditor = new Composite(sashForm, SWT.CENTER | SWT.SCROLL_PAGE);
+//		parentTextEditor.setLayout(new FillLayout());
+		//parentTextEditor.setBackground(colorManager.getColor(blue));
 
-		initBrowser(sashForm);
-
+		
 		// Composite asciiDoctorOutputView = new Composite(sashForm,
 		// SWT.CENTER);
 		// asciiDoctorOutputView.setBackground(colorManager.getColor(red));
@@ -267,7 +266,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		// }
 		// });
 
-		super.createPartControl(parentTextEditor);
+//		super.createPartControl(parentTextEditor);
+		super.createPartControl(sashForm);
+		initBrowser(sashForm);
 
 		Control adapter = getAdapter(Control.class);
 		if (adapter instanceof StyledText) {
@@ -296,13 +297,20 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			if (tempADFile == null) {
 				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
 			} else {
-				try {
-					browser.setUrl(tempADFile.toUri().toURL().toString());
-				} catch (MalformedURLException e) {
-					/* FIXME ATR, 15.03.2018: better error handling */
-					e.printStackTrace();
-					browser.setText("URL problems:" + e.getMessage());
-				}
+				EclipseUtil.safeAsyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+						browser.setUrl(tempADFile.toUri().toURL().toString());
+						
+						} catch (MalformedURLException e) {
+							/* FIXME ATR, 15.03.2018: better error handling */
+							e.printStackTrace();
+							browser.setText("URL problems:" + e.getMessage());
+						}
+						}
+					});
 			}
 
 		} catch (SWTError e) {
