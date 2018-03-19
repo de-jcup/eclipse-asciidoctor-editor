@@ -16,6 +16,8 @@
 package de.jcup.asciidoctoreditor;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -29,6 +31,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -41,6 +46,8 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 
 public class EclipseUtil {
+
+	private static Font monoFont;
 
 	public static ImageDescriptor createImageDescriptor(String path, String pluginId) {
 		if (path == null) {
@@ -188,6 +195,29 @@ public class EclipseUtil {
 			}
 		}
 		return message;
+	}
+	
+	public static final Font getMonospaceFont(){
+		if (monoFont==null){
+			monoFont = createMonospaceFont();
+		}
+		return monoFont;
+	}
+	
+	private static Font createMonospaceFont() {
+//		to get monospaced font is not really simple, 
+//		see https://bugs.eclipse.org/bugs/show_bug.cgi?id=48055
+//		see also https://bugs.eclipse.org/bugs/attachment.cgi?id=238603
+		int size=14;
+		int style = SWT.None;
+		List<FontData> fontDataList = new ArrayList<FontData>();
+		fontDataList.add(new FontData("Consolas",size, style));  // windows + general
+		fontDataList.add(new FontData("Monospace",size, style));  // linux_gtk
+		fontDataList.add(new FontData("adobe-courier",size, style));// linux
+		fontDataList.add(new FontData("Courier New",size, style));
+		Display device = EclipseUtil.getSafeDisplay();
+		FontData[] data = fontDataList.toArray(new FontData[fontDataList.size()]);
+		return new Font(device, data);
 	}
 
 	private static ImageRegistry getImageRegistry() {

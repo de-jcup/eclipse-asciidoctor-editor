@@ -19,6 +19,9 @@ import static de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil.*;
 import static de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferenceConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
@@ -44,7 +47,9 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -70,7 +75,6 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 	private IAdaptable adaptable;
 	private ContentAssistant contentAssistant;
 	private AsciiDoctorEditorSimpleWordContentAssistProcessor contentAssistProcessor;
-	Font mono;
 
 	/**
 	 * Creates configuration by given adaptable
@@ -100,15 +104,15 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 
 		this.colorManager = adaptable.getAdapter(ColorManager.class);
 		Assert.isNotNull(colorManager, " adaptable must support color manager");
-		
 		defaultTextAttribute = new TextAttribute(
 				colorManager.getColor(getPreferences().getColor(COLOR_NORMAL_TEXT)));
 		/* FIXME ATR, 16.03.2018: currently the mono setup is not working! */
-		mono = new Font(EclipseUtil.getSafeDisplay(), "Monospaced", 14, SWT.NONE);
 
 		this.adaptable = adaptable;
 
 	}
+
+	
 
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 		return contentAssistant;
@@ -175,8 +179,8 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 
 		addDefaultPresentation(reconciler);
 
-		addPresentation(reconciler, TEXT_BLOCK.getId(), getPreferences().getColor(COLOR_NORMAL_TEXT), SWT.NONE, mono, getPreferences().getColor(COLOR_TEXT_BLOCKS));
-		addPresentation(reconciler, HYPERLINK.getId(), getPreferences().getColor(COLOR_HYPERLINK), SWT.UNDERLINE_SINGLE);
+		addPresentation(reconciler, TEXT_BLOCK.getId(), getPreferences().getColor(COLOR_TEXT_BLOCKS), SWT.BOLD);
+		addPresentation(reconciler, HYPERLINK.getId(), getPreferences().getColor(COLOR_HYPERLINK), SWT.NONE);
 		addPresentation(reconciler, TEXT_BOLD.getId(), getPreferences().getColor(COLOR_TEXT_BOLD), SWT.BOLD);
 		addPresentation(reconciler, COMMENT.getId(), getPreferences().getColor(COLOR_COMMENT), SWT.NONE);
 		addPresentation(reconciler, INCLUDE_KEYWORD.getId(), getPreferences().getColor(COLOR_INCLUDE_KEYWORD),
@@ -230,4 +234,6 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		gradleScanner.setDefaultReturnToken(createColorToken(color));
 	}
 
+	
+	
 }
