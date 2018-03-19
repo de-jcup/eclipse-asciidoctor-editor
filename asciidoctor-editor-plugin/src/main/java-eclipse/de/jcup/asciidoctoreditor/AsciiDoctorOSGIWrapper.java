@@ -165,8 +165,25 @@ public class AsciiDoctorOSGIWrapper {
 		sb.append("<head>");
 
 		sb.append("<style>");
-		try (FileInputStream defaultFOS = new FileInputStream(helper.getFileInPlugin("css/default.css"));
-				FileInputStream coderayFOS = new FileInputStream(helper.getFileInPlugin("css/coderay.css"))) {
+		File defaultCSSFileInPlugin;
+		File codeRayCSSFileInPlugin;
+		try{
+			defaultCSSFileInPlugin = helper.getFileInPlugin("css/default.css");
+			codeRayCSSFileInPlugin = helper.getFileInPlugin("css/coderay.css");
+			
+		}catch(IOException e){
+			String message = "NO css data available! Cannot render files";
+			AsciiDoctorEditorUtil.logError(message,e);
+			return message;
+		}
+		if (defaultCSSFileInPlugin==null || codeRayCSSFileInPlugin==null){
+			String message = "NO css data found in plugins! Cannot render files";
+			AsciiDoctorEditorUtil.logError(message,null);
+			return message;
+		}
+		
+		try (FileInputStream defaultFOS = new FileInputStream(defaultCSSFileInPlugin);
+				FileInputStream coderayFOS = new FileInputStream(codeRayCSSFileInPlugin)) {
 			/*
 			 * adopted from
 			 * https://github.com/asciidoctor/asciidoctor-intellij-plugin :
@@ -180,8 +197,9 @@ public class AsciiDoctorOSGIWrapper {
 			sb.append(myInlineCss);
 
 		} catch (IOException e) {
-			/* FIXME ATR, 15.03.2018: handle exception */
-			e.printStackTrace();
+			String message = "Was not able load css data. Cannot render file.";
+			AsciiDoctorEditorUtil.logError(message,e);
+			return message;
 		}
 
 		sb.append("</style>");
@@ -193,7 +211,7 @@ public class AsciiDoctorOSGIWrapper {
 			File fontAwesomeCSSfile = helper.getFileInPlugin("css/font-awesome/css/font-awesome.min.css");
 			String fontAwesomeCssPath = fontAwesomeCSSfile.toURI().toURL().toExternalForm();// fontAwesomeCSSfile.getAbsolutePath().replaceAll("\\\\",
 																							// "/"
-																							// );
+			/* FIXME ATR, 19.03.2018: remove sysout when stable */																	// );
 			System.out.println(fontAwesomeCssPath);
 			String fontAwesomeCssLink = "<link rel=\"stylesheet\" href=\"" + fontAwesomeCssPath + "\">";
 			sb.append(fontAwesomeCssLink);
@@ -203,8 +221,9 @@ public class AsciiDoctorOSGIWrapper {
 			String dejavuCssLink = "<link rel=\"stylesheet\" href=\"" + dejavouPath + "\">";
 			sb.append(dejavuCssLink);
 		} catch (IOException e) {
-			/* FIXME ATR, 15.03.2018: handle exception */
-			e.printStackTrace();
+			String message = "Was not able load additional css data. Cannot render file.";
+			AsciiDoctorEditorUtil.logError(message,e);
+			return message;
 		}
 		sb.append("</head>");
 		sb.append("<body>");
