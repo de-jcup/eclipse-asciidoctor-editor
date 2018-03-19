@@ -102,16 +102,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private Object monitor = new Object();
 	private boolean quickOutlineOpened;
 	private int lastCaretPosition;
-	private AsciiDoctorOSGIWrapper asciidoctor;
 	private Browser browser;
 	private Path tempADFile;
+	private AsciiDoctorAccess asciidoctor;
 
 	private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
 
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
-		asciidoctor = AsciiDoctorOSGIWrapper.INSTANCE;
+		asciidoctor = new AsciiDoctorAccess();
 		try {
 			tempADFile = Files.createTempFile(null, ".html");
 		} catch (IOException e) {
