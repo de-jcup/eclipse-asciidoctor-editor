@@ -2,7 +2,7 @@
 <feature
       id="de.jcup.asciidoctoreditor"
       label="AsciiDoctor Editor"
-      version="0.1.0.alpha"
+      version="0.2.0.alpha"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/asciidoctor-editor">
@@ -244,5 +244,11 @@ and limitations under the License.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="de.jcup.asciidoctoreditor.libs"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>

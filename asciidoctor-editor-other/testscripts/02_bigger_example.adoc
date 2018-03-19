@@ -7,7 +7,7 @@ Java JDK (http://www.oracle.com/technetwork/java/javase at least JDK 8)
 
 ==== IDE
 ===== IntelliJ
-Do not use it ;-) 
+Why not use eclipse ? ;-) 
 
 ===== Eclipse
 

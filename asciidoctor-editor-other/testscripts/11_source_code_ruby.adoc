@@ -9,3 +9,16 @@ end
 <1> Library import
 <2> URL mapping
 <3> HTTP response body
+
+:icons: font
+[source,ruby]
+----
+require 'sinatra' // <1>
+
+get '/hi' do // <2>
+  "Hello World!" // <3>
+end
+----
+<1> Library import
+<2> URL mapping
+<3> HTTP response body
