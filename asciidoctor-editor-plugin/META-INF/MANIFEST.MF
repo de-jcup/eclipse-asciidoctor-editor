@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AsciiDoctor Editor
 Bundle-SymbolicName: de.jcup.asciidoctoreditor;singleton:=true
-Bundle-Version: 0.1.0.alpha
+Bundle-Version: 0.2.0.alpha
 Bundle-Activator: de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator
 Bundle-Vendor: Albert Tregnaghi
 Require-Bundle: org.eclipse.ui,
