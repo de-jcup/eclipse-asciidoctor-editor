@@ -2,4 +2,5 @@
 <site>
    <feature url="features/de.jcup.asciidoctoreditor_0.1.0.alpha.jar" id="de.jcup.asciidoctoreditor" version="0.1.0.alpha"/>
    <feature url="features/de.jcup.asciidoctoreditor_0.2.0.alpha.jar" id="de.jcup.asciidoctoreditor" version="0.2.0.alpha"/>
+   <feature url="features/de.jcup.asciidoctoreditor_0.2.1.alpha.jar" id="de.jcup.asciidoctoreditor" version="0.2.1.alpha"/>
 </site>
