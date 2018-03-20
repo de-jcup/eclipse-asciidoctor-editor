@@ -73,7 +73,7 @@ public class AsciiDoctorEditorPreferences {
 				if (!context.hasChanges()) {
 					return;
 				}
-				/* inform all AsciiDoctorAccess editors about color changes */
+				/* inform all AsciiDoctorWrapper editors about color changes */
 				IWorkbenchPage activePage = EclipseUtil.getActivePage();
 				if (activePage == null) {
 					return;

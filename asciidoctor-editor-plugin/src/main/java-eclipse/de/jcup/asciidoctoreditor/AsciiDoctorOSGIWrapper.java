@@ -12,14 +12,16 @@ import org.jruby.RubyInstanceConfig;
 import org.jruby.javasupport.JavaEmbedUtils;
 import org.osgi.framework.Bundle;
 
+import de.jcup.asciidoctoreditor.extension.FileIncludeIncludeProcessor;
+
 /**
  * This wrapper is used to have correct access to asciidoctor inside
  * OSGI/eclipse.<br>
  * <br>
  * <u>In a nutshell: </u><br>
  * <ol>
- * 	<li>Using the lib plugin</li>
- *  <li>Handling OSGI issues</li>
+ * <li>Using the lib plugin</li>
+ * <li>Handling OSGI issues</li>
  * </ol>
  * <br>
  * <u>Details: </u><br>
@@ -29,10 +31,12 @@ import org.osgi.framework.Bundle;
  * stable and does only contain those dependencies (asciidoctor-editor-libs). So
  * users will only need to download the lib-plugin only one time from
  * marketplace no matter how much updates the asciidoctor-editor-plugin has...
- * <br><br>
+ * <br>
+ * <br>
  * OSGI makes much problems when using asciidoctorj and ruby.<br>
- * So we use JavaEmbedUtils inside this wrapper. But even with using JavaEmbedUtils the gems parts -e.g. coderay - 
- * are still problematic. So we unzip gems parts to a user home sub directory
+ * So we use JavaEmbedUtils inside this wrapper. But even with using
+ * JavaEmbedUtils the gems parts -e.g. coderay - are still problematic. So we
+ * unzip gems parts to a user home sub directory
  * 
  * @author Albert Tregnaghi
  *
@@ -42,8 +46,26 @@ public class AsciiDoctorOSGIWrapper {
 	private static final String LIBS_PLUGIN_ID = "de.jcup.asciidoctoreditor.libs";
 	public static final AsciiDoctorOSGIWrapper INSTANCE = new AsciiDoctorOSGIWrapper();
 	private Asciidoctor asciidoctor;
+	private Object monitor = new Object();
 	
 	private AsciiDoctorOSGIWrapper() {
+		
+	}
+
+	/**
+	 * @return asciidoctor instance lazy but threadsafe
+	 */
+	public Asciidoctor getAsciidoctor() {
+		synchronized (monitor) {
+			if (asciidoctor==null){
+				loadAsciidoctor();
+			}
+			return asciidoctor;
+			
+		}
+	}
+
+	private Asciidoctor loadAsciidoctor() {
 		/* load asciidoctor OSGI conform */
 		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
 		String versionName = bundle.getVersion().toString();
@@ -51,10 +73,10 @@ public class AsciiDoctorOSGIWrapper {
 		
 		initAscIIDoctor(versionName, libsClassLoader);
 		asciidoctor = create(libsClassLoader);
-	}
-	
-	public Asciidoctor getAsciidoctor() {
-		return asciidoctor;
+
+		asciidoctor.requireLibrary("asciidoctor-diagram");
+//		asciidoctor.javaExtensionRegistry().includeProcessor(FileIncludeIncludeProcessor.class);
+		return null;
 	}
 
 	protected void initAscIIDoctor(String versionName, ClassLoader libsClassLoader) {
@@ -63,7 +85,6 @@ public class AsciiDoctorOSGIWrapper {
 		config.setLoader(libsClassLoader);
 		initializeRubyConfig(versionName, config);
 	}
-
 
 	private void initializeRubyConfig(String versionName, RubyInstanceConfig config) {
 		File unzippedGEMSfolder = ensureUnzippedRubGemsArtefactsAvailable(versionName);
@@ -83,6 +104,7 @@ public class AsciiDoctorOSGIWrapper {
 		JavaEmbedUtils.initialize(Arrays.asList(
 				"META-INF/jruby.home/lib/ruby/2.0", 
 				"gems/asciidoctor-1.5.6.1/lib",
+				"gems/asciidoctor-diagram-1.5.4.1/lib",
 				"gems/coderay-1.1.0/lib",
 				"gems/erubis-2.7.0/lib",
 				"gems/haml-4.0.5/lib",
@@ -112,8 +134,8 @@ public class AsciiDoctorOSGIWrapper {
 	private File ensureUnzippedRubGemsArtefactsAvailable(String versionName) {
 		File homeSubFolder = new File(System.getProperty("user.home"), ".eclipse-asciidoctor-editor");
 		File libFolder = new File(homeSubFolder, "libs");
-		
-		File unzippedGEMSfolder = new File(libFolder,versionName);
+
+		File unzippedGEMSfolder = new File(libFolder, versionName);
 		if (!unzippedGEMSfolder.exists()) {
 			unzippedGEMSfolder.mkdirs();
 
@@ -129,16 +151,13 @@ public class AsciiDoctorOSGIWrapper {
 	}
 
 	private void unzipOrFail(File unzippedGEMSfolder, String zipFileName) throws IOException {
-		File zipFile = EclipseResourceHelper.DEFAULT.getFileInPlugin(zipFileName,
-				LIBS_PLUGIN_ID);
+		File zipFile = EclipseResourceHelper.DEFAULT.getFileInPlugin(zipFileName, LIBS_PLUGIN_ID);
 		if (!zipFile.exists()) {
-			throw new IllegalStateException(
-					"file:" + zipFile.getAbsolutePath() + " does not exist!");
+			throw new IllegalStateException("file:" + zipFile.getAbsolutePath() + " does not exist!");
 		}
-		
+
 		ZipSupport support = new ZipSupport();
 		support.unzip(zipFile, unzippedGEMSfolder);
 	}
 
-	
 }
