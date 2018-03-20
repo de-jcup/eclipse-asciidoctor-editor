@@ -53,7 +53,6 @@ import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -90,24 +89,32 @@ import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValida
 @AdaptedFromEGradle
 public class AsciiDoctorEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
 
-	/** The COMMAND_ID of this editor as defined in plugin.xml */
+	/** The EDITOR_ID of this editor as defined in plugin.xml */
 	public static final String EDITOR_ID = "asciidoctoreditor.editors.AsciiDoctorEditor";
+	
 	/** The COMMAND_ID of the editor context menu */
 	public static final String EDITOR_CONTEXT_MENU_ID = EDITOR_ID + ".context";
+	
 	/** The COMMAND_ID of the editor ruler context menu */
 	public static final String EDITOR_RULER_CONTEXT_MENU_ID = EDITOR_CONTEXT_MENU_ID + ".ruler";
 
-	private SourceViewerDecorationSupport additionalSourceViewerSupport;
-	private AsciiDoctorContentOutlinePage outlinePage;
-	private AsciiDoctorScriptModelBuilder modelBuilder;
-	private Object monitor = new Object();
-	private boolean quickOutlineOpened;
-	private int lastCaretPosition;
-	private Browser browser;
-	private AsciiDoctorWrapper asciidoctorWrapper;
-	private File tempADFile;
-
 	private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
+	private SourceViewerDecorationSupport additionalSourceViewerSupport;
+	private AsciiDoctorWrapper asciidoctorWrapper;
+	private String bgColor;
+	private Browser browser;
+	private String fgColor;
+	private boolean ignoreNextCaretMove;
+	private int lastCaretPosition;
+	private AsciiDoctorScriptModelBuilder modelBuilder;
+
+	private Object monitor = new Object();
+
+	private AsciiDoctorContentOutlinePage outlinePage;
+
+	private boolean quickOutlineOpened;
+
+	private File tempADFile;
 
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
@@ -115,153 +122,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		asciidoctorWrapper = new AsciiDoctorWrapper();
 	}
 
-	public void resourceChanged(IResourceChangeEvent event) {
-		if (isMarkerChangeForThisEditor(event)) {
-			int severity = getSeverity();
-
-			setTitleImageDependingOnSeverity(severity);
-		}
-	}
-
-	/**
-	 * Opens quick outline
-	 */
-	public void openQuickOutline() {
-		synchronized (monitor) {
-			if (quickOutlineOpened) {
-				/*
-				 * already opened - this is in future the anker point for
-				 * ctrl+o+o...
-				 */
-				return;
-			}
-			quickOutlineOpened = true;
-		}
-		Shell shell = getEditorSite().getShell();
-		AsciiDoctorScriptModel model = buildModelWithoutValidation();
-		AsciiDoctorQuickOutlineDialog dialog = new AsciiDoctorQuickOutlineDialog(this, shell, "Quick outline");
-		dialog.setInput(model);
-
-		dialog.open();
-		synchronized (monitor) {
-			quickOutlineOpened = false;
-		}
-	}
-
-	private AsciiDoctorScriptModel buildModelWithoutValidation() {
-		String text = getDocumentText();
-		/*
-		 * FIXME ATR, 15.03.2018: clean up this stuff... is this still useful?
-		 */
-		/* for quick outline create own model and ignore any validations */
-		modelBuilder.setIgnoreBlockValidation(true);
-		modelBuilder.setIgnoreDoValidation(true);
-		modelBuilder.setIgnoreIfValidation(true);
-		modelBuilder.setIgnoreFunctionValidation(true);
-
-		AsciiDoctorScriptModel model;
-		try {
-			model = modelBuilder.build(text);
-		} catch (AsciiDoctorScriptModelException e) {
-			AsciiDoctorEditorUtil.logError("Was not able to build script model", e);
-			model = FALLBACK_MODEL;
-		}
-		return model;
-	}
-
-	void setTitleImageDependingOnSeverity(int severity) {
-		setTitleImage(
-				EclipseUtil.getImage("icons/" + getTitleImageName(severity), AsciiDoctorEditorActivator.PLUGIN_ID));
-	}
-
-	private String getTitleImageName(int severity) {
-		switch (severity) {
-		case IMarker.SEVERITY_ERROR:
-			return "asciidoctorWrapper-editor-with-error.png";
-		case IMarker.SEVERITY_WARNING:
-			return "asciidoctorWrapper-editor-with-warning.png";
-		case IMarker.SEVERITY_INFO:
-			return "asciidoctorWrapper-editor-with-info.png";
-		default:
-			return "asciidoctorWrapper-editor.png";
-		}
-	}
-
-	private int getSeverity() {
-		IEditorInput editorInput = getEditorInput();
-		if (editorInput == null) {
-			return IMarker.SEVERITY_INFO;
-		}
-		try {
-			final IResource resource = ResourceUtil.getResource(editorInput);
-			if (resource == null) {
-				return IMarker.SEVERITY_INFO;
-			}
-			int severity = resource.findMaxProblemSeverity(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
-			return severity;
-		} catch (CoreException e) {
-			// Might be a project that is not open
-		}
-		return IMarker.SEVERITY_INFO;
-	}
-
-	private void addErrorMarkers(AsciiDoctorScriptModel model, int severity) {
-		if (model == null) {
-			return;
-		}
-		IDocument document = getDocument();
-		if (document == null) {
-			return;
-		}
-		Collection<AsciiDoctorError> errors = model.getErrors();
-		for (AsciiDoctorError error : errors) {
-			int startPos = error.getStart();
-			int line;
-			try {
-				line = document.getLineOfOffset(startPos);
-			} catch (BadLocationException e) {
-				EclipseUtil.logError("Cannot get line offset for " + startPos, e);
-				line = 0;
-			}
-			AsciiDoctorEditorUtil.addScriptError(this, line, error, severity);
-		}
-
-	}
-
-	public void setErrorMessage(String message) {
-		super.setStatusLineErrorMessage(message);
-	}
-
 	@Override
 	public void createPartControl(Composite parent) {
 		
-		RGB green = new RGB(0, 255, 0);
-		RGB red = new RGB(255, 0, 0);
-		RGB blue = new RGB(0, 0, 255);
-		ColorManager colorManager = AsciiDoctorEditorActivator.getDefault().getColorManager();
-
 		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
 		parent.setLayout(new FillLayout());
 
-		// Composite parentTextEditor = new Composite(sashForm, SWT.CENTER |
-		// SWT.SCROLL_PAGE);
-		// parentTextEditor.setLayout(new FillLayout());
-		// parentTextEditor.setBackground(colorManager.getColor(blue));
-
-		// Composite asciiDoctorOutputView = new Composite(sashForm,
-		// SWT.CENTER);
-		// asciiDoctorOutputView.setBackground(colorManager.getColor(red));
-		// Button button = new Button(asciiDoctorOutputView, SWT.PUSH);
-		// asciiDoctorOutputView.setBackground(colorManager.getColor(green));
-		// // register listener for the selection event
-		// button.addSelectionListener(new SelectionAdapter() {
-		// @Override
-		// public void widgetSelected(SelectionEvent e) {
-		// System.out.println("Called!");
-		// }
-		// });
-
-		// super.createPartControl(parentTextEditor);
 		super.createPartControl(sashForm);
 		
 		initBrowser(sashForm);
@@ -274,8 +140,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		activateAsciiDoctorEditorContext();
 
-		installAdditionalSourceViewerSupport();
-
 		/*
 		 * register as resource change listener to provide marker change
 		 * listening
@@ -284,74 +148,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		setTitleImageInitial();
 		updateAsciiDocView();
-	}
-
-	protected void initBrowser(SashForm sashForm) {
-		tempADFile= asciidoctorWrapper.getTempFileFor(getEditorFile(),true);
-		try {
-			browser = new Browser(sashForm, SWT.CENTER);
-			
-			if (tempADFile == null) {
-				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
-			} else {
-				EclipseUtil.safeAsyncExec(new Runnable() {
-
-					@Override
-					public void run() {
-						try {
-							browser.setUrl(tempADFile.toURI().toURL().toString());
-
-						} catch (MalformedURLException e) {
-							/* FIXME ATR, 15.03.2018: better error handling */
-							e.printStackTrace();
-							browser.setText("URL problems:" + e.getMessage());
-						}
-					}
-				});
-			}
-
-		} catch (SWTError e) {
-			MessageBox messageBox = new MessageBox(EclipseUtil.getActiveWorkbenchShell(), SWT.ICON_ERROR | SWT.OK);
-			messageBox.setMessage("Browser cannot be initialized.");
-			messageBox.setText("Exit");
-			messageBox.open();
-			return;
-		}
-		if (tempADFile == null) {
-			if (browser != null) {
-				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
-			}
-		}
-	}
-
-	public AsciiDoctorContentOutlinePage getOutlinePage() {
-		if (outlinePage == null) {
-			outlinePage = new AsciiDoctorContentOutlinePage(this);
-		}
-		return outlinePage;
-	}
-
-	/**
-	 * Installs an additional source viewer support which uses editor
-	 * preferences instead of standard text preferences. If standard source
-	 * viewer support would be set with editor preferences all standard
-	 * preferences would be lost or had to be reimplmented. To avoid this
-	 * another source viewer support is installed...
-	 */
-	private void installAdditionalSourceViewerSupport() {
-
-		// additionalSourceViewerSupport = new
-		// SourceViewerDecorationSupport(getSourceViewer(), getOverviewRuler(),
-		// getAnnotationAccess(), getSharedColors());
-		// additionalSourceViewerSupport.setMatchingCharacterPainterPreferenceKeys(
-		// P_EDITOR_MATCHING_BRACKETS_ENABLED.getId(),
-		// P_EDITOR_MATCHING_BRACKETS_COLOR.getId(),
-		// P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION.getId(),
-		// P_EDITOR_ENCLOSING_BRACKETS.getId());
-		//
-		// IPreferenceStore preferenceStoreForDecorationSupport =
-		// AsciiDoctorEditorUtil.getPreferences().getPreferenceStore();
-		// additionalSourceViewerSupport.install(preferenceStoreForDecorationSupport);
 	}
 
 	@Override
@@ -365,47 +161,19 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 	}
 
-	public String getBackGroundColorAsWeb() {
-		ensureColorsFetched();
-		return bgColor;
-	}
-
-	public String getForeGroundColorAsWeb() {
-		ensureColorsFetched();
-		return fgColor;
-	}
-
-	private void ensureColorsFetched() {
-		if (bgColor == null || fgColor == null) {
-
-			ISourceViewer sourceViewer = getSourceViewer();
-			if (sourceViewer == null) {
-				return;
-			}
-			StyledText textWidget = sourceViewer.getTextWidget();
-			if (textWidget == null) {
-				return;
-			}
-
-			/*
-			 * TODO ATR, 03.02.2017: there should be an easier approach to get
-			 * editors back and foreground, without syncexec
-			 */
-			EclipseUtil.getSafeDisplay().syncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					bgColor = ColorUtil.convertToHexColor(textWidget.getBackground());
-					fgColor = ColorUtil.convertToHexColor(textWidget.getForeground());
-				}
-			});
+	public AsciiDoctorHeadline findAsciiDoctorFunction(String functionName) {
+		if (functionName == null) {
+			return null;
 		}
-
+		AsciiDoctorScriptModel model = buildModelWithoutValidation();
+		Collection<AsciiDoctorHeadline> functions = model.getHeadlines();
+		for (AsciiDoctorHeadline function : functions) {
+			if (functionName.equals(function.getName())) {
+				return function;
+			}
+		}
+		return null;
 	}
-
-	private String bgColor;
-	private String fgColor;
-	private boolean ignoreNextCaretMove;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -442,33 +210,121 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		return super.getAdapter(adapter);
 	}
 
-	/**
-	 * Get document text - safe way.
-	 * 
-	 * @return string, never <code>null</code>
-	 */
-	String getDocumentText() {
-		IDocument doc = getDocument();
-		if (doc == null) {
-			return "";
+	public String getBackGroundColorAsWeb() {
+		ensureColorsFetched();
+		return bgColor;
+	}
+
+	public IDocument getDocument() {
+		return getDocumentProvider().getDocument(getEditorInput());
+	}
+
+	public String getForeGroundColorAsWeb() {
+		ensureColorsFetched();
+		return fgColor;
+	}
+
+	public Item getItemAt(int offset) {
+		if (outlinePage == null) {
+			return null;
 		}
-		return doc.get();
+		AsciiDoctorEditorTreeContentProvider contentProvider = outlinePage.getContentProvider();
+		if (contentProvider == null) {
+			return null;
+		}
+		Item item = contentProvider.tryToFindByOffset(offset);
+		return item;
+	}
+
+	public Item getItemAtCarretPosition() {
+		return getItemAt(lastCaretPosition);
+	}
+
+	public AsciiDoctorContentOutlinePage getOutlinePage() {
+		if (outlinePage == null) {
+			outlinePage = new AsciiDoctorContentOutlinePage(this);
+		}
+		return outlinePage;
+	}
+
+	public AsciiDoctorEditorPreferences getPreferences() {
+		return AsciiDoctorEditorPreferences.getInstance();
+	}
+
+	public void handleColorSettingsChanged() {
+		// done like in TextEditor for spelling
+		ISourceViewer viewer = getSourceViewer();
+		SourceViewerConfiguration configuration = getSourceViewerConfiguration();
+		if (viewer instanceof ISourceViewerExtension2) {
+			ISourceViewerExtension2 viewerExtension2 = (ISourceViewerExtension2) viewer;
+			viewerExtension2.unconfigure();
+			if (configuration instanceof AsciiDoctorSourceViewerConfiguration) {
+				AsciiDoctorSourceViewerConfiguration gconf = (AsciiDoctorSourceViewerConfiguration) configuration;
+				gconf.updateTextScannerDefaultColorToken();
+			}
+			viewer.configure(configuration);
+		}
 	}
 
 	@Override
-	protected void doSetInput(IEditorInput input) throws CoreException {
-		setDocumentProvider(createDocumentProvider(input));
-		super.doSetInput(input);
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		super.init(site, input);
+		if (site == null) {
+			return;
+		}
+		IWorkbenchPage page = site.getPage();
+		if (page == null) {
+			return;
+		}
 
-		rebuildOutline();
-		updateAsciiDocView();
+		// workaround to show action set for block mode etc.
+		// https://www.eclipse.org/forums/index.php/t/366630/
+		page.showActionSet("org.eclipse.ui.edit.text.actionSet.presentation");
+
 	}
+	/**
+	 * Opens quick outline
+	 */
+	public void openQuickOutline() {
+		synchronized (monitor) {
+			if (quickOutlineOpened) {
+				/*
+				 * already opened - this is in future the anker point for
+				 * ctrl+o+o...
+				 */
+				return;
+			}
+			quickOutlineOpened = true;
+		}
+		Shell shell = getEditorSite().getShell();
+		AsciiDoctorScriptModel model = buildModelWithoutValidation();
+		AsciiDoctorQuickOutlineDialog dialog = new AsciiDoctorQuickOutlineDialog(this, shell, "Quick outline");
+		dialog.setInput(model);
 
-	@Override
-	protected void editorSaved() {
-		super.editorSaved();
-		rebuildOutline();
-		updateAsciiDocView();
+		dialog.open();
+		synchronized (monitor) {
+			quickOutlineOpened = false;
+		}
+	}
+	public void openSelectedTreeItemInEditor(ISelection selection, boolean grabFocus) {
+		if (selection instanceof IStructuredSelection) {
+			IStructuredSelection ss = (IStructuredSelection) selection;
+			Object firstElement = ss.getFirstElement();
+			if (firstElement instanceof Item) {
+				Item item = (Item) firstElement;
+				int offset = item.getOffset();
+				int length = item.getLength();
+				if (length == 0) {
+					/* fall back */
+					length = 1;
+				}
+				ignoreNextCaretMove = true;
+				selectAndReveal(offset, length);
+				if (grabFocus) {
+					setFocus();
+				}
+			}
+		}
 	}
 
 	/**
@@ -527,117 +383,21 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		});
 	}
 
-	/**
-	 * Set initial title image dependent on current marker severity. This will
-	 * mark error icon on startup time which is not handled by resource change
-	 * handling, because having no change...
-	 */
-	private void setTitleImageInitial() {
-		IResource resource = resolveResource();
-		if (resource != null) {
-			try {
-				int maxSeverity = resource.findMaxProblemSeverity(null, true, IResource.DEPTH_INFINITE);
-				setTitleImageDependingOnSeverity(maxSeverity);
-			} catch (CoreException e) {
-				/* ignore */
-			}
+	public void resourceChanged(IResourceChangeEvent event) {
+		if (isMarkerChangeForThisEditor(event)) {
+			int severity = getSeverity();
+
+			setTitleImageDependingOnSeverity(severity);
 		}
 	}
 
-	/**
-	 * Resolves resource from current editor input.
-	 * 
-	 * @return file resource or <code>null</code>
-	 */
-	private IResource resolveResource() {
-		IEditorInput input = getEditorInput();
-		if (!(input instanceof IFileEditorInput)) {
-			return null;
-		}
-		return ((IFileEditorInput) input).getFile();
-	}
-
-	private boolean isMarkerChangeForThisEditor(IResourceChangeEvent event) {
-		IResource resource = ResourceUtil.getResource(getEditorInput());
-		if (resource == null) {
-			return false;
-		}
-		IPath path = resource.getFullPath();
-		if (path == null) {
-			return false;
-		}
-		IResourceDelta eventDelta = event.getDelta();
-		if (eventDelta == null) {
-			return false;
-		}
-		IResourceDelta delta = eventDelta.findMember(path);
-		if (delta == null) {
-			return false;
-		}
-		boolean isMarkerChangeForThisResource = (delta.getFlags() & IResourceDelta.MARKERS) != 0;
-		return isMarkerChangeForThisResource;
-	}
-
-	private IDocumentProvider createDocumentProvider(IEditorInput input) {
-		if (input instanceof FileStoreEditorInput) {
-			return new AsciiDoctorTextFileDocumentProvider();
-		} else {
-			return new AsciiDoctorFileDocumentProvider();
-		}
-	}
-
-	public IDocument getDocument() {
-		return getDocumentProvider().getDocument(getEditorInput());
-	}
-
-	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		super.init(site, input);
-		if (site == null) {
-			return;
-		}
-		IWorkbenchPage page = site.getPage();
-		if (page == null) {
-			return;
-		}
-
-		// workaround to show action set for block mode etc.
-		// https://www.eclipse.org/forums/index.php/t/366630/
-		page.showActionSet("org.eclipse.ui.edit.text.actionSet.presentation");
+	public void selectFunction(String text) {
+		System.out.println("should select functin:" + text);
 
 	}
 
-	@Override
-	protected void initializeEditor() {
-		super.initializeEditor();
-		setEditorContextMenuId(EDITOR_CONTEXT_MENU_ID);
-		setRulerContextMenuId(EDITOR_RULER_CONTEXT_MENU_ID);
-	}
-
-	private void activateAsciiDoctorEditorContext() {
-		IContextService contextService = getSite().getService(IContextService.class);
-		if (contextService != null) {
-			contextService.activateContext(EDITOR_CONTEXT_MENU_ID);
-		}
-	}
-
-	private ColorManager getColorManager() {
-		return AsciiDoctorEditorActivator.getDefault().getColorManager();
-	}
-
-	public void handleColorSettingsChanged() {
-		// done like in TextEditor for spelling
-		ISourceViewer viewer = getSourceViewer();
-		SourceViewerConfiguration configuration = getSourceViewerConfiguration();
-		if (viewer instanceof ISourceViewerExtension2) {
-			ISourceViewerExtension2 viewerExtension2 = (ISourceViewerExtension2) viewer;
-			viewerExtension2.unconfigure();
-			if (configuration instanceof AsciiDoctorSourceViewerConfiguration) {
-				AsciiDoctorSourceViewerConfiguration gconf = (AsciiDoctorSourceViewerConfiguration) configuration;
-				gconf.updateTextScannerDefaultColorToken();
-			}
-			viewer.configure(configuration);
-		}
+	public void setErrorMessage(String message) {
+		super.setStatusLineErrorMessage(message);
 	}
 
 	/**
@@ -707,64 +467,349 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 	}
 
-	public void openSelectedTreeItemInEditor(ISelection selection, boolean grabFocus) {
-		if (selection instanceof IStructuredSelection) {
-			IStructuredSelection ss = (IStructuredSelection) selection;
-			Object firstElement = ss.getFirstElement();
-			if (firstElement instanceof Item) {
-				Item item = (Item) firstElement;
-				int offset = item.getOffset();
-				int length = item.getLength();
-				if (length == 0) {
-					/* fall back */
-					length = 1;
+	public void updateAsciiDocView() {
+		if (browser == null) {
+			return;
+		}
+		if (browser.isDisposed()) {
+			return;
+		}
+		if (tempADFile == null) {
+			return;
+		}
+		buildTemporaryHTMLFile();
+		browser.refresh();
+		
+	}
+
+	public void validate() {
+		rebuildOutline();
+	}
+
+	protected void buildTemporaryHTMLFile() {
+		String content=null;
+		File editorFile = getEditorFile();
+		try {
+			if (editorFile != null) {
+				boolean handledError=false;
+				try {
+					asciidoctorWrapper.convertToHTML(editorFile);
+					
+					File generatedFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), false);
+					try(BufferedReader br = new BufferedReader(new FileReader(generatedFile))){
+						String line = null;
+						StringBuilder htmlSB = new StringBuilder();
+						while ((line=br.readLine())!=null){
+							htmlSB.append(line);
+							htmlSB.append("\n");
+						}
+						content= htmlSB.toString();
+					}catch(IOException e){
+						AsciiDoctorEditorUtil.logError("Was not able to build new full", e);
+					}
+					
+					
+				} catch (RuntimeException e) {
+					AsciiDoctorEditorUtil.logWarning("Failed to convert - use fallback to simple text. EditorFile was:" + editorFile+". Origin message was:"+e.getMessage());
+					handledError=true;
 				}
-				ignoreNextCaretMove = true;
-				selectAndReveal(offset, length);
-				if (grabFocus) {
-					setFocus();
+				if (!handledError && (content == null || "null".equals(content))) {
+					AsciiDoctorEditorUtil.logWarning("File conversion failed. Use fallback to simple text. EditorFile was:" + editorFile);
+					content = null;
 				}
+			}
+			if (content == null) {
+				content = asciidoctorWrapper.convertToHTML(getDocumentText());
+			}
+			String html = asciidoctorWrapper.buildHTMLWithCSS(content);
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempADFile))) {
+				bw.write(html);
+				bw.close();
+				
+			} catch (IOException e1) {
+				AsciiDoctorEditorUtil.logError("Was not able to setup", e1);
+			}
+
+		} catch (RuntimeException e) {
+			AsciiDoctorEditorUtil.logError("Was not able to setup, editorFile was:" + editorFile, e);
+		}
+	}
+
+	@Override
+	protected void doSetInput(IEditorInput input) throws CoreException {
+		setDocumentProvider(createDocumentProvider(input));
+		super.doSetInput(input);
+
+		rebuildOutline();
+		updateAsciiDocView();
+	}
+
+	@Override
+	protected void editorSaved() {
+		super.editorSaved();
+		rebuildOutline();
+		updateAsciiDocView();
+	}
+
+	protected File getEditorFile() {
+		IEditorInput input = getEditorInput();
+		return getEditorFile(input);
+	}
+
+	protected File getEditorFile(IEditorInput input) {
+		File editorFile = null;
+		if (input instanceof FileEditorInput) {
+			FileEditorInput finput = (FileEditorInput) input;
+			IFile iFile = finput.getFile();
+			try {
+				editorFile = EclipseResourceHelper.DEFAULT.toFile(iFile);
+			} catch (CoreException e) {
+				AsciiDoctorEditorUtil.logError("Was not able to fetch file of current editor", e);
+			}
+		}
+		return editorFile;
+	}
+
+	protected void initBrowser(SashForm sashForm) {
+		tempADFile= asciidoctorWrapper.getTempFileFor(getEditorFile(),true);
+		try {
+			browser = new Browser(sashForm, SWT.CENTER);
+			if (tempADFile == null || !tempADFile.exists()) {
+				/* can happen when eclipse restarts and editor opens - new temp folder shows to non
+				 * existing file...
+				 */
+				buildTemporaryHTMLFile();
+			}
+			if (tempADFile == null || !tempADFile.exists()) {
+				/* it was not possible to recreate the temp ad file */
+				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
+			} else {
+				EclipseUtil.safeAsyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+						try {
+							browser.setUrl(tempADFile.toURI().toURL().toString());
+
+						} catch (MalformedURLException e) {
+							/* FIXME ATR, 15.03.2018: better error handling */
+							e.printStackTrace();
+							browser.setText("URL problems:" + e.getMessage());
+						}
+					}
+				});
+			}
+
+		} catch (SWTError e) {
+			MessageBox messageBox = new MessageBox(EclipseUtil.getActiveWorkbenchShell(), SWT.ICON_ERROR | SWT.OK);
+			messageBox.setMessage("Browser cannot be initialized.");
+			messageBox.setText("Exit");
+			messageBox.open();
+			return;
+		}
+		if (tempADFile == null) {
+			if (browser != null) {
+				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
 			}
 		}
 	}
 
-	public Item getItemAtCarretPosition() {
-		return getItemAt(lastCaretPosition);
+	@Override
+	protected void initializeEditor() {
+		super.initializeEditor();
+		setEditorContextMenuId(EDITOR_CONTEXT_MENU_ID);
+		setRulerContextMenuId(EDITOR_RULER_CONTEXT_MENU_ID);
 	}
 
-	public Item getItemAt(int offset) {
-		if (outlinePage == null) {
-			return null;
+	/**
+	 * Get document text - safe way.
+	 * 
+	 * @return string, never <code>null</code>
+	 */
+	String getDocumentText() {
+		IDocument doc = getDocument();
+		if (doc == null) {
+			return "";
 		}
-		AsciiDoctorEditorTreeContentProvider contentProvider = outlinePage.getContentProvider();
-		if (contentProvider == null) {
-			return null;
-		}
-		Item item = contentProvider.tryToFindByOffset(offset);
-		return item;
+		return doc.get();
 	}
 
-	public void selectFunction(String text) {
-		System.out.println("should select functin:" + text);
+	void setTitleImageDependingOnSeverity(int severity) {
+		setTitleImage(
+				EclipseUtil.getImage("icons/" + getTitleImageName(severity), AsciiDoctorEditorActivator.PLUGIN_ID));
+	}
+
+	private void activateAsciiDoctorEditorContext() {
+		IContextService contextService = getSite().getService(IContextService.class);
+		if (contextService != null) {
+			contextService.activateContext(EDITOR_CONTEXT_MENU_ID);
+		}
+	}
+
+	private void addErrorMarkers(AsciiDoctorScriptModel model, int severity) {
+		if (model == null) {
+			return;
+		}
+		IDocument document = getDocument();
+		if (document == null) {
+			return;
+		}
+		Collection<AsciiDoctorError> errors = model.getErrors();
+		for (AsciiDoctorError error : errors) {
+			int startPos = error.getStart();
+			int line;
+			try {
+				line = document.getLineOfOffset(startPos);
+			} catch (BadLocationException e) {
+				EclipseUtil.logError("Cannot get line offset for " + startPos, e);
+				line = 0;
+			}
+			AsciiDoctorEditorUtil.addScriptError(this, line, error, severity);
+		}
 
 	}
 
-	public AsciiDoctorHeadline findAsciiDoctorFunction(String functionName) {
-		if (functionName == null) {
+	private AsciiDoctorScriptModel buildModelWithoutValidation() {
+		String text = getDocumentText();
+		/*
+		 * FIXME ATR, 15.03.2018: clean up this stuff... is this still useful?
+		 */
+		/* for quick outline create own model and ignore any validations */
+		modelBuilder.setIgnoreBlockValidation(true);
+		modelBuilder.setIgnoreDoValidation(true);
+		modelBuilder.setIgnoreIfValidation(true);
+		modelBuilder.setIgnoreFunctionValidation(true);
+
+		AsciiDoctorScriptModel model;
+		try {
+			model = modelBuilder.build(text);
+		} catch (AsciiDoctorScriptModelException e) {
+			AsciiDoctorEditorUtil.logError("Was not able to build script model", e);
+			model = FALLBACK_MODEL;
+		}
+		return model;
+	}
+
+	private IDocumentProvider createDocumentProvider(IEditorInput input) {
+		if (input instanceof FileStoreEditorInput) {
+			return new AsciiDoctorTextFileDocumentProvider();
+		} else {
+			return new AsciiDoctorFileDocumentProvider();
+		}
+	}
+
+	private void ensureColorsFetched() {
+		if (bgColor == null || fgColor == null) {
+
+			ISourceViewer sourceViewer = getSourceViewer();
+			if (sourceViewer == null) {
+				return;
+			}
+			StyledText textWidget = sourceViewer.getTextWidget();
+			if (textWidget == null) {
+				return;
+			}
+
+			/*
+			 * TODO ATR, 03.02.2017: there should be an easier approach to get
+			 * editors back and foreground, without syncexec
+			 */
+			EclipseUtil.getSafeDisplay().syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					bgColor = ColorUtil.convertToHexColor(textWidget.getBackground());
+					fgColor = ColorUtil.convertToHexColor(textWidget.getForeground());
+				}
+			});
+		}
+
+	}
+
+	private ColorManager getColorManager() {
+		return AsciiDoctorEditorActivator.getDefault().getColorManager();
+	}
+
+	private int getSeverity() {
+		IEditorInput editorInput = getEditorInput();
+		if (editorInput == null) {
+			return IMarker.SEVERITY_INFO;
+		}
+		try {
+			final IResource resource = ResourceUtil.getResource(editorInput);
+			if (resource == null) {
+				return IMarker.SEVERITY_INFO;
+			}
+			int severity = resource.findMaxProblemSeverity(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
+			return severity;
+		} catch (CoreException e) {
+			// Might be a project that is not open
+		}
+		return IMarker.SEVERITY_INFO;
+	}
+
+	private String getTitleImageName(int severity) {
+		switch (severity) {
+		case IMarker.SEVERITY_ERROR:
+			return "asciidoctorWrapper-editor-with-error.png";
+		case IMarker.SEVERITY_WARNING:
+			return "asciidoctorWrapper-editor-with-warning.png";
+		case IMarker.SEVERITY_INFO:
+			return "asciidoctorWrapper-editor-with-info.png";
+		default:
+			return "asciidoctorWrapper-editor.png";
+		}
+	}
+
+	private boolean isMarkerChangeForThisEditor(IResourceChangeEvent event) {
+		IResource resource = ResourceUtil.getResource(getEditorInput());
+		if (resource == null) {
+			return false;
+		}
+		IPath path = resource.getFullPath();
+		if (path == null) {
+			return false;
+		}
+		IResourceDelta eventDelta = event.getDelta();
+		if (eventDelta == null) {
+			return false;
+		}
+		IResourceDelta delta = eventDelta.findMember(path);
+		if (delta == null) {
+			return false;
+		}
+		boolean isMarkerChangeForThisResource = (delta.getFlags() & IResourceDelta.MARKERS) != 0;
+		return isMarkerChangeForThisResource;
+	}
+
+	/**
+	 * Resolves resource from current editor input.
+	 * 
+	 * @return file resource or <code>null</code>
+	 */
+	private IResource resolveResource() {
+		IEditorInput input = getEditorInput();
+		if (!(input instanceof IFileEditorInput)) {
 			return null;
 		}
-		AsciiDoctorScriptModel model = buildModelWithoutValidation();
-		Collection<AsciiDoctorHeadline> functions = model.getHeadlines();
-		for (AsciiDoctorHeadline function : functions) {
-			if (functionName.equals(function.getName())) {
-				return function;
+		return ((IFileEditorInput) input).getFile();
+	}
+
+	/**
+	 * Set initial title image dependent on current marker severity. This will
+	 * mark error icon on startup time which is not handled by resource change
+	 * handling, because having no change...
+	 */
+	private void setTitleImageInitial() {
+		IResource resource = resolveResource();
+		if (resource != null) {
+			try {
+				int maxSeverity = resource.findMaxProblemSeverity(null, true, IResource.DEPTH_INFINITE);
+				setTitleImageDependingOnSeverity(maxSeverity);
+			} catch (CoreException e) {
+				/* ignore */
 			}
 		}
-		return null;
-	}
-
-	public AsciiDoctorEditorPreferences getPreferences() {
-		return AsciiDoctorEditorPreferences.getInstance();
 	}
 
 	private class AsciiDoctorEditorCaretListener implements CaretListener {
@@ -785,88 +830,5 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			outlinePage.onEditorCaretMoved(event.caretOffset);
 		}
 
-	}
-
-	public void validate() {
-		rebuildOutline();
-		// http://www.baeldung.com/asciidoctorWrapper
-		// http://www.baeldung.com/asciidoctorWrapper-book
-		// https://github.com/asciidoctorWrapper/asciidoctorj#converting-documents
-
-	}
-
-	public void updateAsciiDocView() {
-		if (browser == null) {
-			return;
-		}
-		if (browser.isDisposed()) {
-			return;
-		}
-		if (tempADFile == null) {
-			return;
-		}
-		String html = null;
-		File editorFile = getEditorFile();
-		try {
-			if (editorFile != null) {
-				boolean handledError=false;
-				try {
-					asciidoctorWrapper.convertToHTML(editorFile);
-					File generatedFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), false);
-					try(BufferedReader br = new BufferedReader(new FileReader(generatedFile))){
-						String line = null;
-						StringBuilder sb = new StringBuilder();
-						while ((line=br.readLine())!=null){
-							sb.append(line);
-						}
-						html= asciidoctorWrapper.buildHTMLWithCSS(sb.toString());
-					}catch(IOException e){
-						AsciiDoctorEditorUtil.logError("Was not able to build new full", e);
-					}
-					
-					
-				} catch (RuntimeException e) {
-					AsciiDoctorEditorUtil.logWarning("Failed to convert - use fallback to simple text. EditorFile was:" + editorFile+". Origin message was:"+e.getMessage());
-					handledError=true;
-				}
-				if (!handledError && (html == null || "null".equals(html))) {
-					AsciiDoctorEditorUtil.logWarning("File conversion failed. Use fallback to simple text. EditorFile was:" + editorFile);
-					html = null;
-				}
-			}
-			if (html == null) {
-				html = asciidoctorWrapper.convertToHTML(getDocumentText());
-			}
-			html = asciidoctorWrapper.buildHTMLWithCSS(html);
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempADFile))) {
-				bw.write(html);
-				bw.close();
-				browser.refresh();
-			} catch (IOException e1) {
-				AsciiDoctorEditorUtil.logError("Was not able to setup", e1);
-			}
-
-		} catch (RuntimeException e) {
-			AsciiDoctorEditorUtil.logError("Was not able to setup, editorFile was:" + editorFile, e);
-		}
-	}
-
-	protected File getEditorFile() {
-		IEditorInput input = getEditorInput();
-		return getEditorFile(input);
-	}
-
-	protected File getEditorFile(IEditorInput input) {
-		File editorFile = null;
-		if (input instanceof FileEditorInput) {
-			FileEditorInput finput = (FileEditorInput) input;
-			IFile iFile = finput.getFile();
-			try {
-				editorFile = EclipseResourceHelper.DEFAULT.toFile(iFile);
-			} catch (CoreException e) {
-				AsciiDoctorEditorUtil.logError("Was not able to fetch file of current editor", e);
-			}
-		}
-		return editorFile;
 	}
 }
