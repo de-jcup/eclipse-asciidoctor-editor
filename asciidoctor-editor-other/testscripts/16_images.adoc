@@ -1,0 +1,8 @@
+== PNG Image
+
+image::images/asciidoctor-editor-logo.png[title="AsciiDoctor Editor Logo" opts="inline"]
+
+== SVG image
+
+image::images/if_7_Pen_write_writer_2991007.svg[title="A SVG pen for writers...." opts="interactive,inline", 200,200] 
+
