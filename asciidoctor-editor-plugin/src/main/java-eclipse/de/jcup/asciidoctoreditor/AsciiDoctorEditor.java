@@ -17,13 +17,13 @@ package de.jcup.asciidoctoreditor;
 
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferenceConstants.*;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
@@ -68,6 +68,7 @@ import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.ResourceUtil;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -103,21 +104,15 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private boolean quickOutlineOpened;
 	private int lastCaretPosition;
 	private Browser browser;
-	private Path tempADFile;
-	private AsciiDoctorAccess asciidoctor;
+	private AsciiDoctorWrapper asciidoctorWrapper;
+	private File tempADFile;
 
 	private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
 
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
-		asciidoctor = new AsciiDoctorAccess();
-		try {
-			tempADFile = Files.createTempFile(null, ".html");
-		} catch (IOException e) {
-			/* FIXME ATR, 15.03.2018: handle error */
-			e.printStackTrace();
-		}
+		asciidoctorWrapper = new AsciiDoctorWrapper();
 	}
 
 	public void resourceChanged(IResourceChangeEvent event) {
@@ -182,13 +177,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private String getTitleImageName(int severity) {
 		switch (severity) {
 		case IMarker.SEVERITY_ERROR:
-			return "asciidoctor-editor-with-error.png";
+			return "asciidoctorWrapper-editor-with-error.png";
 		case IMarker.SEVERITY_WARNING:
-			return "asciidoctor-editor-with-warning.png";
+			return "asciidoctorWrapper-editor-with-warning.png";
 		case IMarker.SEVERITY_INFO:
-			return "asciidoctor-editor-with-info.png";
+			return "asciidoctorWrapper-editor-with-info.png";
 		default:
-			return "asciidoctor-editor.png";
+			return "asciidoctorWrapper-editor.png";
 		}
 	}
 
@@ -239,7 +234,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	@Override
 	public void createPartControl(Composite parent) {
-
+		
 		RGB green = new RGB(0, 255, 0);
 		RGB red = new RGB(255, 0, 0);
 		RGB blue = new RGB(0, 0, 255);
@@ -248,11 +243,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
 		parent.setLayout(new FillLayout());
 
-//		Composite parentTextEditor = new Composite(sashForm, SWT.CENTER | SWT.SCROLL_PAGE);
-//		parentTextEditor.setLayout(new FillLayout());
-		//parentTextEditor.setBackground(colorManager.getColor(blue));
+		// Composite parentTextEditor = new Composite(sashForm, SWT.CENTER |
+		// SWT.SCROLL_PAGE);
+		// parentTextEditor.setLayout(new FillLayout());
+		// parentTextEditor.setBackground(colorManager.getColor(blue));
 
-		
 		// Composite asciiDoctorOutputView = new Composite(sashForm,
 		// SWT.CENTER);
 		// asciiDoctorOutputView.setBackground(colorManager.getColor(red));
@@ -266,8 +261,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		// }
 		// });
 
-//		super.createPartControl(parentTextEditor);
+		// super.createPartControl(parentTextEditor);
 		super.createPartControl(sashForm);
+		
 		initBrowser(sashForm);
 
 		Control adapter = getAdapter(Control.class);
@@ -291,26 +287,27 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void initBrowser(SashForm sashForm) {
+		tempADFile= asciidoctorWrapper.getTempFileFor(getEditorFile(),true);
 		try {
 			browser = new Browser(sashForm, SWT.CENTER);
-
+			
 			if (tempADFile == null) {
 				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
 			} else {
 				EclipseUtil.safeAsyncExec(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						try {
-						browser.setUrl(tempADFile.toUri().toURL().toString());
-						
+							browser.setUrl(tempADFile.toURI().toURL().toString());
+
 						} catch (MalformedURLException e) {
 							/* FIXME ATR, 15.03.2018: better error handling */
 							e.printStackTrace();
 							browser.setText("URL problems:" + e.getMessage());
 						}
-						}
-					});
+					}
+				});
 			}
 
 		} catch (SWTError e) {
@@ -792,9 +789,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	public void validate() {
 		rebuildOutline();
-		// http://www.baeldung.com/asciidoctor
-		// http://www.baeldung.com/asciidoctor-book
-		// https://github.com/asciidoctor/asciidoctorj#converting-documents
+		// http://www.baeldung.com/asciidoctorWrapper
+		// http://www.baeldung.com/asciidoctorWrapper-book
+		// https://github.com/asciidoctorWrapper/asciidoctorj#converting-documents
 
 	}
 
@@ -808,15 +805,68 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		if (tempADFile == null) {
 			return;
 		}
-		String html = asciidoctor.convertToHTML(getDocumentText());
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempADFile.toFile()))) {
-			bw.write(html);
-			bw.close();
-			browser.refresh();
-		} catch (IOException e1) {
-			/* FIXME ATR, 15.03.2018: handle error better */
-			e1.printStackTrace();
-			browser.setText("IO problem:" + e1.getMessage());
+		String html = null;
+		File editorFile = getEditorFile();
+		try {
+			if (editorFile != null) {
+				boolean handledError=false;
+				try {
+					asciidoctorWrapper.convertToHTML(editorFile);
+					File generatedFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), false);
+					try(BufferedReader br = new BufferedReader(new FileReader(generatedFile))){
+						String line = null;
+						StringBuilder sb = new StringBuilder();
+						while ((line=br.readLine())!=null){
+							sb.append(line);
+						}
+						html= asciidoctorWrapper.buildHTMLWithCSS(sb.toString());
+					}catch(IOException e){
+						AsciiDoctorEditorUtil.logError("Was not able to build new full", e);
+					}
+					
+					
+				} catch (RuntimeException e) {
+					AsciiDoctorEditorUtil.logWarning("Failed to convert - use fallback to simple text. EditorFile was:" + editorFile+". Origin message was:"+e.getMessage());
+					handledError=true;
+				}
+				if (!handledError && (html == null || "null".equals(html))) {
+					AsciiDoctorEditorUtil.logWarning("File conversion failed. Use fallback to simple text. EditorFile was:" + editorFile);
+					html = null;
+				}
+			}
+			if (html == null) {
+				html = asciidoctorWrapper.convertToHTML(getDocumentText());
+			}
+			html = asciidoctorWrapper.buildHTMLWithCSS(html);
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempADFile))) {
+				bw.write(html);
+				bw.close();
+				browser.refresh();
+			} catch (IOException e1) {
+				AsciiDoctorEditorUtil.logError("Was not able to setup", e1);
+			}
+
+		} catch (RuntimeException e) {
+			AsciiDoctorEditorUtil.logError("Was not able to setup, editorFile was:" + editorFile, e);
 		}
+	}
+
+	protected File getEditorFile() {
+		IEditorInput input = getEditorInput();
+		return getEditorFile(input);
+	}
+
+	protected File getEditorFile(IEditorInput input) {
+		File editorFile = null;
+		if (input instanceof FileEditorInput) {
+			FileEditorInput finput = (FileEditorInput) input;
+			IFile iFile = finput.getFile();
+			try {
+				editorFile = EclipseResourceHelper.DEFAULT.toFile(iFile);
+			} catch (CoreException e) {
+				AsciiDoctorEditorUtil.logError("Was not able to fetch file of current editor", e);
+			}
+		}
+		return editorFile;
 	}
 }

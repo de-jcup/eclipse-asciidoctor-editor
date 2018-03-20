@@ -298,7 +298,7 @@ public class AsciiDoctorScriptModelBuilderTest {
 
 	@Test
 	/**
-	 * AsciiDoctorAccess does not support headlines inside headlines - so if somebody such
+	 * AsciiDoctorWrapper does not support headlines inside headlines - so if somebody such
 	 * things it's not allowed
 	 */
 	public void function_f1_has_only_open_bracket__must_have_no_function_but_two_error() throws Exception {
@@ -320,7 +320,7 @@ public class AsciiDoctorScriptModelBuilderTest {
 
 	@Test
 	/**
-	 * AsciiDoctorAccess does not support headlines inside headlines - so if somebody such
+	 * AsciiDoctorWrapper does not support headlines inside headlines - so if somebody such
 	 * things it's not allowed
 	 */
 	public void function_f1_containing_illegal_child_function_f1b__followed_by_function_f2__results_in_functions_f1_f2__only()

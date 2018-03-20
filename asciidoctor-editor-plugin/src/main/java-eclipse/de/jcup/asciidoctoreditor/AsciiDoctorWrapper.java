@@ -1,5 +1,6 @@
 package de.jcup.asciidoctoreditor;
 
+import java.awt.JobAttributes.DestinationType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,6 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
+import javax.print.attribute.standard.Destination;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
@@ -14,19 +18,54 @@ import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.SafeMode;
 
-public class AsciiDoctorAccess {
+
+public class AsciiDoctorWrapper {
 	private Path tempFolder;
+	private static Object HTML_PREFIX_MONITOR = new Object();
 
 	private Asciidoctor asciiDoctor;
 	private EclipseResourceHelper helper;
 
-	public AsciiDoctorAccess(){
+	private static String prefixHTML;
+
+	public AsciiDoctorWrapper(){
 		this.asciiDoctor = AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
 		this.helper = EclipseResourceHelper.DEFAULT;
+		initTempFolderOrFail();
 	}
-
+	public String convertToHTML(File file) {
+		String message = asciiDoctor.convertFile(file, getDefaultOptions(file.getParentFile()));
+		return message;
+	}
 	public String convertToHTML(String asciiDoc) {
-		String html = asciiDoctor.convert(asciiDoc, getDefaultOptions());
+		String html = asciiDoctor.convert(asciiDoc, getDefaultOptions(new File(".")));
+		return html;
+	}
+	public String buildHTMLWithCSS(String html) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getPrefixHTML());
+		sb.append(html);
+		sb.append("</body>");
+		sb.append("</html>");
+
+		return sb.toString();
+	}
+	private String getPrefixHTML() {
+		synchronized(HTML_PREFIX_MONITOR){
+			if (EclipseDevelopmentSettings.DEBUG_RELOAD_HTML_PREFIX){
+				AsciiDoctorEditorUtil.logInfo("Reloading html prefix - for details look into EclipseDevelopmentSettings.java");
+				return buildPrefixHTML();
+			}
+			
+			/* we build this only one time - so not always reloading necessary*/
+			if (prefixHTML==null){
+				prefixHTML=buildPrefixHTML();
+			}
+			return prefixHTML;
+		}
+	}
+	
+	private String buildPrefixHTML() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html>");
 		sb.append("<head>");
@@ -94,10 +133,6 @@ public class AsciiDoctorAccess {
 		}
 		sb.append("</head>");
 		sb.append("<body>");
-		sb.append(html);
-		sb.append("</body>");
-		sb.append("</html>");
-
 		return sb.toString();
 	}
 
@@ -110,7 +145,7 @@ public class AsciiDoctorAccess {
 		}
 	}
 	
-	private Map<String, Object> getDefaultOptions() {
+	private Map<String, Object> getDefaultOptions(File baseDir) {
 		/* @formatter:off*/
 		Attributes attrs = AttributesBuilder.
 				attributes().
@@ -122,14 +157,40 @@ public class AsciiDoctorAccess {
 			System.out.println("Tempfolder:" + tempFolder);
 			attrs.setAttribute("outdir", tempFolder.toAbsolutePath().normalize().toString());
 		}
+		File destionationFolder= null;
+		if (tempFolder!=null){
+			destionationFolder= tempFolder.toFile();
+		}else{
+			destionationFolder= baseDir;
+		}
+		
 		OptionsBuilder opts = OptionsBuilder.options().
+				toDir(destionationFolder).
+//				destinationDir(destionationFolder).
 				safe(SafeMode.UNSAFE).
 				backend("html5").
 				headerFooter(false).
 				attributes(attrs).
 				option("sourcemap", "true").
-				baseDir(new File("."));
+				baseDir(baseDir);
 		/* @formatter:on*/
 		return opts.asMap();
+	}
+	
+	public File getTempFileFor(File editorFile,boolean full) {
+		File parent = null;
+		if (tempFolder==null){
+			parent = new File(".");
+		}else {
+			parent = tempFolder.toFile();
+		}
+		String baseName = FilenameUtils.getBaseName(editorFile.getName());
+		StringBuilder sb = new StringBuilder();
+		if (full){
+			sb.append("full_");
+		}
+		sb.append(baseName);
+		sb.append(".html");
+		return new File(parent,sb.toString());
 	}
 }

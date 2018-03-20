@@ -29,8 +29,8 @@ import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 
 public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvider {
 
-	private static final String ASCIIDOCTOR_SCRIPT_CONTAINS_ERRORS = "AsciiDoctorAccess script contains errors.";
-	private static final String ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_ANY_FUNCTIONS = "AsciiDoctorAccess script does not contain any headlines";
+	private static final String ASCIIDOCTOR_SCRIPT_CONTAINS_ERRORS = "AsciiDoctorWrapper script contains errors.";
+	private static final String ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_ANY_FUNCTIONS = "AsciiDoctorWrapper script does not contain any headlines";
 	private static final Object[] RESULT_WHEN_EMPTY = new Object[] { ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_ANY_FUNCTIONS };
 	private Object[] items;
 	private Object monitor = new Object();

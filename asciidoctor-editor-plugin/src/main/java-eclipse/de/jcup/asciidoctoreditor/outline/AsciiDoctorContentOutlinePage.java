@@ -99,7 +99,6 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 		 */
 		if (input == null && editor != null) {
 			editor.rebuildOutline();
-			editor.updateAsciiDocView();
 		}
 
 	}
