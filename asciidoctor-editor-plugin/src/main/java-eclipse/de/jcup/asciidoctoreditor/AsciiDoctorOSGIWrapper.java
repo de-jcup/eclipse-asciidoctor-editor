@@ -68,15 +68,25 @@ public class AsciiDoctorOSGIWrapper {
 	private Asciidoctor loadAsciidoctor() {
 		/* load asciidoctor OSGI conform */
 		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
-		String versionName = bundle.getVersion().toString();
 		ClassLoader libsClassLoader = fetchClassLoader(bundle);
 		
-		initAscIIDoctor(versionName, libsClassLoader);
+		initAscIIDoctor(getVersionName(), libsClassLoader);
 		asciidoctor = create(libsClassLoader);
 
 		asciidoctor.requireLibrary("asciidoctor-diagram");
 //		asciidoctor.javaExtensionRegistry().includeProcessor(FileIncludeIncludeProcessor.class);
 		return null;
+	}
+
+	public File getUnzipFolder(){
+		String versionName = getVersionName();
+		return ensureUnzippedRubGemsArtefactsAvailable(versionName);
+	}
+	
+	private String getVersionName() {
+		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
+		String versionName = bundle.getVersion().toString();
+		return versionName;
 	}
 
 	protected void initAscIIDoctor(String versionName, ClassLoader libsClassLoader) {
@@ -149,6 +159,7 @@ public class AsciiDoctorOSGIWrapper {
 		}
 		return unzippedGEMSfolder;
 	}
+	
 
 	private void unzipOrFail(File unzippedGEMSfolder, String zipFileName) throws IOException {
 		File zipFile = EclipseResourceHelper.DEFAULT.getFileInPlugin(zipFileName, LIBS_PLUGIN_ID);
