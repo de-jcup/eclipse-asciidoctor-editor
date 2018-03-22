@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.asciidoctor.AsciiDocDirectoryWalker;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
@@ -34,8 +33,8 @@ public class AsciiDoctorWrapper {
 	private EclipseResourceHelper helper;
 	private String cachedImagesPath;
 	private File cachedBaseDir;
-	
-	private Map<String,Object> cachedAttributes;
+
+	private Map<String, Object> cachedAttributes;
 
 	private static String prefixHTML;
 
@@ -107,18 +106,18 @@ public class AsciiDoctorWrapper {
 	public void resetCaches() {
 		cachedImagesPath = null;
 		cachedBaseDir = null;
-		cachedAttributes=null;
+		cachedAttributes = null;
 	}
 
-	protected Map<String,Object> getCachedAttributes(File baseDir){
-		if (cachedAttributes==null){
-			cachedAttributes=resolveAttributes(baseDir);
+	protected Map<String, Object> getCachedAttributes(File baseDir) {
+		if (cachedAttributes == null) {
+			cachedAttributes = resolveAttributes(baseDir);
 		}
 		return cachedAttributes;
 	}
-	
+
 	protected String resolveImagesDirPath(File baseDir) {
-		
+
 		Object imagesDir = getCachedAttributes(baseDir).get("imagesdir");
 
 		String imagesDirPath = null;
@@ -134,25 +133,8 @@ public class AsciiDoctorWrapper {
 		return imagesDirPath;
 	}
 
-//	protected Object resolveImagesDir(File baseDir) {
-//		Set<DocumentHeader> documentIndex = new HashSet<DocumentHeader>();
-//		DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
-//
-//		Object imagesDir = null;
-//		for (File file : directoryWalker.scan()) {
-//			documentIndex.add(asciiDoctor.readDocumentHeader(file));
-//		}
-//		for (DocumentHeader header : documentIndex) {
-//			imagesDir = header.getAttributes().get("imagesDir");
-//			if (imagesDir != null) {
-//				break;
-//			}
-//		}
-//		return imagesDir;
-//	}
-	
-	protected Map<String,Object> resolveAttributes(File baseDir) {
-		Map<String,Object> map = new HashMap<>();
+	protected Map<String, Object> resolveAttributes(File baseDir) {
+		Map<String, Object> map = new HashMap<>();
 		Set<DocumentHeader> documentIndex = new HashSet<DocumentHeader>();
 		DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
 
@@ -236,7 +218,7 @@ public class AsciiDoctorWrapper {
 			prefixSb.append(createLinkToCSSFile(file));
 		}
 		prefixSb.append("</head>\n");
-//		prefixSb.append("<body  >\n");
+		// prefixSb.append("<body >\n");
 		prefixSb.append("<body class=\"article toc2 toc-left\">");
 		return prefixSb.toString();
 	}
@@ -279,6 +261,11 @@ public class AsciiDoctorWrapper {
 		for (String key: cachedAttributes.keySet()){
 			Object value = cachedAttributes.get(key);
 			if (value!=null && value.toString().isEmpty()){
+				if ("toc".equals(key)){
+					// currently we always remove the TOC - we got a outline...
+					// also the TOC is not correctly positioned - (always on top instead of being at left side)
+					continue;
+				}
 				attrBuilder.attribute(key,value);
 			}
 		}
@@ -330,11 +317,11 @@ public class AsciiDoctorWrapper {
 	}
 
 	public void dispose() {
-		if (tempFolder == null){
+		if (tempFolder == null) {
 			return;
 		}
 		File temp = tempFolder.toFile();
-		if (!temp.exists()){
+		if (!temp.exists()) {
 			return;
 		}
 		try {
@@ -342,6 +329,6 @@ public class AsciiDoctorWrapper {
 		} catch (IOException e) {
 			AsciiDoctorEditorUtil.logError("Was not able to delete temp folder", e);
 		}
-		
+
 	}
 }

@@ -12,8 +12,6 @@ import org.jruby.RubyInstanceConfig;
 import org.jruby.javasupport.JavaEmbedUtils;
 import org.osgi.framework.Bundle;
 
-import de.jcup.asciidoctoreditor.extension.FileIncludeIncludeProcessor;
-
 /**
  * This wrapper is used to have correct access to asciidoctor inside
  * OSGI/eclipse.<br>

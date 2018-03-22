@@ -21,8 +21,6 @@ import java.util.List;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 
-import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
-
 /**
  * Unpersisted marker helper is a helper object for markers. "Unpersisted",
  * because the created markers are recognized and added to a list. So they can

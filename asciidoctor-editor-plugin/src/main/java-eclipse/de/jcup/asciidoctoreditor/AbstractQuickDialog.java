@@ -19,8 +19,6 @@ import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
-
 @AdaptedFromEGradle
 abstract class AbstractQuickDialog extends PopupDialog {
 
