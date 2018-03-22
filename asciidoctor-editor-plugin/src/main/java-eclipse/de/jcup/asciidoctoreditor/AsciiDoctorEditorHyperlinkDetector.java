@@ -15,6 +15,8 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import java.net.FileNameMap;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -81,13 +83,22 @@ public class AsciiDoctorEditorHyperlinkDetector extends AbstractHyperlinkDetecto
 			}
 			sb.append(c);
 		}
-		String functionName = sb.toString();
-		AsciiDoctorHeadline function = editor.findAsciiDoctorFunction(functionName);
-		if (function == null) {
-			return null;
+		String foundText = sb.toString();
+		if (foundText.startsWith("include::")){
+			if (foundText.endsWith(".adoc[]")){
+				String fileName = foundText.substring("include::".length());
+				fileName=fileName.substring(0,fileName.length()-2);
+				Region targetRegion = new Region(offsetLeft, foundText.length());
+				return new IHyperlink[] { new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, fileName, editor) };
+			}
 		}
-		Region targetRegion = new Region(offsetLeft, functionName.length());
-		return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, function, editor) };
+		
+		AsciiDoctorHeadline function = editor.findAsciiDoctorFunction(foundText);
+		if (function != null) {
+			Region targetRegion = new Region(offsetLeft, foundText.length());
+			return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, function, editor) };
+		}
+		return null;
 	}
 
 }

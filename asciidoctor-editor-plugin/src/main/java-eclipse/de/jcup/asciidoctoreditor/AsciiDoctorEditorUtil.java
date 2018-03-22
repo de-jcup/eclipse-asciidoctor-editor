@@ -28,6 +28,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 
@@ -36,26 +38,43 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 
 public class AsciiDoctorEditorUtil {
 	private static final IProgressMonitor NULL_MONITOR = new NullProgressMonitor();
-	
+
 	private static UnpersistedMarkerHelper scriptProblemMarkerHelper = new UnpersistedMarkerHelper(
 			"de.jcup.asciidoctoreditor.script.problem");
 
 	public static AsciiDoctorEditorPreferences getPreferences() {
 		return AsciiDoctorEditorPreferences.getInstance();
 	}
-	
+
+	/**
+	 * Get image by path from image registry. If not already registered a new
+	 * image will be created and registered. If not createable a fallback image
+	 * is used instead
+	 * 
+	 * @param path
+	 * @return image
+	 */
+	public static Image getImage(String path) {
+		return EclipseUtil.getImage(path, AsciiDoctorEditorActivator.PLUGIN_ID);
+	}
+
+	public static ImageDescriptor createImageDescriptor(String path) {
+		return EclipseUtil.createImageDescriptor(path, AsciiDoctorEditorActivator.PLUGIN_ID);
+	}
+
 	/**
 	 * Returns the file or <code>null</code>
+	 * 
 	 * @param path
 	 * @return file or <code>null</code>
 	 * @throws CoreException
 	 */
 	public static File toFile(IPath path) throws CoreException {
-		if (path==null){
+		if (path == null) {
 			return null;
 		}
 		IFileStore fileStore = FileBuffers.getFileStoreAtLocation(path);
-		if (fileStore==null){
+		if (fileStore == null) {
 			return null;
 		}
 		File file = null;
@@ -64,8 +83,8 @@ public class AsciiDoctorEditorUtil {
 	}
 
 	public static File toFile(IResource resource) throws CoreException {
-		if (resource==null){
-			return toFile((IPath)null);
+		if (resource == null) {
+			return toFile((IPath) null);
 		}
 		return toFile(resource.getLocation());
 	}
@@ -114,8 +133,8 @@ public class AsciiDoctorEditorUtil {
 			return;
 		}
 		try {
-			scriptProblemMarkerHelper.createScriptMarker(severity, editorResource, error.getMessage(), line, error.getStart(),
-					+ error.getEnd());
+			scriptProblemMarkerHelper.createScriptMarker(severity, editorResource, error.getMessage(), line,
+					error.getStart(), +error.getEnd());
 		} catch (CoreException e) {
 			logError("Was not able to add error markers", e);
 		}
