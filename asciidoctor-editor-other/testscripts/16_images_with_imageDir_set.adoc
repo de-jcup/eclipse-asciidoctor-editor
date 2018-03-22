@@ -1,3 +1,5 @@
+:imagesDir: ./images
+
 == PNG Image
 image::asciidoctor-editor-logo.png[title="AsciiDoctor Editor Logo" opts="inline"]
 

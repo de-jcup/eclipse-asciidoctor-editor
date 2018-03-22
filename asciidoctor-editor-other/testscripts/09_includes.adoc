@@ -1,9 +1,13 @@
 = Reference Documentation
 
-Test includes
+Test includes are working now
 
 include::basics.adoc[]
 
-include::installation.adoc[]
+include::subfolder1/from_subfolder1_with_images.adoc[]
 
-include::example.adoc[]
+include::not_existing_example.adoc[]
+
+//include::16_images.adoc[]
+
+include::16_images_with_imageDir_set.adoc[]

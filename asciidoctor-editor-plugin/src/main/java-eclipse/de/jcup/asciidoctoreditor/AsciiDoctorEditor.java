@@ -35,13 +35,19 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.ISourceViewerExtension2;
+import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -53,7 +59,8 @@ import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.MessageBox;
@@ -61,15 +68,19 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
-import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
@@ -89,17 +100,23 @@ import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValida
 @AdaptedFromEGradle
 public class AsciiDoctorEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
 
+	private static final int INITIAL_LAYOUT_ORIENTATION = SWT.HORIZONTAL;
+
 	/** The EDITOR_ID of this editor as defined in plugin.xml */
 	public static final String EDITOR_ID = "asciidoctoreditor.editors.AsciiDoctorEditor";
-	
+
 	/** The COMMAND_ID of the editor context menu */
 	public static final String EDITOR_CONTEXT_MENU_ID = EDITOR_ID + ".context";
-	
+
 	/** The COMMAND_ID of the editor ruler context menu */
 	public static final String EDITOR_RULER_CONTEXT_MENU_ID = EDITOR_CONTEXT_MENU_ID + ".ruler";
 
+	private static ImageDescriptor IMG_LAYOUT_VERTICAL = createToolbarImageDescriptor("layout_vertical.png");
+	private static ImageDescriptor IMG_LAYOUT_HORIZONTAL = createToolbarImageDescriptor("layout_horizontal.png");
+	private static ImageDescriptor IMG_REFRESH = createToolbarImageDescriptor("refresh.png");
+	private static ImageDescriptor IMG_NEW_TABLE = createToolbarImageDescriptor("table.gif");
+
 	private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
-	private SourceViewerDecorationSupport additionalSourceViewerSupport;
 	private AsciiDoctorWrapper asciidoctorWrapper;
 	private String bgColor;
 	private Browser browser;
@@ -116,6 +133,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private File tempADFile;
 
+	private SashForm sashForm;
+
+	private Composite topComposite;
+
+	private ToolBarManager toolBarManager;
+
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
@@ -123,13 +146,34 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	@Override
+	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+		return super.createSourceViewer(parent, ruler, styles);
+	}
+
+	@Override
 	public void createPartControl(Composite parent) {
-		
-		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
-		parent.setLayout(new FillLayout());
+
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+
+		/* new composite - takes full place */
+		topComposite = new Composite(parent, SWT.NONE);
+		topComposite.setLayout(gridLayout);
+
+		/* create tool bar */
+		GridData sashGD = new GridData(GridData.FILL_BOTH);
+
+		GridData toolbarGD = new GridData(GridData.FILL_HORIZONTAL);
+		toolbarGD.heightHint = 20;
+		toolbarGD.widthHint = 100;
+
+		createToolbar();
+
+		sashForm = new SashForm(topComposite, INITIAL_LAYOUT_ORIENTATION);
+		sashForm.setLayoutData(sashGD);
 
 		super.createPartControl(sashForm);
-		
+
 		initBrowser(sashForm);
 
 		Control adapter = getAdapter(Control.class);
@@ -150,14 +194,63 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		updateAsciiDocView();
 	}
 
+	protected void createToolbar() {
+		toolBarManager = new ToolBarManager();
+		toolBarManager.createControl(topComposite);
+
+		toolBarManager.add(new Separator("elements"));
+		toolBarManager.add(new Separator("ui"));
+
+		toolBarManager.appendToGroup("ui", new RebuildAsciiDocViewAction());
+		toolBarManager.appendToGroup("ui", new ToggleLayoutAction());
+
+		toolBarManager.appendToGroup("elements", new NewTableInsertAction());
+
+		toolBarManager.update(true);
+
+	}
+
+	private static ImageDescriptor createToolbarImageDescriptor(String name) {
+		return AsciiDoctorEditorUtil.createImageDescriptor("icons/toolbar/" + name);
+	}
+
+	public void setVerticalSplit(boolean verticalSplit) {
+		/*
+		 * don't be confused: SWT.HOROIZONTAL will setup editor on top and view
+		 * on bottom - so its vertical...
+		 */
+		int wanted;
+		if (verticalSplit) {
+			wanted = SWT.HORIZONTAL;
+		} else {
+			wanted = SWT.VERTICAL;
+		}
+		int current = sashForm.getOrientation();
+		if (current == wanted) {
+			return;
+		}
+		sashForm.setOrientation(wanted);
+	}
+
+	protected boolean isVerticalSplit() {
+		int orientation;
+		if (sashForm == null) {
+			orientation = INITIAL_LAYOUT_ORIENTATION;
+		} else {
+			orientation = sashForm.getOrientation();
+		}
+		return orientation == SWT.HORIZONTAL;
+	}
+
 	@Override
 	public void dispose() {
 		super.dispose();
-
-		if (additionalSourceViewerSupport != null) {
-			additionalSourceViewerSupport.dispose();
+		if (browser != null) {
+			if (!browser.isDisposed()) {
+				browser.dispose();
+			}
 		}
-
+		asciidoctorWrapper.dispose();
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 	}
 
@@ -282,6 +375,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		page.showActionSet("org.eclipse.ui.edit.text.actionSet.presentation");
 
 	}
+
 	/**
 	 * Opens quick outline
 	 */
@@ -306,6 +400,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			quickOutlineOpened = false;
 		}
 	}
+
 	public void openSelectedTreeItemInEditor(ISelection selection, boolean grabFocus) {
 		if (selection instanceof IStructuredSelection) {
 			IStructuredSelection ss = (IStructuredSelection) selection;
@@ -467,6 +562,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 	}
 
+	
 	public void updateAsciiDocView() {
 		if (browser == null) {
 			return;
@@ -479,7 +575,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 		buildTemporaryHTMLFile();
 		browser.refresh();
-		
+
 	}
 
 	public void validate() {
@@ -487,34 +583,35 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void buildTemporaryHTMLFile() {
-		String content=null;
+		String content = null;
 		File editorFile = getEditorFile();
 		try {
 			if (editorFile != null) {
-				boolean handledError=false;
+				boolean handledError = false;
 				try {
 					asciidoctorWrapper.convertToHTML(editorFile);
-					
+
 					File generatedFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), false);
-					try(BufferedReader br = new BufferedReader(new FileReader(generatedFile))){
+					try (BufferedReader br = new BufferedReader(new FileReader(generatedFile))) {
 						String line = null;
 						StringBuilder htmlSB = new StringBuilder();
-						while ((line=br.readLine())!=null){
+						while ((line = br.readLine()) != null) {
 							htmlSB.append(line);
 							htmlSB.append("\n");
 						}
-						content= htmlSB.toString();
-					}catch(IOException e){
+						content = htmlSB.toString();
+					} catch (IOException e) {
 						AsciiDoctorEditorUtil.logError("Was not able to build new full", e);
 					}
-					
-					
+
 				} catch (RuntimeException e) {
-					AsciiDoctorEditorUtil.logWarning("Failed to convert - use fallback to simple text. EditorFile was:" + editorFile+". Origin message was:"+e.getMessage());
-					handledError=true;
+					AsciiDoctorEditorUtil.logWarning("Failed to convert - use fallback to simple text. EditorFile was:"
+							+ editorFile + ". Origin message was:" + e.getMessage());
+					handledError = true;
 				}
 				if (!handledError && (content == null || "null".equals(content))) {
-					AsciiDoctorEditorUtil.logWarning("File conversion failed. Use fallback to simple text. EditorFile was:" + editorFile);
+					AsciiDoctorEditorUtil.logWarning(
+							"File conversion failed. Use fallback to simple text. EditorFile was:" + editorFile);
 					content = null;
 				}
 			}
@@ -525,7 +622,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempADFile))) {
 				bw.write(html);
 				bw.close();
-				
+
 			} catch (IOException e1) {
 				AsciiDoctorEditorUtil.logError("Was not able to setup", e1);
 			}
@@ -571,12 +668,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void initBrowser(SashForm sashForm) {
-		tempADFile= asciidoctorWrapper.getTempFileFor(getEditorFile(),true);
+		tempADFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), true);
 		try {
 			browser = new Browser(sashForm, SWT.CENTER);
 			if (tempADFile == null || !tempADFile.exists()) {
-				/* can happen when eclipse restarts and editor opens - new temp folder shows to non
-				 * existing file...
+				/*
+				 * can happen when eclipse restarts and editor opens - new temp
+				 * folder shows to non existing file...
 				 */
 				buildTemporaryHTMLFile();
 			}
@@ -672,7 +770,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private AsciiDoctorScriptModel buildModelWithoutValidation() {
 		String text = getDocumentText();
 		/*
-		 * FIXME ATR, 15.03.2018: clean up this stuff... is this still useful?
+		 * FIXME ATR, 15.03.2018: clean up this ignore stuff... is this still
+		 * useful, will we have a validation for asciidoc files?
 		 */
 		/* for quick outline create own model and ignore any validations */
 		modelBuilder.setIgnoreBlockValidation(true);
@@ -751,13 +850,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private String getTitleImageName(int severity) {
 		switch (severity) {
 		case IMarker.SEVERITY_ERROR:
-			return "asciidoctorWrapper-editor-with-error.png";
+			return "asciidoctor-editor-with-error.png";
 		case IMarker.SEVERITY_WARNING:
-			return "asciidoctorWrapper-editor-with-warning.png";
+			return "asciidoctor-editor-with-warning.png";
 		case IMarker.SEVERITY_INFO:
-			return "asciidoctorWrapper-editor-with-info.png";
+			return "asciidoctor-editor-with-info.png";
 		default:
-			return "asciidoctorWrapper-editor.png";
+			return "asciidoctor-editor.png";
 		}
 	}
 
@@ -830,5 +929,131 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			outlinePage.onEditorCaretMoved(event.caretOffset);
 		}
 
+	}
+
+	private class ToggleLayoutAction extends Action {
+
+		private ToggleLayoutAction() {
+			initUI();
+		}
+
+		@Override
+		public void run() {
+			setVerticalSplit(!isVerticalSplit());
+			initUI();
+		}
+
+		private void initUI() {
+			initImage();
+			initText();
+		}
+
+		private void initImage() {
+			setImageDescriptor(isVerticalSplit() ? IMG_LAYOUT_HORIZONTAL : IMG_LAYOUT_VERTICAL);
+		}
+
+		private void initText() {
+			setText(isVerticalSplit() ? "Switch to horizontal layout" : "Switch to vertical layout");
+		}
+
+	}
+
+	private class RebuildAsciiDocViewAction extends Action {
+
+		private RebuildAsciiDocViewAction() {
+			initUI();
+		}
+
+		@Override
+		public void run() {
+			asciidoctorWrapper.resetCaches();
+			updateAsciiDocView();
+			initUI();
+		}
+
+		private void initUI() {
+			initImage();
+			initText();
+		}
+
+		private void initImage() {
+			setImageDescriptor(IMG_REFRESH);
+		}
+
+		private void initText() {
+			setText("Rebuild ascii doc view (e.g. when includes or imageDir have been changed)");
+		}
+
+	}
+
+	private class NewTableInsertAction extends InsertTextAction {
+		
+		protected NewTableInsertAction() {
+			super("Insert a table", IMG_NEW_TABLE);
+		}
+
+		@Override
+		protected String getInsertText() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("[options=\"header\",cols=\"1,2,2\"]\n");
+			sb.append("|===");
+			sb.append("\n");
+			sb.append("|HeadA|HeadB|HeadC");
+			sb.append("\n");
+			sb.append("|Row1A|Row1B|Row1C");
+			sb.append("\n");
+			sb.append("|Row2A|Row2B|Row2C");
+			sb.append("\n");
+			sb.append("|===");
+			sb.append("\n");
+			return sb.toString();
+		}
+
+	}
+
+	private abstract class InsertTextAction extends Action {
+//		https://wiki.eclipse.org/FAQ_How_do_I_insert_text_in_the_active_text_editor%3F
+		protected abstract String getInsertText();
+		
+		protected InsertTextAction(String text, ImageDescriptor descriptor){
+			setText(text);
+			setImageDescriptor(descriptor);
+		}
+		
+		@Override
+		public void run() {
+			   String toInsert = getInsertText();
+			   if (toInsert==null || toInsert.length()==0){
+				   return;
+			   }
+			   ITextEditor editor = AsciiDoctorEditor.this;
+			   IDocumentProvider dp = editor.getDocumentProvider();
+			   IDocument doc = dp.getDocument(editor.getEditorInput());
+			   int offset;
+			try {
+				offset = doc.getLineOffset(doc.getNumberOfLines()-4);
+				doc.replace(offset, 0, toInsert);
+			} catch (BadLocationException e) {
+				AsciiDoctorEditorUtil.logError("was not able to insert "+toInsert, e);
+			}
+			
+		}
+
+	}
+
+	public void openInclude(String fileName) {
+		IWorkbenchPage activePage = EclipseUtil.getActivePage();
+		File file = new File(getEditorFile().getParentFile(),fileName);
+		if (!file.exists()){
+			MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Not able to load", "Cannot open "+fileName);
+			return;
+		}
+		try {
+			IDE.openEditor(activePage, file.toURI(),AsciiDoctorEditor.EDITOR_ID, true);
+			return;
+		} catch (PartInitException e) {
+			AsciiDoctorEditorUtil.logError("Not able to open include", e);
+		}
+		
 	}
 }
