@@ -15,8 +15,6 @@
  */
 package de.jcup.asciidoctoreditor;
 
-import java.net.FileNameMap;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;

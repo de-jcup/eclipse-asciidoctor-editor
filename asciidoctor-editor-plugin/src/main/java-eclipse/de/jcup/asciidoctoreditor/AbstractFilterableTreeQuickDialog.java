@@ -45,8 +45,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.UIJob;
 
-import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
-import de.jcup.asciidoctoreditor.FilterPatternMatcher;
 import de.jcup.asciidoctoreditor.outline.FallbackOutlineContentProvider;
 
 @AdaptedFromEGradle

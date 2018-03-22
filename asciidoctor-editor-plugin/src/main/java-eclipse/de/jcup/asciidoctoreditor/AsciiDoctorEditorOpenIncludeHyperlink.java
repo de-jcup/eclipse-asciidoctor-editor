@@ -20,8 +20,6 @@ import static org.eclipse.core.runtime.Assert.*;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 
-import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
-
 public class AsciiDoctorEditorOpenIncludeHyperlink implements IHyperlink {
 
 	private IRegion region;

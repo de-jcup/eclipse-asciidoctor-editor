@@ -20,8 +20,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import de.jcup.asciidoctoreditor.ResourceInputStreamProvider;
-
 public class EclipseResourceInputStreamProvider implements ResourceInputStreamProvider{
 
 	@Override

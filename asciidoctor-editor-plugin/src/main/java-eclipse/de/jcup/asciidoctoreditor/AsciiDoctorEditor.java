@@ -35,12 +35,10 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -68,11 +66,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.FileStoreEditorInput;
@@ -80,7 +75,6 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
-import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
@@ -96,6 +90,9 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
+import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
+import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
+import de.jcup.asciidoctoreditor.toolbar.ToggleLayoutAction;
 
 @AdaptedFromEGradle
 public class AsciiDoctorEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
@@ -111,11 +108,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	/** The COMMAND_ID of the editor ruler context menu */
 	public static final String EDITOR_RULER_CONTEXT_MENU_ID = EDITOR_CONTEXT_MENU_ID + ".ruler";
 
-	private static ImageDescriptor IMG_LAYOUT_VERTICAL = createToolbarImageDescriptor("layout_vertical.png");
-	private static ImageDescriptor IMG_LAYOUT_HORIZONTAL = createToolbarImageDescriptor("layout_horizontal.png");
-	private static ImageDescriptor IMG_REFRESH = createToolbarImageDescriptor("refresh.png");
-	private static ImageDescriptor IMG_NEW_TABLE = createToolbarImageDescriptor("table.gif");
-
+	
 	private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
 	private AsciiDoctorWrapper asciidoctorWrapper;
 	private String bgColor;
@@ -201,17 +194,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		toolBarManager.add(new Separator("elements"));
 		toolBarManager.add(new Separator("ui"));
 
-		toolBarManager.appendToGroup("ui", new RebuildAsciiDocViewAction());
-		toolBarManager.appendToGroup("ui", new ToggleLayoutAction());
+		toolBarManager.appendToGroup("ui", new RebuildAsciiDocViewAction(this));
+		toolBarManager.appendToGroup("ui", new ToggleLayoutAction(this));
 
-		toolBarManager.appendToGroup("elements", new NewTableInsertAction());
+		toolBarManager.appendToGroup("elements", new NewTableInsertAction(this));
 
 		toolBarManager.update(true);
 
-	}
-
-	private static ImageDescriptor createToolbarImageDescriptor(String name) {
-		return AsciiDoctorEditorUtil.createImageDescriptor("icons/toolbar/" + name);
 	}
 
 	public void setVerticalSplit(boolean verticalSplit) {
@@ -232,7 +221,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		sashForm.setOrientation(wanted);
 	}
 
-	protected boolean isVerticalSplit() {
+	public boolean isVerticalSplit() {
 		int orientation;
 		if (sashForm == null) {
 			orientation = INITIAL_LAYOUT_ORIENTATION;
@@ -532,12 +521,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 					}
 				}
 				int whitespaceOffsetAdd = whitespaces.length();
-				if ("#".equals(foundCode.toString())) {
+				if ("//".equals(foundCode.toString())) {
 					/* comment before */
 					doc.replace(offset + whitespaceOffsetAdd, 1, "");
 				} else {
 					/* not commented */
-					doc.replace(offset, 0, "#");
+					doc.replace(offset, 0, "//");
 				}
 
 			} catch (BadLocationException e) {
@@ -931,116 +920,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	}
 
-	private class ToggleLayoutAction extends Action {
 
-		private ToggleLayoutAction() {
-			initUI();
-		}
-
-		@Override
-		public void run() {
-			setVerticalSplit(!isVerticalSplit());
-			initUI();
-		}
-
-		private void initUI() {
-			initImage();
-			initText();
-		}
-
-		private void initImage() {
-			setImageDescriptor(isVerticalSplit() ? IMG_LAYOUT_HORIZONTAL : IMG_LAYOUT_VERTICAL);
-		}
-
-		private void initText() {
-			setText(isVerticalSplit() ? "Switch to horizontal layout" : "Switch to vertical layout");
-		}
-
-	}
-
-	private class RebuildAsciiDocViewAction extends Action {
-
-		private RebuildAsciiDocViewAction() {
-			initUI();
-		}
-
-		@Override
-		public void run() {
-			asciidoctorWrapper.resetCaches();
-			updateAsciiDocView();
-			initUI();
-		}
-
-		private void initUI() {
-			initImage();
-			initText();
-		}
-
-		private void initImage() {
-			setImageDescriptor(IMG_REFRESH);
-		}
-
-		private void initText() {
-			setText("Rebuild ascii doc view (e.g. when includes or imageDir have been changed)");
-		}
-
-	}
-
-	private class NewTableInsertAction extends InsertTextAction {
-		
-		protected NewTableInsertAction() {
-			super("Insert a table", IMG_NEW_TABLE);
-		}
-
-		@Override
-		protected String getInsertText() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("[options=\"header\",cols=\"1,2,2\"]\n");
-			sb.append("|===");
-			sb.append("\n");
-			sb.append("|HeadA|HeadB|HeadC");
-			sb.append("\n");
-			sb.append("|Row1A|Row1B|Row1C");
-			sb.append("\n");
-			sb.append("|Row2A|Row2B|Row2C");
-			sb.append("\n");
-			sb.append("|===");
-			sb.append("\n");
-			return sb.toString();
-		}
-
-	}
-
-	private abstract class InsertTextAction extends Action {
-//		https://wiki.eclipse.org/FAQ_How_do_I_insert_text_in_the_active_text_editor%3F
-		protected abstract String getInsertText();
-		
-		protected InsertTextAction(String text, ImageDescriptor descriptor){
-			setText(text);
-			setImageDescriptor(descriptor);
-		}
-		
-		@Override
-		public void run() {
-			   String toInsert = getInsertText();
-			   if (toInsert==null || toInsert.length()==0){
-				   return;
-			   }
-			   ITextEditor editor = AsciiDoctorEditor.this;
-			   IDocumentProvider dp = editor.getDocumentProvider();
-			   IDocument doc = dp.getDocument(editor.getEditorInput());
-			   int offset;
-			try {
-				offset = doc.getLineOffset(doc.getNumberOfLines()-4);
-				doc.replace(offset, 0, toInsert);
-			} catch (BadLocationException e) {
-				AsciiDoctorEditorUtil.logError("was not able to insert "+toInsert, e);
-			}
-			
-		}
-
-	}
-
+	
 	public void openInclude(String fileName) {
 		IWorkbenchPage activePage = EclipseUtil.getActivePage();
 		File file = new File(getEditorFile().getParentFile(),fileName);
@@ -1055,5 +936,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			AsciiDoctorEditorUtil.logError("Not able to open include", e);
 		}
 		
+	}
+
+	public void resetCache() {
+		asciidoctorWrapper.resetCaches();
 	}
 }

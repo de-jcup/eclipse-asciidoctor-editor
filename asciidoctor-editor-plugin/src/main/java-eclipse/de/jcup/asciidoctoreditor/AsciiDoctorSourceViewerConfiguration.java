@@ -19,9 +19,6 @@ import static de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil.*;
 import static de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferenceConstants.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
@@ -47,9 +44,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;

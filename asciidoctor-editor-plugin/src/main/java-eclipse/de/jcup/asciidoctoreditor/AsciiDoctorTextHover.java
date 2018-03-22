@@ -29,7 +29,6 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
 
-import de.jcup.asciidoctoreditor.SimpleStringUtils;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.TooltipTextSupport;

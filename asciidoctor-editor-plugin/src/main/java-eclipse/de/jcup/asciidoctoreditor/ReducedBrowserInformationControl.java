@@ -29,8 +29,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Slider;
 
-import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
-
 @AdaptedFromEGradle// from SimpleBrowserInformationControl - but changed strong - reduced features.
 public class ReducedBrowserInformationControl extends AbstractInformationControl {
 
