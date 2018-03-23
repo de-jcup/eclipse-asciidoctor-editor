@@ -52,6 +52,8 @@ public interface AsciiDoctorEditorColorConstants {
 
 	/* cadetblue - http://www.rapidtables.com/web/color/blue-color.htm */
 	public static final RGB CADET_BLUE = rgb(95, 158, 160);
+	
+	public static final RGB MIDDLE_BLUE = rgb(0,128,255);
 
 	public static final RGB OUTLINE_ITEM__TYPE = rgb(149, 125, 71); // same
 																	// as
