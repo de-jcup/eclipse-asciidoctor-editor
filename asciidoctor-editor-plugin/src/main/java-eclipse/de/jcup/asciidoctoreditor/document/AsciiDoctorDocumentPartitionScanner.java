@@ -22,13 +22,11 @@ import java.util.List;
 
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorLanguageKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialVariableKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 
@@ -47,6 +45,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		IToken variables = createToken(VARIABLES);
 		IToken includeKeyword = createToken(INCLUDE_KEYWORD);
 		IToken asciidoctorCommand = createToken(ASCIIDOCTOR_COMMAND);
+		IToken headline = createToken(HEADLINE);
 
 		List<IPredicateRule> rules = new ArrayList<>();
 		
@@ -55,22 +54,53 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new SingleLineRule("http://", " ", hyperlink, (char) -1, true));
 		rules.add(new SingleLineRule("https://", " ", hyperlink, (char) -1, true));
 		
-		rules.add(new SingleLineRule("//", "", comment, (char) -1, true));
-		rules.add(new MultiLineRule("/*", "*/", comment));
+		aLineStartsWith("= ",rules,headline);
+		aLineStartsWith("== ",rules,headline);
+		aLineStartsWith("=== ",rules,headline);
+		aLineStartsWith("==== ",rules,headline);
+		aLineStartsWith("===== ",rules,headline);
+		
+		aLineStartsWith("|===",rules,asciidoctorCommand);
+
+		aLineStartsWith("NOTE:",rules,asciidoctorCommand,true);
+		aLineStartsWith("TIP:",rules,asciidoctorCommand,true);
+		aLineStartsWith("IMPORTANT:",rules,asciidoctorCommand,true);
+		aLineStartsWith("WARNING:",rules,asciidoctorCommand,true);
+		aLineStartsWith("CAUTION:",rules,asciidoctorCommand,true);
+		
+		rules.add(new AsciiDoctorLineStartsWithRule("[[", "]]",false, asciidoctorCommand));
+		rules.add(new AsciiDoctorLineStartsWithRule("[", "]",false, asciidoctorCommand));
+		
+		rules.add(new AsciiDoctorLineStartsWithRule("////", "////",true, comment));
+		rules.add(new AsciiDoctorLineStartsWithRule("//", null,false, comment));
 		
 		rules.add(new AsciiDoctorStringRule("`", "`", textBlock));
-		rules.add(new MultiLineRule("----", "----", textBlock));
+		rules.add(new AsciiDoctorLineStartsWithRule("----", "----", true, textBlock));
 		
 		rules.add(new SingleLineRule("**", "**", boldText, (char) -1, true));
 		rules.add(new SingleLineRule("*", "*", boldText, (char) -1, true));
 		
-		rules.add(new SingleLineRule("include::*", "[]", includeKeyword, (char) -1, true));
+		rules.add(new AsciiDoctorLineStartsWithRule("include::", "[]", false, includeKeyword));
+		rules.add(new AsciiDoctorLineStartsWithRule("ifdef::", "[]", false, asciidoctorCommand));
+		rules.add(new AsciiDoctorLineStartsWithRule("endif::", "[]", false, asciidoctorCommand));
 
 		buildWordRules(rules, asciidoctorCommand, AsciiDoctorCommandKeyWords.values());
 
 		buildWordRules(rules, knownVariables, AsciiDoctorSpecialVariableKeyWords.values());
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
+	}
+	
+	private void aLineStartsWith(String startsWith, List<IPredicateRule> rules, IToken token){
+		aLineStartsWith(startsWith, rules, token,false);
+	}
+	
+	private void aLineStartsWith(String startsWith, List<IPredicateRule> rules, IToken token, boolean endOnSpace){
+		String endsWith=null;
+		if (endOnSpace){
+			endsWith=" ";
+		}
+		rules.add(new AsciiDoctorLineStartsWithRule(startsWith, endsWith,false, token));
 	}
 
 	private void buildWordRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {

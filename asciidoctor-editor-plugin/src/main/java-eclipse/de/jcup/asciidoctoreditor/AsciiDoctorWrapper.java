@@ -272,8 +272,8 @@ public class AsciiDoctorWrapper {
 		}
 		if (isTocVisible()){
 			attrBuilder.attribute("toc","left");
+//			attrBuilder.attribute("basebackend-html");
 		}
-		
 		if (imagesDir!=null){
 			attrBuilder.imagesDir(imagesDir);
 		}
