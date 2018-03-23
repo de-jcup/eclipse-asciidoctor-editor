@@ -64,6 +64,7 @@ public interface AsciiDoctorEditorColorConstants {
 	public static final RGB MIDDLE_GREEN = rgb(0, 128, 0);
 	public static final RGB MIDDLE_BROWN = rgb(128, 128, 0);
 	public static final RGB MIDDLE_RED = rgb(128, 0, 0);
+	public static final RGB DARK_THEME_LIHT_RED = rgb(200,50,50);
 	public static final RGB MIDDLE_ORANGE = rgb(255,128,64);
 
 	public static final RGB DARK_GREEN = rgb(0, 64, 0);

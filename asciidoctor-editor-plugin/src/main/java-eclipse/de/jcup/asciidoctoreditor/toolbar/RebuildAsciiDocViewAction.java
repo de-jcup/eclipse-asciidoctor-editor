@@ -8,10 +8,6 @@ public class RebuildAsciiDocViewAction extends ToolbarAction {
 	
 	private static ImageDescriptor IMG_REFRESH = createToolbarImageDescriptor("refresh.png");
 
-	private static ImageDescriptor IMG_LAYOUT_VERTICAL = createToolbarImageDescriptor("layout_vertical.png");
-	private static ImageDescriptor IMG_LAYOUT_HORIZONTAL = createToolbarImageDescriptor("layout_horizontal.png");
-
-	
 		public RebuildAsciiDocViewAction(AsciiDoctorEditor editor) {
 			super(editor);
 			initUI();

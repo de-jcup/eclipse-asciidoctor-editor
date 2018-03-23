@@ -93,6 +93,7 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
+import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleLayoutAction;
@@ -198,6 +199,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		IToolBarManager asciiDocActionToolBar = new ToolBarManager(coolBarManager.getStyle());
 		asciiDocActionToolBar.add(new NewTableInsertAction(this));
+		asciiDocActionToolBar.add(new NewCodeBlockInsertAction(this));
 
 		IToolBarManager uiActionToolBar = new ToolBarManager(coolBarManager.getStyle());
 		uiActionToolBar.add(new RebuildAsciiDocViewAction(this));
@@ -328,6 +330,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	public Item getItemAtCarretPosition() {
 		return getItemAt(lastCaretPosition);
+	}
+	
+	public int getLastCaretPosition() {
+		return lastCaretPosition;
 	}
 
 	public AsciiDoctorContentOutlinePage getOutlinePage() {
