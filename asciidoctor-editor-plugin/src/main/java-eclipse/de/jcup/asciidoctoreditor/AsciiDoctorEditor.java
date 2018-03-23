@@ -35,7 +35,9 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.CoolBarManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -61,6 +63,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -93,6 +96,7 @@ import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValida
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleLayoutAction;
+import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
 
 @AdaptedFromEGradle
 public class AsciiDoctorEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
@@ -108,7 +112,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	/** The COMMAND_ID of the editor ruler context menu */
 	public static final String EDITOR_RULER_CONTEXT_MENU_ID = EDITOR_CONTEXT_MENU_ID + ".ruler";
 
-	
 	private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
 	private AsciiDoctorWrapper asciidoctorWrapper;
 	private String bgColor;
@@ -130,7 +133,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private Composite topComposite;
 
-	private ToolBarManager toolBarManager;
+	private CoolBarManager coolBarManager;
 
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
@@ -146,24 +149,23 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	@Override
 	public void createPartControl(Composite parent) {
 
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
+		GridLayout topGridLayout = new GridLayout();
+		topGridLayout.numColumns = 1;
+		topGridLayout.marginWidth=0;
+		topGridLayout.marginHeight=0;
+		topGridLayout.horizontalSpacing=0;
+		topGridLayout.verticalSpacing=0;
 
 		/* new composite - takes full place */
 		topComposite = new Composite(parent, SWT.NONE);
-		topComposite.setLayout(gridLayout);
-
-		/* create tool bar */
-		GridData sashGD = new GridData(GridData.FILL_BOTH);
-
-		GridData toolbarGD = new GridData(GridData.FILL_HORIZONTAL);
-		toolbarGD.heightHint = 20;
-		toolbarGD.widthHint = 100;
+		topComposite.setLayout(topGridLayout);
 
 		createToolbar();
 
+		GridData sashGD = new GridData(GridData.FILL_BOTH);
 		sashForm = new SashForm(topComposite, INITIAL_LAYOUT_ORIENTATION);
 		sashForm.setLayoutData(sashGD);
+		sashForm.setSashWidth(5);
 
 		super.createPartControl(sashForm);
 
@@ -188,18 +190,24 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void createToolbar() {
-		toolBarManager = new ToolBarManager();
-		toolBarManager.createControl(topComposite);
+		coolBarManager = new CoolBarManager(SWT.FLAT|SWT.HORIZONTAL);
+		CoolBar coolbar = coolBarManager.createControl(topComposite);
+		GridData toolbarGD = new GridData(GridData.FILL_HORIZONTAL);
 
-		toolBarManager.add(new Separator("elements"));
-		toolBarManager.add(new Separator("ui"));
+		coolbar.setLayoutData(toolbarGD);
 
-		toolBarManager.appendToGroup("ui", new RebuildAsciiDocViewAction(this));
-		toolBarManager.appendToGroup("ui", new ToggleLayoutAction(this));
+		IToolBarManager asciiDocActionToolBar = new ToolBarManager(coolBarManager.getStyle());
+		asciiDocActionToolBar.add(new NewTableInsertAction(this));
 
-		toolBarManager.appendToGroup("elements", new NewTableInsertAction(this));
+		IToolBarManager uiActionToolBar = new ToolBarManager(coolBarManager.getStyle());
+		uiActionToolBar.add(new RebuildAsciiDocViewAction(this));
+		uiActionToolBar.add(new ToggleLayoutAction(this));
+		uiActionToolBar.add(new ToggleTOCAction(this));
 
-		toolBarManager.update(true);
+		// Add to the cool bar manager
+		coolBarManager.add(new ToolBarContributionItem(asciiDocActionToolBar, "asciiDocEditor.toolbar.asciiDoc"));
+		coolBarManager.add(new ToolBarContributionItem(uiActionToolBar, "asciiDocEditor.toolbar.ui"));
+		coolBarManager.update(true);
 
 	}
 
@@ -551,7 +559,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 	}
 
-	
 	public void updateAsciiDocView() {
 		if (browser == null) {
 			return;
@@ -920,25 +927,33 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	}
 
-
-	
 	public void openInclude(String fileName) {
 		IWorkbenchPage activePage = EclipseUtil.getActivePage();
-		File file = new File(getEditorFile().getParentFile(),fileName);
-		if (!file.exists()){
-			MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Not able to load", "Cannot open "+fileName);
+		File file = new File(getEditorFile().getParentFile(), fileName);
+		if (!file.exists()) {
+			MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Not able to load",
+					"Cannot open " + fileName);
 			return;
 		}
 		try {
-			IDE.openEditor(activePage, file.toURI(),AsciiDoctorEditor.EDITOR_ID, true);
+			IDE.openEditor(activePage, file.toURI(), AsciiDoctorEditor.EDITOR_ID, true);
 			return;
 		} catch (PartInitException e) {
 			AsciiDoctorEditorUtil.logError("Not able to open include", e);
 		}
-		
+
 	}
 
 	public void resetCache() {
 		asciidoctorWrapper.resetCaches();
+	}
+
+	public void setTOCShown(boolean shown) {
+		asciidoctorWrapper.setTocVisible(shown);
+		updateAsciiDocView();
+	}
+
+	public boolean isTOCShown() {
+		return asciidoctorWrapper.isTocVisible();
 	}
 }
