@@ -35,6 +35,7 @@ public class AsciiDoctorWrapper {
 	private File cachedBaseDir;
 
 	private Map<String, Object> cachedAttributes;
+	private boolean tocVisible;
 
 	private static String prefixHTML;
 
@@ -262,13 +263,17 @@ public class AsciiDoctorWrapper {
 			Object value = cachedAttributes.get(key);
 			if (value!=null && value.toString().isEmpty()){
 				if ("toc".equals(key)){
-					// currently we always remove the TOC - we got a outline...
+					// currently we always remove the TOC (we do show the TOC only by the internal boolean flag
 					// also the TOC is not correctly positioned - (always on top instead of being at left side)
 					continue;
 				}
 				attrBuilder.attribute(key,value);
 			}
 		}
+		if (isTocVisible()){
+			attrBuilder.attribute("toc","left");
+		}
+		
 		if (imagesDir!=null){
 			attrBuilder.imagesDir(imagesDir);
 		}
@@ -330,5 +335,13 @@ public class AsciiDoctorWrapper {
 			AsciiDoctorEditorUtil.logError("Was not able to delete temp folder", e);
 		}
 
+	}
+
+	public void setTocVisible(boolean tocVisible) {
+		this.tocVisible = tocVisible;
+	}
+	
+	public boolean isTocVisible() {
+		return tocVisible;
 	}
 }
