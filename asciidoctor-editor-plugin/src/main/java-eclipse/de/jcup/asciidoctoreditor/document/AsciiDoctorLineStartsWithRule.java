@@ -83,30 +83,56 @@ public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
 			}
 			if (c == '\n') {
 				/* new line */
-				if (!multiLines) {
+				if (multiLines) {
+					/* keep on going but start from fresh */
+					endsWithPos = 0;
+					continue;
+				} else {
 					if (noEndsWithScanNecessary) {
 						return getSuccessToken();
 					}
 					/* only one line, so token not found currently */
 					return resetScannerAndReturnUndefined(scanner, count);
-				} else {
-					/* keep on going but start from fresh */
-					endsWithPos = 0;
 				}
 			}
 			if (noEndsWithScanNecessary) {
 				continue;
 			}
-			if (endsWithPos < endsWith.length) {
-				if (c == endsWith[endsWithPos]) {
-					endsWithPos++;
+			/* ENDSWITH is set */
+			
+			
+			if (multiLines){
+				if (endsWithPos < endsWith.length) {
+					if (c == endsWith[endsWithPos]) {
+						endsWithPos++;
+					}else{
+						// car not does not match on position so this line fails
+						// we set the position 1 behind last one so it goes to continue
+						// until next new line 
+						endsWithPos= endsWith.length+1;
+						continue;
+					}
+					if (endsWithPos == endsWith.length) {
+						/* found exact so success */
+						return getSuccessToken();
+					}
+				} else {
+					// just continue ...
+					continue;
 				}
-				if (endsWithPos == endsWith.length) {
-					/* found so success */
-					return getSuccessToken();
+			}else{
+				/* single line - just scan until end of line */
+				if (endsWithPos < endsWith.length) {
+					if (c == endsWith[endsWithPos]) {
+						endsWithPos++;
+					}
+					if (endsWithPos == endsWith.length) {
+						/* found so success */
+						return getSuccessToken();
+					}
+				} else {
+					return resetScannerAndReturnUndefined(scanner, count);
 				}
-			} else {
-				return resetScannerAndReturnUndefined(scanner, count);
 			}
 		}
 	}
