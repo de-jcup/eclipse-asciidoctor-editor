@@ -63,7 +63,7 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
 
 				/* editor colors */
 				changeColor(editorMap, COLOR_NORMAL_TEXT, AsciiDoctorEditorColorConstants.GRAY_JAVA);
-				changeColor(editorMap, COLOR_ASCIIDOCTOR_HEADLINES, AsciiDoctorEditorColorConstants.MIDDLE_GREEN);
+				changeColor(editorMap, COLOR_ASCIIDOCTOR_HEADLINES, AsciiDoctorEditorColorConstants.DARK_THEME_LIHT_RED);
 				
 				changeColor(editorMap, COLOR_COMMENT, AsciiDoctorEditorColorConstants.GREEN_JAVA);
 				changeColor(editorMap, COLOR_INCLUDE_KEYWORD, AsciiDoctorEditorColorConstants.MIDDLE_BROWN);
