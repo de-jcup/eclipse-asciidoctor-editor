@@ -21,8 +21,6 @@ import java.util.List;
 
 import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 import de.jcup.asciidoctoreditor.script.parser.SimpleHeadlineParser;
-import de.jcup.asciidoctoreditor.script.parser.TokenParser;
-import de.jcup.asciidoctoreditor.script.parser.TokenParserException;
 import de.jcup.asciidoctoreditor.script.parser.validator.CaseEndsWithEsacValidator;
 import de.jcup.asciidoctoreditor.script.parser.validator.ClosedBlocksValidator;
 import de.jcup.asciidoctoreditor.script.parser.validator.DoEndsWithDoneValidator;
@@ -56,38 +54,7 @@ public class AsciiDoctorScriptModelBuilder {
 		
 		model.getHeadlines().addAll(headlines);
 		
-		/* FIXME ATR, 15.03.2018: clean up this old copied parsing stuff! */
-		
-//		TokenParser parser = new TokenParser();
-//		List<ParseToken> tokens;
-//		try {
-//			tokens = parser.parse(asciidoctorScript);
-//		} catch (TokenParserException e) {
-//			throw new AsciiDoctorScriptModelException("Was not able to build asciidoctorscript", e);
-//		}
-//
-//		buildFunctionsByTokens(model, tokens);
-//
-//		List<ValidationResult> results = new ArrayList<>();
-//		for (AsciiDoctorScriptValidator<List<ParseToken>> validator : createParseTokenValidators()) {
-//			results.addAll(validator.validate(tokens));
-//		}
-//
-//		for (ValidationResult result : results) {
-//			if (result instanceof AsciiDoctorError) {
-//				model.errors.add((AsciiDoctorError) result);
-//			}
-//		}
-//		
-//		if (debugMode){
-//			appendDebugTokens(model, tokens);
-//		}
-//		
 		return model;
-	}
-
-	private void appendDebugTokens(AsciiDoctorScriptModel model, List<ParseToken> tokens) {
-		model.getDebugTokens().addAll(tokens);
 	}
 
 	public void setIgnoreBlockValidation(boolean ignoreBlockValidation) {

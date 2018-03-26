@@ -21,16 +21,16 @@
 		white-space: pre;
 		font-family: monospace;
 
-		/* the example shall alwas look a little bit like a terminal - in every theme
-		 * so its always black background and green text ...*/		
-		color: #0d9134;
-		background-color: #000000;
+		/* the example shall alwas look as a notepad entry - in every theme
+		 * so its always white background and dark gray text ...*/		
+		color: #333333;
+		background-color: #FFFFFF;
 
 		border:1px;
 		border-style:solid;
 		font-size:smaller;
 		
-		padding: 20px;
+		padding: 5px;
 }
 table, td, th{
 	border: 1px;

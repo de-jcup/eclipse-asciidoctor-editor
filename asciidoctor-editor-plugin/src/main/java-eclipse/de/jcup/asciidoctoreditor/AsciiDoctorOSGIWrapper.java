@@ -5,9 +5,14 @@ import static org.asciidoctor.Asciidoctor.Factory.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.OptionsBuilder;
+import org.eclipse.core.runtime.ICoreRunnable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.Job;
 import org.jruby.RubyInstanceConfig;
 import org.jruby.javasupport.JavaEmbedUtils;
 import org.osgi.framework.Bundle;
@@ -63,7 +68,7 @@ public class AsciiDoctorOSGIWrapper {
 		}
 	}
 
-	private Asciidoctor loadAsciidoctor() {
+	private void loadAsciidoctor() {
 		/* load asciidoctor OSGI conform */
 		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
 		ClassLoader libsClassLoader = fetchClassLoader(bundle);
@@ -73,7 +78,20 @@ public class AsciiDoctorOSGIWrapper {
 
 		asciidoctor.requireLibrary("asciidoctor-diagram");
 //		asciidoctor.javaExtensionRegistry().includeProcessor(FileIncludeIncludeProcessor.class);
-		return null;
+		
+		/* initialize...*/
+		Job job = Job.create("Initialize ascii doctor access", (ICoreRunnable) monitor -> {
+			monitor.beginTask("Initializing...", IProgressMonitor.UNKNOWN);
+			/* start a simple convert to ensure asciidoctor has been started*/
+			asciidoctor.convert("== headline2", OptionsBuilder.options().toFile(false).asMap());
+			monitor.done();
+		});
+		try {
+			job.join();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		
 	}
 
 	public File getUnzipFolder(){

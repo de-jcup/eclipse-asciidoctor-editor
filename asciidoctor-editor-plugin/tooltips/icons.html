@@ -1,0 +1,28 @@
+icons
+<br><br>
+Icons are used for admonition labels, callout numbers and inline symbols. 
+Asciidoctor provides three strategies for display icons: 
+<br><br>
+as text, as images or as a characters selected from an icon font. 
+<br><br>
+The strategy is controlled using the icons attribute. The default behavior is to display the fallback text.
+If you want icons to display using images, set the icons attribute to an empty value in the document header. 
+This strategy is recommended if you are converting to DocBook or you want an easy way to make HTML for viewing offline. The DocBook toolchain provides images for the admonition and callout icons, which you can replace with your own custom icons. 
+If you use the inline icon macro, you’ll need to provide the images for those icons.
+<br><br>
+Alternatively, you can have Asciidoctor “draw” icons using the Font Awesome font-based icon set. 
+To use this feature, set the value of the icons document attribute to font in the document header. 
+You can see the available icons on the icons page. 
+Using Font Awesome provides many more images, but requires online access by default.
+<br><br>
+The default CSS stylesheet (or any stylesheet produced by the Asciidoctor stylesheet factory) 
+is required when using font-based icons.
+
+<div class="example">
+= Document Title
+:icons: font
+
+NOTE: Asciidoctor supports font-based admonition icons, powered by Font Awesome!
+</div>
+
+For more information please refer to online documentation.

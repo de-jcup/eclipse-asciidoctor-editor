@@ -29,8 +29,7 @@ public class DocumentKeyWords {
 	private static DocumentKeyWord[] createAllKeywords() {
 		List<DocumentKeyWord> list = new ArrayList<>();
 		list.addAll(Arrays.asList(AsciiDoctorCommandKeyWords.values()));
-		list.addAll(Arrays.asList(AsciiDoctorLanguageKeyWords.values()));
-		list.addAll(Arrays.asList(AsciiDoctorSpecialVariableKeyWords.values()));
+		list.addAll(Arrays.asList(AsciiDoctorSpecialAttributesKeyWords.values()));
 		
 		return list.toArray(new DocumentKeyWord[list.size()]);
 	}

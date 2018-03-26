@@ -1,0 +1,21 @@
+dependencies {
+    compile 'org.asciidoctor:asciidoctorj:1.5.6'
+    compile 'org.asciidoctor:asciidoctorj-diagram:1.5.4.1'
+    compile 'commons-io:commons-io:2.4'
+	compile 'org.jruby:jruby-complete:1.7.13'
+}
+
+/**
+ * Important: Only necessary when new asciidoctorj /jruby dependencies are necessary!
+ * <br>
+ * This task copies the dependencies to a temporary library directory. 
+ * After this is done these libraries have to be imported into a temporary eclipse plugin (convert from jars)
+ * . When this is done copy the parts to "asciidoctor-editor-libs" and setup exported packages as defined
+ * in temporary project, so all parts are accessible from other plugins.<br><br>
+ * After this is done remove the old jars... and upgrade version of "asciidoctor-editor-libs" to new version.
+ */
+task copyRuntimeLibs(type: Copy) {
+	
+    into "${rootProject.projectDir}/asciidoctor-editor-other/temp"
+    from configurations.compile /*configurations.testRuntime - configurations.runtime*/
+}

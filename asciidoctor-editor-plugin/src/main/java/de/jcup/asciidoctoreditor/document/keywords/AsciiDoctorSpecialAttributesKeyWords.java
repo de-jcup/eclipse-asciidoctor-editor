@@ -15,26 +15,28 @@
  */
 package de.jcup.asciidoctoreditor.document.keywords;
 
-public enum AsciiDoctorSpecialVariableKeyWords implements DocumentKeyWord {
+public enum AsciiDoctorSpecialAttributesKeyWords implements DocumentKeyWord {
 
-	UID,;
+
+	IMAGESDIR("https://asciidoctor.org/docs/user-manual/#setting-the-location-of-images"),
+	
+	ICONS("https://asciidoctor.org/docs/user-manual/#icons"),
+	
+	TOC("https://asciidoctor.org/docs/user-manual/#user-toc")
+	;
 
 	private String text;
-
-	private AsciiDoctorSpecialVariableKeyWords() {
-		this(null);
-	}
-
-	private AsciiDoctorSpecialVariableKeyWords(String tooltipId) {
-		this.text = "$" + name();
-		if (tooltipId == null) {
-			tooltipId = name();
-		}
-		tooltip = TooltipTextSupport.getTooltipText(tooltipId);
+	
+	private AsciiDoctorSpecialAttributesKeyWords(String linkToOnlineDocumentation) {
+		this.text = ":" + name().toLowerCase()+":";
+		tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
 		if (tooltip == null || tooltip.isEmpty()) {
-			tooltip = "An internal asciidoctor variable. See online documentation for mor information.";
+			tooltip = "An internal asciidoctor attribute. See online documentation for mor information.";
 		}
-		this.linkToDocumentation = "http://tldp.org/LDP/abs/html/internalvariables.html";
+		this.linkToDocumentation = linkToOnlineDocumentation;
+		if (this.linkToDocumentation==null){
+			this.linkToDocumentation="https://asciidoctor.org/docs/user-manual";
+		}
 	}
 
 	@Override
@@ -59,4 +61,5 @@ public enum AsciiDoctorSpecialVariableKeyWords implements DocumentKeyWord {
 	public String getLinkToDocumentation() {
 		return linkToDocumentation;
 	}
+
 }

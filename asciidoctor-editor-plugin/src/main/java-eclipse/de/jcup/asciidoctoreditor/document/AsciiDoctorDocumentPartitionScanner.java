@@ -27,13 +27,12 @@ import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialVariableKeyWords;
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 
 public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScanner {
 
 	private OnlyLettersKeyWordDetector onlyLettersWordDetector = new OnlyLettersKeyWordDetector();
-	private VariableDefKeyWordDetector variableDefKeyWordDetector = new VariableDefKeyWordDetector();
 
 	public AsciiDoctorDocumentPartitionScanner() {
 		IToken boldText = createToken(TEXT_BOLD);
@@ -59,6 +58,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		aLineStartsWith("=== ",rules,headline);
 		aLineStartsWith("==== ",rules,headline);
 		aLineStartsWith("===== ",rules,headline);
+		aLineStartsWith("====== ",rules,headline);
 		
 		aLineStartsWith("|===",rules,asciidoctorCommand);
 
@@ -80,13 +80,14 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new SingleLineRule("**", "**", boldText, (char) -1, true));
 		rules.add(new SingleLineRule("*", "*", boldText, (char) -1, true));
 		
-		rules.add(new AsciiDoctorLineStartsWithRule("include::", "[]", false, includeKeyword));
-		rules.add(new AsciiDoctorLineStartsWithRule("ifdef::", "[]", false, asciidoctorCommand));
-		rules.add(new AsciiDoctorLineStartsWithRule("endif::", "[]", false, asciidoctorCommand));
+		rules.add(new AsciiDoctorLineStartsWithRule("include::", "]", false, includeKeyword));
+		rules.add(new AsciiDoctorLineStartsWithRule("image::", "]", false, asciidoctorCommand));
+		rules.add(new AsciiDoctorLineStartsWithRule("ifdef::", "]", false, asciidoctorCommand));
+		rules.add(new AsciiDoctorLineStartsWithRule("endif::", "]", false, asciidoctorCommand));
 
 		buildWordRules(rules, asciidoctorCommand, AsciiDoctorCommandKeyWords.values());
 
-		buildWordRules(rules, knownVariables, AsciiDoctorSpecialVariableKeyWords.values());
+		buildWordRules(rules, knownVariables, AsciiDoctorSpecialAttributesKeyWords.values());
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}
@@ -106,13 +107,6 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 	private void buildWordRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {
 		for (DocumentKeyWord keyWord : values) {
 			rules.add(new ExactWordPatternRule(onlyLettersWordDetector, createWordStart(keyWord), token,
-					keyWord.isBreakingOnEof()));
-		}
-	}
-
-	private void buildVarDefRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {
-		for (DocumentKeyWord keyWord : values) {
-			rules.add(new VariableDefKeyWordPatternRule(variableDefKeyWordDetector, createWordStart(keyWord), token,
 					keyWord.isBreakingOnEof()));
 		}
 	}

@@ -1,0 +1,16 @@
+include
+<br><br>
+The include directive (include::path[attributes]) let’s you import content from another file into the current document. You can use it multiple times in the same document.
+<br><br>
+The include directive has the following anatomy:
+<div class="example">
+include::path[leveloffset=offset,lines=ranges,tag(s)=name(s),indent=depth]
+</div>
+The leveloffset, lines, tag(s) and indent attributes are optional, making the simplest case look like:
+<div class="example">
+include::content.adoc[]
+</div>
+The sections that follow go into detail about when the include is processed, how the include file 
+is resolved, and how each attribute is used.
+<br><br>
+For more information please refer to online documentation.

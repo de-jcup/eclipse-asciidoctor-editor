@@ -25,7 +25,7 @@ import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWords;
 public class DocumentKeyWordsTest {
 
 	@Test
-	public void all_key_words_can_be_initialzed() {
+	public void all_key_words_can_be_initialized() {
 		DocumentKeyWord[] results = DocumentKeyWords.getAll();
 		assertNotNull(results);
 	}

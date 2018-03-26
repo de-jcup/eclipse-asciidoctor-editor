@@ -175,6 +175,10 @@ public class EclipseUtil {
 	public static void safeAsyncExec(Runnable runnable) {
 		getSafeDisplay().asyncExec(runnable);
 	}
+	
+	public static void safeSyncExec(Runnable runnable) {
+		getSafeDisplay().syncExec(runnable);
+	}
 
 	public static void throwCoreException(String message) throws CoreException {
 		throw new CoreException(new Status(IStatus.ERROR, AsciiDoctorEditorActivator.PLUGIN_ID, message));

@@ -1,0 +1,25 @@
+image
+<br><br>
+
+To include an image on its own line (i.e., a block image), use the image:: prefix in front of the file name and square brackets after it.
+<div class="example">
+image::sunset.jpg[]
+</div>
+
+If you want to specify alt text, include it inside the square brackets:
+<div class="example">
+image::sunset.jpg[Sunset]
+
+// you can also give the size into square brackts:
+image::sunset.jpg[Sunset,300,200]
+
+// an images with an URL and size given:
+image::https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg[Tux,250,350]
+</div>
+If you want to include an image <b>inline</b>, use the image: prefix instead (notice there is <b>only one</b> colon):
+<div class="example">
+Click image:icons/play.png[Play, title="Play"] to get the party started.
+
+Click image:icons/pause.png[title="Pause"] when you need a break.
+
+</div>
