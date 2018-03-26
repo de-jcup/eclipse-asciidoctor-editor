@@ -88,6 +88,12 @@ public class AsciiDoctorTextHover implements ITextHover, ITextHoverExtension {
 		}
 		int offset = hoverRegion.getOffset();
 		String word = SimpleStringUtils.nextReducedVariableWord(text, offset);
+		/* reduce words like include::xyz to 'include::' */
+		/* a part like :icons: will not be influenced */
+		int indexOf = word.indexOf("::");
+		if (indexOf!=-1){
+			word=word.substring(0,indexOf+2);
+		}
 		if (word.isEmpty()) {
 			return "";
 		}

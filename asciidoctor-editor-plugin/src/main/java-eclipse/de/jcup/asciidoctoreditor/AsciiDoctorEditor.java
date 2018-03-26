@@ -24,6 +24,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
@@ -34,7 +35,10 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
@@ -88,16 +92,19 @@ import de.jcup.asciidoctoreditor.outline.AsciiDoctorQuickOutlineDialog;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
+import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
+import static de.jcup.asciidoctoreditor.EclipseUtil.*;
 
 @AdaptedFromEGradle
 public class AsciiDoctorEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
@@ -152,10 +159,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		GridLayout topGridLayout = new GridLayout();
 		topGridLayout.numColumns = 1;
-		topGridLayout.marginWidth=0;
-		topGridLayout.marginHeight=0;
-		topGridLayout.horizontalSpacing=0;
-		topGridLayout.verticalSpacing=0;
+		topGridLayout.marginWidth = 0;
+		topGridLayout.marginHeight = 0;
+		topGridLayout.horizontalSpacing = 0;
+		topGridLayout.verticalSpacing = 0;
 
 		/* new composite - takes full place */
 		topComposite = new Composite(parent, SWT.NONE);
@@ -191,7 +198,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void createToolbar() {
-		coolBarManager = new CoolBarManager(SWT.FLAT|SWT.HORIZONTAL);
+		coolBarManager = new CoolBarManager(SWT.FLAT | SWT.HORIZONTAL);
 		CoolBar coolbar = coolBarManager.createControl(topComposite);
 		GridData toolbarGD = new GridData(GridData.FILL_HORIZONTAL);
 
@@ -209,6 +216,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		// Add to the cool bar manager
 		coolBarManager.add(new ToolBarContributionItem(asciiDocActionToolBar, "asciiDocEditor.toolbar.asciiDoc"));
 		coolBarManager.add(new ToolBarContributionItem(uiActionToolBar, "asciiDocEditor.toolbar.ui"));
+
+		if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
+			IToolBarManager debugToolBar = new ToolBarManager(coolBarManager.getStyle());
+			debugToolBar.add(new AddErrorDebugAction(this));
+			coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
+		}
 		coolBarManager.update(true);
 
 	}
@@ -331,7 +344,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	public Item getItemAtCarretPosition() {
 		return getItemAt(lastCaretPosition);
 	}
-	
+
 	public int getLastCaretPosition() {
 		return lastCaretPosition;
 	}
@@ -450,33 +463,27 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		modelBuilder.setDebug(debugMode);
 
-		EclipseUtil.safeAsyncExec(new Runnable() {
+		safeAsyncExec(() -> {
+			AsciiDoctorScriptModel model;
+			try {
+				model = modelBuilder.build(text);
+			} catch (AsciiDoctorScriptModelException e) {
+				AsciiDoctorEditorUtil.logError("Was not able to build validation model", e);
+				model = FALLBACK_MODEL;
+			}
 
-			@Override
-			public void run() {
-				AsciiDoctorEditorUtil.removeScriptErrors(AsciiDoctorEditor.this);
+			getOutlinePage().rebuild(model);
 
-				AsciiDoctorScriptModel model;
-				try {
-					model = modelBuilder.build(text);
-				} catch (AsciiDoctorScriptModelException e) {
-					AsciiDoctorEditorUtil.logError("Was not able to build validation model", e);
-					model = FALLBACK_MODEL;
+			if (model.hasErrors()) {
+				int severity;
+				if (AsciiDoctorEditorValidationErrorLevel.INFO.equals(errorLevel)) {
+					severity = IMarker.SEVERITY_INFO;
+				} else if (AsciiDoctorEditorValidationErrorLevel.WARNING.equals(errorLevel)) {
+					severity = IMarker.SEVERITY_WARNING;
+				} else {
+					severity = IMarker.SEVERITY_ERROR;
 				}
-
-				getOutlinePage().rebuild(model);
-
-				if (model.hasErrors()) {
-					int severity;
-					if (AsciiDoctorEditorValidationErrorLevel.INFO.equals(errorLevel)) {
-						severity = IMarker.SEVERITY_INFO;
-					} else if (AsciiDoctorEditorValidationErrorLevel.WARNING.equals(errorLevel)) {
-						severity = IMarker.SEVERITY_WARNING;
-					} else {
-						severity = IMarker.SEVERITY_ERROR;
-					}
-					addErrorMarkers(model, severity);
-				}
+				addErrorMarkers(model, severity);
 			}
 		});
 	}
@@ -576,6 +583,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			return;
 		}
 		buildTemporaryHTMLFile();
+		ensureBrowserShowsURL();
 		browser.refresh();
 
 	}
@@ -585,52 +593,69 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void buildTemporaryHTMLFile() {
-		String content = null;
+		safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(AsciiDoctorEditor.this));
 		File editorFile = getEditorFile();
+		String html = null;
 		try {
-			if (editorFile != null) {
-				boolean handledError = false;
-				try {
-					asciidoctorWrapper.convertToHTML(editorFile);
-
-					File generatedFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), false);
-					try (BufferedReader br = new BufferedReader(new FileReader(generatedFile))) {
-						String line = null;
-						StringBuilder htmlSB = new StringBuilder();
-						while ((line = br.readLine()) != null) {
-							htmlSB.append(line);
-							htmlSB.append("\n");
-						}
-						content = htmlSB.toString();
-					} catch (IOException e) {
-						AsciiDoctorEditorUtil.logError("Was not able to build new full", e);
-					}
-
-				} catch (RuntimeException e) {
-					AsciiDoctorEditorUtil.logWarning("Failed to convert - use fallback to simple text. EditorFile was:"
-							+ editorFile + ". Origin message was:" + e.getMessage());
-					handledError = true;
-				}
-				if (!handledError && (content == null || "null".equals(content))) {
-					AsciiDoctorEditorUtil.logWarning(
-							"File conversion failed. Use fallback to simple text. EditorFile was:" + editorFile);
-					content = null;
-				}
-			}
-			if (content == null) {
-				content = asciidoctorWrapper.convertToHTML(getDocumentText());
-			}
-			String html = asciidoctorWrapper.buildHTMLWithCSS(content);
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempADFile))) {
-				bw.write(html);
-				bw.close();
-
-			} catch (IOException e1) {
-				AsciiDoctorEditorUtil.logError("Was not able to setup", e1);
+			String content = null;
+			if (editorFile == null) {
+				String asciiDoc = getDocumentText();
+				content = asciidoctorWrapper.convertToHTML(asciiDoc);
+				html = asciidoctorWrapper.buildHTMLWithCSS(content);
+			} else {
+				/* content exists as simple file */
+				asciidoctorWrapper.convertToHTML(editorFile);
+				content = readFileCreatedByAsciiDoctor();
+				html = asciidoctorWrapper.buildHTMLWithCSS(content);
 			}
 
 		} catch (RuntimeException e) {
-			AsciiDoctorEditorUtil.logError("Was not able to setup, editorFile was:" + editorFile, e);
+			/*
+			 * This means the ASCIIDOCTOR wrapper was not able to convert - so
+			 * we have to clean the former ouptput and show up a marker for
+			 * complete file
+			 */
+			StringBuilder htmlSb = new StringBuilder();
+			htmlSb.append("<h4");
+			if (e.getClass().getName().startsWith("org.asciidoctor")) {
+				htmlSb.append("AsciiDoctor error");
+			} else {
+				htmlSb.append("Unknown error");
+			}
+			htmlSb.append("</h4");
+
+			safeAsyncExec(() -> {
+
+				String errorMessage = SimpleExceptionUtils.getRootMessage(e);
+				AsciiDoctorErrorBuilder builder = new AsciiDoctorErrorBuilder();
+				AsciiDoctorError error = builder.build(errorMessage);
+				safeBrowserSetText(htmlSb.toString());
+				AsciiDoctorEditorUtil.addScriptError(AsciiDoctorEditor.this, -1, error, IMarker.SEVERITY_ERROR);
+			});
+			return;
+		}
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempADFile))) {
+			bw.write(html);
+			bw.close();
+
+		} catch (IOException e1) {
+			AsciiDoctorEditorUtil.logError("Was not able to save temporary file for preview!", e1);
+		}
+	}
+
+	protected String readFileCreatedByAsciiDoctor() {
+		File generatedFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), false);
+		try (BufferedReader br = new BufferedReader(new FileReader(generatedFile))) {
+			String line = null;
+			StringBuilder htmlSB = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				htmlSB.append(line);
+				htmlSB.append("\n");
+			}
+			return htmlSB.toString();
+		} catch (IOException e) {
+			AsciiDoctorEditorUtil.logError("Was not able to build new full html variant", e);
+			return "";
 		}
 	}
 
@@ -670,48 +695,83 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void initBrowser(SashForm sashForm) {
-		tempADFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), true);
 		try {
 			browser = new Browser(sashForm, SWT.CENTER);
-			if (tempADFile == null || !tempADFile.exists()) {
-				/*
-				 * can happen when eclipse restarts and editor opens - new temp
-				 * folder shows to non existing file...
-				 */
-				buildTemporaryHTMLFile();
-			}
-			if (tempADFile == null || !tempADFile.exists()) {
-				/* it was not possible to recreate the temp ad file */
-				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
-			} else {
-				EclipseUtil.safeAsyncExec(new Runnable() {
+			safeBrowserSetText("Initializing...");
+			Job job = Job.create("Init browser", new ICoreRunnable() {
 
-					@Override
-					public void run() {
-						try {
-							browser.setUrl(tempADFile.toURI().toURL().toString());
-
-						} catch (MalformedURLException e) {
-							/* FIXME ATR, 15.03.2018: better error handling */
-							e.printStackTrace();
-							browser.setText("URL problems:" + e.getMessage());
-						}
-					}
-				});
-			}
+				@Override
+				public void run(IProgressMonitor monitor) throws CoreException {
+					monitor.beginTask("Initializing browser", IProgressMonitor.UNKNOWN);
+					initBrowserContent();
+					monitor.done();
+				}
+			});
+			job.schedule();
 
 		} catch (SWTError e) {
-			MessageBox messageBox = new MessageBox(EclipseUtil.getActiveWorkbenchShell(), SWT.ICON_ERROR | SWT.OK);
+			MessageBox messageBox = new MessageBox(getActiveWorkbenchShell(), SWT.ICON_ERROR | SWT.OK);
 			messageBox.setMessage("Browser cannot be initialized.");
 			messageBox.setText("Exit");
 			messageBox.open();
 			return;
 		}
-		if (tempADFile == null) {
-			if (browser != null) {
-				browser.setText("<html><h1>No temporary file available! Cannot render data</h1></html>");
-			}
+
+	}
+
+	protected void safeBrowserSetText(String html) {
+		if (browser == null) {
+			return;
 		}
+		if (browser.isDisposed()) {
+			return;
+		}
+		browser.setText(html);
+	}
+
+	private void initBrowserContent() {
+		tempADFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), true);
+		if (tempADFile == null || !tempADFile.exists()) {
+			/*
+			 * can happen when eclipse restarts and editor opens - new temp
+			 * folder shows to non existing file...
+			 */
+			buildTemporaryHTMLFile();
+		}
+		if (tempADFile == null || !tempADFile.exists()) {
+			/* it was not possible to recreate the temp ad file */
+			safeAsyncExec(() -> safeBrowserSetText(""));
+		} else {
+			ensureBrowserShowsURL();
+		}
+	}
+
+	protected void ensureBrowserShowsURL() {
+		safeAsyncExec(() -> {
+
+			try {
+				if (tempADFile == null || !tempADFile.exists()) {
+					safeBrowserSetText("");
+					return;
+				}
+				URL url = tempADFile.toURI().toURL();
+				String foundURL = browser.getUrl();
+				try {
+					URL formerURL = new URL(browser.getUrl());
+					foundURL = formerURL.toExternalForm();
+				} catch (MalformedURLException e) {
+					/* ignore - about pages etc. */
+				}
+				String externalForm = url.toExternalForm();
+				if (!externalForm.equals(foundURL)) {
+					browser.setUrl(externalForm);
+				}
+
+			} catch (MalformedURLException e) {
+				AsciiDoctorEditorUtil.logError("Was not able to use malformed URL", e);
+				safeBrowserSetText("");
+			}
+		});
 	}
 
 	@Override
@@ -735,8 +795,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	void setTitleImageDependingOnSeverity(int severity) {
-		setTitleImage(
-				EclipseUtil.getImage("icons/" + getTitleImageName(severity), AsciiDoctorEditorActivator.PLUGIN_ID));
+		safeAsyncExec(() -> setTitleImage(
+				getImage("icons/" + getTitleImageName(severity), AsciiDoctorEditorActivator.PLUGIN_ID)));
 	}
 
 	private void activateAsciiDoctorEditorContext() {
@@ -761,7 +821,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			try {
 				line = document.getLineOfOffset(startPos);
 			} catch (BadLocationException e) {
-				EclipseUtil.logError("Cannot get line offset for " + startPos, e);
+				logError("Cannot get line offset for " + startPos, e);
 				line = 0;
 			}
 			AsciiDoctorEditorUtil.addScriptError(this, line, error, severity);
@@ -815,13 +875,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			 * TODO ATR, 03.02.2017: there should be an easier approach to get
 			 * editors back and foreground, without syncexec
 			 */
-			EclipseUtil.getSafeDisplay().syncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					bgColor = ColorUtil.convertToHexColor(textWidget.getBackground());
-					fgColor = ColorUtil.convertToHexColor(textWidget.getForeground());
-				}
+			safeSyncExec(() -> {
+				bgColor = ColorUtil.convertToHexColor(textWidget.getBackground());
+				fgColor = ColorUtil.convertToHexColor(textWidget.getForeground());
 			});
 		}
 
@@ -934,11 +990,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	public void openInclude(String fileName) {
-		IWorkbenchPage activePage = EclipseUtil.getActivePage();
+		IWorkbenchPage activePage = getActivePage();
 		File file = new File(getEditorFile().getParentFile(), fileName);
 		if (!file.exists()) {
-			MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Not able to load",
-					"Cannot open " + fileName);
+			MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to load", "Cannot open " + fileName);
 			return;
 		}
 		try {

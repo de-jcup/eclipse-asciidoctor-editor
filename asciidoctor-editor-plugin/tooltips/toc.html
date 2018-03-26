@@ -1,0 +1,24 @@
+toc
+<br><br>
+A table of contents (TOC) is an index of section and subsection titles that can be automatically 
+generated from the document’s structure when converting a document with Asciidoctor.
+<br><br>
+<b>Be aware:</b> the TOC statement is replaced by this eclipse plugin on preview! By the special 
+toolbar action you can toggle the TOC. But the attribute is still interesting when you are creating
+your documents in your build (e.g. by gradle)  
+<br><br>
+To enable the auto-generated TOC, you must set the toc attribute. You can do this inside the document
+or by CLI command.
+<div class='example'>
+= The Dangerous and Thrilling Documentation Chronicles
+Kismet Chameleon
+:toc:
+
+This journey begins on a bleary...
+
+== Cavern Glow
+
+The river rages through the cavern, rattling its content...
+</div>
+There are many more options to setup a TOC. Please refer to online documentation.
+<br><br>

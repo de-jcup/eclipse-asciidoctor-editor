@@ -29,7 +29,6 @@ public class AsciiDoctorWrapper {
 	private static Object HTML_PREFIX_MONITOR = new Object();
 	private static FileFilter ADOC_FILE_FILTER = new ADocFilter();
 
-	private Asciidoctor asciiDoctor;
 	private EclipseResourceHelper helper;
 	private String cachedImagesPath;
 	private File cachedBaseDir;
@@ -40,7 +39,6 @@ public class AsciiDoctorWrapper {
 	private static String prefixHTML;
 
 	public AsciiDoctorWrapper() {
-		this.asciiDoctor = AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
 		this.helper = EclipseResourceHelper.DEFAULT;
 		initTempFolderOrFail();
 	}
@@ -50,8 +48,11 @@ public class AsciiDoctorWrapper {
 		if (cachedImagesPath == null) {
 			cachedImagesPath = resolveImagesDirPath(baseDir);
 		}
-		String message = asciiDoctor.convertFile(asciiDocFile, getDefaultOptions(baseDir, cachedImagesPath));
+		String message = getAsciiDoctor().convertFile(asciiDocFile, getDefaultOptions(baseDir, cachedImagesPath));
 		return message;
+	}
+	private Asciidoctor getAsciiDoctor(){
+		return  AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
 	}
 
 	private File findBaseDir(File dir) {
@@ -140,7 +141,7 @@ public class AsciiDoctorWrapper {
 		DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
 
 		for (File file : directoryWalker.scan()) {
-			documentIndex.add(asciiDoctor.readDocumentHeader(file));
+			documentIndex.add(getAsciiDoctor().readDocumentHeader(file));
 		}
 		for (DocumentHeader header : documentIndex) {
 			map.putAll(header.getAttributes());
@@ -157,13 +158,8 @@ public class AsciiDoctorWrapper {
 	 */
 	public String convertToHTML(String asciiDoc) {
 		File baseFile = new File(".");
-		/* FIXME ATR, 22.03.2018: VERY IMPORTANT: supply next line! */
-		/*
-		 * FIXME ATR, 22.03.2018: wrap up not only images dir but ALL
-		 * attributes!!!! so e.g. ":icons: font" will be available everywher!
-		 */
 		String imagesPath = asciiDoc.indexOf(":imagesDir") == -1 ? baseFile.getAbsolutePath() : null;
-		String html = asciiDoctor.convert(asciiDoc, getDefaultOptions(baseFile, imagesPath));
+		String html = getAsciiDoctor().convert(asciiDoc, getDefaultOptions(baseFile, imagesPath));
 		return html;
 	}
 

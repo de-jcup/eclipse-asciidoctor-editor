@@ -48,9 +48,9 @@ public class TooltipTextSupportTest {
 	}
 	
 	@Test
-	public void support_get_echo_returns_not_empty_string() {
+	public void support_get_ifdef_returns_not_empty_string() {
 		/* execute */
-		String result = supportToTest.get("echo");
+		String result = supportToTest.get("ifdef");
 		/* test */
 		assertFalse(result.isEmpty());
 	}

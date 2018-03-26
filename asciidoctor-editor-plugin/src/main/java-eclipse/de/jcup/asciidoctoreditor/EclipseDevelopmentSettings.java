@@ -7,5 +7,8 @@ public interface EclipseDevelopmentSettings {
 	 */
 	public static final boolean DEBUG_RELOAD_HTML_PREFIX = Boolean
 			.parseBoolean(System.getProperty("asciidoctor.editor.debug.reload.htmlprefix"));
+	
+	public static final boolean DEBUG_TOOLBAR_ENABLED = Boolean
+			.parseBoolean(System.getProperty("asciidoctor.editor.debug.toolbar"));
 
 }

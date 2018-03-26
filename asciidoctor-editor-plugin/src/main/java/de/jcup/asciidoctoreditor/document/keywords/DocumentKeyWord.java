@@ -31,5 +31,6 @@ public interface DocumentKeyWord{
 	 * @return link to documentation or <code>null</code> if none defined
 	 */
 	String getLinkToDocumentation();
+
 	
 }

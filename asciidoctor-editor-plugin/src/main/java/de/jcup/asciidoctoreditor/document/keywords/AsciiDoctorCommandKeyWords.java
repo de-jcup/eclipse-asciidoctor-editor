@@ -17,19 +17,23 @@ package de.jcup.asciidoctoreditor.document.keywords;
 
 public enum AsciiDoctorCommandKeyWords implements DocumentKeyWord {
 
-	ICONS(":icons:"),
-
+	IFDEF("https://asciidoctor.org/docs/user-manual/#ifdef-directive"),
+	IFNDEF("https://asciidoctor.org/docs/user-manual/#ifndef-directive"),
+	INCLUDE("https://asciidoctor.org/docs/user-manual/#include-directive"),
+	IMAGE("https://asciidoctor.org/docs/user-manual/#images"),
 	;
 
 	private String text;
+	private String tooltip;
+	private String linkToDocumentation;
 
 	private AsciiDoctorCommandKeyWords() {
 		this(null);
 	}
 
 	private AsciiDoctorCommandKeyWords(String linkToDocumentation) {
-		this.text = name().toLowerCase();
-		this.tooltip = TooltipTextSupport.getTooltipText(text);
+		this.text = name().toLowerCase()+"::";
+		this.tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
 		this.linkToDocumentation = linkToDocumentation;
 	}
 
@@ -43,8 +47,6 @@ public enum AsciiDoctorCommandKeyWords implements DocumentKeyWord {
 		return true;
 	}
 
-	private String tooltip;
-	private String linkToDocumentation;
 
 	@Override
 	public String getTooltip() {
@@ -55,4 +57,5 @@ public enum AsciiDoctorCommandKeyWords implements DocumentKeyWord {
 	public String getLinkToDocumentation() {
 		return linkToDocumentation;
 	}
+
 }

@@ -37,8 +37,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorLanguageKeyWords;
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialVariableKeyWords;
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 
@@ -210,16 +209,24 @@ public class AsciiDoctorEditorSimpleWordContentAssistProcessor implements IConte
 		for (DocumentKeyWord keyword : AsciiDoctorCommandKeyWords.values()) {
 			addKeyWord(keyword);
 		}
-		for (DocumentKeyWord keyword : AsciiDoctorLanguageKeyWords.values()) {
-			addKeyWord(keyword);
-		}
-		for (DocumentKeyWord keyword : AsciiDoctorSpecialVariableKeyWords.values()) {
+		for (DocumentKeyWord keyword : AsciiDoctorSpecialAttributesKeyWords.values()) {
 			addKeyWord(keyword);
 		}
 	}
 
 	protected void addKeyWord(DocumentKeyWord keyword) {
-		simpleWordCompletion.add(keyword.getText());
+		String text = keyword.getText();
+		if (keyword instanceof AsciiDoctorCommandKeyWords){
+			if (keyword==AsciiDoctorCommandKeyWords.INCLUDE){
+				text+="fileName";
+			}else if (keyword==AsciiDoctorCommandKeyWords.IFDEF){
+				text+="attributeName";
+			}else if (keyword==AsciiDoctorCommandKeyWords.IMAGE){
+				text+="imageName";
+			}
+			text+="[]";
+		}
+		simpleWordCompletion.add(text);
 	}
 
 	@Override
