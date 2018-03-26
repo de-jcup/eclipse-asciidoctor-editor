@@ -1,5 +1,7 @@
 ![AscIIDoctor Editor Logo](https://github.com/de-jcup/eclipse-asciidoctor-editor/blob/master/asciidoctor-editor-other/images/asciidoctor-editor-logo.png)
 
+[![Build status:](https://travis-ci.org/de-jcup/eclipse-asciidoctor-editor.svg?branch=master)](https://travis-ci.org/de-jcup/eclipse-asciidoctor-editor)
+
 # In a nutshell
 
 This an eclipse plugin for editing asciidoctor files
