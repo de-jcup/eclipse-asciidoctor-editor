@@ -82,21 +82,20 @@ public class AsciiDoctorEditorHyperlinkDetector extends AbstractHyperlinkDetecto
 			sb.append(c);
 		}
 		String foundText = sb.toString();
-		if (foundText.startsWith("include::")){
-			if (foundText.endsWith(".adoc[]")){
-				String fileName = foundText.substring("include::".length());
-				fileName=fileName.substring(0,fileName.length()-2);
-				Region targetRegion = new Region(offsetLeft, foundText.length());
-				return new IHyperlink[] { new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, fileName, editor) };
-			}
+		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrNull(foundText);
+		if (includeFileName!=null){
+			Region targetRegion = new Region(offsetLeft, foundText.length());
+			return new IHyperlink[] { new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, editor) };
 		}
 		
-		AsciiDoctorHeadline function = editor.findAsciiDoctorFunction(foundText);
-		if (function != null) {
+		AsciiDoctorHeadline headline = editor.findAsciiDoctorHeadline(foundText);
+		if (headline != null) {
 			Region targetRegion = new Region(offsetLeft, foundText.length());
-			return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, function, editor) };
+			return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, headline, editor) };
 		}
 		return null;
 	}
+
+	
 
 }

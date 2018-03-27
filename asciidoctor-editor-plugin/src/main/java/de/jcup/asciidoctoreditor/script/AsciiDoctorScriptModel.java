@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.script;
+package de.jcup.asciidoctoreditor.script;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +24,7 @@ import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 public class AsciiDoctorScriptModel {
 
 	Collection<AsciiDoctorHeadline> headlines = new ArrayList<>();
+	Collection<AsciiDoctorInclude> includes = new ArrayList<>(); 
 	Collection<AsciiDoctorError> errors = new ArrayList<>();
 	List<ParseToken> debugTokenList;
 
@@ -31,29 +32,32 @@ public class AsciiDoctorScriptModel {
 		return headlines;
 	}
 
+	public Collection<AsciiDoctorInclude> getIncludes() {
+		return includes;
+	}
+
 	public Collection<AsciiDoctorError> getErrors() {
 		return errors;
 	}
-	
-	public boolean hasErrors(){
+
+	public boolean hasErrors() {
 		return !getErrors().isEmpty();
 	}
-	
+
 	/**
 	 * Returns a debug token list - if list is null, a new one will be created
+	 * 
 	 * @return debug token list, never <code>null</code>
 	 */
-	public List<ParseToken> getDebugTokens(){
-		if (debugTokenList==null){
-			debugTokenList=new ArrayList<>();
+	public List<ParseToken> getDebugTokens() {
+		if (debugTokenList == null) {
+			debugTokenList = new ArrayList<>();
 		}
 		return debugTokenList;
 	}
-	
+
 	public boolean hasDebugTokens() {
-		return debugTokenList!=null;
+		return debugTokenList != null;
 	}
-	
-	
 
 }

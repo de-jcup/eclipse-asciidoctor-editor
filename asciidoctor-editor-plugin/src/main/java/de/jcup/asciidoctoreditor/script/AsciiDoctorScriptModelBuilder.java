@@ -21,6 +21,7 @@ import java.util.List;
 
 import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 import de.jcup.asciidoctoreditor.script.parser.SimpleHeadlineParser;
+import de.jcup.asciidoctoreditor.script.parser.SimpleIncludeParser;
 import de.jcup.asciidoctoreditor.script.parser.validator.CaseEndsWithEsacValidator;
 import de.jcup.asciidoctoreditor.script.parser.validator.ClosedBlocksValidator;
 import de.jcup.asciidoctoreditor.script.parser.validator.DoEndsWithDoneValidator;
@@ -51,8 +52,12 @@ public class AsciiDoctorScriptModelBuilder {
 
 		SimpleHeadlineParser parser = new SimpleHeadlineParser();
 		Collection<AsciiDoctorHeadline> headlines=parser.parse(asciidoctorScript);
+
+		SimpleIncludeParser includeParser = new SimpleIncludeParser();
+		Collection<AsciiDoctorInclude> includes=includeParser.parse(asciidoctorScript);
 		
 		model.getHeadlines().addAll(headlines);
+		model.getIncludes().addAll(includes);
 		
 		return model;
 	}

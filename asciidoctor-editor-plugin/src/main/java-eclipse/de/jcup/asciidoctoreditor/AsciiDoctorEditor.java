@@ -99,6 +99,7 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
+import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
@@ -212,6 +213,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		uiActionToolBar.add(new RebuildAsciiDocViewAction(this));
 		uiActionToolBar.add(new ToggleLayoutAction(this));
 		uiActionToolBar.add(new ToggleTOCAction(this));
+		uiActionToolBar.add(new JumpToTopOfAsciiDocViewAction(this));
 
 		// Add to the cool bar manager
 		coolBarManager.add(new ToolBarContributionItem(asciiDocActionToolBar, "asciiDocEditor.toolbar.asciiDoc"));
@@ -266,7 +268,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 	}
 
-	public AsciiDoctorHeadline findAsciiDoctorFunction(String functionName) {
+	public AsciiDoctorHeadline findAsciiDoctorHeadline(String functionName) {
 		if (functionName == null) {
 			return null;
 		}
@@ -1016,5 +1018,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	public boolean isTOCShown() {
 		return asciidoctorWrapper.isTocVisible();
+	}
+
+	public void navgigateToTopOfView() {
+		if (browser == null || browser.isDisposed()) {
+			return;
+		}
+		browser.evaluate("scroll(0,0)");
 	}
 }

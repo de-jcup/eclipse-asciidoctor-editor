@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -33,6 +34,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
+import de.jcup.asciidoctoreditor.AsciiDocStringUtils;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.EclipseUtil;
@@ -108,13 +110,39 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 		if (editor == null) {
 			return;
 		}
+		ISelection selection = event.getSelection();
+		
+		if (isAnIncludedAndHandled(selection)){
+			return;
+		}
 		if (linkingWithEditorEnabled) {
 			editor.setFocus();
 			// selection itself is already handled by single click
 			return;
 		}
-		ISelection selection = event.getSelection();
 		editor.openSelectedTreeItemInEditor(selection, true);
+	}
+
+	private boolean isAnIncludedAndHandled(ISelection selection) {
+		if (selection instanceof IStructuredSelection){
+			IStructuredSelection ss = (IStructuredSelection) selection;
+			Object firstElement = ss.getFirstElement();
+			if (firstElement instanceof Item) {
+				Item item = (Item) firstElement;
+				ItemType type = item.getItemType();
+				if (type!=ItemType.INCLUDE){
+					return false;
+				}
+				String fullString = item.getFullString();
+				String fileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrNull(fullString);
+				if (fileName!=null){
+					editor.openInclude(fileName);
+					return true;
+				}
+			}
+			
+		}
+		return false;
 	}
 
 	@Override
@@ -159,6 +187,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 				return;
 			}
 			treeViewer.setInput(model);
+			treeViewer.expandAll(); // we always expand
 		}
 	}
 

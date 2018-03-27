@@ -24,14 +24,15 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 
 import de.jcup.asciidoctoreditor.SimpleStringUtils;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorInclude;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 
 public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvider {
 
 	private static final String ASCIIDOCTOR_SCRIPT_CONTAINS_ERRORS = "AsciiDoctorWrapper script contains errors.";
-	private static final String ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_ANY_FUNCTIONS = "AsciiDoctorWrapper script does not contain any headlines";
-	private static final Object[] RESULT_WHEN_EMPTY = new Object[] { ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_ANY_FUNCTIONS };
+	private static final String ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS = "Your document has no includes or headlines";
+	private static final Object[] RESULT_WHEN_EMPTY = new Object[] { ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS };
 	private Object[] items;
 	private Object monitor = new Object();
 
@@ -82,35 +83,11 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 	private Item[] createItems(AsciiDoctorScriptModel model) {
 		Map<Integer, Item> parents = new HashMap<Integer, Item>();
 		List<Item> list = new ArrayList<>();
-		for (AsciiDoctorHeadline headline : model.getHeadlines()) {
-			Item item = new Item();
-			item.name = headline.getName();
-			int deep = headline.getDeep();
-			item.prefix = "H"+deep+" :";
-			item.type = ItemType.HEADLINE;
-			item.offset = headline.getPosition();
-			item.length = headline.getLengthToNameEnd();
-			item.endOffset = headline.getEnd();
-			/* register as next parent at this deep */
-			parents.put(deep, item);
-			/* when not root deep, try to fetch parent */
-			if (deep>1){
-				Item parent = parents.get(deep-1);
-				if (parent==null){
-					list.add(item);
-					continue;
-				}else{
-					parent.getChildren().add(item);
-					item.parent=parent;
-					/* no add to list */
-				}
-			}else{
-				list.add(item);
-			}
-		}
+		addIncludes(model, list);
+		addHeadlines(model, parents, list);
 		if (list.isEmpty()) {
 			Item item = new Item();
-			item.name = ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_ANY_FUNCTIONS;
+			item.name = ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS;
 			item.type = ItemType.META_INFO;
 			item.offset = 0;
 			item.length = 0;
@@ -141,6 +118,49 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 		}
 		return list.toArray(new Item[list.size()]);
 
+	}
+
+	protected void addIncludes(AsciiDoctorScriptModel model, List<Item> list) {
+		for (AsciiDoctorInclude include : model.getIncludes()) {
+			Item item = new Item();
+			item.name = include.getLabel();
+			item.type = ItemType.INCLUDE;
+			item.offset = include.getPosition();
+			item.length = include.getLengthToNameEnd();
+			item.endOffset = include.getEnd();
+			item.fullString=include.getFullExpression();
+			
+			list.add(item);
+		}
+	}
+
+	protected void addHeadlines(AsciiDoctorScriptModel model, Map<Integer, Item> parents, List<Item> list) {
+		for (AsciiDoctorHeadline headline : model.getHeadlines()) {
+			Item item = new Item();
+			item.name = headline.getName();
+			int deep = headline.getDeep();
+			item.prefix = "H"+deep+":";
+			item.type = ItemType.HEADLINE;
+			item.offset = headline.getPosition();
+			item.length = headline.getLengthToNameEnd();
+			item.endOffset = headline.getEnd();
+			/* register as next parent at this deep */
+			parents.put(deep, item);
+			/* when not root deep, try to fetch parent */
+			if (deep>1){
+				Item parent = parents.get(deep-1);
+				if (parent==null){
+					list.add(item);
+					continue;
+				}else{
+					parent.getChildren().add(item);
+					item.parent=parent;
+					/* no add to list */
+				}
+			}else{
+				list.add(item);
+			}
+		}
 	}
 
 	public void rebuildTree(AsciiDoctorScriptModel model) {

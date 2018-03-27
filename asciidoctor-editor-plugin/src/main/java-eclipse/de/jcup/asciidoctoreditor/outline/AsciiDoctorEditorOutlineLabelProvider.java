@@ -33,7 +33,8 @@ import de.jcup.asciidoctoreditor.outline.ItemType;
 
 public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider {
 
-	private static final String ICON_FUNCTION = "public_co.png";
+	private static final String ICON_HEADLINE = "headline.gif";
+	private static final String ICON_INCLUDE=  "include.gif";
 	private static final String ICON_ERROR ="error_tsk.png";
 	private static final String ICON_INFO ="info_tsk.png";
 
@@ -72,7 +73,9 @@ public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider imp
 
 			switch (type) {
 			case HEADLINE:
-				return getOutlineImage(ICON_FUNCTION);
+				return getOutlineImage(ICON_HEADLINE);
+			case INCLUDE:
+				return getOutlineImage(ICON_INCLUDE);
 			case META_ERROR:
 				return getOutlineImage(ICON_ERROR);
 			case META_INFO:
