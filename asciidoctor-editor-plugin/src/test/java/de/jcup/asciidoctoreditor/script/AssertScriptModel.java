@@ -77,7 +77,7 @@ public class AssertScriptModel {
 		/* assert function available or not */
 		if (found != null) {
 			if (!excpectedFunctionExists) {
-				fail("Did not expect, but script has function with name:" + functionName);
+				fail("Did not expect, but script has function with label:" + functionName);
 			}
 
 			/* assert start if wanted */
@@ -85,7 +85,7 @@ public class AssertScriptModel {
 
 		} else {
 			if (excpectedFunctionExists) {
-				fail("This script has NO function with name:" + functionName+". But it contains following headlines:"+createFunctionStringList());
+				fail("This script has NO function with label:" + functionName+". But it contains following headlines:"+createFunctionStringList());
 			}
 		}
 

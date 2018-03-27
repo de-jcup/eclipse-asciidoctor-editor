@@ -29,6 +29,7 @@ public class Item {
 	
 	List<Item> children=new ArrayList<>();
 	Item parent;
+	String fullString;
 	
 	public List<Item> getChildren() {
 		return children;
@@ -66,7 +67,7 @@ public class Item {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Item:");
-		sb.append("name:");
+		sb.append("label:");
 		sb.append(name);
 		sb.append(",type:");
 		sb.append(type);
@@ -81,5 +82,9 @@ public class Item {
 
 	public String buildSearchString() {
 		return name;
+	}
+	
+	public String getFullString() {
+		return fullString == null ? name : fullString;
 	}
 }

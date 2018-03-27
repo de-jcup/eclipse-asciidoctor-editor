@@ -17,7 +17,9 @@
 
 public enum ItemType {
 	
-	HEADLINE, 
+	HEADLINE,
+	
+	INCLUDE,
 	
 	META_INFO, 
 	

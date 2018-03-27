@@ -15,18 +15,17 @@
  */
  package de.jcup.asciidoctoreditor.script;
 
-public class AsciiDoctorHeadline {
+public class AsciiDoctorInclude {
 
-	String name;
+	String label;
 	int position;
 	int lengthToNameEnd;
 	public int end;
-	private int deep;
+	private String fullExpression;
 	
-	public AsciiDoctorHeadline(int deep, String name, int position, int end, int lengthTonNameEnd){
-		this.deep=deep;
-		this.name=name;
-		
+	public AsciiDoctorInclude(String fullExpression, String target, int position, int end, int lengthTonNameEnd){
+		this.label=target;
+		this.fullExpression=fullExpression;
 		this.position=position;
 		this.end=end;
 		this.lengthToNameEnd=lengthTonNameEnd;
@@ -36,12 +35,8 @@ public class AsciiDoctorHeadline {
 		return lengthToNameEnd;
 	}
 	
-	public int getDeep() {
-		return deep;
-	}
-	
-	public String getName() {
-		return name;
+	public String getLabel() {
+		return label;
 	}
 
 	public int getPosition() {
@@ -54,7 +49,11 @@ public class AsciiDoctorHeadline {
 	
 	@Override
 	public String toString() {
-		return "h"+deep+":"+name+"[pos:"+position+",end:"+end+",lengthToNameEnd:"+lengthToNameEnd+"]";
+		return "include:"+label+"[pos:"+position+",end:"+end+",lengthToNameEnd:"+lengthToNameEnd+"]";
+	}
+
+	public String getFullExpression() {
+		return fullExpression;
 	}
 
 }

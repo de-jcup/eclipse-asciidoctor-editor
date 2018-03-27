@@ -1,8 +1,7 @@
-= Document Title
+= Document Title A
 
-something beyond the title
+== subtitle A1
 
-== subtitle
 
 :icons: font
 
@@ -10,15 +9,12 @@ NOTE: Asciidoctor supports font-based admonition icons, powered by Font Awesome!
 
 WARNING: Don't do this at home... just kidding
 
-= Document Title
-
-== subtitle
 
 
-= Document Title
+= Document Title B
 
-== subtitle
+== subtitle B1
 
-=== subtitle
-==== subtitle
-== subtitlex
+=== subtitle B1.1
+==== subtitle B1.1.1
+== subtitle B2
