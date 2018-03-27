@@ -53,7 +53,7 @@ public class SimpleIncludeParserTest {
 			hasIncludes(2).
 			hasInclude("include::label.txt").
 				withPosition(0).
-				withEnd(178).
+				withEnd(17).
 			and().
 			hasInclude("include::target2.txt").
 				withPosition(31).
