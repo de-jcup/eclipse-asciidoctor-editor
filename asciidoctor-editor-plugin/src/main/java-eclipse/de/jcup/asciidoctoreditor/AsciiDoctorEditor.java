@@ -549,14 +549,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 					} else {
 						foundCode.append(ch);
 					}
-					if (foundCode.length() > 0) {
+					if (foundCode.length() > 1) {
 						break;
 					}
 				}
 				int whitespaceOffsetAdd = whitespaces.length();
 				if ("//".equals(foundCode.toString())) {
 					/* comment before */
-					doc.replace(offset + whitespaceOffsetAdd, 1, "");
+					doc.replace(offset + whitespaceOffsetAdd, 2, "");
 				} else {
 					/* not commented */
 					doc.replace(offset, 0, "//");
