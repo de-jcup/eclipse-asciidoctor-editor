@@ -15,6 +15,7 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import static de.jcup.asciidoctoreditor.EclipseUtil.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferenceConstants.*;
 
 import java.io.BufferedReader;
@@ -102,10 +103,10 @@ import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
+import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
-import static de.jcup.asciidoctoreditor.EclipseUtil.*;
 
 @AdaptedFromEGradle
 public class AsciiDoctorEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
@@ -150,6 +151,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		asciidoctorWrapper = new AsciiDoctorWrapper();
 	}
 
+	public File getTempADFile() {
+		return tempADFile;
+	}
+	
 	@Override
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 		return super.createSourceViewer(parent, ruler, styles);
@@ -205,19 +210,24 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		coolbar.setLayoutData(toolbarGD);
 
-		IToolBarManager asciiDocActionToolBar = new ToolBarManager(coolBarManager.getStyle());
-		asciiDocActionToolBar.add(new NewTableInsertAction(this));
-		asciiDocActionToolBar.add(new NewCodeBlockInsertAction(this));
+		IToolBarManager asciiDocToolBar = new ToolBarManager(coolBarManager.getStyle());
+		asciiDocToolBar.add(new NewTableInsertAction(this));
+		asciiDocToolBar.add(new NewCodeBlockInsertAction(this));
 
-		IToolBarManager uiActionToolBar = new ToolBarManager(coolBarManager.getStyle());
-		uiActionToolBar.add(new RebuildAsciiDocViewAction(this));
-		uiActionToolBar.add(new ToggleLayoutAction(this));
-		uiActionToolBar.add(new ToggleTOCAction(this));
-		uiActionToolBar.add(new JumpToTopOfAsciiDocViewAction(this));
+		IToolBarManager viewToolBar = new ToolBarManager(coolBarManager.getStyle());
+		viewToolBar.add(new RebuildAsciiDocViewAction(this));
+		viewToolBar.add(new ToggleLayoutAction(this));
+		viewToolBar.add(new ToggleTOCAction(this));
+		viewToolBar.add(new JumpToTopOfAsciiDocViewAction(this));
+		
+		IToolBarManager otherToolBar = new ToolBarManager(coolBarManager.getStyle());
+		otherToolBar.add(new OpenInExternalBrowserAction(this));
+		
 
 		// Add to the cool bar manager
-		coolBarManager.add(new ToolBarContributionItem(asciiDocActionToolBar, "asciiDocEditor.toolbar.asciiDoc"));
-		coolBarManager.add(new ToolBarContributionItem(uiActionToolBar, "asciiDocEditor.toolbar.ui"));
+		coolBarManager.add(new ToolBarContributionItem(asciiDocToolBar, "asciiDocEditor.toolbar.asciiDoc"));
+		coolBarManager.add(new ToolBarContributionItem(viewToolBar, "asciiDocEditor.toolbar.view"));
+		coolBarManager.add(new ToolBarContributionItem(otherToolBar, "asciiDocEditor.toolbar.other"));
 
 		if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
 			IToolBarManager debugToolBar = new ToolBarManager(coolBarManager.getStyle());
