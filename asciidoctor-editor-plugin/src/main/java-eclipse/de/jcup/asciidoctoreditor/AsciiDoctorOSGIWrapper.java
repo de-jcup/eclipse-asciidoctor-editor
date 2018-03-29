@@ -5,8 +5,8 @@ import static org.asciidoctor.Asciidoctor.Factory.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 
+import org.apache.commons.io.FileUtils;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.OptionsBuilder;
 import org.eclipse.core.runtime.ICoreRunnable;
@@ -47,6 +47,7 @@ import org.osgi.framework.Bundle;
 public class AsciiDoctorOSGIWrapper {
 
 	private static final String LIBS_PLUGIN_ID = "de.jcup.asciidoctoreditor.libs";
+	private static final String CSS_PLUGIN_ID = "de.jcup.asciidoctoreditor.css";
 	public static final AsciiDoctorOSGIWrapper INSTANCE = new AsciiDoctorOSGIWrapper();
 	private Asciidoctor asciidoctor;
 	private Object monitor = new Object();
@@ -73,7 +74,7 @@ public class AsciiDoctorOSGIWrapper {
 		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
 		ClassLoader libsClassLoader = fetchClassLoader(bundle);
 		
-		initAscIIDoctor(getVersionName(), libsClassLoader);
+		initAscIIDoctor(libsClassLoader);
 		asciidoctor = create(libsClassLoader);
 
 		asciidoctor.requireLibrary("asciidoctor-diagram");
@@ -94,25 +95,37 @@ public class AsciiDoctorOSGIWrapper {
 		
 	}
 
-	public File getUnzipFolder(){
-		String versionName = getVersionName();
+	public File getLibsUnzipFolder(){
+		String versionName = getLibVersionName();
 		return ensureUnzippedRubGemsArtefactsAvailable(versionName);
 	}
 	
-	private String getVersionName() {
+	public File getCSSFolder(){
+		String versionName = getCSSVersionName();
+		return ensureCSSArtefactsAreAvailable(versionName);
+	}
+	
+	private String getLibVersionName() {
 		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
 		String versionName = bundle.getVersion().toString();
 		return versionName;
 	}
+	
+	private String getCSSVersionName() {
+		Bundle bundle = Platform.getBundle(CSS_PLUGIN_ID);
+		String versionName = bundle.getVersion().toString();
+		return versionName;
+	}
 
-	protected void initAscIIDoctor(String versionName, ClassLoader libsClassLoader) {
+	protected void initAscIIDoctor(ClassLoader libsClassLoader) {
 		// https://github.com/asciidoctor/asciidoctorj#using-asciidoctorj-in-an-osgi-environment
 		RubyInstanceConfig config = new RubyInstanceConfig();
 		config.setLoader(libsClassLoader);
-		initializeRubyConfig(versionName, config);
+		initializeRubyConfig(config);
 	}
 
-	private void initializeRubyConfig(String versionName, RubyInstanceConfig config) {
+	private void initializeRubyConfig(RubyInstanceConfig config) {
+		String versionName = getLibVersionName();
 		File unzippedGEMSfolder = ensureUnzippedRubGemsArtefactsAvailable(versionName);
 
 		/* @formatter:off*/
@@ -158,8 +171,7 @@ public class AsciiDoctorOSGIWrapper {
 	}
 
 	private File ensureUnzippedRubGemsArtefactsAvailable(String versionName) {
-		File homeSubFolder = new File(System.getProperty("user.home"), ".eclipse-asciidoctor-editor");
-		File libFolder = new File(homeSubFolder, "libs");
+		File libFolder = getHomeSubSubFolder("libs");
 
 		File unzippedGEMSfolder = new File(libFolder, versionName);
 		if (!unzippedGEMSfolder.exists()) {
@@ -176,6 +188,23 @@ public class AsciiDoctorOSGIWrapper {
 		return unzippedGEMSfolder;
 	}
 	
+	private File ensureCSSArtefactsAreAvailable(String versionName) {
+		File cssFolder = getHomeSubSubFolder("css");
+
+		File targetVersionCSSfolder = new File(cssFolder, versionName);
+		if (!targetVersionCSSfolder.exists()) {
+			targetVersionCSSfolder.mkdirs();
+
+			try {
+				copyFolderOrFail(targetVersionCSSfolder, "css");
+			} catch (IOException e) {
+				throw new IllegalStateException("Not able to install CSS files from css plugin", e);
+			}
+
+		}
+		return targetVersionCSSfolder;
+	}
+	
 
 	private void unzipOrFail(File unzippedGEMSfolder, String zipFileName) throws IOException {
 		File zipFile = EclipseResourceHelper.DEFAULT.getFileInPlugin(zipFileName, LIBS_PLUGIN_ID);
@@ -185,6 +214,24 @@ public class AsciiDoctorOSGIWrapper {
 
 		ZipSupport support = new ZipSupport();
 		support.unzip(zipFile, unzippedGEMSfolder);
+	}
+	
+	private void copyFolderOrFail(File targetFolder, String sourceFolder) throws IOException {
+		File folderInPlugin = EclipseResourceHelper.DEFAULT.getFileInPlugin(sourceFolder, CSS_PLUGIN_ID);
+		if (!folderInPlugin.exists()) {
+			throw new IllegalStateException("folder:" + folderInPlugin.getAbsolutePath() + " does not exist!");
+		}
+
+		FileUtils.copyDirectory(folderInPlugin,targetFolder);
+	}
+
+	private File getHomeSubSubFolder(String name){
+		return new File(getHomeSubFolder(), name);
+	}
+
+	private File getHomeSubFolder() {
+		File homeSubFolder = new File(System.getProperty("user.home"), ".eclipse-asciidoctor-editor");
+		return homeSubFolder;
 	}
 
 }

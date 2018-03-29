@@ -28,7 +28,6 @@ public class AsciiDoctorWrapper {
 	private Path tempFolder;
 	private static FileFilter ADOC_FILE_FILTER = new ADocFilter();
 
-	private EclipseResourceHelper helper;
 	private String cachedImagesPath;
 	private File cachedBaseDir;
 
@@ -36,7 +35,6 @@ public class AsciiDoctorWrapper {
 	private boolean tocVisible;
 
 	public AsciiDoctorWrapper() {
-		this.helper = EclipseResourceHelper.DEFAULT;
 		initTempFolderOrFail();
 	}
 
@@ -48,8 +46,9 @@ public class AsciiDoctorWrapper {
 		String message = getAsciiDoctor().convertFile(asciiDocFile, getDefaultOptions(baseDir, cachedImagesPath));
 		return message;
 	}
-	private Asciidoctor getAsciiDoctor(){
-		return  AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
+
+	private Asciidoctor getAsciiDoctor() {
+		return AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
 	}
 
 	private File findBaseDir(File dir) {
@@ -173,19 +172,14 @@ public class AsciiDoctorWrapper {
 	private String buildPrefixHTML() {
 
 		List<File> list = new ArrayList<>();
-		try {
-			File fontAwesomeCSSfile = helper.getFileInPlugin("css/font-awesome/css/font-awesome.min.css");
-			File dejavouFile = helper.getFileInPlugin("css/dejavu/dejavu.css");
+		File unzipFolder = AsciiDoctorOSGIWrapper.INSTANCE.getLibsUnzipFolder();
+		File cssFolder = AsciiDoctorOSGIWrapper.INSTANCE.getCSSFolder();
 
-			list.add(fontAwesomeCSSfile);
-			list.add(dejavouFile);
-		} catch (IOException e) {
-			String message = "Was not able load additional css data. Cannot render file.";
-			AsciiDoctorEditorUtil.logError(message, e);
-		}
-		File unzipFolder = AsciiDoctorOSGIWrapper.INSTANCE.getUnzipFolder();
 		list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/asciidoctor-default.css"));
 		list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/coderay-asciidoctor.css"));
+		list.add(new File(cssFolder, "/font-awesome/css/font-awesome.min.css"));
+		list.add(new File(cssFolder, "/dejavu/dejavu.css"));
+		list.add(new File(cssFolder, "/MathJax/MathJax.js"));
 
 		StringBuilder prefixSb = new StringBuilder();
 		prefixSb.append("<html>\n");
@@ -196,28 +190,29 @@ public class AsciiDoctorWrapper {
 		prefixSb.append("  <meta name=\"generator\" content=\"Eclipse Asciidoctor Editor\">\n");
 		prefixSb.append("  <title>AsciiDoctor Editor temporary output</title>\n");
 		for (File file : list) {
-			prefixSb.append(createLinkToCSSFile(file));
+			prefixSb.append(createLinkToFile(file));
 		}
 		prefixSb.append("</head>\n");
 		// prefixSb.append("<body >\n");
-		if (tocVisible){
+		if (tocVisible) {
 			prefixSb.append("<body class=\"article toc2 toc-left\">");
-		}else{
+		} else {
 			prefixSb.append("<body class=\"article\" style=\"margin-left:10px\">");
 		}
 		return prefixSb.toString();
 	}
 
-	protected String createLinkToCSSFile(File file) {
-		String pathToCSSFile;
+	protected String createLinkToFile(File file) {
+		String pathToFile;
 		try {
-			pathToCSSFile = file.toURI().toURL().toExternalForm();
+			pathToFile = file.toURI().toURL().toExternalForm();
 		} catch (MalformedURLException e) {
-			pathToCSSFile = file.getAbsolutePath();
+			pathToFile = file.getAbsolutePath();
 		}
-		;
-		String dejavuCssLink = "<link rel=\"stylesheet\" href=\"" + pathToCSSFile + "\">\n";
-		return dejavuCssLink;
+		if (pathToFile.endsWith(".js")) {
+			return "<script type=\"text/javascript\" src=\"" + pathToFile + "\"></script>\n";
+		}
+		return "<link rel=\"stylesheet\" href=\"" + pathToFile + "\">\n";
 	}
 
 	protected void initTempFolderOrFail() {
@@ -322,7 +317,7 @@ public class AsciiDoctorWrapper {
 	public void setTocVisible(boolean tocVisible) {
 		this.tocVisible = tocVisible;
 	}
-	
+
 	public boolean isTocVisible() {
 		return tocVisible;
 	}
