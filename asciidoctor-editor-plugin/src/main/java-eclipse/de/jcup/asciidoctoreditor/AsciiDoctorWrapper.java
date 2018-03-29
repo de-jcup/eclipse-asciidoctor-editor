@@ -26,7 +26,6 @@ import org.asciidoctor.ast.DocumentHeader;
 
 public class AsciiDoctorWrapper {
 	private Path tempFolder;
-	private static Object HTML_PREFIX_MONITOR = new Object();
 	private static FileFilter ADOC_FILE_FILTER = new ADocFilter();
 
 	private EclipseResourceHelper helper;
@@ -35,8 +34,6 @@ public class AsciiDoctorWrapper {
 
 	private Map<String, Object> cachedAttributes;
 	private boolean tocVisible;
-
-	private static String prefixHTML;
 
 	public AsciiDoctorWrapper() {
 		this.helper = EclipseResourceHelper.DEFAULT;
@@ -165,30 +162,12 @@ public class AsciiDoctorWrapper {
 
 	public String buildHTMLWithCSS(String html) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(getPrefixHTML());
+		sb.append(buildPrefixHTML());
 		sb.append(html);
 		sb.append("</body>");
 		sb.append("</html>");
 
 		return sb.toString();
-	}
-
-	private String getPrefixHTML() {
-		synchronized (HTML_PREFIX_MONITOR) {
-			if (EclipseDevelopmentSettings.DEBUG_RELOAD_HTML_PREFIX) {
-				AsciiDoctorEditorUtil
-						.logInfo("Reloading html prefix - for details look into EclipseDevelopmentSettings.java");
-				return buildPrefixHTML();
-			}
-
-			/*
-			 * we build this only one time - so not always reloading necessary
-			 */
-			if (prefixHTML == null) {
-				prefixHTML = buildPrefixHTML();
-			}
-			return prefixHTML;
-		}
 	}
 
 	private String buildPrefixHTML() {
@@ -211,12 +190,21 @@ public class AsciiDoctorWrapper {
 		StringBuilder prefixSb = new StringBuilder();
 		prefixSb.append("<html>\n");
 		prefixSb.append("<head>\n");
+		prefixSb.append("<meta charset=\"UTF-8\">\n");
+		prefixSb.append("  <!--[if IE]><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><![endif]-->\n");
+		prefixSb.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
+		prefixSb.append("  <meta name=\"generator\" content=\"Eclipse Asciidoctor Editor\">\n");
+		prefixSb.append("  <title>AsciiDoctor Editor temporary output</title>\n");
 		for (File file : list) {
 			prefixSb.append(createLinkToCSSFile(file));
 		}
 		prefixSb.append("</head>\n");
 		// prefixSb.append("<body >\n");
-		prefixSb.append("<body class=\"article toc2 toc-left\">");
+		if (tocVisible){
+			prefixSb.append("<body class=\"article toc2 toc-left\">");
+		}else{
+			prefixSb.append("<body class=\"article\" style=\"margin-left:10px\">");
+		}
 		return prefixSb.toString();
 	}
 
@@ -268,7 +256,6 @@ public class AsciiDoctorWrapper {
 		}
 		if (isTocVisible()){
 			attrBuilder.attribute("toc","left");
-//			attrBuilder.attribute("basebackend-html");
 		}
 		if (imagesDir!=null){
 			attrBuilder.imagesDir(imagesDir);
@@ -289,10 +276,9 @@ public class AsciiDoctorWrapper {
 		
 		OptionsBuilder opts = OptionsBuilder.options().
 				toDir(destionationFolder).
-//				destinationDir(destionationFolder).
 				safe(SafeMode.UNSAFE).
 				backend("html5").
-				headerFooter(false).
+				headerFooter(tocVisible).
 				attributes(attrs).
 				option("sourcemap", "true").
 				baseDir(baseDir);
