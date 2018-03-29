@@ -643,6 +643,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 				AsciiDoctorError error = builder.build(errorMessage);
 				safeBrowserSetText(htmlSb.toString());
 				AsciiDoctorEditorUtil.addScriptError(AsciiDoctorEditor.this, -1, error, IMarker.SEVERITY_ERROR);
+				AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:"+e.getMessage(),e);
 			});
 			return;
 		}
