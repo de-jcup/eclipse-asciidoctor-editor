@@ -74,7 +74,7 @@ public class AsciiDoctorOSGIWrapper {
 		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
 		ClassLoader libsClassLoader = fetchClassLoader(bundle);
 		
-		initAscIIDoctor(libsClassLoader);
+		initAsciidoctor(libsClassLoader);
 		asciidoctor = create(libsClassLoader);
 
 		asciidoctor.requireLibrary("asciidoctor-diagram");
@@ -117,7 +117,7 @@ public class AsciiDoctorOSGIWrapper {
 		return versionName;
 	}
 
-	protected void initAscIIDoctor(ClassLoader libsClassLoader) {
+	protected void initAsciidoctor(ClassLoader libsClassLoader) {
 		// https://github.com/asciidoctor/asciidoctorj#using-asciidoctorj-in-an-osgi-environment
 		RubyInstanceConfig config = new RubyInstanceConfig();
 		config.setLoader(libsClassLoader);
