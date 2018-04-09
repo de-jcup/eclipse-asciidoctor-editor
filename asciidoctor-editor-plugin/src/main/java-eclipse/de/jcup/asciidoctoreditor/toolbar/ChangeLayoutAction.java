@@ -2,7 +2,6 @@ package de.jcup.asciidoctoreditor.toolbar;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -33,10 +32,10 @@ public class ChangeLayoutAction extends ToolbarAction implements IMenuCreator {
 
 	private void initUI() {
 		setMenuCreator(this);
-		initImage();
+		initImageAndText();
 	}
 
-	private void initImage() {
+	private void initImageAndText() {
 		if (asciiDoctorEditor.isPreviewVisible()) {
 			setImageDescriptor(this.asciiDoctorEditor.isVerticalSplit() ? IMG_LAYOUT_VERTICAL : IMG_LAYOUT_HORIZONTAL);
 			setText(this.asciiDoctorEditor.isVerticalSplit() ? SWITCH_TO_VERTICAL_LAYOUT: SWITCH_TO_HORIZONTAL_LAYOUT);
@@ -68,20 +67,20 @@ public class ChangeLayoutAction extends ToolbarAction implements IMenuCreator {
 			public void run() {
 				asciiDoctorEditor.setVerticalSplit(false);
 				asciiDoctorEditor.setPreviewVisible(true);
-				initImage();
+				initImageAndText();
 			}
 		};
 		Action switchToVertical = new Action(SWITCH_TO_VERTICAL_LAYOUT, IMG_LAYOUT_VERTICAL) {
 			public void run() {
 				asciiDoctorEditor.setVerticalSplit(true);
 				asciiDoctorEditor.setPreviewVisible(true);
-				initImage();
+				initImageAndText();
 			}
 		};
 		Action switchToExternal = new Action(SWITCH_TO_EXTERNAL_LAYOUT, IMG_LAYOUT_EXTERNAL) {
 			public void run() {
 				asciiDoctorEditor.setPreviewVisible(false);
-				initImage();
+				initImageAndText();
 			}
 		};
 

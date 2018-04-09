@@ -217,8 +217,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		asciiDocToolBar.add(new NewCodeBlockInsertAction(this));
 
 		IToolBarManager viewToolBar = new ToolBarManager(coolBarManager.getStyle());
-		// ToolItem dropDown = new ToolItem(viewToolBar, SWT.DROP_DOWN);
-		// viewToolBar.add(dropDown);
 		viewToolBar.add(new ChangeLayoutAction(this));
 		viewToolBar.add(new RebuildAsciiDocViewAction(this));
 		viewToolBar.add(new ToggleTOCAction(this));
