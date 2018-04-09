@@ -45,7 +45,6 @@ http://mrhaki.blogspot.de/2014/12/awesome-asciidoctor-span-cell-over-rows.html
 [options="header",cols="1,2,2"]
 |===
    |Name|Link  | Description
-   |Source     | https://github.com/de-jcup/eclipse-asciidoctor-editor                   | GIT repositories
+   |Source     | https://github.com/de-jcup/eclipse-asciidoctor-editor      | GIT 
    |Wiki       | https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki | Wiki
-                                             |Faraday PROD Server (SSH tunnel for port 5985 necessary)
 |===

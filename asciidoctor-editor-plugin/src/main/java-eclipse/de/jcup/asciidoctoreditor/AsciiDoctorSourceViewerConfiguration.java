@@ -101,7 +101,6 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		Assert.isNotNull(colorManager, " adaptable must support color manager");
 		defaultTextAttribute = new TextAttribute(
 				colorManager.getColor(getPreferences().getColor(COLOR_NORMAL_TEXT)));
-		/* FIXME ATR, 16.03.2018: currently the mono setup is not working! */
 
 		this.adaptable = adaptable;
 

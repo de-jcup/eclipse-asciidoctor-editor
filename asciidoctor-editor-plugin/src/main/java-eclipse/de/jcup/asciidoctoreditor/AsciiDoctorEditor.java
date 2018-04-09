@@ -100,12 +100,12 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
+import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
-import de.jcup.asciidoctoreditor.toolbar.ToggleLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
 
 @AdaptedFromEGradle
@@ -145,6 +145,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private CoolBarManager coolBarManager;
 
+	private boolean previewVisible=true;
+
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
@@ -154,7 +156,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	public File getTempADFile() {
 		return tempADFile;
 	}
-	
+
 	@Override
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 		return super.createSourceViewer(parent, ruler, styles);
@@ -215,14 +217,15 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		asciiDocToolBar.add(new NewCodeBlockInsertAction(this));
 
 		IToolBarManager viewToolBar = new ToolBarManager(coolBarManager.getStyle());
+		// ToolItem dropDown = new ToolItem(viewToolBar, SWT.DROP_DOWN);
+		// viewToolBar.add(dropDown);
+		viewToolBar.add(new ChangeLayoutAction(this));
 		viewToolBar.add(new RebuildAsciiDocViewAction(this));
-		viewToolBar.add(new ToggleLayoutAction(this));
 		viewToolBar.add(new ToggleTOCAction(this));
 		viewToolBar.add(new JumpToTopOfAsciiDocViewAction(this));
-		
+
 		IToolBarManager otherToolBar = new ToolBarManager(coolBarManager.getStyle());
 		otherToolBar.add(new OpenInExternalBrowserAction(this));
-		
 
 		// Add to the cool bar manager
 		coolBarManager.add(new ToolBarContributionItem(asciiDocToolBar, "asciiDocEditor.toolbar.asciiDoc"));
@@ -643,7 +646,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 				AsciiDoctorError error = builder.build(errorMessage);
 				safeBrowserSetText(htmlSb.toString());
 				AsciiDoctorEditorUtil.addScriptError(AsciiDoctorEditor.this, -1, error, IMarker.SEVERITY_ERROR);
-				AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:"+e.getMessage(),e);
+				AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:" + e.getMessage(), e);
 			});
 			return;
 		}
@@ -1036,5 +1039,22 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			return;
 		}
 		browser.evaluate("scroll(0,0)");
+	}
+
+	public void setPreviewVisible(boolean visible) {
+		if (browser == null || browser.isDisposed()) {
+			return;
+		}
+		this.previewVisible=visible;
+		boolean isVisible = browser.isVisible();
+		if (isVisible == visible) {
+			return;
+		}
+		browser.setVisible(visible);
+		sashForm.layout(); // after this the browser will be hidden/shown ... otherwise we got an empty space appearing
+	}
+
+	public boolean isPreviewVisible() {
+		return previewVisible;
 	}
 }
