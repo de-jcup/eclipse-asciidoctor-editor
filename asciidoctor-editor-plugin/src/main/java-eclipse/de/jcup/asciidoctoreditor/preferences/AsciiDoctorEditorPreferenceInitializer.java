@@ -24,6 +24,7 @@ import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationP
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import de.jcup.asciidoctoreditor.PreviewLayout;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 
 /**
@@ -52,11 +53,16 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 
 		store.setDefault(P_CODE_ASSIST_ADD_KEYWORDS.getId(), true);
 		store.setDefault(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(), true);
-		
-		/* +++++++++++++++++++ */
-		/* + Tooltips        + */
-		/* +++++++++++++++++++ */
+
+		/* ++++++++++++ */
+		/* + Tooltips + */
+		/* ++++++++++++ */
 		store.setDefault(P_TOOLTIPS_ENABLED.getId(), true);
+
+		/* +++++++++++ */
+		/* + Preview + */
+		/* +++++++++++ */
+		store.setDefault(P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT.getId(), PreviewLayout.VERTICAL.getId());
 
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */

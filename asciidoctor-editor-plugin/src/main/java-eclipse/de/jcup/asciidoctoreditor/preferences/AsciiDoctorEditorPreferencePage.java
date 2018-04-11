@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -35,6 +36,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+
+import de.jcup.asciidoctoreditor.PreviewLayout;
 
 /**
  * Parts are inspired by <a href=
@@ -59,6 +62,8 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	private BooleanFieldEditor codeAssistWithAsciiDoctorKeywords;
 	private BooleanFieldEditor codeAssistWithSimpleWords;
 	private BooleanFieldEditor toolTipsEnabled;
+
+	private ComboFieldEditor previewDefaultTypeRadioButton;
 
 	public AsciiDoctorEditorPreferencePage() {
 		super(GRID);
@@ -95,6 +100,22 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		appearanceComposite.setLayout(layout);
+
+		Composite uiComposite = new Composite(appearanceComposite, SWT.NONE);
+		GridLayout uiLayout = new GridLayout();
+		uiLayout.marginWidth = 0;
+		uiLayout.marginHeight = 0;
+		uiComposite.setLayout(uiLayout);
+
+		String[][] entryNamesAndValues = new String[][] {
+				new String[] { "Vertical", PreviewLayout.VERTICAL.getId() },
+				new String[] { "Horizontal", PreviewLayout.HORIZONTAL.getId()},
+				new String[] { "Hide preview, use external browser", PreviewLayout.EXTERNAL_BROWSER.getId() } };
+		/* @formatter:on */
+		previewDefaultTypeRadioButton = new ComboFieldEditor(P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT.getId(), "Default preview layout",
+				entryNamesAndValues, uiComposite);
+
+		addField(previewDefaultTypeRadioButton);
 
 		/* OTHER */
 		Composite otherComposite = new Composite(appearanceComposite, SWT.NONE);

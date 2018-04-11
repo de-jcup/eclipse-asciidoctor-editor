@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 
+import org.asciidoctor.internal.AsciidoctorUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -91,6 +92,7 @@ import de.jcup.asciidoctoreditor.outline.AsciiDoctorContentOutlinePage;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorQuickOutlineDialog;
 import de.jcup.asciidoctoreditor.outline.Item;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
@@ -164,7 +166,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	@Override
 	public void createPartControl(Composite parent) {
-
+		
 		GridLayout topGridLayout = new GridLayout();
 		topGridLayout.numColumns = 1;
 		topGridLayout.marginWidth = 0;
@@ -186,6 +188,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		super.createPartControl(sashForm);
 
 		initBrowser(sashForm);
+		initToolbar(); // init after browser creation so we toolbar icons are set depending on browser visible or not...
 
 		Control adapter = getAdapter(Control.class);
 		if (adapter instanceof StyledText) {
@@ -204,14 +207,17 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		setTitleImageInitial();
 		updateAsciiDocView();
 	}
-
+	
 	protected void createToolbar() {
 		coolBarManager = new CoolBarManager(SWT.FLAT | SWT.HORIZONTAL);
 		CoolBar coolbar = coolBarManager.createControl(topComposite);
 		GridData toolbarGD = new GridData(GridData.FILL_HORIZONTAL);
 
 		coolbar.setLayoutData(toolbarGD);
-
+	}
+	
+	protected void initToolbar() {
+		
 		IToolBarManager asciiDocToolBar = new ToolBarManager(coolBarManager.getStyle());
 		asciiDocToolBar.add(new NewTableInsertAction(this));
 		asciiDocToolBar.add(new NewCodeBlockInsertAction(this));
@@ -221,7 +227,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		viewToolBar.add(new RebuildAsciiDocViewAction(this));
 		viewToolBar.add(new ToggleTOCAction(this));
 		viewToolBar.add(new JumpToTopOfAsciiDocViewAction(this));
-
+		
 		IToolBarManager otherToolBar = new ToolBarManager(coolBarManager.getStyle());
 		otherToolBar.add(new OpenInExternalBrowserAction(this));
 
@@ -236,8 +242,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
 		}
 		coolBarManager.update(true);
-
+		
 	}
+	
 
 	public void setVerticalSplit(boolean verticalSplit) {
 		/*
@@ -721,6 +728,17 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 					monitor.done();
 				}
 			});
+			
+			String layoutMode = AsciiDoctorEditorPreferences.getInstance().getStringPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT);
+			PreviewLayout layout = PreviewLayout.fromId(layoutMode);
+			if (layout == null){
+				layout = PreviewLayout.VERTICAL;
+			}
+			if (layout.isExternal()){
+				setPreviewVisible(false);
+			}else{
+				setVerticalSplit(layout.isVertical());
+			}			
 			job.schedule();
 
 		} catch (SWTError e) {
