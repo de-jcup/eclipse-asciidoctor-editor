@@ -159,9 +159,9 @@ public class AsciiDoctorWrapper {
 		return html;
 	}
 
-	public String buildHTMLWithCSS(String html) {
+	public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(buildPrefixHTML());
+		sb.append(buildPrefixHTML(refreshAutomaticallyInSeconds));
 		sb.append(html);
 		sb.append("</body>");
 		sb.append("</html>");
@@ -169,7 +169,7 @@ public class AsciiDoctorWrapper {
 		return sb.toString();
 	}
 
-	private String buildPrefixHTML() {
+	private String buildPrefixHTML(int refreshAutomaticallyInSeconds) {
 
 		List<File> list = new ArrayList<>();
 		File unzipFolder = AsciiDoctorOSGIWrapper.INSTANCE.getLibsUnzipFolder();
@@ -184,20 +184,36 @@ public class AsciiDoctorWrapper {
 		StringBuilder prefixSb = new StringBuilder();
 		prefixSb.append("<html>\n");
 		prefixSb.append("<head>\n");
-		prefixSb.append("<meta charset=\"UTF-8\">\n");
+		prefixSb.append("  <meta charset=\"UTF-8\">\n");
 		prefixSb.append("  <!--[if IE]><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><![endif]-->\n");
 		prefixSb.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
 		prefixSb.append("  <meta name=\"generator\" content=\"Eclipse Asciidoctor Editor\">\n");
+		String bodyOnload = null;
+		if (refreshAutomaticallyInSeconds > 0) {
+			prefixSb.append("<script>\n");
+			prefixSb.append("function pageloadEvery(t) {\n");
+			prefixSb.append("setTimeout('location.reload(true)', t);\n");
+			prefixSb.append("}\n");
+			prefixSb.append("</script>\n");
+			prefixSb.append("  <meta http-equiv=\"refresh\" content=\"" + refreshAutomaticallyInSeconds + "\">");
+			bodyOnload="onload=\"javascript:pageloadEvery("+refreshAutomaticallyInSeconds*1000+");\"";
+		}
 		prefixSb.append("  <title>AsciiDoctor Editor temporary output</title>\n");
 		for (File file : list) {
 			prefixSb.append(createLinkToFile(file));
 		}
 		prefixSb.append("</head>\n");
+		
 		// prefixSb.append("<body >\n");
+		prefixSb.append("<body ");
+		if (bodyOnload!=null){
+			prefixSb.append(bodyOnload);
+			prefixSb.append(" ");
+		}
 		if (tocVisible) {
-			prefixSb.append("<body class=\"article toc2 toc-left\">");
+			prefixSb.append("class=\"article toc2 toc-left\">");
 		} else {
-			prefixSb.append("<body class=\"article\" style=\"margin-left:10px\">");
+			prefixSb.append("class=\"article\" style=\"margin-left:10px\">");
 		}
 		return prefixSb.toString();
 	}
