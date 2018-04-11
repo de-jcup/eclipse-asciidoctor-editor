@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.PreviewLayout;
 
 public class ChangeLayoutAction extends ToolbarAction implements IMenuCreator {
 

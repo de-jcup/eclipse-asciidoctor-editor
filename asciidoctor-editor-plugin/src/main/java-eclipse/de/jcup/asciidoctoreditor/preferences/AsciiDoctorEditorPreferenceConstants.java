@@ -36,6 +36,8 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	
 	P_TOOLTIPS_ENABLED("toolTipsEnabled"),
 	
+	P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT("newEditorPreviewLayout"),
+	
 	;
 
 	private String id;
