@@ -28,7 +28,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 
-import org.asciidoctor.internal.AsciidoctorUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -59,7 +58,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
@@ -70,7 +68,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -86,6 +83,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
+import de.jcup.asciidoctoreditor.BrowserAccess.BrowserContentInitializer;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorContentOutlinePage;
@@ -127,7 +125,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
 	private AsciiDoctorWrapper asciidoctorWrapper;
 	private String bgColor;
-	private Browser browser;
+
 	private String fgColor;
 	private boolean ignoreNextCaretMove;
 	private int lastCaretPosition;
@@ -141,13 +139,15 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private File tempADFile;
 
+	private BrowserAccess browserAccess;
+
 	private SashForm sashForm;
 
 	private Composite topComposite;
 
 	private CoolBarManager coolBarManager;
 
-	private boolean previewVisible=true;
+	private boolean previewVisible;
 
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
@@ -166,7 +166,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	@Override
 	public void createPartControl(Composite parent) {
-		
+
 		GridLayout topGridLayout = new GridLayout();
 		topGridLayout.numColumns = 1;
 		topGridLayout.marginWidth = 0;
@@ -187,8 +187,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		super.createPartControl(sashForm);
 
-		initBrowser(sashForm);
-		initToolbar(); // init after browser creation so we toolbar icons are set depending on browser visible or not...
+		browserAccess = new BrowserAccess(sashForm);
+		initPreview(sashForm);
+		initToolbar(); // init after browser creation so we toolbar icons are
+						// set depending on browser visible or not...
 
 		Control adapter = getAdapter(Control.class);
 		if (adapter instanceof StyledText) {
@@ -207,7 +209,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		setTitleImageInitial();
 		updateAsciiDocView();
 	}
-	
+
 	protected void createToolbar() {
 		coolBarManager = new CoolBarManager(SWT.FLAT | SWT.HORIZONTAL);
 		CoolBar coolbar = coolBarManager.createControl(topComposite);
@@ -215,9 +217,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		coolbar.setLayoutData(toolbarGD);
 	}
-	
+
 	protected void initToolbar() {
-		
+
 		IToolBarManager asciiDocToolBar = new ToolBarManager(coolBarManager.getStyle());
 		asciiDocToolBar.add(new NewTableInsertAction(this));
 		asciiDocToolBar.add(new NewCodeBlockInsertAction(this));
@@ -227,7 +229,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		viewToolBar.add(new RebuildAsciiDocViewAction(this));
 		viewToolBar.add(new ToggleTOCAction(this));
 		viewToolBar.add(new JumpToTopOfAsciiDocViewAction(this));
-		
+
 		IToolBarManager otherToolBar = new ToolBarManager(coolBarManager.getStyle());
 		otherToolBar.add(new OpenInExternalBrowserAction(this));
 
@@ -242,9 +244,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
 		}
 		coolBarManager.update(true);
-		
+
 	}
-	
 
 	public void setVerticalSplit(boolean verticalSplit) {
 		/*
@@ -277,11 +278,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	@Override
 	public void dispose() {
 		super.dispose();
-		if (browser != null) {
-			if (!browser.isDisposed()) {
-				browser.dispose();
-			}
-		}
+		browserAccess.dispose();
+
 		asciidoctorWrapper.dispose();
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 	}
@@ -593,18 +591,17 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	public void updateAsciiDocView() {
-		if (browser == null) {
-			return;
-		}
-		if (browser.isDisposed()) {
-			return;
-		}
+		
 		if (tempADFile == null) {
 			return;
 		}
 		buildTemporaryHTMLFile();
+		if (!isPreviewVisible()) {
+			/* do not update the internal browser... */
+			return;
+		}
 		ensureBrowserShowsURL();
-		browser.refresh();
+		browserAccess.refresh();
 
 	}
 
@@ -618,15 +615,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		String html = null;
 		try {
 			String content = null;
+			int refreshAutomaticallyInSeconds = getTimeToRefresh();
 			if (editorFile == null) {
 				String asciiDoc = getDocumentText();
 				content = asciidoctorWrapper.convertToHTML(asciiDoc);
-				html = asciidoctorWrapper.buildHTMLWithCSS(content);
+				html = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
 			} else {
 				/* content exists as simple file */
 				asciidoctorWrapper.convertToHTML(editorFile);
 				content = readFileCreatedByAsciiDoctor();
-				html = asciidoctorWrapper.buildHTMLWithCSS(content);
+				html = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
 			}
 
 		} catch (RuntimeException e) {
@@ -649,7 +647,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 				String errorMessage = SimpleExceptionUtils.getRootMessage(e);
 				AsciiDoctorErrorBuilder builder = new AsciiDoctorErrorBuilder();
 				AsciiDoctorError error = builder.build(errorMessage);
-				safeBrowserSetText(htmlSb.toString());
+				browserAccess.safeBrowserSetText(htmlSb.toString());
 				AsciiDoctorEditorUtil.addScriptError(AsciiDoctorEditor.this, -1, error, IMarker.SEVERITY_ERROR);
 				AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:" + e.getMessage(), e);
 			});
@@ -715,93 +713,87 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		return editorFile;
 	}
 
-	protected void initBrowser(SashForm sashForm) {
-		try {
-			browser = new Browser(sashForm, SWT.CENTER);
-			safeBrowserSetText("Initializing...");
-			Job job = Job.create("Init browser", new ICoreRunnable() {
+	protected PreviewLayout getLayoutMode() {
 
-				@Override
-				public void run(IProgressMonitor monitor) throws CoreException {
-					monitor.beginTask("Initializing browser", IProgressMonitor.UNKNOWN);
-					initBrowserContent();
-					monitor.done();
-				}
-			});
-			
-			String layoutMode = AsciiDoctorEditorPreferences.getInstance().getStringPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT);
-			PreviewLayout layout = PreviewLayout.fromId(layoutMode);
-			if (layout == null){
-				layout = PreviewLayout.VERTICAL;
-			}
-			if (layout.isExternal()){
-				setPreviewVisible(false);
-			}else{
-				setVerticalSplit(layout.isVertical());
-			}			
-			job.schedule();
-
-		} catch (SWTError e) {
-			MessageBox messageBox = new MessageBox(getActiveWorkbenchShell(), SWT.ICON_ERROR | SWT.OK);
-			messageBox.setMessage("Browser cannot be initialized.");
-			messageBox.setText("Exit");
-			messageBox.open();
-			return;
+		String layoutMode = AsciiDoctorEditorPreferences.getInstance()
+				.getStringPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT);
+		PreviewLayout layout = PreviewLayout.fromId(layoutMode);
+		if (layout == null) {
+			layout = PreviewLayout.VERTICAL;
 		}
-
+		return layout;
 	}
 
-	protected void safeBrowserSetText(String html) {
-		if (browser == null) {
-			return;
-		}
-		if (browser.isDisposed()) {
-			return;
-		}
-		browser.setText(html);
-	}
-
-	private void initBrowserContent() {
+	protected void initPreview(SashForm sashForm) {
 		tempADFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), true);
 		if (tempADFile == null || !tempADFile.exists()) {
 			/*
 			 * can happen when eclipse restarts and editor opens - new temp
 			 * folder shows to non existing file...
 			 */
-			buildTemporaryHTMLFile();
+			Job job = Job.create("Initialize asciidoctor output", new ICoreRunnable() {
+				
+				@Override
+				public void run(IProgressMonitor monitor) throws CoreException {
+					monitor.beginTask("Initializing temporary html output", IProgressMonitor.UNKNOWN);
+					buildTemporaryHTMLFile();
+					monitor.done();
+				}
+			});
+			job.schedule();
 		}
-		if (tempADFile == null || !tempADFile.exists()) {
-			/* it was not possible to recreate the temp ad file */
-			safeAsyncExec(() -> safeBrowserSetText(""));
+		
+		PreviewLayout layout = getLayoutMode();
+		if (layout.isExternal()) {
+			setPreviewVisible(false);
 		} else {
-			ensureBrowserShowsURL();
+			setPreviewVisible(true);
+			setVerticalSplit(layout.isVertical());
 		}
 	}
 
+	protected int getTimeToRefresh() {
+		if (isPreviewVisible()) {
+			/*
+			 * we do not use the auto refresh when the standard preview is
+			 * visible - maybe this could lead to problems in internal view - we
+			 * avoid this.
+			 */
+			return 0;
+		}
+		/*
+		 * okay external browser is used... we update currently every 5 seconds
+		 */
+		return 5;
+	}
+
 	protected void ensureBrowserShowsURL() {
+		if (!isPreviewVisible()) {
+			return;
+		}
 		safeAsyncExec(() -> {
 
 			try {
 				if (tempADFile == null || !tempADFile.exists()) {
-					safeBrowserSetText("");
+					browserAccess.safeBrowserSetText("");
 					return;
 				}
 				URL url = tempADFile.toURI().toURL();
-				String foundURL = browser.getUrl();
+				String foundURL = browserAccess.getUrl();
 				try {
-					URL formerURL = new URL(browser.getUrl());
+					URL formerURL = new URL(browserAccess.getUrl());
 					foundURL = formerURL.toExternalForm();
 				} catch (MalformedURLException e) {
 					/* ignore - about pages etc. */
 				}
 				String externalForm = url.toExternalForm();
 				if (!externalForm.equals(foundURL)) {
-					browser.setUrl(externalForm);
+					browserAccess.setUrl(externalForm);
 				}
 
 			} catch (MalformedURLException e) {
 				AsciiDoctorEditorUtil.logError("Was not able to use malformed URL", e);
-				safeBrowserSetText("");
+				browserAccess.safeBrowserSetText("");
 			}
 		});
 	}
@@ -1050,27 +1042,46 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		return asciidoctorWrapper.isTocVisible();
 	}
 
-	public void navgigateToTopOfView() {
-		if (browser == null || browser.isDisposed()) {
-			return;
-		}
-		browser.evaluate("scroll(0,0)");
-	}
-
 	public void setPreviewVisible(boolean visible) {
-		if (browser == null || browser.isDisposed()) {
+		if (this.previewVisible == visible) {
+			/* as before - ignore */
 			return;
 		}
-		this.previewVisible=visible;
-		boolean isVisible = browser.isVisible();
-		if (isVisible == visible) {
-			return;
+		this.previewVisible = visible;
+		browserAccess.setEnabled(previewVisible);
+		if (previewVisible){
+			browserAccess.ensureBrowser(new BrowserContentInitializer() {
+				
+				@Override
+				public void initialize(Browser browser) {
+					if (tempADFile == null || !tempADFile.exists()) {
+						/* it was not possible to recreate the temp ad file */
+						safeAsyncExec(() -> browserAccess.safeBrowserSetText(""));
+					} else {
+						ensureBrowserShowsURL();
+					}
+					
+				}
+			});
 		}
-		browser.setVisible(visible);
-		sashForm.layout(); // after this the browser will be hidden/shown ... otherwise we got an empty space appearing
+		sashForm.layout(); // after this the browser will be hidden/shown ...
+							// otherwise we got an empty space appearing
+
+		/*
+		 * update asciidoc view - necessary to create html for preview variant.
+		 * the internal variants do NOT use meta-info reload mechanism to avoid
+		 * flickering etc.! External browser variant is using this to have an
+		 * auto reload! Here is the single point where the switch is done, so we
+		 * need this
+		 */
+		updateAsciiDocView();
 	}
 
 	public boolean isPreviewVisible() {
 		return previewVisible;
+	}
+
+	public void navgigateToTopOfView() {
+		browserAccess.navgigateToTopOfView();
 	}
 }
