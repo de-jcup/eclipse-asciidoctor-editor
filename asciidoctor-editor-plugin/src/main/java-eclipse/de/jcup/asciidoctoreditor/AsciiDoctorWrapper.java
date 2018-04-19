@@ -163,6 +163,9 @@ public class AsciiDoctorWrapper {
 		StringBuilder sb = new StringBuilder();
 		sb.append(buildPrefixHTML(refreshAutomaticallyInSeconds));
 		sb.append(html);
+		if (refreshAutomaticallyInSeconds > 0) {
+			sb.append("<script type=\"text/javascript\">pageloadEvery("+refreshAutomaticallyInSeconds*1000+");</script>");
+		}
 		sb.append("</body>");
 		sb.append("</html>");
 
@@ -174,12 +177,14 @@ public class AsciiDoctorWrapper {
 		List<File> list = new ArrayList<>();
 		File unzipFolder = AsciiDoctorOSGIWrapper.INSTANCE.getLibsUnzipFolder();
 		File cssFolder = AsciiDoctorOSGIWrapper.INSTANCE.getCSSFolder();
+		File addonsFolder = AsciiDoctorOSGIWrapper.INSTANCE.getAddonsFolder();
 
 		list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/asciidoctor-default.css"));
 		list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/coderay-asciidoctor.css"));
 		list.add(new File(cssFolder, "/font-awesome/css/font-awesome.min.css"));
 		list.add(new File(cssFolder, "/dejavu/dejavu.css"));
 		list.add(new File(cssFolder, "/MathJax/MathJax.js"));
+		list.add(new File(addonsFolder, "/javascript/document-autorefresh.js"));
 
 		StringBuilder prefixSb = new StringBuilder();
 		prefixSb.append("<html>\n");
@@ -189,27 +194,18 @@ public class AsciiDoctorWrapper {
 		prefixSb.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
 		prefixSb.append("  <meta name=\"generator\" content=\"Eclipse Asciidoctor Editor\">\n");
 		String bodyOnload = null;
-		if (refreshAutomaticallyInSeconds > 0) {
-			prefixSb.append("<script>\n");
-			prefixSb.append("function pageloadEvery(t) {\n");
-			prefixSb.append("setTimeout('location.reload(true)', t);\n");
-			prefixSb.append("}\n");
-			prefixSb.append("</script>\n");
-			prefixSb.append("  <meta http-equiv=\"refresh\" content=\"" + refreshAutomaticallyInSeconds + "\">");
-			bodyOnload="onload=\"javascript:pageloadEvery("+refreshAutomaticallyInSeconds*1000+");\"";
-		}
+//		if (refreshAutomaticallyInSeconds > 0) {
+////			prefixSb.append("  <meta http-equiv=\"refresh\" content=\"" + refreshAutomaticallyInSeconds + "\">");
+//			bodyOnload="onload=\"javascript:pageloadEvery("+refreshAutomaticallyInSeconds*1000+");\"";
+//		}
 		prefixSb.append("  <title>AsciiDoctor Editor temporary output</title>\n");
 		for (File file : list) {
 			prefixSb.append(createLinkToFile(file));
 		}
 		prefixSb.append("</head>\n");
 		
-		// prefixSb.append("<body >\n");
+		
 		prefixSb.append("<body ");
-		if (bodyOnload!=null){
-			prefixSb.append(bodyOnload);
-			prefixSb.append(" ");
-		}
 		if (tocVisible) {
 			prefixSb.append("class=\"article toc2 toc-left\">");
 		} else {

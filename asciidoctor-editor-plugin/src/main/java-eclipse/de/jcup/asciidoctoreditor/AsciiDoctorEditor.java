@@ -727,10 +727,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	protected void initPreview(SashForm sashForm) {
 		tempADFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), true);
 		if (tempADFile == null || !tempADFile.exists()) {
-			/*
-			 * can happen when eclipse restarts and editor opens - new temp
-			 * folder shows to non existing file...
-			 */
 			Job job = Job.create("Initialize asciidoctor output", new ICoreRunnable() {
 				
 				@Override

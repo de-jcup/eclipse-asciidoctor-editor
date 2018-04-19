@@ -105,14 +105,23 @@ public class AsciiDoctorOSGIWrapper {
 		return ensureCSSArtefactsAreAvailable(versionName);
 	}
 	
+	public File getAddonsFolder(){
+		return ensureEditorAddonsAreAvailable();
+	}
+	
+	private String getEditorVersionName() {
+		return getPluginVersion(AsciiDoctorEditorActivator.PLUGIN_ID);
+	}
 	private String getLibVersionName() {
-		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
-		String versionName = bundle.getVersion().toString();
-		return versionName;
+		return getPluginVersion(LIBS_PLUGIN_ID);
 	}
 	
 	private String getCSSVersionName() {
-		Bundle bundle = Platform.getBundle(CSS_PLUGIN_ID);
+		return getPluginVersion(CSS_PLUGIN_ID);
+	}
+	
+	private String getPluginVersion(String pluginId){
+		Bundle bundle = Platform.getBundle(pluginId);
 		String versionName = bundle.getVersion().toString();
 		return versionName;
 	}
@@ -196,7 +205,7 @@ public class AsciiDoctorOSGIWrapper {
 			targetVersionCSSfolder.mkdirs();
 
 			try {
-				copyFolderOrFail(targetVersionCSSfolder, "css");
+				copyFolderOrFail(targetVersionCSSfolder, "css",CSS_PLUGIN_ID);
 			} catch (IOException e) {
 				throw new IllegalStateException("Not able to install CSS files from css plugin", e);
 			}
@@ -205,6 +214,23 @@ public class AsciiDoctorOSGIWrapper {
 		return targetVersionCSSfolder;
 	}
 	
+	private File ensureEditorAddonsAreAvailable() {
+		String versionName = getEditorVersionName();
+		File cssFolder = getHomeSubSubFolder("addons");
+
+		File targetVersionAddonsfolder = new File(cssFolder, versionName);
+		if (!targetVersionAddonsfolder.exists()) {
+			targetVersionAddonsfolder.mkdirs();
+
+			try {
+				copyFolderOrFail(targetVersionAddonsfolder, "addons",AsciiDoctorEditorActivator.PLUGIN_ID);
+			} catch (IOException e) {
+				throw new IllegalStateException("Not able to install addon files from editor plugin", e);
+			}
+
+		}
+		return targetVersionAddonsfolder;
+	}
 
 	private void unzipOrFail(File unzippedGEMSfolder, String zipFileName) throws IOException {
 		File zipFile = EclipseResourceHelper.DEFAULT.getFileInPlugin(zipFileName, LIBS_PLUGIN_ID);
@@ -216,8 +242,8 @@ public class AsciiDoctorOSGIWrapper {
 		support.unzip(zipFile, unzippedGEMSfolder);
 	}
 	
-	private void copyFolderOrFail(File targetFolder, String sourceFolder) throws IOException {
-		File folderInPlugin = EclipseResourceHelper.DEFAULT.getFileInPlugin(sourceFolder, CSS_PLUGIN_ID);
+	private void copyFolderOrFail(File targetFolder, String sourceFolder, String pluginID) throws IOException {
+		File folderInPlugin = EclipseResourceHelper.DEFAULT.getFileInPlugin(sourceFolder, pluginID);
 		if (!folderInPlugin.exists()) {
 			throw new IllegalStateException("folder:" + folderInPlugin.getAbsolutePath() + " does not exist!");
 		}
