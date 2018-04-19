@@ -9,7 +9,6 @@ public class ToggleTOCAction extends ToolbarAction {
 	private static ImageDescriptor IMG_TOC_SHOW = createToolbarImageDescriptor("toc_show.png");
 	private static ImageDescriptor IMG_TOC_HIDE = createToolbarImageDescriptor("toc_hide.png");
 
-
 	public ToggleTOCAction(AsciiDoctorEditor asciiDoctorEditor) {
 		super(asciiDoctorEditor);
 		initUI();
@@ -27,11 +26,11 @@ public class ToggleTOCAction extends ToolbarAction {
 	}
 
 	private void initImage() {
-		setImageDescriptor(this.asciiDoctorEditor.isTOCShown() ? IMG_TOC_HIDE : IMG_TOC_SHOW);
+		setImageDescriptor(this.asciiDoctorEditor.isTOCShown() ? IMG_TOC_SHOW : IMG_TOC_HIDE);
 	}
 
 	private void initText() {
-		setText(this.asciiDoctorEditor.isTOCShown() ? "Click to hide TOC" : "Click to show TOC");
+		setText(this.asciiDoctorEditor.isTOCShown() ? "TOC is shown" : "TOC is hidden");
 	}
 
 }
