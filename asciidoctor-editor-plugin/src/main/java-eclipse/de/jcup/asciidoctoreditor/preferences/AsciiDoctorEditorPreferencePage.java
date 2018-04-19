@@ -123,7 +123,6 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		addField(previewDefaultTypeRadioButton);
 
 		
-		//autorefreshSeconds = new ScaleFieldEditor(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), "Auto refresh (in seconds)", uiComposite,0,30,1,10);
 		autorefreshSeconds=new IntegerFieldEditor(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), "Auto refresh (in seconds)", uiComposite);
 		autorefreshSeconds.setValidRange(0, 30);
 		autorefreshSeconds.setTextLimit(2);
