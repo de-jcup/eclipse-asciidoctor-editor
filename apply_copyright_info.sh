@@ -12,7 +12,7 @@ find -iname \*.java | while read file ; do
 if ! grep -q Copyright $file
   then
     echo -e "${BROWN}$file${NC} - ${LIGHT_GREEN}appending copyright.${NC}"
-	cat basheditor-other/copyright-java.txt $file >$file.new && mv $file.new $file
+	cat asciidoctor-editor-other/copyright-java.txt $file >$file.new && mv $file.new $file
 fi
 
 done
