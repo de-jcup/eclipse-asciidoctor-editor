@@ -760,7 +760,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		/*
 		 * okay external browser is used... we update currently every 5 seconds
 		 */
-		return 5;
+		return AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
 	}
 
 	protected void ensureBrowserShowsURL() {

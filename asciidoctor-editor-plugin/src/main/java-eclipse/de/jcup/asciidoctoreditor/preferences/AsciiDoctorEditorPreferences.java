@@ -169,6 +169,10 @@ public class AsciiDoctorEditorPreferences {
 		return INSTANCE;
 	}
 
+	public int getAutoRefreshInSecondsForExternalBrowser() {
+		return getPreferenceStore().getInt(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId());
+	}
+
 	
 
 }
