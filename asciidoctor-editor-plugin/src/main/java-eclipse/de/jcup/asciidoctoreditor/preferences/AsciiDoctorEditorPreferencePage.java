@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
+import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IntegerFieldEditor;
+import org.eclipse.jface.preference.ScaleFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -64,6 +67,8 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	private BooleanFieldEditor toolTipsEnabled;
 
 	private ComboFieldEditor previewDefaultTypeRadioButton;
+	
+	private IntegerFieldEditor autorefreshSeconds;
 
 	public AsciiDoctorEditorPreferencePage() {
 		super(GRID);
@@ -117,6 +122,14 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
 		addField(previewDefaultTypeRadioButton);
 
+		
+		//autorefreshSeconds = new ScaleFieldEditor(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), "Auto refresh (in seconds)", uiComposite,0,30,1,10);
+		autorefreshSeconds=new IntegerFieldEditor(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), "Auto refresh (in seconds)", uiComposite);
+		autorefreshSeconds.setValidRange(0, 30);
+		autorefreshSeconds.setTextLimit(2);
+		autorefreshSeconds.getLabelControl(uiComposite).setToolTipText("This setup is for external browser preview only. 0 will turn off auto refresh.");
+		addField(autorefreshSeconds);
+		
 		/* OTHER */
 		Composite otherComposite = new Composite(appearanceComposite, SWT.NONE);
 		GridLayout otherLayout = new GridLayout();

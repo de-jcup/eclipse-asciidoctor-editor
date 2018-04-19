@@ -193,11 +193,6 @@ public class AsciiDoctorWrapper {
 		prefixSb.append("  <!--[if IE]><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><![endif]-->\n");
 		prefixSb.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
 		prefixSb.append("  <meta name=\"generator\" content=\"Eclipse Asciidoctor Editor\">\n");
-		String bodyOnload = null;
-//		if (refreshAutomaticallyInSeconds > 0) {
-////			prefixSb.append("  <meta http-equiv=\"refresh\" content=\"" + refreshAutomaticallyInSeconds + "\">");
-//			bodyOnload="onload=\"javascript:pageloadEvery("+refreshAutomaticallyInSeconds*1000+");\"";
-//		}
 		prefixSb.append("  <title>AsciiDoctor Editor temporary output</title>\n");
 		for (File file : list) {
 			prefixSb.append(createLinkToFile(file));
