@@ -1,33 +1,577 @@
-== Diagram test scenario
-=== graphviz
+== Plantuml dialog test scenario
+=== Use case diagram
+http://plantuml.com/use-case-diagram
 
-[graphviz, dot-example, svg]
+==== Use case diagram 1
+[plantuml, sample-plantuml-diagram-u1, alt="Use case diagram 1"]
+---- 
+@startuml
+:Main Admin: as Admin
+(Use the application) as (Use)
+
+User -> (Start)
+User --> (Use)
+
+Admin ---> (Use)
+
+note right of Admin : This is an example.
+
+note right of (Use)
+  A note can also
+  be on several lines
+end note
+
+note "This note is connected\nto several objects." as N2
+(Start) .. N2
+N2 .. (Use)
+@enduml
+---- 
+==== Use case diagram 2
+[plantuml, sample-plantuml-diagram-u2, alt="Use case diagram 2"]
 ----
-digraph g {
-    a -> b
-    b -> c
-    c -> d
-    d -> a
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+actor customer
+actor clerk
+rectangle checkout {
+  customer -- (checkout)
+  (checkout) .> (payment) : include
+  (help) .> (checkout) : extends
+  (checkout) -- clerk
 }
+@enduml 
+---- 
+
+=== Class diagram
+http://plantuml.com/class-diagram
+
+==== Class diagram 1
+[[main-classes]]
+.The PlantUML block extension class
+[plantuml, sample-plantuml-diagram-c1, alt="Class diagram 1"]
+----
+class BlockProcessor
+class PlantUmlBlock
+BlockProcessor <|-- PlantUmlBlock
+----
+==== Class diagram 2
+[plantuml, sample-plantuml-diagram-c2, alt="Class diagram 2"]
+---- 
+@startuml
+
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+
+class ArrayList {
+  Object[] elementData
+  size()
+}
+
+enum TimeUnit {
+  DAYS
+  HOURS
+  MINUTES
+}
+
+annotation SuppressWarnings
+
+@enduml
+---- 
+==== Class diagram 3
+[plantuml, sample-plantuml-diagram-c3, alt="Class diagram 3"]
+---- 
+@startuml
+class Foo1 {
+  You can use
+  several lines
+  ..
+  as you want
+  and group
+  ==
+  things together.
+  __
+  You can have as many groups
+  as you want
+  --
+  End of class
+}
+
+class User {
+  .. Simple Getter ..
+  + getName()
+  + getAddress()
+  .. Some setter ..
+  + setName()
+  __ private data __
+  int age
+  -- encrypted --
+  String password
+}
+
+@enduml
+---- 
+==== Class diagram 4
+[plantuml, sample-plantuml-diagram-c4, alt="Class diagram 4"]
+---- 
+@startuml
+class Object << general >>
+Object <|--- ArrayList
+
+note top of Object : In java, every class\nextends this one.
+
+note "This is a floating note" as N1
+note "This note is connected\nto several objects." as N2
+Object .. N2
+N2 .. ArrayList
+
+class Foo
+note left: On last defined class
+
+@enduml
+---- 
+
+=== Activity diagram
+http://plantuml.com/sequence-diagram
+
+==== Activity diagram 1
+[plantuml, sample-plantuml-diagram-a1, alt="Activity diagram 1"]
+----
+@startuml
+
+(*) --> "First Activity"
+"First Activity" --> (*)
+
+@enduml
+---- 
+
+==== Activity diagram 2
+[plantuml, sample-plantuml-diagram-a2]
+----
+@startuml
+
+(*) --> "First Activity"
+-->[You can put also labels] "Second Activity"
+--> (*)
+
+@enduml
+---- 
+==== Activity diagram 3
+[plantuml, sample-plantuml-diagram-a3]
+----
+@startuml
+
+(*) -up-> "First Activity"
+-right-> "Second Activity"
+--> "Third Activity"
+-left-> (*)
+
+@enduml
+---- 
+==== Activity diagram 4
+[plantuml, sample-plantuml-diagram-a4]
+----
+@startuml
+title Servlet Container
+
+(*) --> "ClickServlet.handleRequest()"
+--> "new Page"
+
+if "Page.onSecurityCheck" then
+  ->[true] "Page.onInit()"
+  
+  if "isForward?" then
+   ->[no] "Process controls"
+   
+   if "continue processing?" then
+     -->[yes] ===RENDERING===
+   else
+     -->[no] ===REDIRECT_CHECK===
+   endif
+   
+  else
+   -->[yes] ===RENDERING===
+  endif
+  
+  if "is Post?" then
+    -->[yes] "Page.onPost()"
+    --> "Page.onRender()" as render
+    --> ===REDIRECT_CHECK===
+  else
+    -->[no] "Page.onGet()"
+    --> render
+  endif
+  
+else
+  -->[false] ===REDIRECT_CHECK===
+endif
+
+if "Do redirect?" then
+ ->[yes] "redirect request"
+ --> ==BEFORE_DESTROY===
+else
+ if "Do Forward?" then
+  -left->[yes] "Forward request"
+  --> ==BEFORE_DESTROY===
+ else
+  -right->[no] "Render page template"
+  --> ==BEFORE_DESTROY===
+ endif
+endif
+
+--> "Page.onDestroy()"
+-->(*)
+
+@enduml
+----
+=== Activity diagram (new syntax) 
+http://plantuml.com/activity-diagram-beta
+==== Activity diagram 5
+[plantuml, sample-plantuml-diagram-a5]
+----
+@startuml
+start
+:Hello world;
+:This is defined on
+several **lines**;
+stop
+@enduml
+----
+==== Activity diagram 6
+[plantuml, sample-plantuml-diagram-a6]
+----
+@startuml
+start
+if (condition A) then (yes)
+  :Text 1;
+elseif (condition B) then (yes)
+  :Text 2;
+  stop
+elseif (condition C) then (yes)
+  :Text 3;
+elseif (condition D) then (yes)
+  :Text 4;
+else (nothing)
+  :Text else;
+endif
+stop
+@enduml
+---- 
+=== Sequence diagram
+http://plantuml.com/sequence-diagram
+
+==== Sequence diagram 1
+[plantuml, sample-plantuml-diagram2, alt="Sequence diagram 1"]
+----
+@startuml
+Alice -> Bob: Authentication Request
+Bob --> Alice: Authentication Response
+
+Alice -> Bob: Another authentication Request
+Alice <-- Bob: another authentication Response
+@enduml
+----
+==== Sequence diagram 2
+[plantuml, sample-plantuml-diagram3, alt="Sequence diagram 2"]
+----
+@startuml
+actor Foo1
+boundary Foo2
+control Foo3
+entity Foo4
+database Foo5
+collections Foo6
+Foo1 -> Foo2 : To boundary
+Foo1 -> Foo3 : To control
+Foo1 -> Foo4 : To entity
+Foo1 -> Foo5 : To database
+Foo1 -> Foo6 : To collections
+
+@enduml
+----
+==== Sequence diagram 3
+[plantuml, sample-plantuml-diagram4, alt="Sequence diagram 3"]
+----
+@startuml
+actor Bob #red
+' The only difference between actor
+'and participant is the drawing
+participant Alice
+participant "I have a really\nlong name" as L #99FF99
+/' You can also declare:
+   participant L as "I have a really\nlong name"  #99FF99
+  '/
+
+Alice->Bob: Authentication Request
+Bob->Alice: Authentication Response
+Bob->L: Log transaction
+@enduml
+----
+==== Sequence diagram 4
+[plantuml, sample-plantuml-diagram5, alt="Sequence diagram 4"]
+----
+@startuml
+Bob ->x Alice
+Bob -> Alice
+Bob ->> Alice
+Bob -\ Alice
+Bob \\- Alice
+Bob //-- Alice
+
+Bob ->o Alice
+Bob o\\-- Alice
+
+Bob <-> Alice
+Bob <->o Alice
+@enduml
+----
+==== Sequence diagram 5
+[plantuml, sample-plantuml-diagram6, alt="Sequence diagram 5"]
+----
+@startuml
+Alice -> "Bob()" : Hello
+"Bob()" -> "This is very\nlong" as Long
+' You can also declare:
+' "Bob()" -> Long as "This is very\nlong"
+Long --> "Bob()" : ok
+@enduml
+
 ----
 
-=== ditaa
-[ditaa]
+==== Sequence diagram 6
+[plantuml, sample-plantuml-diagram7, alt="Sequence diagram 6"]
 ----
-                   +-------------+
-                   | Asciidoctor |-------+
-                   |  Diagram    |       |
-                   +-------------+       | PNG out
-                       ^                 |
-                       | ditaa in        |
-                       |                 v
- +--------+   +--------+----+    /----------------\
- |        | --+ Asciidoctor +--> |                |
- |  Text  |   +-------------+    |Beautiful output|
- |Document|   |   !magic!   |    |                |
- |     {d}|   |             |    |                |
- +---+----+   +-------------+    \----------------/
-     :                                   ^
-     |          Lots of work             |
-     +-----------------------------------+
+@startuml
+Alice->Alice: This is a signal to self.\nIt also demonstrates\nmultiline \ntext
+@enduml
+---- 
+
+==== Sequence diagram 7
+[plantuml, sample-plantuml-diagram8, alt="Sequence diagram 7", width=200, height=118]
+----
+@startuml
+Alice -> Bob: Authentication Request
+
+alt successful case
+
+	Bob -> Alice: Authentication Accepted
+	
+else some kind of failure
+
+	Bob -> Alice: Authentication Failure
+	group My own label
+		Alice -> Log : Log attack start
+	    loop 1000 times
+	        Alice -> Bob: DNS Attack
+	    end
+		Alice -> Log : Log attack end
+	end
+	
+else Another type of failure
+
+   Bob -> Alice: Please repeat
+   
+end
+@enduml
+---- 
+
+==== Sequence diagram 8
+[plantuml, sample-plantuml-diagram9, alt="Sequence diagram 8", width=200, height=118]
+----
+@startuml
+Alice->Bob : hello
+note left: this is a first note
+
+Bob->Alice : ok
+note right: this is another note
+
+Bob->Bob : I am thinking
+note left
+	a note
+	can also be defined
+	on several lines
+end note
+@enduml
+---- 
+==== Sequence diagram 9
+[plantuml, sample-plantuml-diagram10, alt="Sequence diagram 9", width=600, height=500]
+----
+@startuml
+participant Alice
+participant "The **Famous** Bob" as Bob
+
+Alice -> Bob : hello --there--
+... Some ~~long delay~~ ...
+Bob -> Alice : ok
+note left
+  This is **bold**
+  This is //italics//
+  This is ""monospaced""
+  This is --stroked--
+  This is __underlined__
+  This is ~~waved~~
+end note
+
+Alice -> Bob : A //well formatted// message
+note right of Alice 
+ This is <back:cadetblue><size:18>displayed</size></back> 
+ __left of__ Alice. 
+end note
+note left of Bob 
+ <u:red>This</u> is <color #118888>displayed</color> 
+ **<color purple>left of</color> <s:red>Alice</strike> Bob**. 
+end note
+note over Alice, Bob
+ <w:#FF33FF>This is hosted</w> by <img sourceforge.jpg>
+end note 
+@enduml
+----
+==== Sequence diagram 10
+[plantuml, sample-plantuml-diagram11, alt="Sequence diagram 10"]
+----
+@startuml
+participant User
+
+User -> A: DoWork
+activate A #FFBBBB
+
+A -> A: Internal call
+activate A #DarkSalmon
+
+A -> B: << createRequest >>
+activate B
+
+B --> A: RequestCreated
+deactivate B
+deactivate A
+A -> User: Done
+deactivate A
+
+@enduml
+----
+==== Sequence diagram 11
+[plantuml, sample-plantuml-diagram12, alt="Sequence diagram 11"]
+----
+@startuml
+Bob -> Alice : hello
+
+create Other
+Alice -> Other : new
+
+create control String
+Alice -> String
+note right : You can also put notes!
+
+Alice --> Bob : ok
+
+@enduml
+----
+==== Sequence diagram 12
+[plantuml, sample-plantuml-diagram13, alt="Sequence diagram 12"]
+----
+@startuml
+
+box "Internal Service" #LightBlue
+	participant Bob
+	participant Alice
+end box
+participant Other
+
+Bob -> Alice : hello
+Alice -> Other : hello
+
+@enduml
+----
+==== Sequence diagram 13 (skin param A)
+[plantuml, sample-plantuml-diagram14, alt="Sequence diagram 13"]
+----
+
+@startuml
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 20
+skinparam maxmessagesize 60
+skinparam sequenceParticipant underline
+
+actor User
+participant "First Class" as A
+participant "Second Class" as B
+participant "Last Class" as C
+
+User -> A: DoWork
+activate A
+
+A -> B: Create Request
+activate B
+
+B -> C: DoWork
+activate C
+C --> B: WorkDone
+destroy C
+
+B --> A: Request Created
+deactivate B
+
+A --> User: Done
+deactivate A
+
+@enduml
+---- 
+
+==== Sequence diagram 14 (skin param B)
+[plantuml, sample-plantuml-diagram15, alt="Sequence diagram 14"]
+----
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+
+skinparam sequence {
+	ArrowColor DeepSkyBlue
+	ActorBorderColor DeepSkyBlue
+	LifeLineBorderColor blue
+	LifeLineBackgroundColor #A9DCDF
+	
+	ParticipantBorderColor DeepSkyBlue
+	ParticipantBackgroundColor DodgerBlue
+	ParticipantFontName Impact
+	ParticipantFontSize 17
+	ParticipantFontColor #A9DCDF
+	
+	ActorBackgroundColor aqua
+	ActorFontColor DeepSkyBlue
+	ActorFontSize 17
+	ActorFontName Aapex
+}
+
+actor User
+participant "First Class" as A
+participant "Second Class" as B
+participant "Last Class" as C
+
+User -> A: DoWork
+activate A
+
+A -> B: Create Request
+activate B
+
+B -> C: DoWork
+activate C
+C --> B: WorkDone
+destroy C
+
+B --> A: Request Created
+deactivate B
+
+A --> User: Done
+deactivate A
+
+@enduml
 ----

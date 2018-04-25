@@ -1,7 +1,7 @@
-== Diagram test scenario
-=== graphviz
+== Graphviz Diagrams (dot)
+=== Example1
 
-[graphviz, dot-example, svg]
+[graphviz, dot-example-1, svg]
 ----
 digraph g {
     a -> b
@@ -11,23 +11,52 @@ digraph g {
 }
 ----
 
-=== ditaa
-[ditaa]
+==== Example2
+https://gist.github.com/nicerobot/8379371
+[graphviz, dot-example-2, svg]
 ----
-                   +-------------+
-                   | Asciidoctor |-------+
-                   |  Diagram    |       |
-                   +-------------+       | PNG out
-                       ^                 |
-                       | ditaa in        |
-                       |                 v
- +--------+   +--------+----+    /----------------\
- |        | --+ Asciidoctor +--> |                |
- |  Text  |   +-------------+    |Beautiful output|
- |Document|   |   !magic!   |    |                |
- |     {d}|   |             |    |                |
- +---+----+   +-------------+    \----------------/
-     :                                   ^
-     |          Lots of work             |
-     +-----------------------------------+
+digraph G {
+	mode = hier
+
+	start [shape = ellipse];
+	end [shape = ellipse];
+
+	process [shape = box];
+	task [shape = box];
+	action [shape = box];
+	operation [shape = box];
+	alternate [shape = box, style = rounded];
+	manual [shape = invtrapezium];
+
+	decision [shape = diamond];
+
+	connector [shape = circle];
+	6 [shape = circle, width = .4, fixedsize = true];
+	offpage [shape = invhouse];
+
+	delay [shape = cds];
+
+	input [shape = parallelogram];
+	manualinput [shape = house];
+	output [shape = parallelogram];
+	display [shape = egg];
+
+	document [shape = folder];
+	documents [shape = box3d];
+	storage [shape = doublecircle];
+
+	start   -> process;
+	process -> task;
+	task    -> action;
+	action  -> decision;
+	decision -> input [label="yes"];
+	decision -> manualinput [label="no"];
+	manualinput -> display;
+
+	display -> end;
+	input -> end;
+
+	overlap=false
+	sep = 1.5
+}
 ----

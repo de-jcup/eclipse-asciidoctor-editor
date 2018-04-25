@@ -1,4 +1,15 @@
 == Diagram test scenario
+
+=== plantuml
+[[main-classes]]
+.The PlantUML block extension class
+[plantuml, sample-plantuml-diagram, alt="Class diagram", width=135, height=118]
+----
+class BlockProcessor
+class PlantUmlBlock
+BlockProcessor <|-- PlantUmlBlock
+----
+
 === graphviz
 
 [graphviz, dot-example, svg]
@@ -17,7 +28,7 @@ digraph g {
                    +-------------+
                    | Asciidoctor |-------+
                    |  Diagram    |       |
-                   +-------------+       | PNG out
+                   +-------------+       | PNG out...
                        ^                 |
                        | ditaa in        |
                        |                 v
@@ -31,3 +42,4 @@ digraph g {
      |          Lots of work             |
      +-----------------------------------+
 ----
+
