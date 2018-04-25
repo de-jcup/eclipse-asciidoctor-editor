@@ -152,7 +152,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
-		asciidoctorWrapper = new AsciiDoctorWrapper();
+		asciidoctorWrapper = new AsciiDoctorWrapper(AsciiDoctorEclipseLogAdapter.INSTANCE);
 	}
 
 	public File getTempADFile() {
@@ -591,7 +591,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	public void updateAsciiDocView() {
-		
+
 		if (tempADFile == null) {
 			return;
 		}
@@ -610,24 +610,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void buildTemporaryHTMLFile() {
-		safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(AsciiDoctorEditor.this));
-		File editorFile = getEditorFile();
 		String html = null;
 		try {
-			String content = null;
-			int refreshAutomaticallyInSeconds = getTimeToRefresh();
-			if (editorFile == null) {
-				String asciiDoc = getDocumentText();
-				content = asciidoctorWrapper.convertToHTML(asciiDoc);
-				html = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
-			} else {
-				/* content exists as simple file */
-				asciidoctorWrapper.convertToHTML(editorFile);
-				content = readFileCreatedByAsciiDoctor();
-				html = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
-			}
-
-		} catch (RuntimeException e) {
+			safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(AsciiDoctorEditor.this));
+			File editorFile = getEditorFile();
+			html = createHTML(editorFile);
+		} catch (Throwable e) {
+			/*
+			 * Normally I would do a catch(Exception e), but we must use
+			 * catch(Throwable t) here. Reason (at least eclipse neon) we got
+			 * full eclipse editor tab freeze problem when a jruby class not
+			 * found error occurs!
+			 */
 			/*
 			 * This means the ASCIIDOCTOR wrapper was not able to convert - so
 			 * we have to clean the former ouptput and show up a marker for
@@ -644,7 +638,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 			safeAsyncExec(() -> {
 
-				String errorMessage = SimpleExceptionUtils.getRootMessage(e);
+				String errorMessage = e.getClass().getSimpleName()+": "+SimpleExceptionUtils.getRootMessage(e);
 				AsciiDoctorErrorBuilder builder = new AsciiDoctorErrorBuilder();
 				AsciiDoctorError error = builder.build(errorMessage);
 				browserAccess.safeBrowserSetText(htmlSb.toString());
@@ -660,6 +654,23 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		} catch (IOException e1) {
 			AsciiDoctorEditorUtil.logError("Was not able to save temporary file for preview!", e1);
 		}
+	}
+
+	private String createHTML(File editorFile) throws Exception {
+		String html;
+		String content = null;
+		int refreshAutomaticallyInSeconds = getTimeToRefresh();
+		if (editorFile == null) {
+			String asciiDoc = getDocumentText();
+			content = asciidoctorWrapper.convertToHTML(asciiDoc);
+			html = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
+		} else {
+			/* content exists as simple file */
+			asciidoctorWrapper.convertToHTML(editorFile);
+			content = readFileCreatedByAsciiDoctor();
+			html = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
+		}
+		return html;
 	}
 
 	protected String readFileCreatedByAsciiDoctor() {
@@ -728,7 +739,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		tempADFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), true);
 		if (tempADFile == null || !tempADFile.exists()) {
 			Job job = Job.create("Initialize asciidoctor output", new ICoreRunnable() {
-				
+
 				@Override
 				public void run(IProgressMonitor monitor) throws CoreException {
 					monitor.beginTask("Initializing temporary html output", IProgressMonitor.UNKNOWN);
@@ -738,7 +749,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			});
 			job.schedule();
 		}
-		
+
 		PreviewLayout layout = getLayoutMode();
 		if (layout.isExternal()) {
 			setPreviewVisible(false);
@@ -1045,9 +1056,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 		this.previewVisible = visible;
 		browserAccess.setEnabled(previewVisible);
-		if (previewVisible){
+		if (previewVisible) {
 			browserAccess.ensureBrowser(new BrowserContentInitializer() {
-				
+
 				@Override
 				public void initialize(Browser browser) {
 					if (tempADFile == null || !tempADFile.exists()) {
@@ -1056,7 +1067,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 					} else {
 						ensureBrowserShowsURL();
 					}
-					
+
 				}
 			});
 		}

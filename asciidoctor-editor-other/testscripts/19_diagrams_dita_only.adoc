@@ -1,0 +1,33 @@
+== Diagram test scenario
+=== graphviz
+
+[graphviz, dot-example, svg]
+----
+digraph g {
+    a -> b
+    b -> c
+    c -> d
+    d -> a
+}
+----
+
+=== ditaa
+[ditaa]
+----
+                   +-------------+
+                   | Asciidoctor |-------+
+                   |  Diagram    |       |
+                   +-------------+       | PNG out
+                       ^                 |
+                       | ditaa in        |
+                       |                 v
+ +--------+   +--------+----+    /----------------\
+ |        | --+ Asciidoctor +--> |                |
+ |  Text  |   +-------------+    |Beautiful output|
+ |Document|   |   !magic!   |    |                |
+ |     {d}|   |             |    |                |
+ +---+----+   +-------------+    \----------------/
+     :                                   ^
+     |          Lots of work             |
+     +-----------------------------------+
+----

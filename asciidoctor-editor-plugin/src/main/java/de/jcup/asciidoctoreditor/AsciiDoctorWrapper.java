@@ -48,18 +48,27 @@ public class AsciiDoctorWrapper {
 
 	private Map<String, Object> cachedAttributes;
 	private boolean tocVisible;
+	private LogAdapter logAdapter;
 
-	public AsciiDoctorWrapper() {
+	public AsciiDoctorWrapper(LogAdapter logAdapter) {
+		if (logAdapter==null){
+			throw new IllegalArgumentException("log adapter may not be null!");
+		}
+		this.logAdapter=logAdapter;
 		initTempFolderOrFail();
 	}
 
-	public String convertToHTML(File asciiDocFile) {
+	public void convertToHTML(File asciiDocFile) throws Exception{
 		File baseDir = findBaseDir(asciiDocFile.getParentFile());
 		if (cachedImagesPath == null) {
 			cachedImagesPath = resolveImagesDirPath(baseDir);
 		}
-		String message = getAsciiDoctor().convertFile(asciiDocFile, getDefaultOptions(baseDir, cachedImagesPath));
-		return message;
+		try{
+			getAsciiDoctor().convertFile(asciiDocFile, getDefaultOptions(baseDir, cachedImagesPath));
+		}catch(Exception e){
+			logAdapter.logError("Cannot convert to html:"+asciiDocFile, e);
+			throw e;
+		}
 	}
 
 	private Asciidoctor getAsciiDoctor() {
@@ -166,12 +175,17 @@ public class AsciiDoctorWrapper {
 	 * 
 	 * @param asciiDoc
 	 * @return html string
+	 * @throws Exception 
 	 */
-	public String convertToHTML(String asciiDoc) {
+	public String convertToHTML(String asciiDoc)  throws Exception{
 		File baseFile = new File(".");
 		String imagesPath = asciiDoc.indexOf(":imagesDir") == -1 ? baseFile.getAbsolutePath() : null;
-		String html = getAsciiDoctor().convert(asciiDoc, getDefaultOptions(baseFile, imagesPath));
-		return html;
+		try{
+			return getAsciiDoctor().convert(asciiDoc, getDefaultOptions(baseFile, imagesPath));
+		}catch(Exception e){
+			logAdapter.logError("Cannot convert html from string", e);
+			throw e;
+		}
 	}
 
 	public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
