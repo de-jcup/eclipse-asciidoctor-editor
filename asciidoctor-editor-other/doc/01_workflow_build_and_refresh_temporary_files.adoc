@@ -1,0 +1,60 @@
+=== Diagram 1
+[ditaa]
+----
+     
+   +-----------------------------------+ 
+   | Eclipse restart with opened Files | 
+   +-----------------------------------+
+                             | when not already temp file exist
+                             v  
+   +------+ opens  +-----------------------------------+   ++++++++++++++++++++++++++++
+   | User |------->| Editor triggers full HTML rebuild |-->+ Show progress of rebuild +
+   +-+----+ File   +-----------------------------------+   ++++++++++++++++++++++++++++
+     |                 ^                            |
+     |  press refresh  |                            |      +------------------------------------------+
+     +-----------------+                            +----->+ Build + copy files                       +
+     |                 ^                                   + inside eclipse Job                       + 
+     |                 |                                   + when not already running for temp folder +
+     |  saves file     |                                   +------------------------------------------+
+     |                 |                                              |
+     +-----------------+                                              v
+     |                                                     ++++++++++++++++++++++
+     |                                                     + Show output in     +
+     |                                                     + preview if enabled +
+     |                                                     ++++++++++++++++++++++
+     |                         +----------------------------------------------+
+     |                         |  this should not lead to another rebuild!    |
+     |                         | instead there must be already two different  |
+     |                         | files being generated+                       |
+     |                         +----------------------------------------------+
+     |   changes layout                    ^
+     |   to external                       |  
+     +-------------------------------------+ 
+----
+
+
+
+//
+//==== Sequence diagram
+//[plantuml, sample-plantuml-diagram11, alt="Sequence diagram  workflow"]
+//----
+//@startuml
+//participant User
+//
+//User -> MainThread: Opens editor
+//activate MainThread #FFBBBB
+//
+//MainThread -> MainThread: Internal call
+//activate MainThread #DarkSalmon
+//
+//MainThread -> Job: << create temporary files >>
+//activate Job
+//
+//Job --> MainThread: RequestCreated
+//deactivate Job
+//deactivate A
+//MainThread -> User: Done
+//deactivate A
+//
+//@enduml
+//----

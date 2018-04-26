@@ -32,8 +32,8 @@ public class BrowserAccess {
 	private Browser browser;
 	private Object monitor = new Object();
 	private Composite sashForm;
-	private boolean enabled;
 
+	/* FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if this could be removed */
 	public interface BrowserContentInitializer {
 
 		public void initialize(Browser browser);
@@ -41,12 +41,7 @@ public class BrowserAccess {
 	}
 
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 		safeSetBrowserVisible(enabled);
-	}
-
-	public boolean isEnabled() {
-		return enabled;
 	}
 
 	public BrowserAccess(Composite parent) {
@@ -63,10 +58,6 @@ public class BrowserAccess {
 
 	private void safeSetBrowserVisible(boolean visible) {
 		if (isBrowserNotAvailable()) {
-			return;
-		}
-		boolean isVisible = browser.isVisible();
-		if (isVisible == visible) {
 			return;
 		}
 		browser.setVisible(visible);
@@ -92,7 +83,7 @@ public class BrowserAccess {
 		synchronized (monitor) {
 			if (browser == null) {
 				browser = new Browser(sashForm, SWT.CENTER);
-				safeBrowserSetText("Initializing...");
+				/* FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if this could be removed */
 				Job job = Job.create("Init browser", new ICoreRunnable() {
 
 					@Override
@@ -110,9 +101,6 @@ public class BrowserAccess {
 
 	public void safeBrowserSetText(String html) {
 		if (isBrowserNotAvailable()) {
-			return;
-		}
-		if (!isEnabled()) {
 			return;
 		}
 		browser.setText(html);

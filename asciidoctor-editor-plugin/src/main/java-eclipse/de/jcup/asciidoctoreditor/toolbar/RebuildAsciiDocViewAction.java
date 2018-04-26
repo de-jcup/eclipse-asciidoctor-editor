@@ -31,7 +31,7 @@ public class RebuildAsciiDocViewAction extends ToolbarAction {
 	@Override
 	public void run() {
 		asciiDoctorEditor.resetCache();
-		asciiDoctorEditor.updateAsciiDocView();
+		asciiDoctorEditor.refreshAsciiDocView();
 		initUI();
 	}
 

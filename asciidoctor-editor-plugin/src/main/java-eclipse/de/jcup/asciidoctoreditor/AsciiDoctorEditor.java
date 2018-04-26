@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -137,7 +139,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private boolean quickOutlineOpened;
 
-	private File tempADFile;
+	private File temporaryInternalPreviewFile;
 
 	private BrowserAccess browserAccess;
 
@@ -149,14 +151,22 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private boolean previewVisible;
 
+	private Semaphore outputBuildSemaphore = new Semaphore(1);
+
+	private File temporaryExternalPreviewFile;
+
 	public AsciiDoctorEditor() {
 		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
 		asciidoctorWrapper = new AsciiDoctorWrapper(AsciiDoctorEclipseLogAdapter.INSTANCE);
 	}
 
-	public File getTempADFile() {
-		return tempADFile;
+	/**
+	 * 
+	 * @return file or <code>null</code>
+	 */
+	public File getTemporaryExternalPreviewFile() {
+		return temporaryExternalPreviewFile;
 	}
 
 	@Override
@@ -207,7 +217,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 
 		setTitleImageInitial();
-		updateAsciiDocView();
 	}
 
 	protected void createToolbar() {
@@ -590,31 +599,46 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 	}
 
-	public void updateAsciiDocView() {
-
-		if (tempADFile == null) {
-			return;
-		}
-		buildTemporaryHTMLFile();
-		if (!isPreviewVisible()) {
-			/* do not update the internal browser... */
-			return;
-		}
-		ensureBrowserShowsURL();
-		browserAccess.refresh();
-
+	public void refreshAsciiDocView() {
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
 	}
 
 	public void validate() {
 		rebuildOutline();
 	}
 
-	protected void buildTemporaryHTMLFile() {
-		String html = null;
+	private void fullBuildTemporaryHTMLFilesAndShowAfter() {
+		String htmlInternalPreview = null;
+		String htmlExternalBrowser = null;
 		try {
 			safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(AsciiDoctorEditor.this));
+
 			File editorFile = getEditorFile();
-			html = createHTML(editorFile);
+
+			String content = null;
+			if (editorFile == null) {
+				String asciiDoc = getDocumentText();
+				content = asciidoctorWrapper.convertToHTML(asciiDoc);
+			} else {
+				/* content exists as simple file */
+				asciidoctorWrapper.convertToHTML(editorFile);
+				content = readFileCreatedByAsciiDoctor();
+			}
+			int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance()
+					.getAutoRefreshInSecondsForExternalBrowser();
+			htmlInternalPreview = asciidoctorWrapper.buildHTMLWithCSS(content, 0);
+			htmlExternalBrowser = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
+
+			try (BufferedWriter internalBw = new BufferedWriter(new FileWriter(temporaryInternalPreviewFile));
+					BufferedWriter externalBw = new BufferedWriter(new FileWriter(temporaryExternalPreviewFile))) {
+
+				internalBw.write(htmlInternalPreview);
+				externalBw.write(htmlExternalBrowser);
+
+			} catch (IOException e1) {
+				AsciiDoctorEditorUtil.logError("Was not able to save temporary files for preview!", e1);
+			}
+
 		} catch (Throwable e) {
 			/*
 			 * Normally I would do a catch(Exception e), but we must use
@@ -638,43 +662,21 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 			safeAsyncExec(() -> {
 
-				String errorMessage = e.getClass().getSimpleName()+": "+SimpleExceptionUtils.getRootMessage(e);
+				String errorMessage = e.getClass().getSimpleName() + ": " + SimpleExceptionUtils.getRootMessage(e);
+
 				AsciiDoctorErrorBuilder builder = new AsciiDoctorErrorBuilder();
 				AsciiDoctorError error = builder.build(errorMessage);
 				browserAccess.safeBrowserSetText(htmlSb.toString());
 				AsciiDoctorEditorUtil.addScriptError(AsciiDoctorEditor.this, -1, error, IMarker.SEVERITY_ERROR);
 				AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:" + e.getMessage(), e);
 			});
-			return;
-		}
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempADFile))) {
-			bw.write(html);
-			bw.close();
 
-		} catch (IOException e1) {
-			AsciiDoctorEditorUtil.logError("Was not able to save temporary file for preview!", e1);
 		}
-	}
 
-	private String createHTML(File editorFile) throws Exception {
-		String html;
-		String content = null;
-		int refreshAutomaticallyInSeconds = getTimeToRefresh();
-		if (editorFile == null) {
-			String asciiDoc = getDocumentText();
-			content = asciidoctorWrapper.convertToHTML(asciiDoc);
-			html = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
-		} else {
-			/* content exists as simple file */
-			asciidoctorWrapper.convertToHTML(editorFile);
-			content = readFileCreatedByAsciiDoctor();
-			html = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
-		}
-		return html;
 	}
 
 	protected String readFileCreatedByAsciiDoctor() {
-		File generatedFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), false);
+		File generatedFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), TemporaryFileType.ORIGIN);
 		try (BufferedReader br = new BufferedReader(new FileReader(generatedFile))) {
 			String line = null;
 			StringBuilder htmlSB = new StringBuilder();
@@ -695,14 +697,23 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		super.doSetInput(input);
 
 		rebuildOutline();
-		updateAsciiDocView();
+		if (browserAccess == null) {
+			/*
+			 * happens when eclipse is starting editors opened before are
+			 * initialized. The createPartControl is not already called
+			 */
+			return;
+		}
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
 	}
 
 	@Override
 	protected void editorSaved() {
 		super.editorSaved();
+
 		rebuildOutline();
-		updateAsciiDocView();
+
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
 	}
 
 	protected File getEditorFile() {
@@ -734,21 +745,89 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 		return layout;
 	}
+	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob() {
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(false);
+	}
+	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(boolean forceInitialize) {
+
+		if (!forceInitialize && outputBuildSemaphore.availablePermits() == 0) {
+			/* already rebuilding -so ignore */
+			return;
+		}
+		boolean initializing = forceInitialize || temporaryInternalPreviewFile == null || !temporaryExternalPreviewFile.exists();
+
+		try {
+			outputBuildSemaphore.acquire();
+			if (initializing) {
+				File previewInitializingFile = new File(AsciiDoctorOSGIWrapper.INSTANCE.getAddonsFolder(),
+						"html/initialize/preview_initializing.html");
+				boolean previewInitializingFileFound = false;
+				try {
+					if (previewInitializingFile.exists()) {
+						previewInitializingFileFound = true;
+					}
+					String previewFileURL = previewInitializingFile.toURI().toURL().toExternalForm();
+					browserAccess.setUrl(previewFileURL);
+				} catch (MalformedURLException e) {
+					logError("Preview initializer html file not valid url", e);
+				}
+				if (!previewInitializingFileFound) {
+					browserAccess.safeBrowserSetText("<html><body><h3>Initializing document</h3></body></html>");
+				}
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return;
+		}
+		String jobInfo = null;
+		if (initializing) {
+			jobInfo = "Asciidoctor editor preview initializing ";
+		} else {
+			jobInfo = "Asciidoctor editor full rebuild";
+		}
+		Job job = Job.create(jobInfo, new ICoreRunnable() {
+
+			@Override
+			public void run(IProgressMonitor monitor) throws CoreException {
+				try {
+					monitor.beginTask("Building document " + getSafeFileName(), IProgressMonitor.UNKNOWN);
+
+					fullBuildTemporaryHTMLFilesAndShowAfter();
+
+					ensureInternalBrowserShowsURL();
+
+					monitor.done();
+
+				} finally {
+					outputBuildSemaphore.release();
+				}
+			}
+
+			protected String getSafeFileName() {
+				if (temporaryInternalPreviewFile == null) {
+					return "<unknown>";
+				}
+				return temporaryInternalPreviewFile.getName();
+			}
+		});
+		job.schedule();
+	}
 
 	protected void initPreview(SashForm sashForm) {
-		tempADFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), true);
-		if (tempADFile == null || !tempADFile.exists()) {
-			Job job = Job.create("Initialize asciidoctor output", new ICoreRunnable() {
+		temporaryInternalPreviewFile = asciidoctorWrapper.getTempFileFor(getEditorFile(),
+				TemporaryFileType.INTERNAL_PREVIEW);
+		temporaryExternalPreviewFile = asciidoctorWrapper.getTempFileFor(getEditorFile(),
+				TemporaryFileType.EXTERNAL_PREVIEW);
 
-				@Override
-				public void run(IProgressMonitor monitor) throws CoreException {
-					monitor.beginTask("Initializing temporary html output", IProgressMonitor.UNKNOWN);
-					buildTemporaryHTMLFile();
-					monitor.done();
-				}
-			});
-			job.schedule();
-		}
+		browserAccess.ensureBrowser(new BrowserContentInitializer() {
+
+			@Override
+			public void initialize(Browser browser) {
+
+			}
+		});
+
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
 
 		PreviewLayout layout = getLayoutMode();
 		if (layout.isExternal()) {
@@ -759,50 +838,67 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 	}
 
-	protected int getTimeToRefresh() {
-		if (isPreviewVisible()) {
-			/*
-			 * we do not use the auto refresh when the standard preview is
-			 * visible - maybe this could lead to problems in internal view - we
-			 * avoid this.
-			 */
-			return 0;
-		}
-		/*
-		 * okay external browser is used... we update currently every 5 seconds
-		 */
-		return AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
+	protected boolean isNoPreviewFileGenerated() {
+		return temporaryInternalPreviewFile == null || !temporaryInternalPreviewFile.exists();
 	}
 
-	protected void ensureBrowserShowsURL() {
+	protected void ensureInternalBrowserShowsURL() {
 		if (!isPreviewVisible()) {
 			return;
 		}
-		safeAsyncExec(() -> {
+		Thread t = new Thread(new WaitForGeneratedFileAndShowInsideIternalPreviewRunner());
+		String name = "";
+		if (temporaryExternalPreviewFile!=null){
+			name=temporaryInternalPreviewFile.getName();
+		}else{
+			name="undefined";
+		}
+		t.setName("asciidoctor-editor-ensure:"+name);
+		t.start();
+	}
 
-			try {
-				if (tempADFile == null || !tempADFile.exists()) {
-					browserAccess.safeBrowserSetText("");
-					return;
-				}
-				URL url = tempADFile.toURI().toURL();
-				String foundURL = browserAccess.getUrl();
-				try {
-					URL formerURL = new URL(browserAccess.getUrl());
-					foundURL = formerURL.toExternalForm();
-				} catch (MalformedURLException e) {
-					/* ignore - about pages etc. */
-				}
-				String externalForm = url.toExternalForm();
-				if (!externalForm.equals(foundURL)) {
-					browserAccess.setUrl(externalForm);
-				}
+	private class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements Runnable {
 
-			} catch (MalformedURLException e) {
-				AsciiDoctorEditorUtil.logError("Was not able to use malformed URL", e);
-				browserAccess.safeBrowserSetText("");
+		@Override
+		public void run() {
+			boolean aquired = false;
+			try{
+				aquired = outputBuildSemaphore.tryAcquire(5, TimeUnit.SECONDS);
+				
+				safeAsyncExec(() -> {
+
+					try {
+						URL url = temporaryInternalPreviewFile.toURI().toURL();
+						String foundURL = browserAccess.getUrl();
+						try {
+							URL formerURL = new URL(browserAccess.getUrl());
+							foundURL = formerURL.toExternalForm();
+						} catch (MalformedURLException e) {
+							/* ignore - about pages etc. */
+						}
+						String externalForm = url.toExternalForm();
+						if (!externalForm.equals(foundURL)) {
+							browserAccess.setUrl(externalForm);
+						} else {
+							browserAccess.refresh();
+						}
+
+					} catch (MalformedURLException e) {
+						AsciiDoctorEditorUtil.logError("Was not able to use malformed URL", e);
+						browserAccess.safeBrowserSetText("<html><body><h3>URL malformed</h3></body></html>");
+					}
+				});
+
+				
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}finally{
+				if (aquired==true){
+					outputBuildSemaphore.release();
+				}
 			}
-		});
+			
+		}
 	}
 
 	@Override
@@ -1041,8 +1137,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	public void setTOCShown(boolean shown) {
+		if (shown == asciidoctorWrapper.isTocVisible()) {
+			return;
+		}
 		asciidoctorWrapper.setTocVisible(shown);
-		updateAsciiDocView();
+		/* TOC building does always lead to a long time running task, at least
+		 * inside preview - so we show the initializing info with progressbar
+		 */
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(true);
 	}
 
 	public boolean isTOCShown() {
@@ -1050,38 +1152,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	public void setPreviewVisible(boolean visible) {
-		if (this.previewVisible == visible) {
-			/* as before - ignore */
-			return;
-		}
 		this.previewVisible = visible;
 		browserAccess.setEnabled(previewVisible);
-		if (previewVisible) {
-			browserAccess.ensureBrowser(new BrowserContentInitializer() {
-
-				@Override
-				public void initialize(Browser browser) {
-					if (tempADFile == null || !tempADFile.exists()) {
-						/* it was not possible to recreate the temp ad file */
-						safeAsyncExec(() -> browserAccess.safeBrowserSetText(""));
-					} else {
-						ensureBrowserShowsURL();
-					}
-
-				}
-			});
-		}
 		sashForm.layout(); // after this the browser will be hidden/shown ...
 							// otherwise we got an empty space appearing
-
-		/*
-		 * update asciidoc view - necessary to create html for preview variant.
-		 * the internal variants do NOT use meta-info reload mechanism to avoid
-		 * flickering etc.! External browser variant is using this to have an
-		 * auto reload! Here is the single point where the switch is done, so we
-		 * need this
-		 */
-		updateAsciiDocView();
+		ensureInternalBrowserShowsURL();
 	}
 
 	public boolean isPreviewVisible() {
@@ -1091,4 +1166,5 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	public void navgigateToTopOfView() {
 		browserAccess.navgigateToTopOfView();
 	}
+
 }

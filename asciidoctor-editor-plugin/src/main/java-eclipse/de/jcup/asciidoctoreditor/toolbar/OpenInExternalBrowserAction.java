@@ -45,9 +45,9 @@ public class OpenInExternalBrowserAction extends ToolbarAction {
 
 	@Override
 	public void run() {
-		File tempAdFile = asciiDoctorEditor.getTempADFile();
+		File tempAdFile = asciiDoctorEditor.getTemporaryExternalPreviewFile();
 		if (tempAdFile==null || !tempAdFile.exists()){
-			MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Asciidoctor Editor", "Cannot open html output file - its missing");
+			MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Asciidoctor Editor", "Generated HTML output not found - maybe it's still in generation.\n\nPlease wait and try again.");
 			return;
 		}
 		try {

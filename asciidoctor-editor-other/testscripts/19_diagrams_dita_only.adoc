@@ -62,7 +62,7 @@ https://gist.github.com/nicerobot/8379371
 Memory:
 
       +--------+
-   0  |        |  <- start
+   0  |        |  <- start x
       +--------+
    1  |        |  <- q  scans from start to end
       +--------+

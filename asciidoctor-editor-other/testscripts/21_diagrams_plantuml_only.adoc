@@ -311,7 +311,7 @@ participant "I have a really\nlong name" as L #99FF99
    participant L as "I have a really\nlong name"  #99FF99
   '/
 
-Alice->Bob: Authentication Request
+Alice->Bob: Authentication Request 2
 Bob->Alice: Authentication Response
 Bob->L: Log transaction
 @enduml

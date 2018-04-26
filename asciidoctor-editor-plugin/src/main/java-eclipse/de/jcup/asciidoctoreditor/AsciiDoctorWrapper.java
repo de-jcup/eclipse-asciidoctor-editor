@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -344,7 +343,7 @@ public class AsciiDoctorWrapper {
 		return path.toAbsolutePath().normalize().toString();
 	}
 
-	public File getTempFileFor(File editorFile, boolean full) {
+	public File getTempFileFor(File editorFile, TemporaryFileType type) {
 		File parent = null;
 		if (tempFolder == null) {
 			parent = new File(".");
@@ -353,9 +352,7 @@ public class AsciiDoctorWrapper {
 		}
 		String baseName = FilenameUtils.getBaseName(editorFile.getName());
 		StringBuilder sb = new StringBuilder();
-		if (full) {
-			sb.append("full_");
-		}
+		sb.append(type.getPrefix());
 		sb.append(baseName);
 		sb.append(".html");
 		return new File(parent, sb.toString());
