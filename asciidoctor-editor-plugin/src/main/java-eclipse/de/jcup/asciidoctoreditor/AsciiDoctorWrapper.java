@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -260,13 +261,22 @@ public class AsciiDoctorWrapper {
 		}
 	}
 
-	private Map<String, Object> getDefaultOptions(File baseDir, String imagesDir) {
+	private Map<String, Object> getDefaultOptions(File baseDir, String sourceImagesDir) {
 		/* @formatter:off*/
 		Attributes attrs;
+		File targetImagesDir =null;
+		if (tempFolder == null) {
+			initTempFolderOrFail();
+		}
+		targetImagesDir = new File(tempFolder.toFile(),"images");
+		targetImagesDir.deleteOnExit();
+		copyImagesToOutputFolder(sourceImagesDir,targetImagesDir);
+		
 		AttributesBuilder attrBuilder = AttributesBuilder.
 				attributes().
 					showTitle(true).
 					sourceHighlighter("coderay").
+					attribute("imagesoutdir", createAbsolutePath(targetImagesDir.toPath())).
 				    attribute("icons", "font").
 					attribute("source-highlighter","coderay").
 					attribute("coderay-css", "style").
@@ -288,15 +298,15 @@ public class AsciiDoctorWrapper {
 		if (isTocVisible()){
 			attrBuilder.attribute("toc","left");
 		}
-		if (imagesDir!=null){
-			attrBuilder.imagesDir(imagesDir);
+		if (targetImagesDir!=null){
+			attrBuilder.imagesDir(targetImagesDir.getAbsolutePath());
 		}
 		
 		
 		attrs=attrBuilder.get();
 		if (tempFolder != null) {
 			System.out.println("Tempfolder:" + tempFolder);
-			attrs.setAttribute("outdir", tempFolder.toAbsolutePath().normalize().toString());
+			attrs.setAttribute("outdir", createAbsolutePath(tempFolder));
 		}
 		File destionationFolder= null;
 		if (tempFolder!=null){
@@ -315,6 +325,23 @@ public class AsciiDoctorWrapper {
 				baseDir(baseDir);
 		/* @formatter:on*/
 		return opts.asMap();
+	}
+
+	private void copyImagesToOutputFolder(String sourcePath, File target) {
+		File cachedImagesFile = new File(sourcePath);
+		if (!cachedImagesFile.exists()){
+			return;
+		}
+		try {
+			FileUtils.copyDirectory(cachedImagesFile, target);
+		} catch (IOException e) {
+			logAdapter.logError("Cannot copy images", e);
+		}
+		
+	}
+
+	protected String createAbsolutePath(Path path) {
+		return path.toAbsolutePath().normalize().toString();
 	}
 
 	public File getTempFileFor(File editorFile, boolean full) {
