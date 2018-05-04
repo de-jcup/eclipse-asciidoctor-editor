@@ -28,6 +28,8 @@ public class DocumentKeyWords {
 	
 	private static DocumentKeyWord[] createAllKeywords() {
 		List<DocumentKeyWord> list = new ArrayList<>();
+		list.addAll(Arrays.asList(AsciiDoctorAdmonitionParagraphKeyWords.values()));
+		list.addAll(Arrays.asList(AsciiDoctorAdmonitionBlockKeyWords.values()));
 		list.addAll(Arrays.asList(AsciiDoctorCommandKeyWords.values()));
 		list.addAll(Arrays.asList(AsciiDoctorSpecialAttributesKeyWords.values()));
 		

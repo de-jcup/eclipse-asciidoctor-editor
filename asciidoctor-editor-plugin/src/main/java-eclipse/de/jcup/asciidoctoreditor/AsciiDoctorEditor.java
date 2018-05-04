@@ -103,6 +103,7 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
+import de.jcup.asciidoctoreditor.toolbar.InsertAdmonitionAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
@@ -231,6 +232,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		IToolBarManager asciiDocToolBar = new ToolBarManager(coolBarManager.getStyle());
 		asciiDocToolBar.add(new NewTableInsertAction(this));
+		asciiDocToolBar.add(new InsertAdmonitionAction(this));
 		asciiDocToolBar.add(new NewCodeBlockInsertAction(this));
 
 		IToolBarManager viewToolBar = new ToolBarManager(coolBarManager.getStyle());

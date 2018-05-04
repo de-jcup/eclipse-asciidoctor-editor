@@ -36,6 +36,8 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorAdmonitionBlockKeyWords;
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorAdmonitionParagraphKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
@@ -210,6 +212,9 @@ public class AsciiDoctorEditorSimpleWordContentAssistProcessor implements IConte
 			addKeyWord(keyword);
 		}
 		for (DocumentKeyWord keyword : AsciiDoctorSpecialAttributesKeyWords.values()) {
+			addKeyWord(keyword);
+		}
+		for (DocumentKeyWord keyword : AsciiDoctorAdmonitionParagraphKeyWords.values()) {
 			addKeyWord(keyword);
 		}
 	}

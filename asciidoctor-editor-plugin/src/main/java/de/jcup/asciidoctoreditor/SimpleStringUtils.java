@@ -56,10 +56,11 @@ public class SimpleStringUtils {
 		sb.append("...");
 		return sb.toString();
 	}
-	
+
 	/**
-	 * Returns next reduced variable from given offset.
-	 * Reduced means a variable array like $ASCIIDOCTOR_VERSIN[0] will be reduced to $ASCIIDOCTOR_VERSIN!
+	 * Returns next reduced variable from given offset. Reduced means a variable
+	 * array like $ASCIIDOCTOR_VERSION[0] will be reduced to
+	 * $ASCIIDOCTOR_VERSION!
 	 * 
 	 * @param string
 	 * @param offset
@@ -74,7 +75,9 @@ public class SimpleStringUtils {
 	 * 
 	 * @param string
 	 * @param offset
-	 * @param wordEndDetector - if null {@link WhitespaceWordEndDetector} will be used automatically
+	 * @param wordEndDetector
+	 *            - if null {@link WhitespaceWordEndDetector} will be used
+	 *            automatically
 	 * @return word, or empty string, never <code>null</code>
 	 */
 	public static String nextWord(String string, int offset, WordEndDetector wordEndDetector) {
@@ -88,28 +91,34 @@ public class SimpleStringUtils {
 			return EMPTY;
 		}
 		char c2 = string.charAt(offset);
-		if (Character.isWhitespace(c2)){
+		if (Character.isWhitespace(c2)) {
 			return EMPTY;
 		}
-		if (wordEndDetector==null){
+		if (wordEndDetector == null) {
 			/* back to fall back impl */
-			wordEndDetector=new WhitespaceWordEndDetector();
+			wordEndDetector = new WhitespaceWordEndDetector();
 		}
-		/* go to word start (offset == 0 or whitespace)*/
-		int start=offset;
-		for (;start>0;start--){
+		/* go to word start (offset == 0 or whitespace) */
+		int start = offset;
+		for (; start > 0; start--) {
 			char c = string.charAt(start);
-			if (wordEndDetector.isWordEnd(c)){
-				start+=1;
+			if (wordEndDetector.isWordEnd(c)) {
+				start += 1;
 				break;
 			}
 		}
 		/* start defined so scan for word */
 		StringBuilder sb = new StringBuilder();
-		for (int i=start;i<string.length();i++){
+		for (int i = start; i < string.length(); i++) {
 			char c = string.charAt(i);
-			if (wordEndDetector.isWordEnd(c)){
-				break;
+			boolean isNotStartOfDocument = (i != 0);
+			if (wordEndDetector.isWordEnd(c)) {
+				if (isNotStartOfDocument) {
+					break;
+				} else {
+					continue; // but no append... so this will reduce a "[TIP]"
+								// to an "TIP]";
+				}
 			}
 			sb.append(c);
 		}

@@ -56,13 +56,19 @@ public class SimpleHeadlineParser {
 	protected void addHeadlineWhenCurrentNotEmpty(String asciidoctorScript, List<AsciiDoctorHeadline> list,
 			StringBuilder current, int start, int end) {
 		if (current != null && current.length() > 0) {
-			list.add(createHeadline(asciidoctorScript, current.toString(), start, end));
+			AsciiDoctorHeadline headline = createHeadlineOrNull(asciidoctorScript, current.toString(), start, end);
+			if (headline!=null){
+				list.add(headline);
+			}
 		}
 	}
 
-	private AsciiDoctorHeadline createHeadline(String asciidoctorScript, String identifiedHeadline, int start, int end) {
-		int deep = calculateDeep(identifiedHeadline);
+	private AsciiDoctorHeadline createHeadlineOrNull(String asciidoctorScript, String identifiedHeadline, int start, int end) {
 		String name = calculateName(identifiedHeadline);
+		if (name == null || name.trim().length()==0){
+			return null;
+		}
+		int deep = calculateDeep(identifiedHeadline);
 		AsciiDoctorHeadline headline = new AsciiDoctorHeadline(deep, name, start, end, identifiedHeadline.length());
 		return headline;
 	}

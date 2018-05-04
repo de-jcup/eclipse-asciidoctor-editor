@@ -24,6 +24,16 @@ import de.jcup.asciidoctoreditor.SimpleStringUtils;
 public class SimpleStringUtilsTest {
 
 	@Test
+	public void tip_adminition_block_with_space_before_is_reduced_to_tip_closing_brocket_only() throws Exception {
+		assertEquals("TIP]", SimpleStringUtils.nextReducedVariableWord(" [TIP]", 1));
+	}
+	
+	@Test
+	public void tip_adminition_block_with_no_space_before_is_reduced_to_tip_closing_brocket_only() throws Exception {
+		assertEquals("TIP]", SimpleStringUtils.nextReducedVariableWord("[TIP]", 0));
+	}
+	
+	@Test
 	public void nextReducedVariable_from_string_alpha_beta_gamma_offset_0_is_alpha() {
 		assertEquals("alpha", SimpleStringUtils.nextReducedVariableWord("alpha beta gamma", 0));
 	}

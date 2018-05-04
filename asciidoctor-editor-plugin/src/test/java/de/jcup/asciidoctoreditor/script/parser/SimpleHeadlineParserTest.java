@@ -33,6 +33,45 @@ public class SimpleHeadlineParserTest {
 	public void before(){
 		parserToTest=new SimpleHeadlineParser();
 	}
+	
+
+	@Test
+	public void two_headline4_with_text_are_recognized_as_headlines_4() throws Exception {
+		/* prepare */
+		String text = "==== headline1\n==== headline2";
+		//.............01234567890 123456789012
+
+		/* execute */
+		List<AsciiDoctorHeadline> result = parserToTest.parse(text);
+
+		/* test */
+		/* @formatter:off*/
+		assertHeadlines(result).
+			hasHeadline("headline1").
+				withPosition(0).
+				withEnd(13).
+			and().
+			hasHeadline("headline2").
+				withPosition(15).
+				withEnd(28);
+		/* @formatter:on*/
+	}
+	
+	@Test
+	public void two_headline4_with_no_text_are_NOT_recognized_as_headlines_4() throws Exception {
+		/* prepare */
+		String text = "====\n====";
+
+		/* execute */
+		List<AsciiDoctorHeadline> result = parserToTest.parse(text);
+
+		/* test */
+		/* @formatter:off*/
+		assertHeadlines(result).
+			hasNoHeadlines();
+		/* @formatter:on*/
+	}
+
 
 	@Test
 	public void headline1_new_line_headline2__headline1_has_pos_0_headline2_pos_12() throws Exception {

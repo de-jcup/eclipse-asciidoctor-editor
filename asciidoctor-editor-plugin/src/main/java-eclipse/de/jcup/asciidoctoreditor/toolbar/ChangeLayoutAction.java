@@ -112,11 +112,4 @@ public class ChangeLayoutAction extends ToolbarAction implements IMenuCreator {
 		item.fill(parent, -1);
 	}
 
-	/**
-	 * Get's rid of the menu, because the menu hangs on to the searches, etc.
-	 */
-	void clear() {
-		dispose();
-	}
-
 }

@@ -80,4 +80,8 @@ public class AssertHeadlines {
 		}
 	}
 
+	public AssertHeadlines hasNoHeadlines() {
+		return hasHeadlines(0);
+	}
+
 }
