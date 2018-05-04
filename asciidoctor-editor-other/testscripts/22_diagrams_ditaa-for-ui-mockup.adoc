@@ -1,0 +1,23 @@
+== Mockup example with DITAA
+
+// Idea about mockup came originally from 
+// https://stackoverflow.com/questions/46252816/asciidoc-draw-screen-prototypes-gui-mockup/50058991#5005899
+
+[ditaa]
+----
+   /-------------------------\
+   |cEEE   +---------------+ |
+   |  Name:|               | |
+   |       +---------------+ |
+   |                         |
+   |       +---------------+ |
+   |   Age:|               | |
+   |       +---------------+ |
+   |                         |
+   |/----------------------\ |
+   || cAAA Validate        | |
+   |\----------------------/ |
+   |                         |
+   \-------------------------/
+----
+Seems its very simple to create Mockups with DITAA

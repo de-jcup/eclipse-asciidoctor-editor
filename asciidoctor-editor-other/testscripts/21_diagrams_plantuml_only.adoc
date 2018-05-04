@@ -21,7 +21,7 @@ note right of (Use)
   be on several lines
 end note
 
-note "This note is connected\nto several objects." as N2
+note "This note is connected\nto several objects - of course...." as N2
 (Start) .. N2
 N2 .. (Use)
 @enduml
@@ -204,7 +204,7 @@ if "Page.onSecurityCheck" then
   
   if "is Post?" then
     -->[yes] "Page.onPost()"
-    --> "Page.onRender()" as render
+    --> "Page.onRender(yxzz)" as render
     --> ===REDIRECT_CHECK===
   else
     -->[no] "Page.onGet()"

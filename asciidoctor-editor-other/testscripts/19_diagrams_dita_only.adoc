@@ -18,7 +18,7 @@ http://ditaa.sourceforge.net/
  |     {d}|   |             |    |                |
  +---+----+   +-------------+    \----------------/
      :                                   ^
-     |          Lots of work             |
+     |          Lots of work ...         |
      +-----------------------------------+
      
      
@@ -72,7 +72,7 @@ Memory:
       +--------+  <-+
       |        |    |
       +--------+    | rest of the
-      :  ..... |    | allocated memory
+      :  ..... |    | allocated memory, nice to debug
       +--------+    |
   n   |        |    |
       +--------+  <-+
