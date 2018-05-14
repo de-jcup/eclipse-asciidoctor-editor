@@ -87,12 +87,9 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* ++++++++++++++ */
 		/* + Validation + */
 		/* ++++++++++++++ */
-		store.setDefault(VALIDATE_BLOCK_STATEMENTS.getId(), true);
-		store.setDefault(VALIDATE_DO_STATEMENTS.getId(), true);
-		store.setDefault(VALIDATE_IF_STATEMENTS.getId(), true);
-		store.setDefault(VALIDATE_FUNCTION_STATEMENTS.getId(), true);
+		store.setDefault(VALIDATE_GRAPHVIZ.getId(), true);
 
-		store.setDefault(VALIDATE_ERROR_LEVEL.getId(), AsciiDoctorEditorValidationErrorLevel.ERROR.getId());
+		store.setDefault(VALIDATE_ERROR_LEVEL.getId(), AsciiDoctorEditorValidationErrorLevel.WARNING.getId());
 	}
 
 }

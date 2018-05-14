@@ -476,22 +476,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		IPreferenceStore store = AsciiDoctorEditorUtil.getPreferences().getPreferenceStore();
 
-		boolean validateBlocks = store.getBoolean(VALIDATE_BLOCK_STATEMENTS.getId());
-		boolean validateDo = store.getBoolean(VALIDATE_DO_STATEMENTS.getId());
-		boolean validateIf = store.getBoolean(VALIDATE_IF_STATEMENTS.getId());
-		boolean validateFunctions = store.getBoolean(VALIDATE_FUNCTION_STATEMENTS.getId());
+		boolean validateGraphviz = store.getBoolean(VALIDATE_GRAPHVIZ.getId());
 		String errorLevelId = store.getString(VALIDATE_ERROR_LEVEL.getId());
 		AsciiDoctorEditorValidationErrorLevel errorLevel = AsciiDoctorEditorValidationErrorLevel.fromId(errorLevelId);
 
-		boolean debugMode = Boolean.parseBoolean(System.getProperty("asciidoctoreditor.debug.enabled"));
-
-		modelBuilder.setIgnoreBlockValidation(!validateBlocks);
-		modelBuilder.setIgnoreDoValidation(!validateDo);
-		modelBuilder.setIgnoreIfValidation(!validateIf);
-		modelBuilder.setIgnoreFunctionValidation(!validateFunctions);
-
-		modelBuilder.setDebug(debugMode);
-
+		modelBuilder.setValidateGraphviz(validateGraphviz);
+		
 		safeAsyncExec(() -> {
 			AsciiDoctorScriptModel model;
 			try {
@@ -960,15 +950,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private AsciiDoctorScriptModel buildModelWithoutValidation() {
 		String text = getDocumentText();
-		/*
-		 * FIXME ATR, 15.03.2018: clean up this ignore stuff... is this still
-		 * useful, will we have a validation for asciidoc files?
-		 */
-		/* for quick outline create own model and ignore any validations */
-		modelBuilder.setIgnoreBlockValidation(true);
-		modelBuilder.setIgnoreDoValidation(true);
-		modelBuilder.setIgnoreIfValidation(true);
-		modelBuilder.setIgnoreFunctionValidation(true);
 
 		AsciiDoctorScriptModel model;
 		try {

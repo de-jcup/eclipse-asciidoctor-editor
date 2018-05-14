@@ -18,7 +18,9 @@
 public interface ValidationResult {
 	
 	public enum Type{
-		ERROR
+		ERROR, 
+		
+		WARNING
 	}
 
 	int getStart();

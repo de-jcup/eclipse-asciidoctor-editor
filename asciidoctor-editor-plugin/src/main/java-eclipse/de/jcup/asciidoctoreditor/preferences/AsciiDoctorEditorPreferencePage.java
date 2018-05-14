@@ -23,10 +23,8 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
-import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
-import org.eclipse.jface.preference.ScaleFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -202,15 +200,15 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		return button;
 	}
 
-	private void setBoolean(AsciiDoctorEditorPreferenceConstants id, boolean value) {
+	void setBoolean(AsciiDoctorEditorPreferenceConstants id, boolean value) {
 		getPreferences().setBooleanPreference(id, value);
 	}
 
-	private boolean getBoolean(AsciiDoctorEditorPreferenceConstants id) {
+	boolean getBoolean(AsciiDoctorEditorPreferenceConstants id) {
 		return getPreferences().getBooleanPreference(id);
 	}
 
-	private boolean getDefaultBoolean(AsciiDoctorEditorPreferenceConstants id) {
+	boolean getDefaultBoolean(AsciiDoctorEditorPreferenceConstants id) {
 		return getPreferences().getDefaultBooleanPreference(id);
 	}
 

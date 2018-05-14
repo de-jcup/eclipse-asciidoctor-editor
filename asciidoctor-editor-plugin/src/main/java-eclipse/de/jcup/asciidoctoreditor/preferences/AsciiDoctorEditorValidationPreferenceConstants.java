@@ -19,15 +19,8 @@ package de.jcup.asciidoctoreditor.preferences;
  * Constant definitions for plug-in preferences
  */
 public enum AsciiDoctorEditorValidationPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled{
-	VALIDATE_BLOCK_STATEMENTS("validateCodeBlocks","Code blocks"), 
-	
-	VALIDATE_DO_STATEMENTS("validateDo","Do statements"), 
-	
-	VALIDATE_IF_STATEMENTS("validateIf","If and case statements"),
-	
-	VALIDATE_FUNCTION_STATEMENTS("validateIf","Functions"),
-	
-	VALIDATE_ERROR_LEVEL("validateErrorLevel","Error level"),
+	VALIDATE_GRAPHVIZ("validateGraphviz","Check GraphViz is installed"), 
+	VALIDATE_ERROR_LEVEL("validationErrorLevel","Validation error level"),
 	
 	;
 

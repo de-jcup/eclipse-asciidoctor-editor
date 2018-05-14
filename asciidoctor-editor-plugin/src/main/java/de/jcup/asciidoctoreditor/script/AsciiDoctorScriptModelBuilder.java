@@ -15,17 +15,11 @@
  */
 package de.jcup.asciidoctoreditor.script;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-import de.jcup.asciidoctoreditor.script.parser.ParseToken;
+import de.jcup.asciidoctoreditor.CheckGraphviz;
 import de.jcup.asciidoctoreditor.script.parser.SimpleHeadlineParser;
 import de.jcup.asciidoctoreditor.script.parser.SimpleIncludeParser;
-import de.jcup.asciidoctoreditor.script.parser.validator.CaseEndsWithEsacValidator;
-import de.jcup.asciidoctoreditor.script.parser.validator.ClosedBlocksValidator;
-import de.jcup.asciidoctoreditor.script.parser.validator.DoEndsWithDoneValidator;
-import de.jcup.asciidoctoreditor.script.parser.validator.IfEndsWithFiValidator;
 
 /**
  * A asciidoc file model builder
@@ -34,11 +28,8 @@ import de.jcup.asciidoctoreditor.script.parser.validator.IfEndsWithFiValidator;
  *
  */
 public class AsciiDoctorScriptModelBuilder {
-	private boolean ignoreDoValidation;
-	private boolean ignoreBlockValidation;
-	private boolean ignoreIfValidation;
-	private boolean ignoreFunctionValidation;
-	private boolean debugMode;
+	
+	private boolean validateGraphviz;
 
 	/**
 	 * Parses given script and creates a asciidoc file model
@@ -59,145 +50,36 @@ public class AsciiDoctorScriptModelBuilder {
 		model.getHeadlines().addAll(headlines);
 		model.getIncludes().addAll(includes);
 		
+		if (isGaphvizCheckNecessary(asciidoctorScript)){
+			boolean graphvizAvailable= CheckGraphviz.checkInstalled();
+			if (!graphvizAvailable){
+				int index = getIndexWhereGraphvizBecomesNecessary(asciidoctorScript);
+				
+				AsciiDoctorError error = new AsciiDoctorError(index, index+9, "No GraphViz installation found but necessary.\n"
+						+ "Please install GraphViz on your machine if\nyou want the diagramm correct generated!");
+				model.getErrors().add(error);
+			}
+		}
 		return model;
 	}
 
-	public void setIgnoreBlockValidation(boolean ignoreBlockValidation) {
-		this.ignoreBlockValidation = ignoreBlockValidation;
-	}
-
-	public void setIgnoreDoValidation(boolean ignoreDoValidation) {
-		this.ignoreDoValidation = ignoreDoValidation;
-	}
-
-	public void setIgnoreIfValidation(boolean ignoreIfValidation) {
-		this.ignoreIfValidation = ignoreIfValidation;
-	}
-	
-	public void setIgnoreFunctionValidation(boolean ignoreFunctionValidation) {
-		this.ignoreFunctionValidation = ignoreFunctionValidation;
-	}
-	
-
-	private List<AsciiDoctorScriptValidator<List<ParseToken>>> createParseTokenValidators() {
-		List<AsciiDoctorScriptValidator<List<ParseToken>>> validators = new ArrayList<>();
-		if (!ignoreDoValidation) {
-			validators.add(new DoEndsWithDoneValidator());
-		}
-		if (!ignoreBlockValidation) {
-			validators.add(new ClosedBlocksValidator());
-		}
-		if (!ignoreIfValidation) {
-			validators.add(new IfEndsWithFiValidator());
-			validators.add(new CaseEndsWithEsacValidator());
-		}
-		return validators;
-	}
-
-	private void buildFunctionsByTokens(AsciiDoctorScriptModel model, List<ParseToken> tokens) {
-//
-//		for (int tokenNr = 0; tokenNr < tokens.size(); tokenNr++) {
-//			int currentTokenNr = tokenNr;
-//			ParseToken token = tokens.get(currentTokenNr++);
-//			boolean isFunction = false;
-//			Integer functionStart = null;
-//			int functionEnd = 0;
-//			/* ++++++++++++++++++++++ */
-//			/* + Scan for headlines + */
-//			/* ++++++++++++++++++++++ */
-//			/* could be 'function MethodName()' or 'function MethodName()' */
-//			if (token.isFunctionKeyword() && hasPos(currentTokenNr, tokens)) {
-//				isFunction = true;
-//				functionStart = Integer.valueOf(token.getStart());
-//				token = tokens.get(currentTokenNr++);
-//			}
-//			/* could be 'MethodName()' */
-//			isFunction = isFunction || token.isFunction();
-//			if (!isFunction) {
-//				/* could be 'MethodName ()' but NOT something like params=()*/
-//				if (token.isLegalFunctionName() && hasPos(currentTokenNr, tokens)) {
-//					ParseToken followToken = tokens.get(currentTokenNr++);
-//					isFunction = followToken.hasLength(2) && followToken.endsWithFunctionBrackets();
-//				}
-//			}
-//			if (isFunction) {
-//				if (functionStart == null) {
-//					functionStart = Integer.valueOf(token.getStart());
-//				}
-//				String functionName = token.getTextAsFunctionName();
-//				functionEnd = token.getEnd();
-//				/* ++++++++++++++++++++++++++++++ */
-//				/* + Scan for curly braces open + */
-//				/* ++++++++++++++++++++++++++++++ */
-//
-//				if (!hasPos(currentTokenNr, tokens)) {
-//					if (!ignoreFunctionValidation){
-//						model.errors.add(createAsciiDoctorErrorFunctionMissingCurlyBrace(token, functionName));
-//					}
-//					break;
-//				}
-//				ParseToken openCurlyBraceToken = tokens.get(currentTokenNr++);
-//				if (!openCurlyBraceToken.isOpenBlock()) {
-//					if (!ignoreFunctionValidation){
-//						model.errors.add(createAsciiDoctorErrorFunctionMissingCurlyBrace(token, functionName));
-//					}
-//					continue;
-//				}
-//				/* +++++++++++++++++++++++++++++++ */
-//				/* + Scan for curly braces close + */
-//				/* +++++++++++++++++++++++++++++++ */
-//
-//				AsciiDoctorHeadline function = new AsciiDoctorHeadline();
-//				function.lengthToNameEnd = functionEnd - functionStart.intValue();
-//				function.position = functionStart.intValue();
-//				function.name = functionName;
-//				function.end = -1;
-//
-//				while (hasPos(currentTokenNr, tokens)) {
-//					ParseToken closeCurlyBraceToken = tokens.get(currentTokenNr++);
-//					if (closeCurlyBraceToken.isCloseBlock()) {
-//						function.end = closeCurlyBraceToken.getEnd();
-//						break;
-//					}
-//				}
-//				if (function.end == -1) {
-//					/* no close block found - mark this as an error */
-//					if (!ignoreFunctionValidation){
-//						model.errors.add(createAsciiDoctorErrorCloseFunctionCurlyBraceMissing(functionName, openCurlyBraceToken));
-//					}
-//					break;
-//				}
-//
-//				model.headlines.add(function);
-//				/*
-//				 * function created - last currentTokenNr++ was too much because
-//				 * it will be done by loop to- so reduce with 1
-//				 */
-//				tokenNr = currentTokenNr - 1;
-//			}
-//		}
-	}
-
-	private AsciiDoctorError createAsciiDoctorErrorCloseFunctionCurlyBraceMissing(String functionName,
-			ParseToken openCurlyBraceToken) {
-		return new AsciiDoctorError(openCurlyBraceToken.getStart(), openCurlyBraceToken.getEnd(),
-				"This curly brace is not closed. So function '" + functionName + "' is not valid.");
-	}
-
-	private AsciiDoctorError createAsciiDoctorErrorFunctionMissingCurlyBrace(ParseToken token, String functionName) {
-		return new AsciiDoctorError(token.getStart(), token.getEnd(),
-				"The function '" + functionName + "' is not valid because no opening curly brace found.");
-	}
-
-	private boolean hasPos(int pos, List<?> elements) {
-		if (elements == null) {
+	protected boolean isGaphvizCheckNecessary(String asciidoctorScript) {
+		if (!validateGraphviz){
 			return false;
 		}
-		return pos < elements.size();
+		return getIndexWhereGraphvizBecomesNecessary(asciidoctorScript)!=-1;
 	}
 
-	public void setDebug(boolean debugMode) {
-		this.debugMode=debugMode;
+	protected int getIndexWhereGraphvizBecomesNecessary(String asciidoctorScript) {
+		int index = asciidoctorScript.indexOf("[plantuml");
+		if (index==-1){
+			index = asciidoctorScript.indexOf("[graphviz");
+		}
+		return index;
+	}
+
+	public void setValidateGraphviz(boolean validateGraphviz) {
+		this.validateGraphviz=validateGraphviz;
 	}
 
 }

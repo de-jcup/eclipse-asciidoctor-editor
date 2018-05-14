@@ -156,10 +156,6 @@
             class="de.jcup.asciidoctoreditor.handlers.ValidateHandler">
       </handler>
       <handler
-            commandId="asciidoctoreditor.editor.commands.gotomatchingbracket"
-            class="de.jcup.asciidoctoreditor.handlers.GotoMatchingBracketHandler">
-      </handler>
-      <handler
             commandId="asciidoctoreditor.command.openWithAsciiDoctorEditor"
             class="de.jcup.asciidoctoreditor.handlers.OpenWithAsciiDoctorEditor">
       </handler>
@@ -197,12 +193,10 @@
             locationURI="popup:asciidoctoreditor.editors.AsciiDoctorEditor.context?after=additions">
          <command
                commandId="asciidoctoreditor.editor.commands.source.validate" icon="icons/asciidoctor-editor.png"
-               >
+               />
          <command
                commandId="asciidoctoreditor.editor.commands.quickoutline"
-               >
-         </command>
-         </command>
+               />
       </menuContribution>
       
       <menuContribution
@@ -257,7 +251,6 @@
                id="asciidoctoreditor.preferences.keyword.color">
          </keywordReference>
       </page>
-     <!--
       <page
          id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorValidationPreferencePage"
          class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferencePage"
@@ -270,7 +263,6 @@
                id="asciidoctoreditor.preferences.keyword.validation">
          </keywordReference>
       </page>
-      -->
     </extension>
     <extension
          point="org.eclipse.core.runtime.preferences">

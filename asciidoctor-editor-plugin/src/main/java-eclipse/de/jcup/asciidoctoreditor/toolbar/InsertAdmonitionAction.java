@@ -118,7 +118,7 @@ public class InsertAdmonitionAction extends ToolbarAction implements IMenuCreato
 				
 				@Override
 				protected String getInsertText(InsertTextContext context) {
-					return keyword.getText()+" some nice text to show iside admonition...\n\n";
+					return keyword.getText()+" some nice text to show inside admonition...\n\n";
 				}
 			};
 			return action;

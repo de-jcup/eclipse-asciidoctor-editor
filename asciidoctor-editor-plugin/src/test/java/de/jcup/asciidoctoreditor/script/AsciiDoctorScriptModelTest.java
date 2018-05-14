@@ -20,9 +20,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
-
 public class AsciiDoctorScriptModelTest {
 	private AsciiDoctorScriptModel modelToTest;
 

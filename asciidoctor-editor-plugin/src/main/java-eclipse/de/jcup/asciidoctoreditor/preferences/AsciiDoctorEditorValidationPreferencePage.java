@@ -43,12 +43,9 @@ public class AsciiDoctorEditorValidationPreferencePage extends FieldEditorPrefer
 	protected void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
 
-//		createEditor(VALIDATE_IF_STATEMENTS, parent);
-//		createEditor(VALIDATE_DO_STATEMENTS, parent);
-//		createEditor(VALIDATE_FUNCTION_STATEMENTS, parent);
-//		createEditor(VALIDATE_BLOCK_STATEMENTS, parent);
+		createEditor(VALIDATE_GRAPHVIZ, parent);
 
-		createComboBox(VALIDATE_ERROR_LEVEL, parent);
+//		createComboBox(VALIDATE_ERROR_LEVEL, parent);
 	}
 
 	private void createComboBox(AsciiDoctorEditorValidationPreferenceConstants constant, Composite parent) {

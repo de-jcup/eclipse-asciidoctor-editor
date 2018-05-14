@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Asciidoctor editor libs
 Bundle-SymbolicName: de.jcup.asciidoctoreditor.libs
-Bundle-Version: 1.1.0
+Bundle-Version: 1.2.0
 Bundle-ClassPath: asciidoctorj-1.5.6.jar,
  asciidoctorj-diagram-1.5.4.1.jar,
  commons-io-2.4.jar,
@@ -82,6 +82,8 @@ Export-Package: com.beust.jcommander,
  jnr.posix.windows,
  jnr.unixsocket,
  jnr.x86asm,
+ net.sourceforge.plantuml,
+ net.sourceforge.plantuml.cucadiagram.dot,
  org.apache.commons.io,
  org.apache.commons.io.comparator,
  org.apache.commons.io.filefilter,
