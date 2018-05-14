@@ -850,11 +850,19 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	private class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements Runnable {
-
 		@Override
 		public void run() {
+			long start= System.currentTimeMillis();
 			boolean aquired = false;
 			try{
+				while (temporaryInternalPreviewFile==null || !temporaryInternalPreviewFile.exists()){
+					if (System.currentTimeMillis()-start>20000){
+						// after 20 seconds there seems to be no chance to get the generated preview file back
+						browserAccess.safeBrowserSetText("<html><body><h3>Preview file generation timed out, so preview not available.</h3></body></html>");
+						return;
+					}
+					Thread.sleep(300);
+				}
 				aquired = outputBuildSemaphore.tryAcquire(5, TimeUnit.SECONDS);
 				
 				safeAsyncExec(() -> {
