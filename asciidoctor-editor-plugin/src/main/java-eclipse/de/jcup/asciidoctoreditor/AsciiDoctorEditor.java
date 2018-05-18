@@ -480,8 +480,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		String errorLevelId = store.getString(VALIDATE_ERROR_LEVEL.getId());
 		AsciiDoctorEditorValidationErrorLevel errorLevel = AsciiDoctorEditorValidationErrorLevel.fromId(errorLevelId);
 
-		modelBuilder.setValidateGraphviz(validateGraphviz);
-		
+		if (validateGraphviz){
+			modelBuilder.setGraphVizCheckSupport(CheckGraphviz.INSTANCE);
+		}else{
+			modelBuilder.setGraphVizCheckSupport(null);
+		}
 		safeAsyncExec(() -> {
 			AsciiDoctorScriptModel model;
 			try {

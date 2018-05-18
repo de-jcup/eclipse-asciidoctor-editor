@@ -1,10 +1,17 @@
 package de.jcup.asciidoctoreditor;
 
+import de.jcup.asciidoctoreditor.script.GraphvizCheckSupport;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 
-public class CheckGraphviz {
+public class CheckGraphviz implements GraphvizCheckSupport{
 
-	public static boolean checkInstalled() {
+	public static CheckGraphviz INSTANCE = new CheckGraphviz();
+	
+	private CheckGraphviz(){
+		
+	}
+	
+	public boolean checkInstalled() {
 		try {
 			int version = GraphvizUtils.getDotVersion();
 			return version != -1; // -1 only when no version 

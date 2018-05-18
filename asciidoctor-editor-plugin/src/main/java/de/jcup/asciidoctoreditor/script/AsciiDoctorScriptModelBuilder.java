@@ -17,7 +17,6 @@ package de.jcup.asciidoctoreditor.script;
 
 import java.util.Collection;
 
-import de.jcup.asciidoctoreditor.CheckGraphviz;
 import de.jcup.asciidoctoreditor.script.parser.SimpleHeadlineParser;
 import de.jcup.asciidoctoreditor.script.parser.SimpleIncludeParser;
 
@@ -29,7 +28,7 @@ import de.jcup.asciidoctoreditor.script.parser.SimpleIncludeParser;
  */
 public class AsciiDoctorScriptModelBuilder {
 	
-	private boolean validateGraphviz;
+	private GraphvizCheckSupport graphVizCheckSupport;
 
 	/**
 	 * Parses given script and creates a asciidoc file model
@@ -51,7 +50,7 @@ public class AsciiDoctorScriptModelBuilder {
 		model.getIncludes().addAll(includes);
 		
 		if (isGaphvizCheckNecessary(asciidoctorScript)){
-			boolean graphvizAvailable= CheckGraphviz.checkInstalled();
+			boolean graphvizAvailable= graphVizCheckSupport.checkInstalled();
 			if (!graphvizAvailable){
 				int index = getIndexWhereGraphvizBecomesNecessary(asciidoctorScript);
 				
@@ -64,7 +63,7 @@ public class AsciiDoctorScriptModelBuilder {
 	}
 
 	protected boolean isGaphvizCheckNecessary(String asciidoctorScript) {
-		if (!validateGraphviz){
+		if (graphVizCheckSupport==null){
 			return false;
 		}
 		return getIndexWhereGraphvizBecomesNecessary(asciidoctorScript)!=-1;
@@ -78,8 +77,8 @@ public class AsciiDoctorScriptModelBuilder {
 		return index;
 	}
 
-	public void setValidateGraphviz(boolean validateGraphviz) {
-		this.validateGraphviz=validateGraphviz;
+	public void setGraphVizCheckSupport(GraphvizCheckSupport validateGraphviz) {
+		this.graphVizCheckSupport=validateGraphviz;
 	}
 
 }
