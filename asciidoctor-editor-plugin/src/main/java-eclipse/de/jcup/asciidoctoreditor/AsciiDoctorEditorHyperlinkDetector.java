@@ -82,7 +82,7 @@ public class AsciiDoctorEditorHyperlinkDetector extends AbstractHyperlinkDetecto
 			sb.append(c);
 		}
 		String foundText = sb.toString();
-		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrNull(foundText);
+		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrDiagram(foundText);
 		if (includeFileName!=null){
 			Region targetRegion = new Region(offsetLeft, foundText.length());
 			return new IHyperlink[] { new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, editor) };

@@ -17,6 +17,42 @@ package de.jcup.asciidoctoreditor;
 
 public class AsciiDocStringUtils {
 
+	public static String resolveFilenameOfIncludeOrDiagram(String potentialInclude) {
+		String fileName = resolveFilenameOfIncludeOrNull(potentialInclude);
+		if (fileName!=null){
+			return fileName;
+		}
+		return resolveFilenameOfDiagramMacroOrNull(potentialInclude);
+	}
+	
+	public static String resolveFilenameOfDiagramMacroOrNull(String potentialInclude) {
+		if (potentialInclude==null){
+			return null;
+		}
+		String fileName = resolveFilenameOfMacroOrNull(potentialInclude, "ditaa");
+		if (fileName!=null){
+			return fileName;
+		}
+		return resolveFilenameOfMacroOrNull(potentialInclude, "plantuml");
+	}
+	
+	public static String resolveFilenameOfMacroOrNull(String potentialInclude, String macroName) {
+		if (potentialInclude==null){
+			return null;
+		}
+		String prefix = macroName+"::";
+		if (potentialInclude.startsWith(prefix)){
+			int index = potentialInclude.indexOf("[");
+			if (index==-1){
+				return null;
+			}
+			String fileName = potentialInclude.substring(0,index);
+			fileName= fileName.substring(prefix.length());
+			return fileName;
+		}
+		return null;
+	}
+	
 	/**
 	 * Resolves filenames from fullstrings of an potential include.<br><br>
 	 * Example:<br>

@@ -81,6 +81,10 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new SingleLineRule("*", "*", boldText, (char) -1, true));
 		
 		rules.add(new AsciiDoctorLineStartsWithRule("include::", "]", false, includeKeyword));
+		/* add ditaa and plantuml macros as "include" too */
+		rules.add(new AsciiDoctorLineStartsWithRule("plantuml::", "]", false, includeKeyword));
+		rules.add(new AsciiDoctorLineStartsWithRule("ditaa::", "]", false, includeKeyword));
+		
 		rules.add(new AsciiDoctorLineStartsWithRule("image::", "]", false, asciidoctorCommand));
 		rules.add(new AsciiDoctorLineStartsWithRule("ifdef::", "]", false, asciidoctorCommand));
 		rules.add(new AsciiDoctorLineStartsWithRule("endif::", "]", false, asciidoctorCommand));
