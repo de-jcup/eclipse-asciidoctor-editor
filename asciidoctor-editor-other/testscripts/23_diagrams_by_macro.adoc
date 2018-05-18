@@ -1,0 +1,7 @@
+= Macro usage of diagrams
+
+== Plantuml 
+plantuml::diagrams/diagram1.plantuml[format=svg, alt="Class diagram of target and install setup architecture"] 
+
+== Ditaa
+ditaa::diagrams/diagram2.ditaa[format=png, alt="Diagram about kubernetes deployment architecture"] 

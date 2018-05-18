@@ -296,6 +296,7 @@ public class AsciiDoctorWrapper {
 		}
 		if (isTocVisible()){
 			attrBuilder.attribute("toc","left");
+			attrBuilder.attribute("toclevel","6");
 		}
 		if (targetImagesDir!=null){
 			attrBuilder.imagesDir(targetImagesDir.getAbsolutePath());
