@@ -42,10 +42,10 @@ import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 
 public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements IDoubleClickListener {
-	private static ImageDescriptor IMG_DESC_LINKED = EclipseUtil.createImageDescriptor("/icons/outline/synced.png",
-			AsciiDoctorEditorActivator.PLUGIN_ID);
-	private static ImageDescriptor IMG_DESC_NOT_LINKED = EclipseUtil
-			.createImageDescriptor("/icons/outline/sync_broken.png", AsciiDoctorEditorActivator.PLUGIN_ID);
+	private static ImageDescriptor IMG_DESC_LINKED = createOutlineImageDescriptor("synced.png");
+	private static ImageDescriptor IMG_DESC_NOT_LINKED =  createOutlineImageDescriptor("sync_broken.png");
+	private static ImageDescriptor IMG_DESC_EXPAND_ALL =  createOutlineImageDescriptor("expandall.png");
+	private static ImageDescriptor IMG_DESC_COLLAPSE_ALL =  createOutlineImageDescriptor("collapseall.png");
 
 	private AsciiDoctorEditorTreeContentProvider contentProvider;
 	private Object input;
@@ -86,6 +86,8 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 		IActionBars actionBars = getSite().getActionBars();
 		
 		IToolBarManager toolBarManager = actionBars.getToolBarManager();
+		toolBarManager.add(new ExpandAllAction());
+		toolBarManager.add(new CollapseAllAction());
 		toolBarManager.add(toggleLinkingAction);
 		
 		IMenuManager viewMenuManager = actionBars.getMenuManager();
@@ -221,6 +223,30 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 
 	}
 
+	class CollapseAllAction extends Action {
+
+		private CollapseAllAction() {
+			setImageDescriptor(IMG_DESC_COLLAPSE_ALL);
+			setText("Collapse all");
+		}
+
+		@Override
+		public void run() {
+			getTreeViewer().collapseAll();
+		}
+	}
+	class ExpandAllAction extends Action {
+
+		private ExpandAllAction() {
+			setImageDescriptor(IMG_DESC_EXPAND_ALL);
+			setText("Expand all");
+		}
+
+		@Override
+		public void run() {
+			getTreeViewer().expandAll();
+		}
+	}
 	protected ImageDescriptor getImageDescriptionForLinked() {
 		return IMG_DESC_LINKED;
 	}
@@ -228,5 +254,12 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 	protected ImageDescriptor getImageDescriptionNotLinked() {
 		return IMG_DESC_NOT_LINKED;
 	}
+	
+	private static ImageDescriptor createOutlineImageDescriptor(String name){
+		return EclipseUtil.createImageDescriptor("/icons/outline/"+name,
+				AsciiDoctorEditorActivator.PLUGIN_ID);	
+	}
+	
+	
 
 }
