@@ -118,6 +118,11 @@ public class AsciiDoctorEditorPreferences {
 		}
 		return data;
 	}
+	
+	public int getIntegerPreference(AsciiDoctorEditorPreferenceConstants id) {
+		int data = getPreferenceStore().getInt(id.getId());
+		return data;
+	}
 
 	public boolean getBooleanPreference(AsciiDoctorEditorPreferenceConstants id) {
 		boolean data = getPreferenceStore().getBoolean(id.getId());

@@ -39,6 +39,9 @@ import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.SafeMode;
 import org.asciidoctor.ast.DocumentHeader;
 
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+
 public class AsciiDoctorWrapper {
 	private Path tempFolder;
 	private static FileFilter ADOC_FILE_FILTER = new ADocFilter();
@@ -296,7 +299,10 @@ public class AsciiDoctorWrapper {
 		}
 		if (isTocVisible()){
 			attrBuilder.attribute("toc","left");
-			attrBuilder.attribute("toclevel","6");
+			int tocLevels = AsciiDoctorEditorPreferences.getInstance().getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
+			if (tocLevels!=0){
+				attrBuilder.attribute("toclevels",""+tocLevels);
+			}
 		}
 		if (targetImagesDir!=null){
 			attrBuilder.imagesDir(targetImagesDir.getAbsolutePath());
@@ -320,6 +326,7 @@ public class AsciiDoctorWrapper {
 				safe(SafeMode.UNSAFE).
 				backend("html5").
 				headerFooter(tocVisible).
+				
 				attributes(attrs).
 				option("sourcemap", "true").
 				baseDir(baseDir);

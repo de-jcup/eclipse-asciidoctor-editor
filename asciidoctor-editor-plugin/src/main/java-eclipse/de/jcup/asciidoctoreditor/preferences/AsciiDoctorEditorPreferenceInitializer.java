@@ -64,6 +64,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* +++++++++++ */
 		store.setDefault(P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT.getId(), PreviewLayout.VERTICAL.getId());
 		store.setDefault(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), 5);
+		store.setDefault(P_EDITOR_TOC_LEVELS.getId(), 6);
 		
 		
 		/* +++++++++++++++++ */

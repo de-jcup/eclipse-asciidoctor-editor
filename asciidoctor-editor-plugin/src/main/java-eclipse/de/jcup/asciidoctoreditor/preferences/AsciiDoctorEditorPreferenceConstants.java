@@ -40,6 +40,8 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	
 	P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS("autoRefreshExternalBrowserInSeconds"),
 	
+	P_EDITOR_TOC_LEVELS("tocLevels"),
+	
 	;
 
 	private String id;

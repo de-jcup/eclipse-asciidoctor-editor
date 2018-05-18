@@ -68,6 +68,8 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	
 	private IntegerFieldEditor autorefreshSeconds;
 
+	private IntegerFieldEditor tocLevels;
+
 	public AsciiDoctorEditorPreferencePage() {
 		super(GRID);
 		setPreferenceStore(getPreferences().getPreferenceStore());
@@ -127,6 +129,13 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		autorefreshSeconds.getLabelControl(uiComposite).setToolTipText("This setup is for external browser preview only. 0 will turn off auto refresh.");
 		addField(autorefreshSeconds);
 		
+		
+		tocLevels = new IntegerFieldEditor(P_EDITOR_TOC_LEVELS.getId(), "TOC levels shown in preview", uiComposite);
+		tocLevels.setValidRange(0, 7);
+		tocLevels.setTextLimit(1);
+		tocLevels.getLabelControl(uiComposite).setToolTipText("0 keeps defaults from asciidoctor, other will set the wanted depth for TOC on preview only!");
+		
+		addField(tocLevels);
 		/* OTHER */
 		Composite otherComposite = new Composite(appearanceComposite, SWT.NONE);
 		GridLayout otherLayout = new GridLayout();
