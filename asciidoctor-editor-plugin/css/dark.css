@@ -6,5 +6,10 @@ IEclipsePreferences#de-jcup-asciidoctoreditor:de-jcup-asciidoctoreditor { /* pse
 		'colorTextBlocks=49,98,98'
 		'colorNormalText=192,192,192'
 		'colorHeadlines=200,50,50'
+		
+		'colorComments=63,127,95',
+		'colorIncludeKeywords=128,128,0'
+		'colorCommands=0,128,128'
+		'colorKnownVariables=97,97,97'
 }
 

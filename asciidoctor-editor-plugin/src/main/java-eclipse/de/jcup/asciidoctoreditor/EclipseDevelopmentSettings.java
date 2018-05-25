@@ -16,8 +16,10 @@
 package de.jcup.asciidoctoreditor;
 
 public interface EclipseDevelopmentSettings {
-	
+
 	public static final boolean DEBUG_TOOLBAR_ENABLED = Boolean
 			.parseBoolean(System.getProperty("asciidoctor.editor.debug.toolbar"));
+	public static final boolean OLD_STUFF_ENABLED_DARK_PREFERENCE_DEFAULTS = Boolean
+			.parseBoolean(System.getProperty("asciidoctor.editor.oldstuff.darkdefaultpreferences"));
 
 }
