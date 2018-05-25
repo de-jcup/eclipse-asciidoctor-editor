@@ -71,6 +71,7 @@ public interface AsciiDoctorEditorColorConstants {
 	public static final RGB TASK_DEFAULT_RED = rgb(128, 0, 0);
 
 	public static final RGB BLACK = rgb(0, 0, 0);
+	public static final RGB ASCIIDOC_HEADLINE_HTML = rgb(186, 57, 37); // #ba3925
 	public static final RGB RED = rgb(170, 0, 0);
 	public static final RGB GREEN = rgb(0, 170, 0);
 	public static final RGB BROWN = rgb(170, 85, 0);

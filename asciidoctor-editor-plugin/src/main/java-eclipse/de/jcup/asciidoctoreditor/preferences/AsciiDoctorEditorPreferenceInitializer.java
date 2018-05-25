@@ -72,7 +72,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* +++++++++++++++++ */
 		preferences.setDefaultColor(COLOR_NORMAL_TEXT, BLACK);
 
-		preferences.setDefaultColor(COLOR_ASCIIDOCTOR_HEADLINES, RED);
+		preferences.setDefaultColor(COLOR_ASCIIDOCTOR_HEADLINES, ASCIIDOC_HEADLINE_HTML);
 
 		preferences.setDefaultColor(COLOR_TEXT_BLOCKS, CADET_BLUE);
 		preferences.setDefaultColor(COLOR_COMMENT, GREEN_JAVA);
