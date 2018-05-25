@@ -56,7 +56,7 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
 			addField(editor);
 		}
 		/*
-		 * It seems #66 does work well. But I had a problem with an older version of eclipse where the CSS parts did not work well. So if there are
+		 * It seems #60 #63 does work well. But I had a problem with an older version of eclipse where the CSS parts did not work well. So if there are
 		 * any users having the same problem I want to have the possibility to give them a fast workaround by setting system property on eclipse start
 		 */
 		if (EclipseDevelopmentSettings.OLD_STUFF_ENABLED_DARK_PREFERENCE_DEFAULTS){
