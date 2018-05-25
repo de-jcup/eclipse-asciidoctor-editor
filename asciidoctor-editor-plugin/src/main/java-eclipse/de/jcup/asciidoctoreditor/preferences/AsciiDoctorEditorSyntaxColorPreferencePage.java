@@ -33,6 +33,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorColorConstants;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
+import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 
 public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -54,6 +55,20 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
 			editorMap.put(colorIdentifier, editor);
 			addField(editor);
 		}
+		/*
+		 * It seems #66 does work well. But I had a problem with an older version of eclipse where the CSS parts did not work well. So if there are
+		 * any users having the same problem I want to have the possibility to give them a fast workaround by setting system property on eclipse start
+		 */
+		if (EclipseDevelopmentSettings.OLD_STUFF_ENABLED_DARK_PREFERENCE_DEFAULTS){
+			addOldStuffDarkThemeDefaultsButton(parent, editorMap);
+		}
+			
+		
+	}
+
+	
+	private void addOldStuffDarkThemeDefaultsButton(Composite parent,
+			Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap) {
 		Button restoreDarkThemeColorsButton= new Button(parent,  SWT.PUSH);
 		restoreDarkThemeColorsButton.setText("Restore Defaults for Dark Theme");
 		restoreDarkThemeColorsButton.setToolTipText("Same as 'Restore Defaults' but for dark themes.\n Editor makes just a suggestion, you still have to apply or cancel the settings.");
@@ -82,8 +97,6 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
 			}
 			
 		});
-			
-		
 	}
 	
 }
