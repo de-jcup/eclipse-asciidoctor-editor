@@ -44,7 +44,7 @@ http://mrhaki.blogspot.de/2014/12/awesome-asciidoctor-span-cell-over-rows.html
 
 [options="header",cols="1,2,2"]
 |===
-   |Name|Link  | Description
+   |Name       |Link                                                        | Description
    |Source     | https://github.com/de-jcup/eclipse-asciidoctor-editor      | GIT 
    |Wiki       | https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki | Wiki
 |===
