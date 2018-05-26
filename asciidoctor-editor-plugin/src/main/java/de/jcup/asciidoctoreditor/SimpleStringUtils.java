@@ -17,6 +17,7 @@ package de.jcup.asciidoctoreditor;
 
 public class SimpleStringUtils {
 	private static final String EMPTY = "";
+	private static WordEndDetector REDUCED_VARIABLE_WORDEND_DETECTOR = new ReducedVariableWordEndDetector();
 
 	public static boolean equals(String text1, String text2) {
 		if (text1 == null) {
@@ -67,9 +68,9 @@ public class SimpleStringUtils {
 	 * @return word, or empty string, never <code>null</code>
 	 */
 	public static String nextReducedVariableWord(String string, int offset) {
-		return nextWord(string, offset, new ReducedVariableWordEndDetector());
+		return nextWord(string, offset, REDUCED_VARIABLE_WORDEND_DETECTOR);
 	}
-
+	
 	/**
 	 * Returns next word until word end detected from given offset
 	 * 

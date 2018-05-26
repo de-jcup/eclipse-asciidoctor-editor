@@ -138,7 +138,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 		for (AsciiDoctorHeadline headline : model.getHeadlines()) {
 			Item item = new Item();
 			item.name = headline.getName();
-			int deep = headline.getDeep();
+			int deep = headline.getDeep()-1;// = is level 0 so -1
 			item.prefix = "H"+deep+":";
 			item.type = ItemType.HEADLINE;
 			item.offset = headline.getPosition();
