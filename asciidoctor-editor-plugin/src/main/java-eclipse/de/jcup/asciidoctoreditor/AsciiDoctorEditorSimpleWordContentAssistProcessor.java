@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.Point;
 
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorAdmonitionParagraphKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSectionTitleKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -210,6 +211,10 @@ public class AsciiDoctorEditorSimpleWordContentAssistProcessor implements IConte
 		for (DocumentKeyWord keyword : AsciiDoctorCommandKeyWords.values()) {
 			addKeyWord(keyword);
 		}
+		for (DocumentKeyWord keyword : AsciiDoctorSectionTitleKeyWords.values()) {
+			addKeyWord(keyword);
+		}
+		
 		for (DocumentKeyWord keyword : AsciiDoctorSpecialAttributesKeyWords.values()) {
 			addKeyWord(keyword);
 		}

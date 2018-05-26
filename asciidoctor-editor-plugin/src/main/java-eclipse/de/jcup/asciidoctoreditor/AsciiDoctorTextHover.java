@@ -37,6 +37,7 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPrefere
 
 public class AsciiDoctorTextHover implements ITextHover, ITextHoverExtension {
 
+	private static final WordEndDetector WHITE_SPACE_END_DETECTOR = new WhitespaceWordEndDetector();
 	private IInformationControlCreator creator;
 	private String bgColor;
 	private String fgColor;
@@ -88,6 +89,21 @@ public class AsciiDoctorTextHover implements ITextHover, ITextHoverExtension {
 		}
 		int offset = hoverRegion.getOffset();
 		String word = SimpleStringUtils.nextReducedVariableWord(text, offset);
+		if (word.isEmpty()){
+			/* special case for headlines - reduction detector does remove "=" always */
+			String section = SimpleStringUtils.nextWord(text, offset, WHITE_SPACE_END_DETECTOR);
+			if (section.startsWith("=")){
+				StringBuilder sb = new StringBuilder();
+				for (char c: section.toCharArray()){
+					if (c=='='){
+						sb.append(c);
+					}else{
+						break;
+					}
+				}
+				word = sb.toString();
+			}
+		}
 		/* reduce words like include::xyz to 'include::' */
 		/* a part like :icons: will not be influenced */
 		int indexOf = word.indexOf("::");
