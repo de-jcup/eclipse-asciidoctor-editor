@@ -102,9 +102,12 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
+import de.jcup.asciidoctoreditor.toolbar.BoldFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertAdmonitionAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertSectionTitleAction;
+import de.jcup.asciidoctoreditor.toolbar.ItalicFormatAction;
+import de.jcup.asciidoctoreditor.toolbar.MonospacedFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
@@ -233,6 +236,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		IToolBarManager asciiDocToolBar = new ToolBarManager(coolBarManager.getStyle());
 		asciiDocToolBar.add(new InsertSectionTitleAction(this));
+		
+		asciiDocToolBar.add(new ItalicFormatAction(this));
+		asciiDocToolBar.add(new BoldFormatAction(this));
+		asciiDocToolBar.add(new MonospacedFormatAction(this));
+		
 		asciiDocToolBar.add(new NewTableInsertAction(this));
 		asciiDocToolBar.add(new InsertAdmonitionAction(this));
 		asciiDocToolBar.add(new NewCodeBlockInsertAction(this));

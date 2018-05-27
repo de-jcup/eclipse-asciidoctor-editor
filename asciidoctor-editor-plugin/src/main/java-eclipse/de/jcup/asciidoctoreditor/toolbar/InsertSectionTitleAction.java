@@ -35,7 +35,7 @@ public class InsertSectionTitleAction extends ToolbarAction implements IMenuCrea
 
 	public InsertSectionTitleAction(AsciiDoctorEditor asciiDoctorEditor) {
 		super(asciiDoctorEditor);
-		valueVisibleOnToolbar = AsciiDoctorSectionTitleKeyWords.H2;
+		valueVisibleOnToolbar = AsciiDoctorSectionTitleKeyWords.H1;
 		initUI();
 	}
 
@@ -82,7 +82,7 @@ public class InsertSectionTitleAction extends ToolbarAction implements IMenuCrea
 	}
 
 	/**
-	 * Common helper class to handle admonition parts
+	 * Common helper class to handle section level parts
 	 * @author Albert Tregnaghi
 	 *
 	 */
@@ -107,7 +107,7 @@ public class InsertSectionTitleAction extends ToolbarAction implements IMenuCrea
 		}
 	
 		public Action buildAction(AsciiDoctorSectionTitleKeyWords keyword) {
-			Action action = new InsertTextAction(asciiDoctorEditor, getText(keyword), getDescriptor(keyword)) {
+			Action action = new FormatTextAction(asciiDoctorEditor, getText(keyword), getDescriptor(keyword)) {
 	
 				@Override
 				public void run() {
@@ -115,10 +115,15 @@ public class InsertSectionTitleAction extends ToolbarAction implements IMenuCrea
 					valueVisibleOnToolbar=keyword;
 					initImageAndText();
 				}
-				
+
 				@Override
-				protected String getInsertText(InsertTextContext context) {
-					return keyword.getText()+" \n";
+				protected String formatPrefix() {
+					return keyword.getText()+" ";
+				}
+
+				@Override
+				protected String formatPostfix() {
+					return "\n";
 				}
 			};
 			return action;

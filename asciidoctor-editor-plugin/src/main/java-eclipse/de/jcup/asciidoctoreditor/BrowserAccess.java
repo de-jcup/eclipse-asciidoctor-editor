@@ -99,11 +99,20 @@ public class BrowserAccess {
 		}
 	}
 
-	public void safeBrowserSetText(String html) {
+	public void safeBrowserSetText(final String html) {
 		if (isBrowserNotAvailable()) {
 			return;
 		}
-		browser.setText(html);
+		EclipseUtil.safeAsyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (isBrowserNotAvailable()) {
+					return;
+				}
+				browser.setText(html);
+			}
+		});
 	}
 
 	public String getUrl() {

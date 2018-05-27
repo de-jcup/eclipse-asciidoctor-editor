@@ -33,7 +33,7 @@ public class NewCodeBlockInsertAction extends InsertTextAction {
 	private static final String XML = "XML";
 	private static final String JAVA = "Java";
 	private static final String RUBY = "Ruby";
-	private static ImageDescriptor IMG_NEW_CODE_BLOCK = createToolbarImageDescriptor("source.png");
+	private static ImageDescriptor IMG_NEW_CODE_BLOCK = createToolbarImageDescriptor("insert_codeblock.png");
 
 	public NewCodeBlockInsertAction(AsciiDoctorEditor editor) {
 		super(editor, "Insert a code block", IMG_NEW_CODE_BLOCK);
