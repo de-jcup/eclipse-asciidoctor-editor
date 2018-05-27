@@ -110,6 +110,7 @@ import de.jcup.asciidoctoreditor.toolbar.ItalicFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.MonospacedFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
+import de.jcup.asciidoctoreditor.toolbar.NewLinkInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
@@ -242,6 +243,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		asciiDocToolBar.add(new MonospacedFormatAction(this));
 		
 		asciiDocToolBar.add(new NewTableInsertAction(this));
+		asciiDocToolBar.add(new NewLinkInsertAction(this));
 		asciiDocToolBar.add(new InsertAdmonitionAction(this));
 		asciiDocToolBar.add(new NewCodeBlockInsertAction(this));
 

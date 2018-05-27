@@ -125,4 +125,15 @@ public class SimpleStringUtils {
 		}
 		return sb.toString();
 	}
+
+	/**
+	 * @param string
+	 * @return <code>true</code> when given string is null or contains only whitespaces or an empty string
+	 */
+	public static boolean isEmpty(String string) {
+		if (string==null){
+			return true;
+		}
+		return string.trim().isEmpty();
+	}
 }
