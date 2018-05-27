@@ -18,6 +18,10 @@ package de.jcup.asciidoctoreditor.toolbar;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
@@ -25,6 +29,7 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
 
 public abstract class InsertTextAction extends ToolbarAction {
+	// see
 	// https://wiki.eclipse.org/FAQ_How_do_I_insert_text_in_the_active_text_editor%3F
 	protected abstract String getInsertText(InsertTextContext context);
 
@@ -37,35 +42,63 @@ public abstract class InsertTextAction extends ToolbarAction {
 	@Override
 	public void run() {
 		InsertTextContext context = new InsertTextContext();
+		ITextEditor editor = asciiDoctorEditor;
+
+		ISelection selection = editor.getSelectionProvider().getSelection();
+		if (selection instanceof ITextSelection) {
+			ITextSelection ts = (ITextSelection) selection;
+			context.selectedText = ts.getText();
+			context.selectedLength = ts.getLength();
+			context.selectedOffset = ts.getOffset();
+		}
 		beforeInsert(context);
-		if (context.canceled){
+
+		if (context.canceled) {
 			return;
 		}
 		String toInsert = getInsertText(context);
 		if (toInsert == null || toInsert.length() == 0) {
 			return;
 		}
-		ITextEditor editor = asciiDoctorEditor;
+
 		IDocumentProvider dp = editor.getDocumentProvider();
 		IDocument doc = dp.getDocument(editor.getEditorInput());
-		int offset;
 		try {
-			offset = asciiDoctorEditor.getLastCaretPosition();
-			doc.replace(offset, 0, toInsert);
+			int offsetBefore = context.selectedOffset;//asciiDoctorEditor.getLastCaretPosition();
+			if (offsetBefore==-1){
+				offsetBefore = asciiDoctorEditor.getLastCaretPosition();
+			}
+			doc.replace(offsetBefore, context.selectedLength, toInsert);
+			if (context.nextOffset != -1) {
+				Control control = editor.getAdapter(Control.class);
+				if (control instanceof StyledText) {
+					StyledText text = (StyledText) control;
+					text.setCaretOffset(context.nextOffset);
+				}
+			}
 		} catch (BadLocationException e) {
 			AsciiDoctorEditorUtil.logError("was not able to insert " + toInsert, e);
 		}
 		afterInsert(context);
 	}
-	protected void  afterInsert(InsertTextContext context) {
+
+	protected void afterInsert(InsertTextContext context) {
 	}
-	
+
 	protected void beforeInsert(InsertTextContext context) {
 	}
-	
-	protected class InsertTextContext{
+
+	protected class InsertTextContext {
+		/**
+		 * Next offset after insert is done and not canceled. If -1 (default) the 
+		 * cursor location will be still on cursor before inset - so before inserted text
+		 */
+		public int nextOffset = -1;
+		public int selectedOffset;
+		public int selectedLength;
+		public String selectedText;
 		protected Object data;
-		protected boolean canceled; 
+		protected boolean canceled;
 	}
 
 }
