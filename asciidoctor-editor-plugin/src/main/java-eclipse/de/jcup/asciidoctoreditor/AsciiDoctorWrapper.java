@@ -67,7 +67,7 @@ public class AsciiDoctorWrapper {
 			cachedImagesPath = resolveImagesDirPath(baseDir);
 		}
 		try{
-			getAsciiDoctor().convertFile(asciiDocFile, getDefaultOptions(baseDir, cachedImagesPath));
+			getAsciiDoctor().convertFile(asciiDocFile, getDefaultOptions(asciiDocFile, baseDir, cachedImagesPath));
 		}catch(Exception e){
 			logAdapter.logError("Cannot convert to html:"+asciiDocFile, e);
 			throw e;
@@ -184,7 +184,7 @@ public class AsciiDoctorWrapper {
 		File baseFile = new File(".");
 		String imagesPath = asciiDoc.indexOf(":imagesDir") == -1 ? baseFile.getAbsolutePath() : null;
 		try{
-			return getAsciiDoctor().convert(asciiDoc, getDefaultOptions(baseFile, imagesPath));
+			return getAsciiDoctor().convert(asciiDoc, getDefaultOptions(null, baseFile, imagesPath));
 		}catch(Exception e){
 			logAdapter.logError("Cannot convert html from string", e);
 			throw e;
@@ -263,7 +263,7 @@ public class AsciiDoctorWrapper {
 		}
 	}
 
-	private Map<String, Object> getDefaultOptions(File baseDir, String sourceImagesDir) {
+	private Map<String, Object> getDefaultOptions(File asciidocFile, File baseDir, String sourceImagesDir) {
 		/* @formatter:off*/
 		Attributes attrs;
 		File targetImagesDir =null;
@@ -329,7 +329,7 @@ public class AsciiDoctorWrapper {
 				
 				attributes(attrs).
 				option("sourcemap", "true").
-				baseDir(baseDir);
+				baseDir(asciidocFile !=null ? asciidocFile.getParentFile(): baseDir);
 		/* @formatter:on*/
 		return opts.asMap();
 	}
