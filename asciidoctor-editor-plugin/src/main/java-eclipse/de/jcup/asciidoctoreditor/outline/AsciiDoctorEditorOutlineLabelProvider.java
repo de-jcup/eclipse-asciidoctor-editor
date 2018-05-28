@@ -34,7 +34,7 @@ import de.jcup.asciidoctoreditor.outline.ItemType;
 public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider {
 
 	private static final String ICON_HEADLINE = "headline.gif";
-	private static final String ICON_INCLUDE=  "include.gif";
+	private static final String ICON_INCLUDE=  "gotoobj_tsk.png";
 	private static final String ICON_ERROR ="error_tsk.png";
 	private static final String ICON_INFO ="info_tsk.png";
 
