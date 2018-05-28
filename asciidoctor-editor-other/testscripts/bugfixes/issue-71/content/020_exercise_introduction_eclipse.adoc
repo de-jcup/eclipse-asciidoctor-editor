@@ -1,0 +1,3 @@
+include::../exercise_settings.adoc[]
+
+include::./026_exercise_setup.adoc[]
