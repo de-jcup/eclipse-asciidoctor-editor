@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -156,7 +157,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private Composite topComposite;
 
-	private CoolBarManager coolBarManager;
+	protected CoolBarManager coolBarManager;
 
 	private boolean previewVisible;
 
@@ -164,10 +165,28 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private File temporaryExternalPreviewFile;
 
+	private ContentTransformer contentTransformer;
+
+	private long editorTempIdentifier;
+
 	public AsciiDoctorEditor() {
-		setSourceViewerConfiguration(new AsciiDoctorSourceViewerConfiguration(this));
+		this.editorTempIdentifier=System.nanoTime();
+		setSourceViewerConfiguration(createSourceViewerConfig());
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
 		asciidoctorWrapper = new AsciiDoctorWrapper(AsciiDoctorEclipseLogAdapter.INSTANCE);
+
+		contentTransformer = createCustomContentTransformer();
+		if (contentTransformer == null) {
+			contentTransformer = NotChangingContentTransformer.INSTANCE;
+		}
+	}
+
+	protected SourceViewerConfiguration createSourceViewerConfig() {
+		return new AsciiDoctorSourceViewerConfiguration(this);
+	}
+
+	protected ContentTransformer createCustomContentTransformer() {
+		return null;
 	}
 
 	/**
@@ -240,11 +259,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		IToolBarManager asciiDocToolBarManager = new ToolBarManager(coolBarManager.getStyle());
 		asciiDocToolBarManager.add(new InsertSectionTitleAction(this));
-		
+
 		asciiDocToolBarManager.add(new ItalicFormatAction(this));
 		asciiDocToolBarManager.add(new BoldFormatAction(this));
 		asciiDocToolBarManager.add(new MonospacedFormatAction(this));
-		
+
 		asciiDocToolBarManager.add(new NewTableInsertAction(this));
 		asciiDocToolBarManager.add(new NewLinkInsertAction(this));
 		asciiDocToolBarManager.add(new InsertAdmonitionAction(this));
@@ -254,7 +273,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		viewToolBarManager.add(new ChangeLayoutAction(this));
 		viewToolBarManager.add(new RebuildAsciiDocViewAction(this));
 		viewToolBarManager.add(new ToggleTOCAction(this));
-		viewToolBarManager.add(new Separator("gargi"));
+		viewToolBarManager.add(new Separator("simple"));
 		viewToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
 
 		IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
@@ -270,9 +289,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			debugToolBar.add(new AddErrorDebugAction(this));
 			coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
 		}
-		
-		/* bugfix - coolbar manager does not use theme colors correctly so we try
-		 * with transparent background color 
+
+		/*
+		 * bugfix - coolbar manager does not use theme colors correctly so we
+		 * try with transparent background color
 		 */
 		CoolBar coolbarControl = coolBarManager.getControl();
 		Composite parent = coolbarControl.getParent();
@@ -422,6 +442,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			if (configuration instanceof AsciiDoctorSourceViewerConfiguration) {
 				AsciiDoctorSourceViewerConfiguration gconf = (AsciiDoctorSourceViewerConfiguration) configuration;
 				gconf.updateTextScannerDefaultColorToken();
+			}else if (configuration instanceof AsciiDoctorPlantUMLSourceViewerConfiguration) {
+				AsciiDoctorPlantUMLSourceViewerConfiguration gconf = (AsciiDoctorPlantUMLSourceViewerConfiguration) configuration;
+				gconf.updateTextScannerDefaultColorToken();
 			}
 			viewer.configure(configuration);
 		}
@@ -503,9 +526,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		String errorLevelId = store.getString(VALIDATE_ERROR_LEVEL.getId());
 		AsciiDoctorEditorValidationErrorLevel errorLevel = AsciiDoctorEditorValidationErrorLevel.fromId(errorLevelId);
 
-		if (validateGraphviz){
+		if (validateGraphviz) {
 			modelBuilder.setGraphVizCheckSupport(CheckGraphviz.INSTANCE);
-		}else{
+		} else {
 			modelBuilder.setGraphVizCheckSupport(null);
 		}
 		safeAsyncExec(() -> {
@@ -634,14 +657,19 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			File editorFile = getEditorFile();
 
 			String content = null;
+			File fileToConvertIntoHTML = null;
 			if (editorFile == null) {
 				String asciiDoc = getDocumentText();
-				content = asciidoctorWrapper.convertToHTML(asciiDoc);
+				fileToConvertIntoHTML = resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(asciiDoc);
 			} else {
-				/* content exists as simple file */
-				asciidoctorWrapper.convertToHTML(editorFile);
-				content = readFileCreatedByAsciiDoctor();
+				fileToConvertIntoHTML = resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(editorFile);
 			}
+			if (fileToConvertIntoHTML == null) {
+				return;
+			}
+			/* content exists as simple file */
+			asciidoctorWrapper.convertToHTML(fileToConvertIntoHTML);
+			content = readFileCreatedByAsciiDoctor(fileToConvertIntoHTML);
 			int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance()
 					.getAutoRefreshInSecondsForExternalBrowser();
 			htmlInternalPreview = asciidoctorWrapper.buildHTMLWithCSS(content, 0);
@@ -693,8 +721,79 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	}
 
-	protected String readFileCreatedByAsciiDoctor() {
-		File generatedFile = asciidoctorWrapper.getTempFileFor(getEditorFile(), TemporaryFileType.ORIGIN);
+	protected File resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(String asciiDoc) throws IOException {
+		File fileToConvertIntoHTML;
+		String text;
+		if (contentTransformer.isTransforming(asciiDoc)){
+			text=contentTransformer.transform(asciiDoc);
+		}else{
+			text=asciiDoc;
+		}
+		fileToConvertIntoHTML = resolveFileToConvertToHTML("no_origin_file_defined", text);
+		return fileToConvertIntoHTML;
+	}
+
+	protected File resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(File editorFile) throws IOException {
+		if (editorFile == null || !editorFile.exists()) {
+			return null;
+		}
+
+		String originText = readFileToString(editorFile);
+		if (originText == null) {
+			return null;
+		}
+		if (!contentTransformer.isTransforming(originText)) {
+			return editorFile;
+		}
+		return resolveFileToConvertToHTML(editorFile.getName(), originText);
+	}
+
+	private File resolveFileToConvertToHTML(String filename, String text) throws IOException {
+		String tempDir = System.getProperty("java.io.tmpdir");
+		File newTempFolder = new File(tempDir, "asciidoctor-editor-temp");
+
+		if (!newTempFolder.exists() && !newTempFolder.mkdirs()) {
+			throw new IOException("Was not able to create tempfolder:" + newTempFolder);
+		}
+
+		File newTempFile = new File(newTempFolder, editorTempIdentifier + "_" + filename);
+		if (newTempFile.exists()){
+			if (!newTempFile.delete()){
+				throw new IOException("Unable to delete old tempfile:"+newTempFile);
+			}
+		}
+		newTempFile.deleteOnExit();
+
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(newTempFile))) {
+			String transformed = contentTransformer.transform(text);
+			bw.write(transformed);
+			bw.close();
+			return newTempFile;
+		} catch (IOException e) {
+			logError("Was not able to write transformed file:" + filename, e);
+			return null;
+		}
+	}
+
+	private String readFileToString(File editorFile) {
+		String originText = null;
+		StringBuilder sb = new StringBuilder();
+		try (BufferedReader br = new BufferedReader(new FileReader(editorFile))) {
+			String line = "";
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+				sb.append("\n");
+			}
+			br.close();
+			originText = sb.toString();
+		} catch (IOException e) {
+			logError("Was not able to read file:" + editorFile, e);
+		}
+		return originText;
+	}
+
+	protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML) {
+		File generatedFile = asciidoctorWrapper.getTempFileFor(fileToConvertIntoHTML, TemporaryFileType.ORIGIN);
 		try (BufferedReader br = new BufferedReader(new FileReader(generatedFile))) {
 			String line = null;
 			StringBuilder htmlSB = new StringBuilder();
@@ -763,16 +862,19 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 		return layout;
 	}
+
 	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob() {
 		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(false);
 	}
+
 	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(boolean forceInitialize) {
 
 		if (!forceInitialize && outputBuildSemaphore.availablePermits() == 0) {
 			/* already rebuilding -so ignore */
 			return;
 		}
-		boolean initializing = forceInitialize || temporaryInternalPreviewFile == null || !temporaryExternalPreviewFile.exists();
+		boolean initializing = forceInitialize || temporaryInternalPreviewFile == null
+				|| !temporaryExternalPreviewFile.exists();
 
 		try {
 			outputBuildSemaphore.acquire();
@@ -866,31 +968,33 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 		Thread t = new Thread(new WaitForGeneratedFileAndShowInsideIternalPreviewRunner());
 		String name = "";
-		if (temporaryExternalPreviewFile!=null){
-			name=temporaryInternalPreviewFile.getName();
-		}else{
-			name="undefined";
+		if (temporaryExternalPreviewFile != null) {
+			name = temporaryInternalPreviewFile.getName();
+		} else {
+			name = "undefined";
 		}
-		t.setName("asciidoctor-editor-ensure:"+name);
+		t.setName("asciidoctor-editor-ensure:" + name);
 		t.start();
 	}
 
 	private class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements Runnable {
 		@Override
 		public void run() {
-			long start= System.currentTimeMillis();
+			long start = System.currentTimeMillis();
 			boolean aquired = false;
-			try{
-				while (temporaryInternalPreviewFile==null || !temporaryInternalPreviewFile.exists()){
-					if (System.currentTimeMillis()-start>20000){
-						// after 20 seconds there seems to be no chance to get the generated preview file back
-						browserAccess.safeBrowserSetText("<html><body><h3>Preview file generation timed out, so preview not available.</h3></body></html>");
+			try {
+				while (temporaryInternalPreviewFile == null || !temporaryInternalPreviewFile.exists()) {
+					if (System.currentTimeMillis() - start > 20000) {
+						// after 20 seconds there seems to be no chance to get
+						// the generated preview file back
+						browserAccess.safeBrowserSetText(
+								"<html><body><h3>Preview file generation timed out, so preview not available.</h3></body></html>");
 						return;
 					}
 					Thread.sleep(300);
 				}
 				aquired = outputBuildSemaphore.tryAcquire(5, TimeUnit.SECONDS);
-				
+
 				safeAsyncExec(() -> {
 
 					try {
@@ -915,15 +1019,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 					}
 				});
 
-				
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-			}finally{
-				if (aquired==true){
+			} finally {
+				if (aquired == true) {
 					outputBuildSemaphore.release();
 				}
 			}
-			
+
 		}
 	}
 
@@ -995,7 +1098,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		return model;
 	}
 
-	private IDocumentProvider createDocumentProvider(IEditorInput input) {
+	protected IDocumentProvider createDocumentProvider(IEditorInput input) {
 		if (input instanceof FileStoreEditorInput) {
 			return new AsciiDoctorTextFileDocumentProvider();
 		} else {
@@ -1015,10 +1118,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 				return;
 			}
 
-			/*
-			 * TODO ATR, 03.02.2017: there should be an easier approach to get
-			 * editors back and foreground, without syncexec
-			 */
 			safeSyncExec(() -> {
 				bgColor = ColorUtil.convertToHexColor(textWidget.getBackground());
 				fgColor = ColorUtil.convertToHexColor(textWidget.getForeground());
@@ -1049,7 +1148,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		return IMarker.SEVERITY_INFO;
 	}
 
-	private String getTitleImageName(int severity) {
+	protected String getTitleImageName(int severity) {
 		switch (severity) {
 		case IMarker.SEVERITY_ERROR:
 			return "asciidoctor-editor-with-error.png";
@@ -1158,7 +1257,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			return;
 		}
 		asciidoctorWrapper.setTocVisible(shown);
-		/* TOC building does always lead to a long time running task, at least
+		/*
+		 * TOC building does always lead to a long time running task, at least
 		 * inside preview - so we show the initializing info with progressbar
 		 */
 		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(true);

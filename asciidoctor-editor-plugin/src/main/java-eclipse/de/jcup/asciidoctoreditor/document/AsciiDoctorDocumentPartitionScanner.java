@@ -61,7 +61,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		
 		aLineStartsWith("|===",rules,asciidoctorCommand);
 
-		aLineStartsWith("NOTE:",rules,asciidoctorCommand,true);
+		aLineStartsWith("PLANTUML_NOTE:",rules,asciidoctorCommand,true);
 		aLineStartsWith("TIP:",rules,asciidoctorCommand,true);
 		aLineStartsWith("IMPORTANT:",rules,asciidoctorCommand,true);
 		aLineStartsWith("WARNING:",rules,asciidoctorCommand,true);
