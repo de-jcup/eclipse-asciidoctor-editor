@@ -50,9 +50,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		List<IPredicateRule> rules = new ArrayList<>();
 		
 		rules.add(new AsciiDoctorVariableRule(variables));
-
-		rules.add(new SingleLineRule("http://", " ", hyperlink, (char) -1, true));
-		rules.add(new SingleLineRule("https://", " ", hyperlink, (char) -1, true));
+		rules.add(new AsciiDoctorURLHyperlinkRule(hyperlink));
 		
 		aLineStartsWith("= ",rules,headline);
 		aLineStartsWith("== ",rules,headline);
