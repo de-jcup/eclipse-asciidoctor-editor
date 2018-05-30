@@ -181,6 +181,8 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		addPresentation(reconciler, HEADLINE.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_HEADLINES), SWT.BOLD);
 		addPresentation(reconciler, INCLUDE_KEYWORD.getId(), getPreferences().getColor(COLOR_INCLUDE_KEYWORD),
 				SWT.BOLD);
+		addPresentation(reconciler, KNOWN_VARIABLES.getId(), getPreferences().getColor(COLOR_KNOWN_VARIABLES),
+				SWT.BOLD);
 
 		return reconciler;
 	}

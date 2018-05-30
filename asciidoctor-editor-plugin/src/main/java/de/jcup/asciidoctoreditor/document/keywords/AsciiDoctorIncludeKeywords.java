@@ -15,25 +15,21 @@
  */
 package de.jcup.asciidoctoreditor.document.keywords;
 
-public enum AsciiDoctorCommandKeyWords implements StartLineAndHavingDoubleColonsDocumentKeyword {
-
-
-	IFDEF("https://asciidoctor.org/docs/user-manual/#ifdef-directive"),
-	IFNDEF("https://asciidoctor.org/docs/user-manual/#ifndef-directive"),
-	ENDIF("https://asciidoctor.org/docs/user-manual/#ifdef-directive"),
-	
-	IMAGE("https://asciidoctor.org/docs/user-manual/#images"),
+public enum AsciiDoctorIncludeKeywords implements StartLineAndHavingDoubleColonsDocumentKeyword {
+	INCLUDE("https://asciidoctor.org/docs/user-manual/#include-directive"),
+	PLANTUML("https://asciidoctor.org/docs/asciidoctor-diagram/#diagram-block-macro"),
+	DITAA("https://asciidoctor.org/docs/asciidoctor-diagram/#diagram-block-macro"),
 	;
 
 	private String text;
 	private String tooltip;
 	private String linkToDocumentation;
 
-	private AsciiDoctorCommandKeyWords() {
+	private AsciiDoctorIncludeKeywords() {
 		this(null);
 	}
 
-	private AsciiDoctorCommandKeyWords(String linkToDocumentation) {
+	private AsciiDoctorIncludeKeywords(String linkToDocumentation) {
 		this.text = name().toLowerCase()+"::";
 		this.tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
 		this.linkToDocumentation = linkToDocumentation;

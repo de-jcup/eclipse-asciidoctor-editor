@@ -1,0 +1,30 @@
+endif
+<br><br>
+Content between the ifdef and endif directives gets included if the specified attribute is set:
+<div class='example'>
+ifdef::env-github[]
+	This content is for GitHub only.
+endif::[]
+</div>
+The syntax of the start directive is ifdef::$attribute[], where $attribute is the name of an attribute.
+<br><br>
+Keep in mind that the content is not limited to a single line. You can have any amount of content between the ifdef and endif directives.
+<br><br>
+If you have a large amount of content inside the ifdef directive, you may find it more readable to use the long-form version of the directive, in which the attribute (aka condition) is referenced again in the endif directive.
+<br><br>
+endif long-form example
+<div class='example'>
+ifdef::env-github[]
+	This content is for GitHub only.
+	
+	So much content in this section, I'd get confused reading the source without the 
+	closing `ifdef` directive.
+	
+	It isn't necessary for short blocks, but if you are conditionally including a section 
+	it may be something worth considering.
+
+	Other readers reviewing your docs source code may go cross-eyed when reading your source 
+	docs if you don't.
+
+endif::env-github[]
+</div>

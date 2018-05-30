@@ -32,8 +32,8 @@ public class DocumentKeyWords {
 		list.addAll(Arrays.asList(AsciiDoctorAdmonitionBlockKeyWords.values()));
 		list.addAll(Arrays.asList(AsciiDoctorSectionTitleKeyWords.values()));
 		list.addAll(Arrays.asList(AsciiDoctorCommandKeyWords.values()));
+		list.addAll(Arrays.asList(AsciiDoctorIncludeKeywords.values()));
 		list.addAll(Arrays.asList(AsciiDoctorSpecialAttributesKeyWords.values()));
-		
 		return list.toArray(new DocumentKeyWord[list.size()]);
 	}
 }

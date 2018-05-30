@@ -38,9 +38,11 @@ import org.eclipse.swt.graphics.Point;
 
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorAdmonitionParagraphKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorIncludeKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSectionTitleKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
+import de.jcup.asciidoctoreditor.document.keywords.StartLineAndHavingDoubleColonsDocumentKeyword;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 
 public class AsciiDoctorEditorSimpleWordContentAssistProcessor implements IContentAssistProcessor, ICompletionListener {
@@ -225,10 +227,10 @@ public class AsciiDoctorEditorSimpleWordContentAssistProcessor implements IConte
 
 	protected void addKeyWord(DocumentKeyWord keyword) {
 		String text = keyword.getText();
-		if (keyword instanceof AsciiDoctorCommandKeyWords){
-			if (keyword==AsciiDoctorCommandKeyWords.INCLUDE){
+		if (keyword instanceof StartLineAndHavingDoubleColonsDocumentKeyword){
+			if (keyword instanceof AsciiDoctorIncludeKeywords){
 				text+="fileName";
-			}else if (keyword==AsciiDoctorCommandKeyWords.IFDEF){
+			}else if (keyword==AsciiDoctorCommandKeyWords.IFDEF || keyword==AsciiDoctorCommandKeyWords.IFNDEF){
 				text+="attributeName";
 			}else if (keyword==AsciiDoctorCommandKeyWords.IMAGE){
 				text+="imageName";

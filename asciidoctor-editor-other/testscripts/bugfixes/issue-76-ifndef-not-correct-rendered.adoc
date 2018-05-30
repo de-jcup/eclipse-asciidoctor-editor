@@ -1,0 +1,11 @@
+=== Eclipse IDE
+
+ifndef::fullscript[]
+See http://www.eclipse.org
+endif::fullscript[]
+
+// hmm...
+
+:icons: font
+:imagesdir: ...
+
