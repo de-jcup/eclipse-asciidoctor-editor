@@ -34,6 +34,7 @@
             icon="icons/asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.jcup.asciidoctoreditor.AsciiDoctorEditor"
+	    default="true"  
             id="asciidoctoreditor.editors.AsciiDoctorEditor">
       </editor>
       <editor
