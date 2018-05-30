@@ -160,11 +160,11 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 
 	@Override
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-		if (sourceViewer == null)
+		if (sourceViewer == null){
 			return null;
-
-		return new IHyperlinkDetector[] { new URLHyperlinkDetector(),
-				new AsciiDoctorEditorHyperlinkDetector(adaptable) };
+		}
+		return new IHyperlinkDetector[] { new AsciiDoctorURLHyperlinkDetector(),
+				new AsciiDoctorEditorLinkTextHyperlinkDetector(adaptable) };
 	}
 
 	@Override

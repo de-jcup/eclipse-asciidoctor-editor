@@ -24,6 +24,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 
+import de.jcup.asciidoctoreditor.AsciiDocStringUtils.LinkTextData;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 
 /**
@@ -32,11 +33,11 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
  * @author Albert Tregnaghi
  *
  */
-public class AsciiDoctorEditorHyperlinkDetector extends AbstractHyperlinkDetector {
+public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlinkDetector {
 
 	private IAdaptable adaptable;
 
-	AsciiDoctorEditorHyperlinkDetector(IAdaptable editor) {
+	AsciiDoctorEditorLinkTextHyperlinkDetector(IAdaptable editor) {
 		this.adaptable = editor;
 	}
 
@@ -62,35 +63,19 @@ public class AsciiDoctorEditorHyperlinkDetector extends AbstractHyperlinkDetecto
 		}
 
 		int offsetInLine = offset - lineInfo.getOffset();
-		String leftChars = line.substring(0, offsetInLine);
-		String rightChars = line.substring(offsetInLine);
-		StringBuilder sb = new StringBuilder();
-		int offsetLeft=offset;
-		char[] left = leftChars.toCharArray();
-		for (int i=left.length-1; i>=0;i--) {
-			char c = left[i];
-			if (Character.isWhitespace(c)) {
-				break;
-			}
-			offsetLeft--;
-			sb.insert(0,c);
-		}
-		for (char c : rightChars.toCharArray()) {
-			if (Character.isWhitespace(c)) {
-				break;
-			}
-			sb.append(c);
-		}
-		String foundText = sb.toString();
+		
+		LinkTextData linkTextData = AsciiDocStringUtils.resolveLinkTextForIncludeOrHeadline(line,offset,offsetInLine);
+		
+		String foundText =linkTextData.text;
 		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrDiagram(foundText);
 		if (includeFileName!=null){
-			Region targetRegion = new Region(offsetLeft, foundText.length());
+			Region targetRegion = new Region(linkTextData.offsetLeft, foundText.length());
 			return new IHyperlink[] { new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, editor) };
 		}
 		
 		AsciiDoctorHeadline headline = editor.findAsciiDoctorHeadline(foundText);
 		if (headline != null) {
-			Region targetRegion = new Region(offsetLeft, foundText.length());
+			Region targetRegion = new Region(linkTextData.offsetLeft, foundText.length());
 			return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, headline, editor) };
 		}
 		return null;

@@ -75,4 +75,38 @@ public class AsciiDocStringUtils {
 		}
 		return null;
 	}
+
+	public static class LinkTextData{
+		LinkTextData(){
+			
+		}
+		public String text;
+		public int offsetLeft;
+	}
+	
+	public static LinkTextData resolveLinkTextForIncludeOrHeadline(String line, int offset, int offsetInLine) {
+		String leftChars = line.substring(0, offsetInLine);
+		String rightChars = line.substring(offsetInLine);
+		StringBuilder sb = new StringBuilder();
+		int offsetLeft=offset;
+		char[] left = leftChars.toCharArray();
+		for (int i=left.length-1; i>=0;i--) {
+			char c = left[i];
+			if (Character.isWhitespace(c)) {
+				break;
+			}
+			offsetLeft--;
+			sb.insert(0,c);
+		}
+		for (char c : rightChars.toCharArray()) {
+			if (Character.isWhitespace(c)) {
+				break;
+			}
+			sb.append(c);
+		}
+		LinkTextData data = new LinkTextData();
+		data.text=sb.toString();
+		data.offsetLeft=offsetLeft;
+		return data;
+	}
 }
