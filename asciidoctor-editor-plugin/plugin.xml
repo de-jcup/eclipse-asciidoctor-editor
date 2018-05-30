@@ -36,6 +36,22 @@
             class="de.jcup.asciidoctoreditor.AsciiDoctorEditor"
             id="asciidoctoreditor.editors.AsciiDoctorEditor">
       </editor>
+      <editor
+      		name="Ditaa Editor (AsciiDoctor)"
+            extensions="ditaa"
+            icon="icons/ditaa-asciidoctor-editor.png"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="de.jcup.asciidoctoreditor.AsciiDoctorDitaaEditor"
+            id="asciidoctoreditor.editors.AsciiDoctorDitaaEditor">
+      </editor>
+       <editor
+      		name="PlantUML Editor (AsciiDoctor)"
+            extensions="plantuml"
+            icon="icons/plantuml-asciidoctor-editor.png"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="de.jcup.asciidoctoreditor.AsciiDoctorPlantUMLEditor"
+            id="asciidoctoreditor.editors.AsciiDoctorPlantUMLEditor">
+      </editor>
    </extension>
    
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->

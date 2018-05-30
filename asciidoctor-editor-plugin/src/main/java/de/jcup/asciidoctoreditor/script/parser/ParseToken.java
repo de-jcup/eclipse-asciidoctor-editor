@@ -67,7 +67,7 @@ public class ParseToken {
 		StringBuilder sb = new StringBuilder();
 		
 		if (isComment()){
-			sb.append("COMMENT");
+			sb.append("PLANTUML_NOTE");
 		}
 		if (isVariable()){
 			sb.append("VARIABLE");
