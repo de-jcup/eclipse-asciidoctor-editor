@@ -27,6 +27,7 @@ import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorIncludeKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 
@@ -80,26 +81,30 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new SingleLineRule("**", "**", boldText, (char) -1, true));
 		rules.add(new SingleLineRule("*", "*", boldText, (char) -1, true));
 		
-		rules.add(new AsciiDoctorLineStartsWithRule("include::", "]", false, includeKeyword));
-		/* add ditaa and plantuml macros as "include" too */
-		rules.add(new AsciiDoctorLineStartsWithRule("plantuml::", "]", false, includeKeyword));
-		rules.add(new AsciiDoctorLineStartsWithRule("ditaa::", "]", false, includeKeyword));
-		
-		rules.add(new AsciiDoctorLineStartsWithRule("image::", "]", false, asciidoctorCommand));
-		rules.add(new AsciiDoctorLineStartsWithRule("ifdef::", "]", false, asciidoctorCommand));
-		rules.add(new AsciiDoctorLineStartsWithRule("endif::", "]", false, asciidoctorCommand));
+		buildLineStartsWithRule(rules, asciidoctorCommand, "]", AsciiDoctorCommandKeyWords.values());
+		buildLineStartsWithRule(rules, includeKeyword, "]", AsciiDoctorIncludeKeywords.values());
 
-		buildWordRules(rules, asciidoctorCommand, AsciiDoctorCommandKeyWords.values());
-
-		buildWordRules(rules, knownVariables, AsciiDoctorSpecialAttributesKeyWords.values());
+		buildLineStartsWithRule(rules, knownVariables, "", AsciiDoctorSpecialAttributesKeyWords.values());
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}
 	
+	private void buildLineStartsWithRule(List<IPredicateRule> rules, IToken token, String ending, DocumentKeyWord[] values) {
+		for (DocumentKeyWord keyWord : values) {
+			String text = keyWord.getText();
+			rules.add(new AsciiDoctorLineStartsWithRule(text, ending, false, token));
+		}
+	}
 	private void aLineStartsWith(String startsWith, List<IPredicateRule> rules, IToken token){
 		aLineStartsWith(startsWith, rules, token,false);
 	}
-	
+	private void buildWordRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {
+		for (DocumentKeyWord keyWord : values) {
+			rules.add(new ExactWordPatternRule(onlyLettersWordDetector, createWordStart(keyWord), token,
+					keyWord.isBreakingOnEof()));
+		}
+	}
+
 	private void aLineStartsWith(String startsWith, List<IPredicateRule> rules, IToken token, boolean endOnSpace){
 		String endsWith=null;
 		if (endOnSpace){
@@ -107,13 +112,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		}
 		rules.add(new AsciiDoctorLineStartsWithRule(startsWith, endsWith,false, token));
 	}
-
-	private void buildWordRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {
-		for (DocumentKeyWord keyWord : values) {
-			rules.add(new ExactWordPatternRule(onlyLettersWordDetector, createWordStart(keyWord), token,
-					keyWord.isBreakingOnEof()));
-		}
-	}
+	
 
 	private String createWordStart(DocumentKeyWord keyWord) {
 		return keyWord.getText();

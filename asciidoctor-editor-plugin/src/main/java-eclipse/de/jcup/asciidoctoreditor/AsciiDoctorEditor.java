@@ -44,6 +44,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -65,12 +66,14 @@ import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -107,8 +110,8 @@ import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertAdmonitionAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertSectionTitleAction;
 import de.jcup.asciidoctoreditor.toolbar.ItalicFormatAction;
-import de.jcup.asciidoctoreditor.toolbar.MonospacedFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
+import de.jcup.asciidoctoreditor.toolbar.MonospacedFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewLinkInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
@@ -235,37 +238,45 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	protected void initToolbar() {
 
-		IToolBarManager asciiDocToolBar = new ToolBarManager(coolBarManager.getStyle());
-		asciiDocToolBar.add(new InsertSectionTitleAction(this));
+		IToolBarManager asciiDocToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+		asciiDocToolBarManager.add(new InsertSectionTitleAction(this));
 		
-		asciiDocToolBar.add(new ItalicFormatAction(this));
-		asciiDocToolBar.add(new BoldFormatAction(this));
-		asciiDocToolBar.add(new MonospacedFormatAction(this));
+		asciiDocToolBarManager.add(new ItalicFormatAction(this));
+		asciiDocToolBarManager.add(new BoldFormatAction(this));
+		asciiDocToolBarManager.add(new MonospacedFormatAction(this));
 		
-		asciiDocToolBar.add(new NewTableInsertAction(this));
-		asciiDocToolBar.add(new NewLinkInsertAction(this));
-		asciiDocToolBar.add(new InsertAdmonitionAction(this));
-		asciiDocToolBar.add(new NewCodeBlockInsertAction(this));
+		asciiDocToolBarManager.add(new NewTableInsertAction(this));
+		asciiDocToolBarManager.add(new NewLinkInsertAction(this));
+		asciiDocToolBarManager.add(new InsertAdmonitionAction(this));
+		asciiDocToolBarManager.add(new NewCodeBlockInsertAction(this));
 
-		IToolBarManager viewToolBar = new ToolBarManager(coolBarManager.getStyle());
-		viewToolBar.add(new ChangeLayoutAction(this));
-		viewToolBar.add(new RebuildAsciiDocViewAction(this));
-		viewToolBar.add(new ToggleTOCAction(this));
-		viewToolBar.add(new JumpToTopOfAsciiDocViewAction(this));
+		IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+		viewToolBarManager.add(new ChangeLayoutAction(this));
+		viewToolBarManager.add(new RebuildAsciiDocViewAction(this));
+		viewToolBarManager.add(new ToggleTOCAction(this));
+		viewToolBarManager.add(new Separator("gargi"));
+		viewToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
 
-		IToolBarManager otherToolBar = new ToolBarManager(coolBarManager.getStyle());
-		otherToolBar.add(new OpenInExternalBrowserAction(this));
+		IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+		otherToolBarManager.add(new OpenInExternalBrowserAction(this));
 
 		// Add to the cool bar manager
-		coolBarManager.add(new ToolBarContributionItem(asciiDocToolBar, "asciiDocEditor.toolbar.asciiDoc"));
-		coolBarManager.add(new ToolBarContributionItem(viewToolBar, "asciiDocEditor.toolbar.view"));
-		coolBarManager.add(new ToolBarContributionItem(otherToolBar, "asciiDocEditor.toolbar.other"));
+		coolBarManager.add(new ToolBarContributionItem(asciiDocToolBarManager, "asciiDocEditor.toolbar.asciiDoc"));
+		coolBarManager.add(new ToolBarContributionItem(viewToolBarManager, "asciiDocEditor.toolbar.view"));
+		coolBarManager.add(new ToolBarContributionItem(otherToolBarManager, "asciiDocEditor.toolbar.other"));
 
 		if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
 			IToolBarManager debugToolBar = new ToolBarManager(coolBarManager.getStyle());
 			debugToolBar.add(new AddErrorDebugAction(this));
 			coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
 		}
+		
+		/* bugfix - coolbar manager does not use theme colors correctly so we try
+		 * with transparent background color 
+		 */
+		CoolBar coolbarControl = coolBarManager.getControl();
+		Composite parent = coolbarControl.getParent();
+		coolbarControl.setBackground(parent.getBackground());
 		coolBarManager.update(true);
 
 	}
