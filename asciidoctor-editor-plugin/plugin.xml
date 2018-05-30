@@ -30,7 +30,7 @@
          point="org.eclipse.ui.editors">
       <editor
       		name="AsciiDoctor Editor"
-            extensions="adoc"
+            extensions="adoc,ditaa"
             icon="icons/asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.jcup.asciidoctoreditor.AsciiDoctorEditor"
