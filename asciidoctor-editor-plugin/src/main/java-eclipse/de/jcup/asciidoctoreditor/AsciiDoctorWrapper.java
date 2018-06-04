@@ -16,42 +16,31 @@
 package de.jcup.asciidoctoreditor;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.asciidoctor.AsciiDocDirectoryWalker;
 import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.Attributes;
-import org.asciidoctor.AttributesBuilder;
-import org.asciidoctor.DirectoryWalker;
-import org.asciidoctor.OptionsBuilder;
-import org.asciidoctor.SafeMode;
-import org.asciidoctor.ast.DocumentHeader;
 
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 
 public class AsciiDoctorWrapper {
-	private Path tempFolder;
-	private static FileFilter ADOC_FILE_FILTER = new ADocFilter();
+	
 
-	private String cachedImagesPath;
-	private File cachedBaseDir;
-
-	private Map<String, Object> cachedAttributes;
-	private boolean tocVisible;
 	private LogAdapter logAdapter;
+
+	private Path tempFolder;
+
+	private AsciiDoctorProviderContext context;
 
 	public AsciiDoctorWrapper(LogAdapter logAdapter) {
 		if (logAdapter==null){
@@ -59,137 +48,38 @@ public class AsciiDoctorWrapper {
 		}
 		this.logAdapter=logAdapter;
 		initTempFolderOrFail();
+		this.context = new AsciiDoctorProviderContext(AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor());
+		context.setOutputFolder(tempFolder);
+		
 	}
 
 	public void convertToHTML(File asciiDocFile) throws Exception{
-		File baseDir = findBaseDir(asciiDocFile.getParentFile());
-		if (cachedImagesPath == null) {
-			cachedImagesPath = resolveImagesDirPath(baseDir);
-		}
+		context.setAsciidocFile(asciiDocFile);
+		AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+		int tocLevels = preferences.getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
+		context.setTocLevels(tocLevels);
 		try{
-			getAsciiDoctor().convertFile(asciiDocFile, getDefaultOptions(asciiDocFile, baseDir, cachedImagesPath));
+			AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
+			Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions();
+			
+			Asciidoctor asciiDoctor = context.getAsciiDoctor();
+			asciiDoctor.convertFile(asciiDocFile, defaultOptions);
 		}catch(Exception e){
 			logAdapter.logError("Cannot convert to html:"+asciiDocFile, e);
 			throw e;
 		}
 	}
 
-	private Asciidoctor getAsciiDoctor() {
-		return AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
-	}
-
-	private File findBaseDir(File dir) {
-		if (cachedBaseDir == null) {
-			cachedBaseDir = findBaseDirNotCached(dir);
-		}
-		return cachedBaseDir;
-	}
-
-	private File findBaseDirNotCached(File dir) {
-		// very simple approach just go up until no longer any asciidoc files
-		// are found
-		// if no longer .adoc files assume this is the end and use directory
-		if (dir == null) {
-			return new File(".");// should not happen but fall back...
-		}
-		File parentFile = dir.getParentFile();
-		if (containsADocFiles(parentFile)) {
-			return findBaseDir(parentFile);
-		}
-		return dir;
-	}
-
-	private boolean containsADocFiles(File dir) {
-		if (!dir.isDirectory()) {
-			return false;
-		}
-		File[] files = dir.listFiles(ADOC_FILE_FILTER);
-		if (files.length == 0) {
-			return false;
-		}
-		return true;
-	}
-
-	private static class ADocFilter implements FileFilter {
-
-		@Override
-		public boolean accept(File file) {
-			if (file == null || !file.isFile()) {
-				return false;
-			}
-			if (!file.getName().endsWith(".adoc")) {
-				return false;
-			}
-			return true;
-		}
-
-	}
-
+	
 	/**
 	 * Resets cached values: baseDir, imagesDir
 	 */
 	public void resetCaches() {
-		cachedImagesPath = null;
-		cachedBaseDir = null;
-		cachedAttributes = null;
+		context.reset();
+		context.setOutputFolder(tempFolder);
 	}
 
-	protected Map<String, Object> getCachedAttributes(File baseDir) {
-		if (cachedAttributes == null) {
-			cachedAttributes = resolveAttributes(baseDir);
-		}
-		return cachedAttributes;
-	}
-
-	protected String resolveImagesDirPath(File baseDir) {
-
-		Object imagesDir = getCachedAttributes(baseDir).get("imagesdir");
-
-		String imagesDirPath = null;
-		if (imagesDir != null) {
-			imagesDirPath = imagesDir.toString();
-			if (imagesDirPath.startsWith("./")) {
-				File imagePathNew = new File(baseDir, imagesDirPath.substring(2));
-				imagesDirPath = imagePathNew.getAbsolutePath();
-			}
-		} else {
-			imagesDirPath = baseDir.getAbsolutePath();
-		}
-		return imagesDirPath;
-	}
-
-	protected Map<String, Object> resolveAttributes(File baseDir) {
-		Map<String, Object> map = new HashMap<>();
-		Set<DocumentHeader> documentIndex = new HashSet<DocumentHeader>();
-		DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
-
-		for (File file : directoryWalker.scan()) {
-			documentIndex.add(getAsciiDoctor().readDocumentHeader(file));
-		}
-		for (DocumentHeader header : documentIndex) {
-			map.putAll(header.getAttributes());
-		}
-		return map;
-	}
-
-	/**
-	 * This method should normally only be used when we have no file access -
-	 * e.g. in compare modes etc.
-	 * 
-	 * @param asciiDoc
-	 * @return html string
-	 * @throws Exception 
-	 */
-	public String convertToHTML(String asciiDoc)  throws Exception{
-		File baseFile = new File(".");
-		String imagesPath = asciiDoc.indexOf(":imagesDir") == -1 ? baseFile.getAbsolutePath() : null;
-		try{
-			return getAsciiDoctor().convert(asciiDoc, getDefaultOptions(null, baseFile, imagesPath));
-		}catch(Exception e){
-			logAdapter.logError("Cannot convert html from string", e);
-			throw e;
-		}
-	}
+	
 
 	public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
 		StringBuilder sb = new StringBuilder();
@@ -233,7 +123,7 @@ public class AsciiDoctorWrapper {
 		
 		
 		prefixSb.append("<body ");
-		if (tocVisible) {
+		if (context.isTOCVisible()) {
 			prefixSb.append("class=\"article toc2 toc-left\">");
 		} else {
 			prefixSb.append("class=\"article\" style=\"margin-left:10px\">");
@@ -261,94 +151,6 @@ public class AsciiDoctorWrapper {
 		} catch (IOException e) {
 			throw new IllegalStateException("Not able to provide tempfolder", e);
 		}
-	}
-
-	private Map<String, Object> getDefaultOptions(File asciidocFile, File baseDir, String sourceImagesDir) {
-		/* @formatter:off*/
-		Attributes attrs;
-		File targetImagesDir =null;
-		if (tempFolder == null) {
-			initTempFolderOrFail();
-		}
-		targetImagesDir = new File(tempFolder.toFile(),"images");
-		targetImagesDir.deleteOnExit();
-		copyImagesToOutputFolder(sourceImagesDir,targetImagesDir);
-		
-		AttributesBuilder attrBuilder = AttributesBuilder.
-				attributes().
-					showTitle(true).
-					sourceHighlighter("coderay").
-					attribute("imagesoutdir", createAbsolutePath(targetImagesDir.toPath())).
-				    attribute("icons", "font").
-					attribute("source-highlighter","coderay").
-					attribute("coderay-css", "style").
-					attribute("env", "eclipse").
-					attribute("env-eclipse");
-		
-		Map<String, Object> cachedAttributes = getCachedAttributes(baseDir);
-		for (String key: cachedAttributes.keySet()){
-			Object value = cachedAttributes.get(key);
-			if (value!=null && value.toString().isEmpty()){
-				if ("toc".equals(key)){
-					// currently we always remove the TOC (we do show the TOC only by the internal boolean flag
-					// also the TOC is not correctly positioned - (always on top instead of being at left side)
-					continue;
-				}
-				attrBuilder.attribute(key,value);
-			}
-		}
-		if (isTocVisible()){
-			attrBuilder.attribute("toc","left");
-			int tocLevels = AsciiDoctorEditorPreferences.getInstance().getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
-			if (tocLevels!=0){
-				attrBuilder.attribute("toclevels",""+tocLevels);
-			}
-		}
-		if (targetImagesDir!=null){
-			attrBuilder.imagesDir(targetImagesDir.getAbsolutePath());
-		}
-		
-		
-		attrs=attrBuilder.get();
-		if (tempFolder != null) {
-			System.out.println("Tempfolder:" + tempFolder);
-			attrs.setAttribute("outdir", createAbsolutePath(tempFolder));
-		}
-		File destionationFolder= null;
-		if (tempFolder!=null){
-			destionationFolder= tempFolder.toFile();
-		}else{
-			destionationFolder= baseDir;
-		}
-		
-		OptionsBuilder opts = OptionsBuilder.options().
-				toDir(destionationFolder).
-				safe(SafeMode.UNSAFE).
-				backend("html5").
-				headerFooter(tocVisible).
-				
-				attributes(attrs).
-				option("sourcemap", "true").
-				baseDir(asciidocFile !=null ? asciidocFile.getParentFile(): baseDir);
-		/* @formatter:on*/
-		return opts.asMap();
-	}
-
-	private void copyImagesToOutputFolder(String sourcePath, File target) {
-		File cachedImagesFile = new File(sourcePath);
-		if (!cachedImagesFile.exists()){
-			return;
-		}
-		try {
-			FileUtils.copyDirectory(cachedImagesFile, target);
-		} catch (IOException e) {
-			logAdapter.logError("Cannot copy images", e);
-		}
-		
-	}
-
-	protected String createAbsolutePath(Path path) {
-		return path.toAbsolutePath().normalize().toString();
 	}
 
 	public File getTempFileFor(File editorFile, TemporaryFileType type) {
@@ -383,10 +185,10 @@ public class AsciiDoctorWrapper {
 	}
 
 	public void setTocVisible(boolean tocVisible) {
-		this.tocVisible = tocVisible;
+		this.context.setTOCVisible(tocVisible);
 	}
 
 	public boolean isTocVisible() {
-		return tocVisible;
+		return context.isTocVisible();
 	}
 }
