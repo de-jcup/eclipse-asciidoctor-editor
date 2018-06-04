@@ -18,15 +18,10 @@ package de.jcup.asciidoctoreditor;
 import static de.jcup.asciidoctoreditor.EclipseUtil.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferenceConstants.*;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -67,14 +62,12 @@ import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -675,11 +668,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			htmlInternalPreview = asciidoctorWrapper.buildHTMLWithCSS(content, 0);
 			htmlExternalBrowser = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
 
-			try (BufferedWriter internalBw = new BufferedWriter(new FileWriter(temporaryInternalPreviewFile));
-					BufferedWriter externalBw = new BufferedWriter(new FileWriter(temporaryExternalPreviewFile))) {
-
-				internalBw.write(htmlInternalPreview);
-				externalBw.write(htmlExternalBrowser);
+			try{
+				AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, temporaryInternalPreviewFile);
+				AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, temporaryExternalPreviewFile);
 
 			} catch (IOException e1) {
 				AsciiDoctorEditorUtil.logError("Was not able to save temporary files for preview!", e1);
@@ -738,7 +729,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			return null;
 		}
 
-		String originText = readFileToString(editorFile);
+		String originText = AsciiDocStringUtils.readUTF8FileToString(editorFile);
 		if (originText == null) {
 			return null;
 		}
@@ -764,45 +755,22 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 		newTempFile.deleteOnExit();
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(newTempFile))) {
-			String transformed = contentTransformer.transform(text);
-			bw.write(transformed);
-			bw.close();
-			return newTempFile;
+		String transformed = contentTransformer.transform(text);
+		try{
+			return AsciiDocStringUtils.writeTextToUTF8File(transformed,newTempFile);
 		} catch (IOException e) {
 			logError("Was not able to write transformed file:" + filename, e);
 			return null;
 		}
 	}
 
-	private String readFileToString(File editorFile) {
-		String originText = null;
-		StringBuilder sb = new StringBuilder();
-		try (BufferedReader br = new BufferedReader(new FileReader(editorFile))) {
-			String line = "";
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-				sb.append("\n");
-			}
-			br.close();
-			originText = sb.toString();
-		} catch (IOException e) {
-			logError("Was not able to read file:" + editorFile, e);
-		}
-		return originText;
-	}
+	
 
 	protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML) {
 		File generatedFile = asciidoctorWrapper.getTempFileFor(fileToConvertIntoHTML, TemporaryFileType.ORIGIN);
-		try (BufferedReader br = new BufferedReader(new FileReader(generatedFile))) {
-			String line = null;
-			StringBuilder htmlSB = new StringBuilder();
-			while ((line = br.readLine()) != null) {
-				htmlSB.append(line);
-				htmlSB.append("\n");
-			}
-			return htmlSB.toString();
-		} catch (IOException e) {
+		try{
+			return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
+		}catch(IOException e){
 			AsciiDoctorEditorUtil.logError("Was not able to build new full html variant", e);
 			return "";
 		}
