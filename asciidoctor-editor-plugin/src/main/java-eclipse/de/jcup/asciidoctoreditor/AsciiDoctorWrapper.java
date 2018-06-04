@@ -25,7 +25,8 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.asciidoctor.Asciidoctor;
+
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 
 public class AsciiDoctorWrapper {
 	
@@ -35,8 +36,7 @@ public class AsciiDoctorWrapper {
 
 	private Path tempFolder;
 
-	private AsciiDoctorSupportContext context;
-
+	private AsciiDoctorProviderContext context;
 
 	public AsciiDoctorWrapper(LogAdapter logAdapter) {
 		if (logAdapter==null){
@@ -44,26 +44,19 @@ public class AsciiDoctorWrapper {
 		}
 		this.logAdapter=logAdapter;
 		initTempFolderOrFail();
-		this.context = new AsciiDoctorSupportContext();
-		context.outputFolder=tempFolder;
-		context.attributesSupport=new AsciiDoctorAttributesSupport(context);
-		context.imageSupport=new AsciiDoctorOutputImageSupport(context);
-		context.optionsSupport = new AsciiDoctorOptionsSupport(context);
+		this.context = new AsciiDoctorProviderContext(AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor());
+		context.setOutputFolder(tempFolder);
 		
 	}
 
 	public void convertToHTML(File asciiDocFile) throws Exception{
-		context.asciidocFile=asciiDocFile;
+		context.setAsciidocFile(asciiDocFile);
 		try{
-			getAsciiDoctor().convertFile(asciiDocFile, context.optionsSupport.createDefaultOptions());
+			context.getAsciiDoctor().convertFile(asciiDocFile, context.getOptionsSupport().createDefaultOptions());
 		}catch(Exception e){
 			logAdapter.logError("Cannot convert to html:"+asciiDocFile, e);
 			throw e;
 		}
-	}
-
-	private Asciidoctor getAsciiDoctor() {
-		return AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
 	}
 
 	
@@ -72,29 +65,10 @@ public class AsciiDoctorWrapper {
 	 */
 	public void resetCaches() {
 		context.reset();
+		context.setOutputFolder(tempFolder);
 	}
 
 	
-
-	/**
-	 * This method should normally only be used when we have no file access -
-	 * e.g. in compare modes etc.
-	 * 
-	 * @param asciiDoc
-	 * @return html string
-	 * @throws Exception 
-	 */
-	public String convertToHTML(String asciiDoc)  throws Exception{
-		File baseFile = new File(".");
-		String imagesPath = asciiDoc.indexOf(":imagesDir") == -1 ? baseFile.getAbsolutePath() : null;
-		context.setAsciidocFile(null);
-		try{
-			return getAsciiDoctor().convert(asciiDoc, context.optionsSupport.createDefaultOptions());
-		}catch(Exception e){
-			logAdapter.logError("Cannot convert html from string", e);
-			throw e;
-		}
-	}
 
 	public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
 		StringBuilder sb = new StringBuilder();

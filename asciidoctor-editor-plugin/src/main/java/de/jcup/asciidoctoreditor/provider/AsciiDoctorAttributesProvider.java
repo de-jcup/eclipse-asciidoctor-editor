@@ -1,4 +1,4 @@
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
 import java.util.HashMap;
@@ -10,12 +10,15 @@ import org.asciidoctor.AsciiDocDirectoryWalker;
 import org.asciidoctor.DirectoryWalker;
 import org.asciidoctor.ast.DocumentHeader;
 
-public class AsciiDoctorAttributesSupport {
+public class AsciiDoctorAttributesProvider {
 	
 	private Map<String, Object> cachedAttributes;
-	private AsciiDoctorSupportContext context;
+	private AsciiDoctorProviderContext context;
 
-	public AsciiDoctorAttributesSupport(AsciiDoctorSupportContext context){
+	AsciiDoctorAttributesProvider(AsciiDoctorProviderContext context){
+		if (context==null ){
+			throw new IllegalArgumentException("context may never be null!");
+		}
 		this.context=context;
 	}
 
@@ -55,6 +58,10 @@ public class AsciiDoctorAttributesSupport {
 			map.putAll(header.getAttributes());
 		}
 		return map;
+	}
+
+	public void reset() {
+		cachedAttributes=null;
 	}
 
 }

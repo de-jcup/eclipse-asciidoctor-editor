@@ -1,4 +1,4 @@
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -12,20 +12,20 @@ import org.asciidoctor.SafeMode;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 
-class AsciiDoctorOptionsSupport implements AsciiDoctorSupport {
+public class AsciiDoctorOptionsProvider {
 
-	AsciiDoctorAttributesSupport attributeSupport;
+	private AsciiDoctorProviderContext context;
 
-	private AsciiDoctorSupportContext context;
-
-	AsciiDoctorOptionsSupport(AsciiDoctorSupportContext context) {
+	AsciiDoctorOptionsProvider(AsciiDoctorProviderContext context) {
+		if (context==null ){
+			throw new IllegalArgumentException("context may never be null!");
+		}
 		this.context = context;
 	}
 
 	public Map<String, Object> createDefaultOptions() {
 		/* @formatter:off*/
 		Attributes attrs;
-		File targetImagesDir =null;
 		if (context.outputFolder==null){
 			throw new IllegalStateException("output folder not defined");
 		}
@@ -35,14 +35,14 @@ class AsciiDoctorOptionsSupport implements AsciiDoctorSupport {
 				attributes().
 					showTitle(true).
 					sourceHighlighter("coderay").
-					attribute("imagesoutdir", createAbsolutePath(targetImagesDir.toPath())).
+					attribute("imagesoutdir", createAbsolutePath(context.targetImagesDir.toPath())).
 				    attribute("icons", "font").
 					attribute("source-highlighter","coderay").
 					attribute("coderay-css", "style").
 					attribute("env", "eclipse").
 					attribute("env-eclipse");
 		
-		Map<String, Object> cachedAttributes = attributeSupport.getCachedAttributes();
+		Map<String, Object> cachedAttributes = context.getAttributesSupport().getCachedAttributes();
 		for (String key: cachedAttributes.keySet()){
 			Object value = cachedAttributes.get(key);
 			if (value!=null && value.toString().isEmpty()){
@@ -61,9 +61,7 @@ class AsciiDoctorOptionsSupport implements AsciiDoctorSupport {
 				attrBuilder.attribute("toclevels",""+tocLevels);
 			}
 		}
-		if (targetImagesDir!=null){
-			attrBuilder.imagesDir(targetImagesDir.getAbsolutePath());
-		}
+		attrBuilder.imagesDir(context.targetImagesDir.getAbsolutePath());
 		
 		
 		attrs=attrBuilder.get();
@@ -93,6 +91,10 @@ class AsciiDoctorOptionsSupport implements AsciiDoctorSupport {
 
 	protected String createAbsolutePath(Path path) {
 		return path.toAbsolutePath().normalize().toString();
+	}
+
+	public void reset() {
+		
 	}
 
 }
