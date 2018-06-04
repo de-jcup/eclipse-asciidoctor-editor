@@ -17,8 +17,9 @@
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class TestScriptLoader {
 			throw new IllegalArgumentException("Test case corrupt! Test script file does not exist:"+file);
 		}
 		StringBuilder sb = new StringBuilder();
-		try(BufferedReader br = new BufferedReader(new FileReader(file))){
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))){
 			String line = null;
 			while ((line=br.readLine())!=null){
 				sb.append(line);

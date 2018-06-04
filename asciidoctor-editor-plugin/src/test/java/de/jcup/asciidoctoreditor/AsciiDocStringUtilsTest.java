@@ -21,6 +21,7 @@ import org.junit.Test;
 import static de.jcup.asciidoctoreditor.AsciiDocStringUtils.*;
 
 public class AsciiDocStringUtilsTest {
+	
 	@Test
 	public void resolveDitaDiagramname_has_name() throws Exception {
 		assertEquals("diagrams/diagram_kubernetes_deployment_architecture.ditaa",resolveFilenameOfDiagramMacroOrNull("ditaa::diagrams/diagram_kubernetes_deployment_architecture.ditaa[format=png, alt=\"Diagram about kubernetes deployment architecture\"]"));
