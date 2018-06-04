@@ -1,17 +1,19 @@
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
 import java.io.FileFilter;
 
-public class AsciiDoctorBaseDirectorySupport implements AsciiDoctorSupport{
+public class AsciiDoctorBaseDirectoryProvider {
 	private static FileFilter ADOC_FILE_FILTER = new ADocFilter();
-	private AsciiDoctorSupportContext context;
+	private AsciiDoctorProviderContext context;
 
-
-	public AsciiDoctorBaseDirectorySupport(AsciiDoctorSupportContext context){
-		this.context=context;
+	AsciiDoctorBaseDirectoryProvider(AsciiDoctorProviderContext context) {
+		if (context == null) {
+			throw new IllegalArgumentException("context may never be null!");
+		}
+		this.context = context;
 	}
-	
+
 	private File cachedBaseDir;
 
 	private File findBaseDir(File dir) {
@@ -62,7 +64,13 @@ public class AsciiDoctorBaseDirectorySupport implements AsciiDoctorSupport{
 	}
 
 	public File findBaseDir() {
+		if (context.asciidocFile == null) {
+			return new File(".");
+		}
 		return findBaseDir(context.asciidocFile.getParentFile());
 	}
 
+	public void reset() {
+		cachedBaseDir = null;
+	}
 }

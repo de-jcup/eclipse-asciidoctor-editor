@@ -1,16 +1,19 @@
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
-public class AsciiDoctorOutputImageSupport implements AsciiDoctorSupport {
+public class AsciiDoctorImageProvider {
 
 	private String cachedSourceImagesPath;
-	private AsciiDoctorSupportContext context;
+	private AsciiDoctorProviderContext context;
 
-	AsciiDoctorOutputImageSupport(AsciiDoctorSupportContext context) {
+	AsciiDoctorImageProvider(AsciiDoctorProviderContext context) {
+		if (context==null ){
+			throw new IllegalArgumentException("context may never be null!");
+		}
 		this.context = context;
 		context.imageSupport = this;
 	}
@@ -39,6 +42,7 @@ public class AsciiDoctorOutputImageSupport implements AsciiDoctorSupport {
 			cachedSourceImagesPath = resolveImagesDirPath(context.baseDir);
 		}
 		copyImagesToOutputFolder(cachedSourceImagesPath, targetImagesDir);
+		context.targetImagesDir=targetImagesDir;
 
 	}
 
@@ -57,6 +61,10 @@ public class AsciiDoctorOutputImageSupport implements AsciiDoctorSupport {
 			imagesDirPath = baseDir.getAbsolutePath();
 		}
 		return imagesDirPath;
+	}
+
+	public void reset() {
+		this.cachedSourceImagesPath=null;
 	}
 
 }
