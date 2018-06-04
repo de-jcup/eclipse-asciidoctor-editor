@@ -22,16 +22,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.asciidoctor.Asciidoctor;
 
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 
 public class AsciiDoctorWrapper {
 	
 
-	private boolean tocVisible;
 	private LogAdapter logAdapter;
 
 	private Path tempFolder;
@@ -51,8 +55,15 @@ public class AsciiDoctorWrapper {
 
 	public void convertToHTML(File asciiDocFile) throws Exception{
 		context.setAsciidocFile(asciiDocFile);
+		AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+		int tocLevels = preferences.getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
+		context.setTocLevels(tocLevels);
 		try{
-			context.getAsciiDoctor().convertFile(asciiDocFile, context.getOptionsSupport().createDefaultOptions());
+			AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
+			Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions();
+			
+			Asciidoctor asciiDoctor = context.getAsciiDoctor();
+			asciiDoctor.convertFile(asciiDocFile, defaultOptions);
 		}catch(Exception e){
 			logAdapter.logError("Cannot convert to html:"+asciiDocFile, e);
 			throw e;
@@ -112,7 +123,7 @@ public class AsciiDoctorWrapper {
 		
 		
 		prefixSb.append("<body ");
-		if (tocVisible) {
+		if (context.isTOCVisible()) {
 			prefixSb.append("class=\"article toc2 toc-left\">");
 		} else {
 			prefixSb.append("class=\"article\" style=\"margin-left:10px\">");
@@ -141,10 +152,6 @@ public class AsciiDoctorWrapper {
 			throw new IllegalStateException("Not able to provide tempfolder", e);
 		}
 	}
-
-	
-
-	
 
 	public File getTempFileFor(File editorFile, TemporaryFileType type) {
 		File parent = null;
@@ -178,10 +185,10 @@ public class AsciiDoctorWrapper {
 	}
 
 	public void setTocVisible(boolean tocVisible) {
-		this.tocVisible = tocVisible;
+		this.context.setTOCVisible(tocVisible);
 	}
 
 	public boolean isTocVisible() {
-		return tocVisible;
+		return context.isTocVisible();
 	}
 }

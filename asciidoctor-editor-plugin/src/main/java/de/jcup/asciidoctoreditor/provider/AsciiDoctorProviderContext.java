@@ -8,18 +8,20 @@ import org.asciidoctor.Asciidoctor;
 import de.jcup.asciidoctoreditor.LogAdapter;
 
 public class AsciiDoctorProviderContext {
+	
 	LogAdapter logAdapter;
 	File asciidocFile;
 	File baseDir;
 	Path outputFolder;
 	boolean tocVisible;
 
-	AsciiDoctorBaseDirectoryProvider baseDirSupport;
-	AsciiDoctorImageProvider imageSupport;
-	AsciiDoctorAttributesProvider attributesSupport;
+	AsciiDoctorBaseDirectoryProvider baseDirProvider;
+	AsciiDoctorImageProvider imageProvider;
+	AsciiDoctorAttributesProvider attributesProvider;
 	Asciidoctor asciidoctor;
-	AsciiDoctorOptionsProvider optionsSupport;
+	AsciiDoctorOptionsProvider optionsProvider;
 	File targetImagesDir;
+	int tocLevels;
 
 	public AsciiDoctorProviderContext(Asciidoctor asciidoctor) {
 		if (asciidoctor==null ){
@@ -28,34 +30,42 @@ public class AsciiDoctorProviderContext {
 		this.asciidoctor=asciidoctor;
 		init();
 	}
+	
+	public boolean isTOCVisible(){
+		return tocVisible;
+	}
 
-	public AsciiDoctorBaseDirectoryProvider getBaseDirSupport() {
-		return baseDirSupport;
+	public void setTocLevels(int tocLevels) {
+		this.tocLevels = tocLevels;
 	}
 	
-	public AsciiDoctorImageProvider getImageSupport() {
-		return imageSupport;
+	public AsciiDoctorBaseDirectoryProvider getBaseDirProvider() {
+		return baseDirProvider;
 	}
 	
-	public AsciiDoctorAttributesProvider getAttributesSupport() {
-		return attributesSupport;
+	public AsciiDoctorImageProvider getImageProvider() {
+		return imageProvider;
+	}
+	
+	public AsciiDoctorAttributesProvider getAttributesProvider() {
+		return attributesProvider;
 	}
 	
 	
-	public AsciiDoctorOptionsProvider getOptionsSupport() {
-		return optionsSupport;
+	public AsciiDoctorOptionsProvider getOptionsProvider() {
+		return optionsProvider;
 	}
 	
 	public void setAsciidocFile(File asciidocFile) {
 		this.asciidocFile = asciidocFile;
-		this.baseDir = baseDirSupport.findBaseDir();
+		this.baseDir = baseDirProvider.findBaseDir();
 	}
 
 	protected void init() {
-		attributesSupport = new AsciiDoctorAttributesProvider(this);
-		imageSupport = new AsciiDoctorImageProvider(this);
-		optionsSupport = new AsciiDoctorOptionsProvider(this);
-		baseDirSupport = new AsciiDoctorBaseDirectoryProvider(this);
+		attributesProvider = new AsciiDoctorAttributesProvider(this);
+		imageProvider = new AsciiDoctorImageProvider(this);
+		optionsProvider = new AsciiDoctorOptionsProvider(this);
+		baseDirProvider = new AsciiDoctorBaseDirectoryProvider(this);
 	}
 
 	public void setOutputFolder(Path outputFolder) {
@@ -67,13 +77,21 @@ public class AsciiDoctorProviderContext {
 		this.outputFolder = null;
 		this.asciidocFile = null;
 		
-		this.attributesSupport.reset();
-		this.optionsSupport.reset();
-		this.imageSupport.reset();
+		this.attributesProvider.reset();
+		this.optionsProvider.reset();
+		this.imageProvider.reset();
 	}
 
 	public Asciidoctor getAsciiDoctor() {
 		return asciidoctor;
+	}
+
+	public void setTOCVisible(boolean visible) {
+		this.tocVisible=visible;
+	}
+	
+	public boolean isTocVisible() {
+		return tocVisible;
 	}
 
 }
