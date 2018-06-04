@@ -9,9 +9,6 @@ import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.SafeMode;
 
-import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
-import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
-
 public class AsciiDoctorOptionsProvider {
 
 	private AsciiDoctorProviderContext context;
@@ -29,7 +26,7 @@ public class AsciiDoctorOptionsProvider {
 		if (context.outputFolder==null){
 			throw new IllegalStateException("output folder not defined");
 		}
-		context.imageSupport.ensureImages();
+		context.imageProvider.ensureImages();
 		
 		AttributesBuilder attrBuilder = AttributesBuilder.
 				attributes().
@@ -42,7 +39,7 @@ public class AsciiDoctorOptionsProvider {
 					attribute("env", "eclipse").
 					attribute("env-eclipse");
 		
-		Map<String, Object> cachedAttributes = context.getAttributesSupport().getCachedAttributes();
+		Map<String, Object> cachedAttributes = context.getAttributesProvider().getCachedAttributes();
 		for (String key: cachedAttributes.keySet()){
 			Object value = cachedAttributes.get(key);
 			if (value!=null && value.toString().isEmpty()){
@@ -56,9 +53,8 @@ public class AsciiDoctorOptionsProvider {
 		}
 		if (context.tocVisible){
 			attrBuilder.attribute("toc","left");
-			int tocLevels = AsciiDoctorEditorPreferences.getInstance().getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
-			if (tocLevels!=0){
-				attrBuilder.attribute("toclevels",""+tocLevels);
+			if (context.tocLevels>0){
+				attrBuilder.attribute("toclevels",""+context.tocLevels);
 			}
 		}
 		attrBuilder.imagesDir(context.targetImagesDir.getAbsolutePath());
