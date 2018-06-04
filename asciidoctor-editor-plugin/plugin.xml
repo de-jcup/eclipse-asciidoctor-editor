@@ -34,19 +34,19 @@
             icon="icons/asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.jcup.asciidoctoreditor.AsciiDoctorEditor"
-	    default="true"  
+	        default="true"  
             id="asciidoctoreditor.editors.AsciiDoctorEditor">
       </editor>
       <editor
-      		name="Ditaa Editor (AsciiDoctor)"
+      		name="Ditaa (AsciiDoctor) Editor"
             extensions="ditaa"
             icon="icons/ditaa-asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.jcup.asciidoctoreditor.AsciiDoctorDitaaEditor"
             id="asciidoctoreditor.editors.AsciiDoctorDitaaEditor">
       </editor>
-       <editor
-      		name="PlantUML Editor (AsciiDoctor)"
+      <editor
+      		name="PlantUML (AsciiDoctor) Editor"
             extensions="plantuml"
             icon="icons/plantuml-asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
