@@ -26,6 +26,7 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorAdmonitionParagraphKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorIncludeKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
@@ -61,11 +62,9 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		
 		aLineStartsWith("|===",rules,asciidoctorCommand);
 
-		aLineStartsWith("PLANTUML_NOTE:",rules,asciidoctorCommand,true);
-		aLineStartsWith("TIP:",rules,asciidoctorCommand,true);
-		aLineStartsWith("IMPORTANT:",rules,asciidoctorCommand,true);
-		aLineStartsWith("WARNING:",rules,asciidoctorCommand,true);
-		aLineStartsWith("CAUTION:",rules,asciidoctorCommand,true);
+		for (AsciiDoctorAdmonitionParagraphKeyWords admonitionKeyword: AsciiDoctorAdmonitionParagraphKeyWords.values()){
+			aLineStartsWith(admonitionKeyword.getText(),rules,asciidoctorCommand,true);
+		}
 		
 		rules.add(new AsciiDoctorLineStartsWithRule("[[", "]]",false, asciidoctorCommand));
 		rules.add(new AsciiDoctorLineStartsWithRule("[", "]",false, asciidoctorCommand));
