@@ -42,18 +42,6 @@ public class AsciiDoctorURLHyperlinkRule implements IPredicateRule {
 
 	@Override
 	public IToken evaluate(ICharacterScanner scanner, boolean resume) {
-		boolean startOfDocument = scanner.getColumn() == 0;
-		boolean newLine = startOfDocument;
-		if (!startOfDocument) {
-			scanner.unread();
-			int cbefore = scanner.read();
-			newLine = newLine || cbefore == '\n';
-			newLine = newLine || cbefore == '\r';
-		}
-
-		if (!newLine) {
-			return Token.UNDEFINED;
-		}
 		int count = 0;
 		for (int i = 0; i < startsWith.length; i++) {
 			int c = scanner.read();

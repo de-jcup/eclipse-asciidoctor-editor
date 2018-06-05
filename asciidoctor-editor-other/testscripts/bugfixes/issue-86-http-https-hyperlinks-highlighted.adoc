@@ -1,0 +1,22 @@
+== on start
+http://www.google.de
+
+http://www.google.de[Link to google]
+
+== between
+Search can be done by http://www.google.de or another search engine
+
+Search can be done by http://www.google.de/ or another search engine
+
+Search can be done by http://www.google.de[Link to google] or another search engine
+
+Search can be done by http://www.google.de/[Link to google] or another search engine
+
+== on end
+Search can not only be done by http://www.google.de
+
+Search can not only be done by http://www.google.de/
+
+Search can not only be done by http://www.google.de[Link to google]
+
+Search can not only be done by http://www.google.de/[Link to google]
