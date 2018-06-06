@@ -30,7 +30,7 @@
          point="org.eclipse.ui.editors">
       <editor
       		name="AsciiDoctor Editor"
-            extensions="adoc"
+            extensions="asciidoc,adoc"
             icon="icons/asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.jcup.asciidoctoreditor.AsciiDoctorEditor"
@@ -47,7 +47,7 @@
       </editor>
       <editor
       		name="PlantUML (AsciiDoctor) Editor"
-            extensions="plantuml"
+            extensions="plantuml,pu"
             icon="icons/plantuml-asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.jcup.asciidoctoreditor.AsciiDoctorPlantUMLEditor"
