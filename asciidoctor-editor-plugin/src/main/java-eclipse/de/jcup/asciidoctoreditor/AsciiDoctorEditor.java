@@ -1229,7 +1229,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			return;
 		}
 		try {
-			IDE.openEditor(activePage, file.toURI(), AsciiDoctorEditor.EDITOR_ID, true);
+			IFile iFile = EclipseResourceHelper.DEFAULT.toIFile(file);
+//			IDE.openEditor(activePage, file.toURI(), AsciiDoctorEditor.EDITOR_ID, true);
+			IDE.openEditor(activePage, iFile,true);
 			return;
 		} catch (PartInitException e) {
 			AsciiDoctorEditorUtil.logError("Not able to open include", e);

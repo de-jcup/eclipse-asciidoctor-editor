@@ -26,6 +26,8 @@ import java.io.OutputStreamWriter;
 
 public class AsciiDocStringUtils {
 
+	private static final String INCLUDE_PREFIX = "include::";
+	private static final int INCLUDE_PREFIX_LENGTH = INCLUDE_PREFIX.length();
 	private static final String UTF_8 = "UTF-8";
 
 	public static String resolveFilenameOfIncludeOrDiagram(String potentialInclude) {
@@ -79,10 +81,15 @@ public class AsciiDocStringUtils {
 		if (potentialInclude == null) {
 			return null;
 		}
-		if (potentialInclude.startsWith("include::")) {
-			if (potentialInclude.endsWith(".adoc[]")) {
-				String fileName = potentialInclude.substring("include::".length());
-				fileName = fileName.substring(0, fileName.length() - 2);
+		if (potentialInclude.startsWith(INCLUDE_PREFIX)) {
+			if (potentialInclude.endsWith("]")) {
+				int lastOpening=potentialInclude.lastIndexOf('[');
+				if (lastOpening==-1){
+					return null;
+				}
+				int endIndex = lastOpening-INCLUDE_PREFIX_LENGTH;
+				String fileName = potentialInclude.substring(INCLUDE_PREFIX_LENGTH);
+				fileName = fileName.substring(0, endIndex);
 				return fileName;
 			}
 		}

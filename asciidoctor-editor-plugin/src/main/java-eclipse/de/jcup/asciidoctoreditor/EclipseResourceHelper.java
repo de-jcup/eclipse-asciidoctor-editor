@@ -233,10 +233,17 @@ public class EclipseResourceHelper {
 	 *             EFS.getLocalFileSystem().getStore(localFile.toURI());
 	 */
 	public IFile toIFile(File file) {
-		IPath path = Path.fromOSString(file.getAbsolutePath());
-		return toIFile(path);
+		IFileStore fileStore =
+				              EFS.getLocalFileSystem().getStore(file.toURI());
+		
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IFile[] fileResults = workspace.getRoot().findFilesForLocationURI(fileStore.toURI());
+		if (fileResults==null || fileResults.length==0){
+			return null;
+		}
+		return fileResults[0];
 	}
-
+	
 	public IFile toIFile(IPath path) {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile fileResult = workspace.getRoot().getFile(path);
