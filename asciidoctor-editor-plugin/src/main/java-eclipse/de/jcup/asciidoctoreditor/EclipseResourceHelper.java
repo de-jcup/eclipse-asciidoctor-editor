@@ -223,15 +223,6 @@ public class EclipseResourceHelper {
 		}
 	}
 
-	/**
-	 * Returns the IFile representation for given file or <code>null</code> if
-	 * file not in workspace
-	 * 
-	 * @param file
-	 * @return file or null
-	 * @deprecated does not work correctly. Better: IFileStore fileStore =
-	 *             EFS.getLocalFileSystem().getStore(localFile.toURI());
-	 */
 	public IFile toIFile(File file) {
 		IFileStore fileStore =
 				              EFS.getLocalFileSystem().getStore(file.toURI());
