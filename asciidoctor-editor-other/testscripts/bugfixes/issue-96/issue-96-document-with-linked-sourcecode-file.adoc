@@ -1,0 +1,8 @@
+= Example include
+
+The include hyperlink (CTRL + Mouse Hover) must work in Asciidoctor Editor: 
+
+[source, java]
+----
+include::res/Test.java[]
+----

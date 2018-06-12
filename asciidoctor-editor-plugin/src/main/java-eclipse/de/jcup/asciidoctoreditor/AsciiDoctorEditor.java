@@ -162,6 +162,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private long editorTempIdentifier;
 
+	private File editorFile;
+
 	public AsciiDoctorEditor() {
 		this.editorTempIdentifier=System.nanoTime();
 		setSourceViewerConfiguration(createSourceViewerConfig());
@@ -647,15 +649,15 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		try {
 			safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(AsciiDoctorEditor.this));
 
-			File editorFile = getEditorFile();
+			File editorFileOrNull = getEditorFileOrNull();
 
 			String content = null;
 			File fileToConvertIntoHTML = null;
-			if (editorFile == null) {
+			if (editorFileOrNull == null) {
 				String asciiDoc = getDocumentText();
 				fileToConvertIntoHTML = resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(asciiDoc);
 			} else {
-				fileToConvertIntoHTML = resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(editorFile);
+				fileToConvertIntoHTML = resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(editorFileOrNull);
 			}
 			if (fileToConvertIntoHTML == null) {
 				return;
@@ -800,15 +802,20 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
 	}
-
-	protected File getEditorFile() {
-		IEditorInput input = getEditorInput();
-		return getEditorFile(input);
+	
+	protected File getEditorFileOrNull() {
+		if (editorFile==null){
+			editorFile=resolveEditorFileOrNull();
+		}
+		return editorFile;
 	}
-
-	protected File getEditorFile(IEditorInput input) {
+	
+	protected File resolveEditorFileOrNull() {
+		IEditorInput input = getEditorInput();
 		File editorFile = null;
+		
 		if (input instanceof FileEditorInput) {
+			/* standard opening with eclipse IDE inside */
 			FileEditorInput finput = (FileEditorInput) input;
 			IFile iFile = finput.getFile();
 			try {
@@ -816,6 +823,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			} catch (CoreException e) {
 				AsciiDoctorEditorUtil.logError("Was not able to fetch file of current editor", e);
 			}
+		}else if (input instanceof FileStoreEditorInput){
+			/* command line : eclipse xyz.adoc does use file store editor input ....*/
+			FileStoreEditorInput fsInput = (FileStoreEditorInput) input;
+			editorFile = fsInput.getAdapter(File.class);
 		}
 		return editorFile;
 	}
@@ -902,9 +913,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void initPreview(SashForm sashForm) {
-		temporaryInternalPreviewFile = asciidoctorWrapper.getTempFileFor(getEditorFile(),
+		File editorFileOrNull = getEditorFileOrNull();
+		if (editorFileOrNull==null){
+			setErrorMessage("Asciidoctor Editor: preview not available because no editor file found");
+			return;
+		}
+		temporaryInternalPreviewFile = asciidoctorWrapper.getTempFileFor(editorFileOrNull,
 				TemporaryFileType.INTERNAL_PREVIEW);
-		temporaryExternalPreviewFile = asciidoctorWrapper.getTempFileFor(getEditorFile(),
+		temporaryExternalPreviewFile = asciidoctorWrapper.getTempFileFor(editorFileOrNull,
 				TemporaryFileType.EXTERNAL_PREVIEW);
 
 		browserAccess.ensureBrowser(new BrowserContentInitializer() {
@@ -1202,13 +1218,19 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	public void openInclude(String fileName) {
 		IWorkbenchPage activePage = getActivePage();
-		File file = new File(getEditorFile().getParentFile(), fileName);
+		File editorFileOrNull = getEditorFileOrNull();
+		if (editorFileOrNull==null){
+			MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to resolve editor file", "Not able to resolve editor file, so Cannot open " + fileName);
+			return;
+		}
+		File file = new File(editorFileOrNull.getParentFile(), fileName);
 		if (!file.exists()) {
 			MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to load", "Cannot open " + fileName);
 			return;
 		}
 		try {
-			IDE.openEditor(activePage, file.toURI(), AsciiDoctorEditor.EDITOR_ID, true);
+			IFile iFile = EclipseResourceHelper.DEFAULT.toIFile(file);
+			IDE.openEditor(activePage, iFile,true);
 			return;
 		} catch (PartInitException e) {
 			AsciiDoctorEditorUtil.logError("Not able to open include", e);
