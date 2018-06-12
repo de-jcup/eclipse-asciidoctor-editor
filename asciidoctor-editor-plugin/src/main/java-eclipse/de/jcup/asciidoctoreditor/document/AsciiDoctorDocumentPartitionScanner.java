@@ -80,6 +80,8 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new SingleLineRule("*", "*", boldText, (char) -1, true));
 		rules.add(new SingleLineRule("_", "_", italicText, (char) -1, true));
 		
+		rules.add(new SingleLineRule("<<", ">>", hyperlink, (char) -1, true));
+		
 		buildLineStartsWithRule(rules, asciidoctorCommand, "]", AsciiDoctorCommandKeyWords.values());
 		buildLineStartsWithRule(rules, includeKeyword, "]", AsciiDoctorIncludeKeywords.values());
 
