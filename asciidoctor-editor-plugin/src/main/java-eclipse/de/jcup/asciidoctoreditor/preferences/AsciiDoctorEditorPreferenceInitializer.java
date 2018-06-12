@@ -83,7 +83,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		preferences.setDefaultColor(COLOR_KNOWN_VARIABLES, DARK_GRAY);
 		preferences.setDefaultColor(COLOR_TEXT_BOLD, BLACK);
 		preferences.setDefaultColor(COLOR_HYPERLINK, DARK_BLUE);
-		preferences.setDefaultColor(COLOR_TEXT_ITALIC, LIGHT_THEME_LIGHT_BLUE);
+		preferences.setDefaultColor(COLOR_TEXT_ITALIC, BLACK);
 
 		/* ++++++++++++++ */
 		/* + Validation + */
