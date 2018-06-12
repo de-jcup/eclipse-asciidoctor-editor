@@ -43,13 +43,23 @@ public class AsciiDocStringUtilsTest {
 	}
 
 	@Test
-	public void resolveFilenameOfIncludeOrNull_include_colon_colon_src_slash_include1_dot_adoc_has_no_filename_but_null() {
-		assertNull(resolveFilenameOfIncludeOrNull("include::src/include1.adoc"));
+	public void resolveFilenameOfIncludeOrNull_include_colon_colon_src_slash_include1_dot_java_has_no_filename_but_null() {
+		assertNull(resolveFilenameOfIncludeOrNull("include::src/include1.java"));
 	}
 
 	@Test
 	public void resolveFilenameOfIncludeOrNull_include_colon_colon_src_slash_include1_dot_adoc_brackets_has_src_slash_include1_dot_adoc() {
 		assertEquals("src/include1.adoc", resolveFilenameOfIncludeOrNull("include::src/include1.adoc[]"));
+	}
+
+	@Test
+	public void resolveFilenameOfIncludeOrNull_include_colon_colon_src_slash_include1_dot_java_brackets_has_src_slash_include1_dot_java() {
+		assertEquals("src/include1.java", resolveFilenameOfIncludeOrNull("include::src/include1.java[]"));
+	}
+	
+	@Test
+	public void resolveFilenameOfIncludeOrNull_include_colon_colon_src_slash_include1_dot_java_brackets_with_something_inside_has_src_slash_include1_dot_java() {
+		assertEquals("src/include1.java", resolveFilenameOfIncludeOrNull("include::src/include1.java[somethinginside]"));
 	}
 
 }
