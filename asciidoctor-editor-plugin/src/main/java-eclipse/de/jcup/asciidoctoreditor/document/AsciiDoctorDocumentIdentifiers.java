@@ -33,6 +33,8 @@ public enum AsciiDoctorDocumentIdentifiers implements AsciiDoctorDocumentIdentif
 	
 	TEXT_BOLD,
 	
+	TEXT_ITALIC,
+	
 	HEADLINE,
 	
 	;

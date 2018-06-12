@@ -87,7 +87,7 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
 				changeColor(editorMap, COLOR_TEXT_BOLD, AsciiDoctorEditorColorConstants.BRIGHT_CYAN);
 				changeColor(editorMap, COLOR_TEXT_BLOCKS, AsciiDoctorEditorColorConstants.DARK_THEME_CYAN);
 				changeColor(editorMap, COLOR_HYPERLINK, AsciiDoctorEditorColorConstants.DARK_THEME_CYAN);
-				changeColor(editorMap, COLOR_TEXT_ITALIC, AsciiDoctorEditorColorConstants.DARK_THEME_BRIGHT_CYAN);
+				changeColor(editorMap, COLOR_TEXT_ITALIC, AsciiDoctorEditorColorConstants.BRIGHT_CYAN);
 				
 			}
 
