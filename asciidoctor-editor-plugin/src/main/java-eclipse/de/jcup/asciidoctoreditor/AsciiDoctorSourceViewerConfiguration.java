@@ -29,7 +29,6 @@ import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
-import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.quickassist.IQuickAssistAssistant;
@@ -49,6 +48,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
+import org.eclipse.ui.texteditor.spelling.SpellingAnnotation;
 
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers;
@@ -114,19 +114,11 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 
 	@Override
 	public IQuickAssistAssistant getQuickAssistAssistant(ISourceViewer sourceViewer) {
-		/*
-		 * currently we avoid the default quick assistence parts (spell checking
-		 * etc.)
-		 */
-		return null;
+		return super.getQuickAssistAssistant(sourceViewer);
 	}
 
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
-		/*
-		 * currently we avoid the default reconciler mechanism parts (spell
-		 * checking etc.)
-		 */
-		return null;
+		return super.getReconciler(sourceViewer);
 	}
 
 	@Override
@@ -140,6 +132,9 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 			if (annotation instanceof MarkerAnnotation) {
 				return true;
 			}
+			if (annotation instanceof SpellingAnnotation) {
+				return true;
+			}
 			/* we do not support other annotations */
 			return false;
 		}
@@ -147,7 +142,12 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return new AsciiDoctorTextHover();
+		if (AsciiDoctorDocumentIdentifiers.isContaining(contentType)){
+			return new AsciiDoctorTextHover();
+		}
+		else{
+			return super.getTextHover(sourceViewer, contentType);
+		}
 	}
 
 	@Override

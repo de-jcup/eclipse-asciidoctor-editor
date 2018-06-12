@@ -61,5 +61,18 @@ public enum AsciiDoctorDocumentIdentifiers implements AsciiDoctorDocumentIdentif
 		}
 		return data;
 	}
+	
+	public static boolean isContaining(String contentType) {
+		if (contentType==null){
+			return false;
+		}
+		for (AsciiDoctorDocumentIdentifiers identifier: values()){
+			if (identifier.getId().equals(contentType)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 }

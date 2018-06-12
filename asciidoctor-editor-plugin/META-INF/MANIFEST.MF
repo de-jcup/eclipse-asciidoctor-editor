@@ -20,10 +20,11 @@ Require-Bundle: org.eclipse.ui,
  de.jcup.asciidoctoreditor.css;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Import-Package: org.asciidoctor,
+Import-Package: org.apache.commons.io,
+ org.asciidoctor,
  org.asciidoctor.converter,
  org.eclipse.ui,
+ org.eclipse.ui.texteditor.spelling,
  org.jruby,
- org.jruby.javasupport,
- org.apache.commons.io
+ org.jruby.javasupport
 Bundle-ClassPath: .
