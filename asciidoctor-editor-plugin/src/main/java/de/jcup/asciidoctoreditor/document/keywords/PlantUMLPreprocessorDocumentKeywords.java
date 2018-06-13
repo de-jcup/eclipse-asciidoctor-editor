@@ -15,27 +15,26 @@
  */
 package de.jcup.asciidoctoreditor.document.keywords;
 
-public enum AsciiDoctorPlantUMLKeyWords implements DocumentKeyWord {
+/**
+* 
+* PlantUMLPreprocessorDocumentKeywords is a generated java class. Please look into PlantUMLKeywordsGenerator.java
+*
+*/
+public enum PlantUMLPreprocessorDocumentKeywords implements DocumentKeyWord {
 
-
-	CLASS("http://plantuml.com/class-diagram"),
-	INTERFACE("http://plantuml.com/class-diagram"),
-	IMPLEMENTS("http://plantuml.com/class-diagram"),
-	EXTENDS("http://plantuml.com/class-diagram"),
+	
+          NOT_DEFINE("!define"),
+          NOT_ENDIF("!endif"),
+          NOT_IFDEF("!ifdef"),
+          NOT_IFNDEF("!ifndef"),
+          NOT_INCLUDE("!include"),
+          NOT_UNDEF("!undef"),
 	;
 
 	private String text;
-	private String tooltip;
-	private String linkToDocumentation;
 
-	private AsciiDoctorPlantUMLKeyWords() {
-		this(null);
-	}
-
-	private AsciiDoctorPlantUMLKeyWords(String linkToDocumentation) {
-		this.text = name().toLowerCase();
-		this.tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
-		this.linkToDocumentation = linkToDocumentation;
+	private PlantUMLPreprocessorDocumentKeywords(String text) {
+		this.text = text;
 	}
 
 	@Override
@@ -51,12 +50,12 @@ public enum AsciiDoctorPlantUMLKeyWords implements DocumentKeyWord {
 
 	@Override
 	public String getTooltip() {
-		return tooltip;
+		return "This is a keyword representing a 'preprocessor' in plantuml. Please refer to online documentation for more information";
 	}
 
 	@Override
 	public String getLinkToDocumentation() {
-		return linkToDocumentation;
+		return "http://plantuml.com";
 	}
 
 }

@@ -26,8 +26,12 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorPlantUMLKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
+import de.jcup.asciidoctoreditor.document.keywords.PlantUMLColorDocumentKeywords;
+import de.jcup.asciidoctoreditor.document.keywords.PlantUMLKeywordDocumentKeywords;
+import de.jcup.asciidoctoreditor.document.keywords.PlantUMLPreprocessorDocumentKeywords;
+import de.jcup.asciidoctoreditor.document.keywords.PlantUMLSkinparameterDocumentKeywords;
+import de.jcup.asciidoctoreditor.document.keywords.PlantUMLTypeDocumentKeywords;
 
 public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartitionScanner {
 
@@ -36,15 +40,24 @@ public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartit
 	public AsciiDoctorPlantUMLDocumentPartitionScanner() {
 		IToken note = createToken(PLANTUML_NOTE);
 
-		IToken annotation = createToken(PLANTUML_ANNOTATION);
+		IToken color = createToken(PLANTUML_COLOR);
+		IToken skinparameter = createToken(PLANTUML_SKINPARAMETER);
+		IToken type = createToken(PLANTUML_TYPE);
+
+		
+		IToken preprocessor = createToken(PLANTUML_PREPROCESSOR);
 		IToken keyword = createToken(PLANTUML_KEYWORD);
 
 		List<IPredicateRule> rules = new ArrayList<>();
 		rules.add(new SingleLineRule("note", " ", note, (char) -1, true));
-		rules.add(new SingleLineRule("@startuml", "", annotation, (char) -1, true));
-		rules.add(new SingleLineRule("@enduml", "", annotation, (char) -1, true));
+		rules.add(new SingleLineRule("@startuml", "", preprocessor, (char) -1, true));
+		rules.add(new SingleLineRule("@enduml", "", preprocessor, (char) -1, true));
 
-		buildWordRules(rules, keyword, AsciiDoctorPlantUMLKeyWords.values());
+		buildWordRules(rules, color, PlantUMLColorDocumentKeywords.values());
+		buildWordRules(rules, keyword, PlantUMLKeywordDocumentKeywords.values());
+		buildWordRules(rules, preprocessor, PlantUMLPreprocessorDocumentKeywords.values());
+		buildWordRules(rules, skinparameter, PlantUMLSkinparameterDocumentKeywords.values());
+		buildWordRules(rules, type, PlantUMLTypeDocumentKeywords.values());
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}
