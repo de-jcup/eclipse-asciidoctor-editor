@@ -19,9 +19,15 @@ public enum AsciiDoctorPlantUMLDocumentIdentifiers implements AsciiDoctorDocumen
 	
 	PLANTUML_NOTE,
 	
-	PLANTUML_ANNOTATION,
+	PLANTUML_PREPROCESSOR,
 	
 	PLANTUML_KEYWORD,
+	
+	PLANTUML_COLOR,
+	
+	PLANTUML_SKINPARAMETER,
+	
+	PLANTUML_TYPE,
 	
 	
 	;
