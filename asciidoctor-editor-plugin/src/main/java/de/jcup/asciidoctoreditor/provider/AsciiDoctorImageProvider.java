@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
 
 public class AsciiDoctorImageProvider {
 	private static ImageFilesFilter IMAGE_FILTER = new ImageFilesFilter();
@@ -56,12 +55,16 @@ public class AsciiDoctorImageProvider {
 			targetImagesDir.mkdirs();
 			targetImagesDir.deleteOnExit();
 		}
+		copyImagesToOutputFolder(getCachedSourceImagesPath(), targetImagesDir);
+		context.targetImagesDir=targetImagesDir;
+
+	}
+	
+	public String getCachedSourceImagesPath() {
 		if (cachedSourceImagesPath == null) {
 			cachedSourceImagesPath = resolveImagesDirPath(context.baseDir);
 		}
-		copyImagesToOutputFolder(cachedSourceImagesPath, targetImagesDir);
-		context.targetImagesDir=targetImagesDir;
-
+		return cachedSourceImagesPath;
 	}
 	
 	private static class ImageFilesFilter implements FileFilter{

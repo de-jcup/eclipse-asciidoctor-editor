@@ -52,6 +52,10 @@ public class AsciiDoctorWrapper {
 		context.setOutputFolder(tempFolder);
 		
 	}
+	
+	public AsciiDoctorProviderContext getContext() {
+		return context;
+	}
 
 	public void convertToHTML(File asciiDocFile) throws Exception{
 		context.setAsciidocFile(asciiDocFile);

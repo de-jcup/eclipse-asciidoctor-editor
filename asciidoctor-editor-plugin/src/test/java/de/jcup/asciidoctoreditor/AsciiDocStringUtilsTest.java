@@ -61,5 +61,24 @@ public class AsciiDocStringUtilsTest {
 	public void resolveFilenameOfIncludeOrNull_include_colon_colon_src_slash_include1_dot_java_brackets_with_something_inside_has_src_slash_include1_dot_java() {
 		assertEquals("src/include1.java", resolveFilenameOfIncludeOrNull("include::src/include1.java[somethinginside]"));
 	}
+	
+	@Test
+	public void resolveFilenameOfImageOrNull_image_colon_colon_src_slash_subfolder_slash_imagename_dot_png_brackets_with_something_inside_has_subfolder_slash_imagename_dot_png() {
+		assertEquals("subfolder/imagename.png", resolveFilenameOfImageOrNull("image::subfolder/imagename.png[something]"));
+	}
+	
+	@Test
+	public void resolveTextFromStartToBracketsEnd_includeTexts_for_an_image_complete_resolved_0_0(){
+		String include ="something::very-special-and-useful[title=\"AsciiDoctor Editor Logo\" opts=\"inline\"]";
+		String line = include+"... something else";
+		assertEquals(include, resolveTextFromStartToBracketsEnd(line, 0, 0).text);
+	}
+	
+	@Test
+	public void resolveTextFromStartToBracketsEnd_includeTexts_for_an_image_complete_resolved_0_5(){
+		String include ="something::very-special-and-useful[title=\"AsciiDoctor Editor Logo\" opts=\"inline\"]";
+		String line = include+"... something else";
+		assertEquals(include, resolveTextFromStartToBracketsEnd(line, 0, 5).text);
+	}
 
 }

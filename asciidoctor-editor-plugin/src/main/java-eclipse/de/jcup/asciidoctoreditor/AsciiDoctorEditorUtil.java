@@ -16,6 +16,7 @@
 package de.jcup.asciidoctoreditor;
 
 import java.io.File;
+import java.net.URL;
 
 import org.eclipse.core.filebuffers.FileBuffers;
 import org.eclipse.core.filesystem.EFS;
@@ -32,6 +33,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
@@ -144,6 +148,19 @@ public class AsciiDoctorEditorUtil {
 	private static ILog getLog() {
 		ILog log = AsciiDoctorEditorActivator.getDefault().getLog();
 		return log;
+	}
+
+	public static void openFileInExternalBrowser(File tempAdFile) {
+		try {
+			URL url =tempAdFile.toURI().toURL();
+			// Open default external browser
+			IWorkbenchBrowserSupport browserSupport = PlatformUI.getWorkbench().getBrowserSupport();
+			IWebBrowser externalBrowser = browserSupport.getExternalBrowser();
+			externalBrowser.openURL(url);
+			
+		} catch (Exception ex) {
+			AsciiDoctorEditorUtil.logError("Was not able to open url in external browser", ex);
+		}
 	}
 
 }

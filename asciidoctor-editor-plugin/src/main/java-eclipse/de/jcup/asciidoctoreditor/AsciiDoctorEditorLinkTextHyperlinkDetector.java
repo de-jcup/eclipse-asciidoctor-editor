@@ -15,6 +15,9 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -27,12 +30,6 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import de.jcup.asciidoctoreditor.AsciiDocStringUtils.LinkTextData;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 
-/**
- * Hyperlink detector for all kind of hyperlinks in egradle editor.
- * 
- * @author Albert Tregnaghi
- *
- */
 public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlinkDetector {
 
 	private IAdaptable adaptable;
@@ -63,24 +60,70 @@ public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlin
 		}
 
 		int offsetInLine = offset - lineInfo.getOffset();
-		
-		LinkTextData linkTextData = AsciiDocStringUtils.resolveLinkTextForIncludeOrHeadline(line,offset,offsetInLine);
-		
-		String foundText =linkTextData.text;
-		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrDiagram(foundText);
-		if (includeFileName!=null){
-			Region targetRegion = new Region(linkTextData.offsetLeft, foundText.length());
-			return new IHyperlink[] { new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, editor) };
+
+		LinkTextData linkTextData = AsciiDocStringUtils.resolveTextFromStartToBracketsEnd(line, offset, offsetInLine);
+
+		List<IHyperlink> hyperlinks = new ArrayList<>();
+		append(hyperlinks, resolveLinkToInclude(linkTextData, editor));
+		append(hyperlinks, resolveLinkToImage(linkTextData, editor));
+		append(hyperlinks, resolveLinkToHeadline(linkTextData, editor));
+
+		if (hyperlinks.isEmpty()) {
+			return null;
 		}
-		
+		return hyperlinks.toArray(new IHyperlink[hyperlinks.size()]);
+	}
+
+	private Region createTargetRegion(LinkTextData linkTextData) {
+		Region targetRegion = new Region(linkTextData.offsetLeft, linkTextData.text.length());
+		return targetRegion;
+	}
+
+	private void append(List<IHyperlink> hyperlinks, IHyperlink[] hyperlinkArray) {
+		if (hyperlinkArray == null) {
+			return;
+		}
+		for (IHyperlink hyperlink : hyperlinkArray) {
+			if (hyperlink == null) {
+				continue;
+			}
+			hyperlinks.add(hyperlink);
+		}
+
+	}
+
+	private IHyperlink[] resolveLinkToImage(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+
+		String imageName = AsciiDocStringUtils.resolveFilenameOfImageOrNull(linkTextData.text);
+		if (imageName != null) {
+			Region targetRegion = createTargetRegion(linkTextData);
+			return new IHyperlink[] { new AsciiDoctorEditorOpenImageHyperlink(targetRegion, imageName, editor) };
+
+		}
+		return null;
+	}
+
+	private IHyperlink[] resolveLinkToHeadline(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+		String foundText = linkTextData.text;
 		AsciiDoctorHeadline headline = editor.findAsciiDoctorHeadline(foundText);
 		if (headline != null) {
-			Region targetRegion = new Region(linkTextData.offsetLeft, foundText.length());
+			Region targetRegion = createTargetRegion(linkTextData);
 			return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, headline, editor) };
 		}
 		return null;
 	}
 
-	
+	protected IHyperlink[] resolveLinkToInclude(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+
+		String foundText = linkTextData.text;
+		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrDiagram(foundText);
+		if (includeFileName != null) {
+			Region targetRegion = createTargetRegion(linkTextData);
+			return new IHyperlink[] {
+					new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, editor) };
+		}
+		
+		return null;
+	}
 
 }
