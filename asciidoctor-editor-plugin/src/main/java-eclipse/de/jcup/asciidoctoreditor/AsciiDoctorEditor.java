@@ -168,7 +168,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		this.editorTempIdentifier=System.nanoTime();
 		setSourceViewerConfiguration(createSourceViewerConfig());
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
-		asciidoctorWrapper = new AsciiDoctorWrapper(AsciiDoctorEclipseLogAdapter.INSTANCE);
+		asciidoctorWrapper = new AsciiDoctorWrapper(editorTempIdentifier, AsciiDoctorEclipseLogAdapter.INSTANCE);
 
 		contentTransformer = createCustomContentTransformer();
 		if (contentTransformer == null) {
