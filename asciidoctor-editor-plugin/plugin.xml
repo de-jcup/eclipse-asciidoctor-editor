@@ -9,6 +9,10 @@
    		id="asciidoctoreditor.preferences.keyword.asciidoctor"
    		label="asciidoctor">
      </keyword>
+       <keyword
+   		id="asciidoctoreditor.preferences.keyword.plantuml"
+   		label="plantuml">
+     </keyword>
       <keyword
    		id="asciidoctoreditor.preferences.keyword.color"
    		label="color">
@@ -29,7 +33,7 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-      		name="AsciiDoctor Editor"
+      		name="Asciidoctor Editor"
             extensions="asciidoc,adoc"
             icon="icons/asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
@@ -38,7 +42,7 @@
             id="asciidoctoreditor.editors.AsciiDoctorEditor">
       </editor>
       <editor
-      		name="Ditaa (AsciiDoctor) Editor"
+      		name="Ditaa Editor (Asciidoctor)"
             extensions="ditaa"
             icon="icons/ditaa-asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
@@ -46,7 +50,7 @@
             id="asciidoctoreditor.editors.AsciiDoctorDitaaEditor">
       </editor>
       <editor
-      		name="PlantUML (AsciiDoctor) Editor"
+      		name="PlantUML Editor (Asciidoctor)"
             extensions="plantuml,pu,puml,iuml"
             icon="icons/plantuml-asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
@@ -119,13 +123,13 @@
    
    <extension point="org.eclipse.ui.commands">
        <category
-            description="AsciiDoctor editor"
+            description="Asciidoctor editor"
             id="asciidoctoreditor.commands.category"
-            name="AsciiDoctor editor">
+            name="Asciidoctor editor">
        </category>
       
        <command
-      		name="Open with asciidoctor editor"
+      		name="Open with Asciidoctor editor"
       		description="Open file with asciidoctor editor"
       		categoryId="asciidoctoreditor.commands.category"
       		id="asciidoctoreditor.command.openWithAsciiDoctorEditor">
@@ -247,7 +251,7 @@
       <page
          id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorEditorPreferencePage"
          class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferencePage"
-         name="AsciiDoctor Editor"
+         name="Asciidoctor Editor"
          >
          <keywordReference
                id="asciidoctoreditor.preferences.keyword.asciidoctor">
@@ -280,6 +284,22 @@
                id="asciidoctoreditor.preferences.keyword.validation">
          </keywordReference>
       </page>
+    <!-- plantuml -->
+      <page
+         id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorPlantUMLEditorSyntaxColorPreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorPlantUMLEditorSyntaxColorPreferencePage"
+         name="PlantUML Editor (Asciidoctor)"
+         >
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.plantuml">
+         </keywordReference>
+          <keywordReference
+               id="asciidoctoreditor.preferences.keyword.color">
+         </keywordReference>
+      </page>
     </extension>
     <extension
          point="org.eclipse.core.runtime.preferences">
@@ -293,7 +313,7 @@
    <extension 
    		id="de.jcup.asciidoctoreditor.parse.error"
     	point="org.eclipse.core.resources.markers"
-    	name="AsciiDoctor editor parse error">
+    	name="Asciidoctor editor parse error">
         <super type="org.eclipse.core.resources.problemmarker"/>
         <super type="org.eclipse.core.resources.textmarker"/>
         <persistent value="true"/>

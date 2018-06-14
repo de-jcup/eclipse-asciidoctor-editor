@@ -78,7 +78,6 @@ public enum PlantUMLKeywordDocumentKeywords implements DocumentKeyWord {
           SKINPARAM("skinparam"),
           START("start"),
           STOP("stop"),
-          TITLE("title"),
           TOP("top"),
           TOP_TO_BOTTOM_DIRECTION("top to bottom direction"),
           UP("up"),

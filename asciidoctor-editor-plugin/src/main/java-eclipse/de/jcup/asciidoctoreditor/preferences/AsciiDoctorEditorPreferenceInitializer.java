@@ -19,6 +19,7 @@ import static de.jcup.asciidoctoreditor.AsciiDoctorEditorColorConstants.*;
 import static de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferenceConstants.*;
+import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorPlantUMLEditorSyntaxColorPreferenceConstants.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferenceConstants.*;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
@@ -71,6 +72,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* + Editor Colors + */
 		/* +++++++++++++++++ */
 		preferences.setDefaultColor(COLOR_NORMAL_TEXT, BLACK);
+		preferences.setDefaultColor(COLOR_PLANTUML_NORMAL_TEXT, BLACK);
 
 		preferences.setDefaultColor(COLOR_ASCIIDOCTOR_HEADLINES, ASCIIDOC_HEADLINE_HTML);
 
@@ -84,6 +86,14 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		preferences.setDefaultColor(COLOR_TEXT_BOLD, BLACK);
 		preferences.setDefaultColor(COLOR_HYPERLINK, DARK_BLUE);
 		preferences.setDefaultColor(COLOR_TEXT_ITALIC, BLACK);
+
+		preferences.setDefaultColor(COLOR_PLANTUML_KEYWORD, KEYWORD_DEFAULT_PURPLE);
+		preferences.setDefaultColor(COLOR_PLANTUML_NOTE, GREEN_JAVA);
+		preferences.setDefaultColor(COLOR_PLANTUML_PREPROCESSOR, DARK_GRAY);
+		preferences.setDefaultColor(COLOR_PLANTUML_SKINPARAMETER, DARK_GRAY);
+		preferences.setDefaultColor(COLOR_PLANTUML_TYPE, KEYWORD_DEFAULT_PURPLE);
+		preferences.setDefaultColor(COLOR_PLANTUML_COLOR, DARK_BLUE);
+		preferences.setDefaultColor(COLOR_PLANTUML_DOUBLESTRING, ROYALBLUE);
 
 		/* ++++++++++++++ */
 		/* + Validation + */

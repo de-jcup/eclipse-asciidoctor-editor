@@ -10,5 +10,13 @@ IEclipsePreferences#de-jcup-asciidoctoreditor:de-jcup-asciidoctoreditor { /* pse
 		'colorIncludeKeywords=128,128,0'
 		'colorCommands=0,128,128'
 		'colorKnownVariables=97,97,97'
+		'colorPlantUMLKeyword=49,98,98'
+		'colorPlantUMLNormalText=192,192,192'
+		'colorPlantUMLPreprocessor=0,128,128'
+		'colorPlantUMLColor=128,128,0'
+		'colorPlantUMLNote=63,127,95',
+		'colorPlantUMLType=186,57,37'
+		'colorPlantUMLSkinparameter=97,97,97'
+		'colorPlantUMLDoubleString=237,127,0'
 }
 
