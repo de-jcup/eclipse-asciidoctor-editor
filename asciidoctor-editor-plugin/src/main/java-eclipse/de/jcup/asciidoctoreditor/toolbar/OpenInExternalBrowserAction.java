@@ -16,13 +16,9 @@
  package de.jcup.asciidoctoreditor.toolbar;
 
 import java.io.File;
-import java.net.URL;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWebBrowser;
-import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
@@ -50,15 +46,6 @@ public class OpenInExternalBrowserAction extends ToolbarAction {
 			MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Asciidoctor Editor", "Generated HTML output not found - maybe it's still in generation.\n\nPlease wait and try again.");
 			return;
 		}
-		try {
-			URL url =tempAdFile.toURI().toURL();
-			// Open default external browser
-			IWorkbenchBrowserSupport browserSupport = PlatformUI.getWorkbench().getBrowserSupport();
-			IWebBrowser externalBrowser = browserSupport.getExternalBrowser();
-			externalBrowser.openURL(url);
-			
-		} catch (Exception ex) {
-			AsciiDoctorEditorUtil.logError("Was not able to open url in external browser", ex);
-		}
+		AsciiDoctorEditorUtil.openFileInExternalBrowser(tempAdFile);
 	}
 }

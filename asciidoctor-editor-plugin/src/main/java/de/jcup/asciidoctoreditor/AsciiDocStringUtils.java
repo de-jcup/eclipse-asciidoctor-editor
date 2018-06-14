@@ -26,8 +26,8 @@ import java.io.OutputStreamWriter;
 
 public class AsciiDocStringUtils {
 
+	private static final String IMAGE_PREFIX = "image::";
 	private static final String INCLUDE_PREFIX = "include::";
-	private static final int INCLUDE_PREFIX_LENGTH = INCLUDE_PREFIX.length();
 	private static final String UTF_8 = "UTF-8";
 
 	public static String resolveFilenameOfIncludeOrDiagram(String potentialInclude) {
@@ -54,18 +54,14 @@ public class AsciiDocStringUtils {
 			return null;
 		}
 		String prefix = macroName + "::";
-		if (potentialInclude.startsWith(prefix)) {
-			int index = potentialInclude.indexOf("[");
-			if (index == -1) {
-				return null;
-			}
-			String fileName = potentialInclude.substring(0, index);
-			fileName = fileName.substring(prefix.length());
-			return fileName;
-		}
-		return null;
+		return resolveSubstringFromPrefixToStartOfLastOpeningBracket(potentialInclude, prefix);
 	}
 
+	
+	public static String resolveFilenameOfImageOrNull(String potentialImage){
+		return resolveSubstringFromPrefixToStartOfLastOpeningBracket(potentialImage, IMAGE_PREFIX);
+	}
+	
 	/**
 	 * Resolves filenames from fullstrings of an potential include.<br>
 	 * <br>
@@ -78,17 +74,23 @@ public class AsciiDocStringUtils {
 	 * @return resolved filename of include or <code>null</code>
 	 */
 	public static String resolveFilenameOfIncludeOrNull(String potentialInclude) {
+		return resolveSubstringFromPrefixToStartOfLastOpeningBracket(potentialInclude, INCLUDE_PREFIX);
+	}
+
+	static String resolveSubstringFromPrefixToStartOfLastOpeningBracket(String potentialInclude,
+			String prefix) {
 		if (potentialInclude == null) {
 			return null;
 		}
-		if (potentialInclude.startsWith(INCLUDE_PREFIX)) {
+		if (potentialInclude.startsWith(prefix)) {
 			if (potentialInclude.endsWith("]")) {
 				int lastOpening=potentialInclude.lastIndexOf('[');
 				if (lastOpening==-1){
 					return null;
 				}
-				int endIndex = lastOpening-INCLUDE_PREFIX_LENGTH;
-				String fileName = potentialInclude.substring(INCLUDE_PREFIX_LENGTH);
+				int length = prefix.length();
+				int endIndex = lastOpening-length;
+				String fileName = potentialInclude.substring(length);
 				fileName = fileName.substring(0, endIndex);
 				return fileName;
 			}
@@ -98,19 +100,43 @@ public class AsciiDocStringUtils {
 
 	public static class LinkTextData {
 		LinkTextData() {
-
+			this.text="";
+			this.offsetLeft=0;
 		}
 
 		public String text;
 		public int offsetLeft;
 	}
 
-	public static LinkTextData resolveLinkTextForIncludeOrHeadline(String line, int offset, int offsetInLine) {
-		String leftChars = line.substring(0, offsetInLine);
-		String rightChars = line.substring(offsetInLine);
+	/**
+	 * Resolves a text from cursor position to left start (whitspace is terminator) and to right with ending square bracket ("]").
+	 * @param line
+	 * @param offset (offset in complet document)
+	 * @param offsetInLine (offset inside the line)
+	 * @return link text data object
+	 */
+	public static LinkTextData resolveTextFromStartToBracketsEnd(String line, int offset, int offsetInLine) {
+		LinkTextData data = new LinkTextData();
+		
+		String lineLeftChars = line.substring(0, offsetInLine);
+		String lineRightChars = line.substring(offsetInLine);
 		StringBuilder sb = new StringBuilder();
+		
 		int offsetLeft = offset;
-		char[] left = leftChars.toCharArray();
+		/* build right part */
+		boolean foundEndingBracket = false;
+		for (char c : lineRightChars.toCharArray()) {
+			foundEndingBracket= (c==']');
+			sb.append(c);
+			if (foundEndingBracket) {
+				break;
+			}
+		}
+		if (!foundEndingBracket){
+			return data;
+		}
+		/* build left part */
+		char[] left = lineLeftChars.toCharArray();
 		for (int i = left.length - 1; i >= 0; i--) {
 			char c = left[i];
 			if (Character.isWhitespace(c)) {
@@ -119,13 +145,7 @@ public class AsciiDocStringUtils {
 			offsetLeft--;
 			sb.insert(0, c);
 		}
-		for (char c : rightChars.toCharArray()) {
-			if (Character.isWhitespace(c)) {
-				break;
-			}
-			sb.append(c);
-		}
-		LinkTextData data = new LinkTextData();
+		
 		data.text = sb.toString();
 		data.offsetLeft = offsetLeft;
 		return data;

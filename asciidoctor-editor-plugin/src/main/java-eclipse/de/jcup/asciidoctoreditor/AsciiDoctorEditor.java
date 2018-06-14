@@ -1217,15 +1217,21 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	public void openInclude(String fileName) {
-		IWorkbenchPage activePage = getActivePage();
+	
 		File editorFileOrNull = getEditorFileOrNull();
 		if (editorFileOrNull==null){
 			MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to resolve editor file", "Not able to resolve editor file, so Cannot open " + fileName);
 			return;
 		}
 		File file = new File(editorFileOrNull.getParentFile(), fileName);
+		openFileWithEclipseDefault(file);
+
+	}
+
+	protected void openFileWithEclipseDefault(File file) {
+		IWorkbenchPage activePage = getActivePage();
 		if (!file.exists()) {
-			MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to load", "Cannot open " + fileName);
+			MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to load", "Cannot open " + file.getAbsolutePath());
 			return;
 		}
 		try {
@@ -1235,7 +1241,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		} catch (PartInitException e) {
 			AsciiDoctorEditorUtil.logError("Not able to open include", e);
 		}
-
 	}
 
 	public void resetCache() {
@@ -1272,6 +1277,15 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	public void navgigateToTopOfView() {
 		browserAccess.navgigateToTopOfView();
+	}
+
+	public void openImage(String fileName) {
+		if (fileName==null){
+			return;
+		}
+		String imagespath=asciidoctorWrapper.getContext().getImageProvider().getCachedSourceImagesPath();
+		File file = new File(imagespath,fileName);
+		openFileWithEclipseDefault(file);
 	}
 
 }
