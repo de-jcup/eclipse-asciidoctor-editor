@@ -1,6 +1,6 @@
 dependencies {
+    compile 'commons-io:commons-io:2.4'
     testCompile 'org.asciidoctor:asciidoctorj:1.5.6'
-    testCompile 'commons-io:commons-io:2.4'
     
     testCompile project(':asciidoctor-editor-plugin')
 
