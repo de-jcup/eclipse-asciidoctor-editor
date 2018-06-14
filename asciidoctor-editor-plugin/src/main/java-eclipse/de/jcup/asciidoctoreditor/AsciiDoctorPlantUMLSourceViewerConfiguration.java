@@ -17,7 +17,7 @@ package de.jcup.asciidoctoreditor;
 
 import static de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil.*;
 import static de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLDocumentIdentifiers.*;
-import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferenceConstants.*;
+import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorPlantUMLEditorSyntaxColorPreferenceConstants.*;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
@@ -50,10 +50,10 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLDocumentIdentifiers;
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLColorDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLKeywordDocumentKeywords;
+import de.jcup.asciidoctoreditor.document.keywords.PlantUMLMissingKeywordDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLPreprocessorDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLSkinparameterDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLTypeDocumentKeywords;
@@ -72,7 +72,6 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 
 	private TextAttribute defaultTextAttribute;
 	private AsciiDoctorPlantUMLEditorAnnotationHoover annotationHoover;
-	private IAdaptable adaptable;
 	private ContentAssistant contentAssistant;
 	private AsciiDoctorEditorSimpleWordContentAssistProcessor contentAssistProcessor;
 
@@ -100,6 +99,9 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 				for (DocumentKeyWord keyword : PlantUMLKeywordDocumentKeywords.values()) {
 					addKeyWord(keyword);
 				}
+				for (DocumentKeyWord keyword : PlantUMLMissingKeywordDocumentKeywords.values()) {
+					addKeyWord(keyword);
+				}
 				for (DocumentKeyWord keyword : PlantUMLPreprocessorDocumentKeywords.values()) {
 					addKeyWord(keyword);
 				}
@@ -125,9 +127,8 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 		this.colorManager = adaptable.getAdapter(ColorManager.class);
 		Assert.isNotNull(colorManager, " adaptable must support color manager");
 		defaultTextAttribute = new TextAttribute(
-				colorManager.getColor(getPreferences().getColor(COLOR_NORMAL_TEXT)));
+				colorManager.getColor(getPreferences().getColor(COLOR_PLANTUML_NORMAL_TEXT)));
 
-		this.adaptable = adaptable;
 
 	}
 
@@ -189,12 +190,13 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 
 		addDefaultPresentation(reconciler);
 		/* TODO Albert: think about using own color preferences here*/
-		addPresentation(reconciler, PLANTUML_PREPROCESSOR.getId(), getPreferences().getColor(COLOR_TEXT_BLOCKS), SWT.BOLD);
-		addPresentation(reconciler, PLANTUML_KEYWORD.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_HEADLINES), SWT.BOLD);
-		addPresentation(reconciler, PLANTUML_NOTE.getId(), getPreferences().getColor(COLOR_COMMENT), SWT.BOLD);
-		addPresentation(reconciler, PLANTUML_SKINPARAMETER.getId(), getPreferences().getColor(COLOR_KNOWN_VARIABLES), SWT.BOLD);
-		addPresentation(reconciler, PLANTUML_COLOR.getId(), getPreferences().getColor(COLOR_TEXT_BOLD), SWT.BOLD);
-		addPresentation(reconciler, PLANTUML_TYPE.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_COMMAND), SWT.BOLD);
+		addPresentation(reconciler, PLANTUML_PREPROCESSOR.getId(), getPreferences().getColor(COLOR_PLANTUML_PREPROCESSOR), SWT.BOLD);
+		addPresentation(reconciler, PLANTUML_DOUBLE_STRING.getId(), getPreferences().getColor(COLOR_PLANTUML_DOUBLESTRING), SWT.NONE);
+		addPresentation(reconciler, PLANTUML_KEYWORD.getId(), getPreferences().getColor(COLOR_PLANTUML_KEYWORD), SWT.BOLD);
+		addPresentation(reconciler, PLANTUML_NOTE.getId(), getPreferences().getColor(COLOR_PLANTUML_NOTE), SWT.BOLD);
+		addPresentation(reconciler, PLANTUML_SKINPARAMETER.getId(), getPreferences().getColor(COLOR_PLANTUML_SKINPARAMETER), SWT.BOLD);
+		addPresentation(reconciler, PLANTUML_COLOR.getId(), getPreferences().getColor(COLOR_PLANTUML_COLOR), SWT.BOLD);
+		addPresentation(reconciler, PLANTUML_TYPE.getId(), getPreferences().getColor(COLOR_PLANTUML_TYPE), SWT.BOLD);
 		return reconciler;
 	}
 
@@ -239,7 +241,7 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 		if (scanner == null) {
 			return;
 		}
-		RGB color = getPreferences().getColor(COLOR_NORMAL_TEXT);
+		RGB color = getPreferences().getColor(COLOR_PLANTUML_NORMAL_TEXT);
 		scanner.setDefaultReturnToken(createColorToken(color));
 	}
 

@@ -29,6 +29,7 @@ public enum AsciiDoctorPlantUMLDocumentIdentifiers implements AsciiDoctorDocumen
 	
 	PLANTUML_TYPE,
 	
+	PLANTUML_DOUBLE_STRING,
 	
 	;
 
