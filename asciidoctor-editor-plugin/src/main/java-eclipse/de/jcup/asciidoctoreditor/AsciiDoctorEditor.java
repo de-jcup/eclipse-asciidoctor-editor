@@ -263,7 +263,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		asciiDocToolBarManager.add(new NewLinkInsertAction(this));
 		asciiDocToolBarManager.add(new InsertAdmonitionAction(this));
 		asciiDocToolBarManager.add(new NewCodeBlockInsertAction(this));
-
+		
 		IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
 		viewToolBarManager.add(new ChangeLayoutAction(this));
 		viewToolBarManager.add(new RebuildAsciiDocViewAction(this));
@@ -285,13 +285,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
 		}
 
-		/*
-		 * bugfix - coolbar manager does not use theme colors correctly so we
-		 * try with transparent background color
-		 */
-		CoolBar coolbarControl = coolBarManager.getControl();
-		Composite parent = coolbarControl.getParent();
-		coolbarControl.setBackground(parent.getBackground());
 		coolBarManager.update(true);
 
 	}
