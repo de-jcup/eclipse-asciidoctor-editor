@@ -31,14 +31,26 @@ public class AsciiDoctorBaseDirectoryProvider {
 
 	private File cachedBaseDir;
 
-	private File findBaseDir(File dir) {
+	private File findBaseDir(File startFrom) {
 		if (cachedBaseDir == null) {
-			cachedBaseDir = findBaseDirNotCached(dir);
+			cachedBaseDir = findBaseDirNotCached(startFrom);
 		}
 		return cachedBaseDir;
 	}
 
-	private File findBaseDirNotCached(File dir) {
+	private File findBaseDirNotCached(File startFrom) {
+		File file = resolveUnSaveBaseDir(startFrom);
+		File tempFolder = new File(System.getProperty("java.io.tmpdir"));
+		if (tempFolder.equals(file)){
+			/* this is a fuse - we got this situation with https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/97 . It will be fixed,
+			 * but preventing those situations is very important. So this exception will break cycles and is also check in a test case
+			 */
+			throw new IllegalStateException("Tempfolder may never be the base dir folder!");
+		}
+		return file;
+	}
+
+	protected File resolveUnSaveBaseDir(File dir) {
 		// very simple approach just go up until no longer any asciidoc files
 		// are found
 		// if no longer .adoc files assume this is the end and use directory
@@ -79,10 +91,11 @@ public class AsciiDoctorBaseDirectoryProvider {
 	}
 
 	public File findBaseDir() {
-		if (context.asciidocFile == null) {
-			return new File(".");
+		File asciiDocFile = context.getAsciiDocFile();
+		if (asciiDocFile == null) {
+			 throw new IllegalStateException("No asciidoc file set!");
 		}
-		return findBaseDir(context.asciidocFile.getParentFile());
+		return findBaseDir(asciiDocFile.getParentFile());
 	}
 
 	public void reset() {

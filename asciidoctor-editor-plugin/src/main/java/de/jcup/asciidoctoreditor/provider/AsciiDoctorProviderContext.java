@@ -24,32 +24,36 @@ import de.jcup.asciidoctoreditor.LogAdapter;
 
 public class AsciiDoctorProviderContext {
 	
-	LogAdapter logAdapter;
-	File asciidocFile;
-	File baseDir;
-	Path outputFolder;
-	boolean tocVisible;
+	private LogAdapter logAdapter;
+	private File asciidocFile;
+	private File baseDir;
+	private Path outputFolder;
+	private boolean tocVisible;
 
-	AsciiDoctorBaseDirectoryProvider baseDirProvider;
-	AsciiDoctorImageProvider imageProvider;
-	AsciiDoctorAttributesProvider attributesProvider;
-	Asciidoctor asciidoctor;
-	AsciiDoctorOptionsProvider optionsProvider;
+	private AsciiDoctorBaseDirectoryProvider baseDirProvider;
+	private AsciiDoctorImageProvider imageProvider;
+	private AsciiDoctorAttributesProvider attributesProvider;
+	private Asciidoctor asciidoctor;
+	private AsciiDoctorOptionsProvider optionsProvider;
 	File targetImagesDir;
 	int tocLevels;
 
-	public AsciiDoctorProviderContext(Asciidoctor asciidoctor) {
+	public AsciiDoctorProviderContext(Asciidoctor asciidoctor, LogAdapter logAdapter) {
 		if (asciidoctor==null ){
 			throw new IllegalArgumentException("asciidoctor may never be null!");
 		}
+		if (logAdapter==null ){
+			throw new IllegalArgumentException("logAdapter may never be null!");
+		}
 		this.asciidoctor=asciidoctor;
+		this.logAdapter=logAdapter;
 		init();
 	}
 	
-	public boolean isTOCVisible(){
-		return tocVisible;
+	public Path getOutputFolder() {
+		return outputFolder;
 	}
-
+	
 	public void setTocLevels(int tocLevels) {
 		this.tocLevels = tocLevels;
 	}
@@ -105,8 +109,23 @@ public class AsciiDoctorProviderContext {
 		this.tocVisible=visible;
 	}
 	
-	public boolean isTocVisible() {
+	public boolean isTOCVisible() {
 		return tocVisible;
+	}
+
+	public File getBaseDir() {
+		if (baseDir==null){
+			baseDir=baseDirProvider.findBaseDir();
+		}
+		return baseDir;
+	}
+
+	public LogAdapter getLogAdapter() {
+		return logAdapter;
+	}
+
+	public File getAsciiDocFile() {
+		return asciidocFile;
 	}
 
 }

@@ -16,40 +16,41 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.ast.DocumentHeader;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
 
+import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.TestscriptsUtil;
 
 public class AsciiDoctorProviderContextTest {
 
 	private Asciidoctor asciidoctor;
+	private LogAdapter logAdapter;
 
 	
 	@Before
 	public void before(){
 		asciidoctor=mock(Asciidoctor.class);
+		logAdapter = mock(LogAdapter.class);
 	}
 	
 	@Test
 	public void test_normal_creating_context_creates_internal_providers() {
 		/* execute */
-		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(asciidoctor);
+		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(asciidoctor,logAdapter);
 	
 		/* test */
 		assertNotNull(context.getAsciiDoctor());
@@ -108,7 +109,7 @@ public class AsciiDoctorProviderContextTest {
 
 	private Set<File> testInternalImages(boolean imageDirSet) throws IOException {
 		/* before */
-		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(asciidoctor);
+		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(asciidoctor, logAdapter);
 		File testFile = TestscriptsUtil.assertFileInTestscripts("09_includes.adoc");
 		context.setAsciidocFile(testFile);
 		Path tempDirectory = Files.createTempDirectory("junittest");

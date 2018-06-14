@@ -38,10 +38,11 @@ public class AsciiDoctorOptionsProvider {
 	public Map<String, Object> createDefaultOptions() {
 		/* @formatter:off*/
 		Attributes attrs;
-		if (context.outputFolder==null){
+		Path outputFolder = context.getOutputFolder();
+		if (outputFolder==null){
 			throw new IllegalStateException("output folder not defined");
 		}
-		context.imageProvider.ensureImages();
+		context.getImageProvider().ensureImages();
 		
 		AttributesBuilder attrBuilder = AttributesBuilder.
 				attributes().
@@ -66,7 +67,7 @@ public class AsciiDoctorOptionsProvider {
 				attrBuilder.attribute(key,value);
 			}
 		}
-		if (context.tocVisible){
+		if (context.isTOCVisible()){
 			attrBuilder.attribute("toc","left");
 			if (context.tocLevels>0){
 				attrBuilder.attribute("toclevels",""+context.tocLevels);
@@ -76,26 +77,26 @@ public class AsciiDoctorOptionsProvider {
 		
 		
 		attrs=attrBuilder.get();
-		if (context.outputFolder != null) {
-			System.out.println("Tempfolder:" + context.outputFolder);
-			attrs.setAttribute("outdir", createAbsolutePath(context.outputFolder));
+		if (outputFolder != null) {
+			System.out.println("Tempfolder:" + outputFolder);
+			attrs.setAttribute("outdir", createAbsolutePath(outputFolder));
 		}
 		File destionationFolder= null;
-		if (context.outputFolder!=null){
-			destionationFolder= context.outputFolder.toFile();
+		if (outputFolder!=null){
+			destionationFolder= outputFolder.toFile();
 		}else{
-			destionationFolder= context.baseDir;
+			destionationFolder= context.getBaseDir();
 		}
 		
 		OptionsBuilder opts = OptionsBuilder.options().
 				toDir(destionationFolder).
 				safe(SafeMode.UNSAFE).
 				backend("html5").
-				headerFooter(context.tocVisible).
+				headerFooter(context.isTOCVisible()).
 				
 				attributes(attrs).
 				option("sourcemap", "true").
-				baseDir(context.asciidocFile !=null ? context.asciidocFile.getParentFile(): context.baseDir);
+				baseDir(context.getBaseDir());
 		/* @formatter:on*/
 		return opts.asMap();
 	}

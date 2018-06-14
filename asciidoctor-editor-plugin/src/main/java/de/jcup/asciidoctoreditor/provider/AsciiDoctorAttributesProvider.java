@@ -39,7 +39,7 @@ public class AsciiDoctorAttributesProvider {
 
 	protected Map<String, Object> getCachedAttributes() {
 		if (cachedAttributes == null) {
-			cachedAttributes = resolveAttributes(context.baseDir);
+			cachedAttributes = resolveAttributes(context.getBaseDir());
 		}
 		return cachedAttributes;
 	}
@@ -67,7 +67,7 @@ public class AsciiDoctorAttributesProvider {
 		DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
 
 		for (File file : directoryWalker.scan()) {
-			documentIndex.add(context.asciidoctor.readDocumentHeader(file));
+			documentIndex.add(context.getAsciiDoctor().readDocumentHeader(file));
 		}
 		for (DocumentHeader header : documentIndex) {
 			map.putAll(header.getAttributes());
