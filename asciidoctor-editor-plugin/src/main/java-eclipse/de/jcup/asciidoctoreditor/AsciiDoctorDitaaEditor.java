@@ -64,13 +64,6 @@ public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 			coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
 		}
 
-		/*
-		 * bugfix - coolbar manager does not use theme colors correctly so we
-		 * try with transparent background color
-		 */
-		CoolBar coolbarControl = coolBarManager.getControl();
-		Composite parent = coolbarControl.getParent();
-		coolbarControl.setBackground(parent.getBackground());
 		coolBarManager.update(true);
 
 	}
