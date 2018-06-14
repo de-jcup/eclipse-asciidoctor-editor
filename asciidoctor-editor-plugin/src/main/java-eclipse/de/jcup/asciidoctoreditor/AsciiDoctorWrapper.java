@@ -42,12 +42,12 @@ public class AsciiDoctorWrapper {
 
 	private AsciiDoctorProviderContext context;
 
-	public AsciiDoctorWrapper(LogAdapter logAdapter) {
+	public AsciiDoctorWrapper(long tempIdentifier, LogAdapter logAdapter) {
 		if (logAdapter==null){
 			throw new IllegalArgumentException("log adapter may not be null!");
 		}
 		this.logAdapter=logAdapter;
-		initTempFolderOrFail();
+		initTempFolderOrFail(tempIdentifier);
 		this.context = new AsciiDoctorProviderContext(AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor(), AsciiDoctorEclipseLogAdapter.INSTANCE);
 		context.setOutputFolder(tempFolder);
 		
@@ -148,13 +148,8 @@ public class AsciiDoctorWrapper {
 		return "<link rel=\"stylesheet\" href=\"" + pathToFile + "\">\n";
 	}
 
-	protected void initTempFolderOrFail() {
-		try {
-			tempFolder = Files.createTempDirectory("ascii-doctor-eclipse");
-			tempFolder.toFile().deleteOnExit();
-		} catch (IOException e) {
-			throw new IllegalStateException("Not able to provide tempfolder", e);
-		}
+	protected void initTempFolderOrFail(long tempIdentifier) {
+		tempFolder = AsciiDocFileUtils.createTempFolderForEditor(tempIdentifier);
 	}
 
 	public File getTempFileFor(File editorFile, TemporaryFileType type) {
