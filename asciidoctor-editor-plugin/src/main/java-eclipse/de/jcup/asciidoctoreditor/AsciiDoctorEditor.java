@@ -741,21 +741,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		return resolveFileToConvertToHTML(editorFile.getName(), originText);
 	}
 
-	private File resolveFileToConvertToHTML(String filename, String text) throws IOException {
-		String tempDir = System.getProperty("java.io.tmpdir");
-		File newTempFolder = new File(tempDir, "asciidoctor-editor-temp");
-
-		if (!newTempFolder.exists() && !newTempFolder.mkdirs()) {
-			throw new IOException("Was not able to create tempfolder:" + newTempFolder);
-		}
-
-		File newTempFile = new File(newTempFolder, editorTempIdentifier + "_" + filename);
-		if (newTempFile.exists()){
-			if (!newTempFile.delete()){
-				throw new IOException("Unable to delete old tempfile:"+newTempFile);
-			}
-		}
-		newTempFile.deleteOnExit();
+	public File resolveFileToConvertToHTML(String filename, String text) throws IOException {
+		File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(editorTempIdentifier, filename);
 
 		String transformed = contentTransformer.transform(text);
 		try{
@@ -765,6 +752,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			return null;
 		}
 	}
+
+	
 
 	
 

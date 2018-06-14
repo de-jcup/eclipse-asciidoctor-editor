@@ -48,7 +48,7 @@ public class AsciiDoctorWrapper {
 		}
 		this.logAdapter=logAdapter;
 		initTempFolderOrFail();
-		this.context = new AsciiDoctorProviderContext(AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor());
+		this.context = new AsciiDoctorProviderContext(AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor(), AsciiDoctorEclipseLogAdapter.INSTANCE);
 		context.setOutputFolder(tempFolder);
 		
 	}
@@ -193,6 +193,6 @@ public class AsciiDoctorWrapper {
 	}
 
 	public boolean isTocVisible() {
-		return context.isTocVisible();
+		return context.isTOCVisible();
 	}
 }

@@ -18,6 +18,7 @@ package de.jcup.asciidoctoreditor.provider;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,7 +33,6 @@ public class AsciiDoctorImageProvider {
 			throw new IllegalArgumentException("context may never be null!");
 		}
 		this.context = context;
-		context.imageProvider = this;
 	}
 
 	private void copyImagesToOutputFolder(String sourcePath, File target) {
@@ -44,13 +44,17 @@ public class AsciiDoctorImageProvider {
 		try {
 			FileUtils.copyDirectory(cachedImagesFile, target, IMAGE_FILTER);
 		} catch (IOException e) {
-			context.logAdapter.logError("Cannot copy images", e);
+			context.getLogAdapter().logError("Cannot copy images", e);
 		}
 
 	}
 
 	public void ensureImages() {
-		File targetImagesDir = new File(context.outputFolder.toFile(), "images");
+		Path outputFolder = context.getOutputFolder();
+		if (outputFolder==null){
+			throw new IllegalStateException("no output folder set!");
+		}
+		File targetImagesDir = new File(outputFolder.toFile(), "images");
 		if (!targetImagesDir.exists()) {
 			targetImagesDir.mkdirs();
 			targetImagesDir.deleteOnExit();
@@ -62,7 +66,7 @@ public class AsciiDoctorImageProvider {
 	
 	public String getCachedSourceImagesPath() {
 		if (cachedSourceImagesPath == null) {
-			cachedSourceImagesPath = resolveImagesDirPath(context.baseDir);
+			cachedSourceImagesPath = resolveImagesDirPath(context.getBaseDir());
 		}
 		return cachedSourceImagesPath;
 	}
@@ -107,7 +111,7 @@ public class AsciiDoctorImageProvider {
 
 	protected String resolveImagesDirPath(File baseDir) {
 
-		Object imagesDir = context.attributesProvider.getCachedAttributes().get("imagesdir");
+		Object imagesDir = context.getAttributesProvider().getCachedAttributes().get("imagesdir");
 
 		String imagesDirPath = null;
 		if (imagesDir != null) {
