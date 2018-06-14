@@ -112,6 +112,21 @@ public class SimpleHeadlineParserTest {
 
 	}
 	
+	@Test
+	public void wrongheadline1_new_line_headline2__headline2_has_deep1() throws Exception {
+
+		/* prepare */
+		String text = "=wrongheadline1\n= headline2";
+		//.............01234567890 12
+
+		/* execute */
+		List<AsciiDoctorHeadline> result = parserToTest.parse(text);
+
+		/* test */
+		assertHeadlines(result).hasHeadlines(1).hasHeadline("headline2").withDeep(1);
+
+	}
+	
 	
 		
 	@Test
@@ -124,7 +139,7 @@ public class SimpleHeadlineParserTest {
 	
 	@Test
 	public void one_line_headline1__has_one_result_with_deep_1() {
-		List<AsciiDoctorHeadline> result = parserToTest.parse("=headline1");
+		List<AsciiDoctorHeadline> result = parserToTest.parse("= headline1");
 		
 		assertHeadlines(result).hasHeadlines(1).hasHeadline("headline1").withDeep(1);
 	}
@@ -141,7 +156,7 @@ public class SimpleHeadlineParserTest {
 	
 	@Test
 	public void three_headlines__has_3_result() {
-		Collection<AsciiDoctorHeadline> result = parserToTest.parse("=headline1\n==headline2\n=headline3");
+		Collection<AsciiDoctorHeadline> result = parserToTest.parse("= headline1\n== headline2\n= headline3");
 		
 		assertEquals(3, result.size());
 		Iterator<AsciiDoctorHeadline> iterator = result.iterator();

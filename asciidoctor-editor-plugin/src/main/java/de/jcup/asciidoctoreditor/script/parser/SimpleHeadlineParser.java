@@ -34,7 +34,7 @@ public class SimpleHeadlineParser {
 			currentPos++;
 			if (c == '\n') {
 				int end = currentPos-1;// we do not count \n ...
-				addHeadlineWhenCurrentNotEmpty(asciidoctorScript, list, current, start, end); 
+				addHeadlineWhenCurrentNotEmptyAndHasASpaceAfterLastEqual(asciidoctorScript, list, current, start, end); 
 				/* start next */
 				current = new StringBuilder();
 				start =currentPos+1; // next word (will not be interpreted when current is empty...)
@@ -48,12 +48,12 @@ public class SimpleHeadlineParser {
 				}
 			}
 		}
-		addHeadlineWhenCurrentNotEmpty(asciidoctorScript, list, current, start, currentPos);
+		addHeadlineWhenCurrentNotEmptyAndHasASpaceAfterLastEqual(asciidoctorScript, list, current, start, currentPos);
 
 		return list;
 	}
 
-	protected void addHeadlineWhenCurrentNotEmpty(String asciidoctorScript, List<AsciiDoctorHeadline> list,
+	protected void addHeadlineWhenCurrentNotEmptyAndHasASpaceAfterLastEqual(String asciidoctorScript, List<AsciiDoctorHeadline> list,
 			StringBuilder current, int start, int end) {
 		if (current != null && current.length() > 0) {
 			AsciiDoctorHeadline headline = createHeadlineOrNull(asciidoctorScript, current.toString(), start, end);
@@ -64,10 +64,23 @@ public class SimpleHeadlineParser {
 	}
 
 	private AsciiDoctorHeadline createHeadlineOrNull(String asciidoctorScript, String identifiedHeadline, int start, int end) {
+		/* check nothing like "==xx" but only "== xx" */
+		boolean charAfterEqualWasSpace=false;
+		for (char c: identifiedHeadline.toCharArray()){
+			if (c!='='){
+				charAfterEqualWasSpace=(c==' ');
+				break;
+			}
+		}
+		if (!charAfterEqualWasSpace){
+			return null;
+		}
+		/* okay, seems right, try to resolve name */
 		String name = calculateName(identifiedHeadline);
 		if (name == null || name.trim().length()==0){
 			return null;
 		}
+		
 		int deep = calculateDeep(identifiedHeadline);
 		AsciiDoctorHeadline headline = new AsciiDoctorHeadline(deep, name, start, end, identifiedHeadline.length());
 		return headline;
