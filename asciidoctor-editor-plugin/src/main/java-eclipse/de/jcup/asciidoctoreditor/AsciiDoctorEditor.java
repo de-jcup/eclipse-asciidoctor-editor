@@ -636,9 +636,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		rebuildOutline();
 	}
 
-	private void fullBuildTemporaryHTMLFilesAndShowAfter() {
+	private void fullBuildTemporaryHTMLFilesAndShowAfter(IProgressMonitor monitor) {
 		String htmlInternalPreview = null;
 		String htmlExternalBrowser = null;
+		if (isCanceled(monitor)){
+			return;
+		}
 		try {
 			safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(AsciiDoctorEditor.this));
 
@@ -655,14 +658,23 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			if (fileToConvertIntoHTML == null) {
 				return;
 			}
+			if (isCanceled(monitor)){
+				return;
+			}
+			
 			/* content exists as simple file */
 			asciidoctorWrapper.convertToHTML(fileToConvertIntoHTML);
+			if (isCanceled(monitor)){
+				return;
+			}
 			content = readFileCreatedByAsciiDoctor(fileToConvertIntoHTML);
 			int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance()
 					.getAutoRefreshInSecondsForExternalBrowser();
 			htmlInternalPreview = asciidoctorWrapper.buildHTMLWithCSS(content, 0);
 			htmlExternalBrowser = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
-
+			if (isCanceled(monitor)){
+				return;
+			}
 			try{
 				AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, temporaryInternalPreviewFile);
 				AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, temporaryExternalPreviewFile);
@@ -872,10 +884,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					monitor.beginTask("Building document " + getSafeFileName(), IProgressMonitor.UNKNOWN);
+					
+					fullBuildTemporaryHTMLFilesAndShowAfter(monitor);
 
-					fullBuildTemporaryHTMLFilesAndShowAfter();
-
-					ensureInternalBrowserShowsURL();
+					ensureInternalBrowserShowsURL(monitor);
 
 					monitor.done();
 
@@ -928,11 +940,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		return temporaryInternalPreviewFile == null || !temporaryInternalPreviewFile.exists();
 	}
 
-	protected void ensureInternalBrowserShowsURL() {
+	protected void ensureInternalBrowserShowsURL(IProgressMonitor monitor) {
 		if (!isPreviewVisible()) {
 			return;
 		}
-		Thread t = new Thread(new WaitForGeneratedFileAndShowInsideIternalPreviewRunner());
+		if (isCanceled(monitor)){
+			return;
+		}
+		Thread t = new Thread(new WaitForGeneratedFileAndShowInsideIternalPreviewRunner(monitor));
 		String name = "";
 		if (temporaryExternalPreviewFile != null) {
 			name = temporaryInternalPreviewFile.getName();
@@ -942,14 +957,33 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		t.setName("asciidoctor-editor-ensure:" + name);
 		t.start();
 	}
+	
+	private boolean isNotCanceled(IProgressMonitor monitor){
+		return ! isCanceled(monitor);
+	}
+	
+	private boolean isCanceled(IProgressMonitor monitor){
+		if (monitor==null){
+			return false; // no chance to cancel...
+		}
+		return monitor.isCanceled();
+	}
 
 	private class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements Runnable {
+		
+		private IProgressMonitor monitor;
+
+		WaitForGeneratedFileAndShowInsideIternalPreviewRunner(IProgressMonitor monitor){
+			this.monitor=monitor;
+		}
+		
+		
 		@Override
 		public void run() {
 			long start = System.currentTimeMillis();
 			boolean aquired = false;
 			try {
-				while (temporaryInternalPreviewFile == null || !temporaryInternalPreviewFile.exists()) {
+				while ( isNotCanceled(monitor) && (temporaryInternalPreviewFile == null || !temporaryInternalPreviewFile.exists())) {
 					if (System.currentTimeMillis() - start > 20000) {
 						// after 20 seconds there seems to be no chance to get
 						// the generated preview file back
@@ -1250,7 +1284,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		browserAccess.setEnabled(previewVisible);
 		sashForm.layout(); // after this the browser will be hidden/shown ...
 							// otherwise we got an empty space appearing
-		ensureInternalBrowserShowsURL();
+		ensureInternalBrowserShowsURL(null);
 	}
 
 	public boolean isPreviewVisible() {
