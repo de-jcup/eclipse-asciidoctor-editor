@@ -39,6 +39,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 	public AsciiDoctorDocumentPartitionScanner() {
 		IToken boldText = createToken(TEXT_BOLD);
 		IToken italicText = createToken(TEXT_ITALIC);
+		IToken monospacedText = createToken(TEXT_MONOSPACED);
 		IToken hyperlink = createToken(HYPERLINK);
 		IToken comment = createToken(COMMENT);
 		IToken textBlock = createToken(TEXT_BLOCK);
@@ -73,12 +74,12 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new AsciiDoctorLineStartsWithRule("////", "////",true, comment));
 		rules.add(new AsciiDoctorLineStartsWithRule("//", null,false, comment));
 		
-		rules.add(new AsciiDoctorStringRule("`", "`", textBlock));
 		rules.add(new AsciiDoctorLineStartsWithRule("----", "----", true, textBlock));
 		
-		rules.add(new SingleLineRule("**", "**", boldText, (char) -1, true));
-		rules.add(new SingleLineRule("*", "*", boldText, (char) -1, true));
-		rules.add(new SingleLineRule("_", "_", italicText, (char) -1, true));
+		rules.add(new AsciiDoctorFormattedTextRule("`", "`", monospacedText)); 
+		rules.add(new AsciiDoctorFormattedTextRule("**", "**", boldText));
+		rules.add(new AsciiDoctorFormattedTextRule("*", "*", boldText));
+		rules.add(new AsciiDoctorFormattedTextRule("_", "_", italicText));
 		
 		rules.add(new SingleLineRule("<<", ">>", hyperlink, (char) -1, true));
 		

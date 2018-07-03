@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextAttribute;
@@ -172,8 +173,9 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		PresentationReconciler reconciler = new PresentationReconciler();
 
 		addDefaultPresentation(reconciler);
-
+		Font textFont = JFaceResources.getTextFont();
 		addPresentation(reconciler, TEXT_BLOCK.getId(), getPreferences().getColor(COLOR_TEXT_BLOCKS), SWT.BOLD);
+		addPresentation(reconciler, TEXT_MONOSPACED.getId(), getPreferences().getColor(COLOR_TEXT_BLOCKS), SWT.BOLD,textFont, null);
 		addPresentation(reconciler, HYPERLINK.getId(), getPreferences().getColor(COLOR_HYPERLINK), SWT.NONE);
 		addPresentation(reconciler, TEXT_BOLD.getId(), getPreferences().getColor(COLOR_TEXT_BOLD), SWT.BOLD);
 		addPresentation(reconciler, TEXT_ITALIC.getId(), getPreferences().getColor(COLOR_TEXT_ITALIC), SWT.ITALIC);
