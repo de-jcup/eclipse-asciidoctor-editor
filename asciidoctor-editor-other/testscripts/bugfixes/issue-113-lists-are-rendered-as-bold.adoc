@@ -1,0 +1,34 @@
+== This is testcase for #13
+
+
+=== Bold versus list
+* this is a list
+
+*this is not a list but also not bold because space missing and end missing
+
+*this is not a list but IS BOLD*
+
+XX *this is not a list but IS BOLD*
+
+XX * this is not a list but is also not BOLD because of leading space*
+
+XX *this is not a list but is also not BOLD of trailing space *
+
+
+=== Italic
+_i am italic_
+
+xx _i am also italic_
+
+xx _i am not italic _
+
+xx _ i am not italic_
+
+=== Mono
+`I am mono spaced`
+
+` I am NOT mono spaced`
+
+`I am NOT mono spaced `
+
+
