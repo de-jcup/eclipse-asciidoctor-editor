@@ -83,9 +83,6 @@ public class AsciiDoctorBaseDirectoryProvider {
 			if (file == null || !file.isFile()) {
 				return false;
 			}
-//			if (!file.getName().endsWith(".adoc")) {
-//				return false;
-//			}
 			if(!hasValidFileEnding(file)) {
 				return false;
 			}
