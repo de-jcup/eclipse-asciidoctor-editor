@@ -77,15 +77,31 @@ public class AsciiDoctorBaseDirectoryProvider {
 
 	private static class ADocFilter implements FileFilter {
 
+		static final String[] validFileEndings = new String[] {".adoc", ".asciidoc"};
 		@Override
 		public boolean accept(File file) {
 			if (file == null || !file.isFile()) {
 				return false;
 			}
-			if (!file.getName().endsWith(".adoc")) {
+//			if (!file.getName().endsWith(".adoc")) {
+//				return false;
+//			}
+			if(!hasValidFileEnding(file)) {
 				return false;
 			}
 			return true;
+		}
+		
+		
+		private boolean hasValidFileEnding(File file) {
+			String fileName = file.getName();
+			for (String validFileEnding : validFileEndings) {
+				if (fileName.endsWith(validFileEnding)) {
+					return true;
+				}
+			}
+			
+			return false;
 		}
 
 	}
