@@ -1,18 +1,17 @@
-== This is testcase for #13
-
+== This is test case for #13
 
 === Bold versus list
-* this is a list
+* this is a list so NOT bold
 
-*this is not a list but also not bold because space missing and end missing
+*this is not a list but also NOT bold because space missing and end missing
 
-*this is not a list but IS BOLD*
+*this is not a list but IS bold*
 
-XX *this is not a list but IS BOLD*
+XX *this is not a list but IS bold*
 
-XX * this is not a list but is also not BOLD because of leading space*
+XX * this is not a list but is also NOT bold because of leading space*
 
-XX *this is not a list but is also not BOLD of trailing space *
+XX *this is not a list but is also NOT bold of trailing space *
 
 
 === Italic
@@ -20,9 +19,9 @@ _i am italic_
 
 xx _i am also italic_
 
-xx _i am not italic _
+xx _i am NOT italic _
 
-xx _ i am not italic_
+xx _ i am NOT italic_
 
 === Mono
 `I am mono spaced`
