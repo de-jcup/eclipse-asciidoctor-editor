@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="de.jcup.asciidoctoreditor"
-      label="AsciiDoctor Editor"
-      version="1.0.0"
+      label="Asciidoctor Editor"
+      version="1.0.1"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/asciidoctor-editor">
@@ -235,7 +235,7 @@ and limitations under the License.
    </license>
 
    <url>
-      <update label="AsciiDoctor Editor update site" url="https://dl.bintray.com/de-jcup/asciidoctoreditor"/>
+      <update label="Asciidoctor Editor update site" url="https://dl.bintray.com/de-jcup/asciidoctoreditor"/>
    </url>
 
    <plugin
