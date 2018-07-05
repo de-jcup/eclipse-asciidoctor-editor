@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -1247,15 +1248,41 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	protected void openFileWithEclipseDefault(File file) {
 		IWorkbenchPage activePage = getActivePage();
 		if (!file.exists()) {
-			MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to load", "Cannot open " + file.getAbsolutePath());
-			return;
+			String message = String.format("Cannot open %s! Would you like to create the file?", file.getAbsolutePath());
+			boolean createFile = MessageDialog.openQuestion(getActiveWorkbenchShell(), "Not able to load", message);
+			if (createFile) {
+				createFile(file);
+			}
+			else {
+				return;
+			}
 		}
 		try {
 			IFile iFile = EclipseResourceHelper.DEFAULT.toIFile(file);
+			/*
+			 * after creating the file, refresh project to show the newly created file in the current workspace
+			 */
+			iFile.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 			IDE.openEditor(activePage, iFile,true);
 			return;
 		} catch (PartInitException e) {
 			AsciiDoctorEditorUtil.logError("Not able to open include", e);
+		} catch (CoreException e) {
+			AsciiDoctorEditorUtil.logError("CoreException", e);
+		}
+	}
+	
+	private void createFile(File file) {
+		try {
+			boolean fileCreated = file.createNewFile();
+			if (!fileCreated) {
+				MessageDialog.openInformation(getActiveWorkbenchShell(), "File already exists", "The file already exists");
+			}
+		} catch (IOException e) {
+			AsciiDoctorEditorUtil.logError("There was an Error while creating the file", e);
+			
+			String message = String.format("An Error occured while creating the file %s with errormessage \"%s\"",file.getAbsolutePath(), e.getMessage());
+			MessageDialog.openError(getActiveWorkbenchShell(), "Error while creating file", message);
 		}
 	}
 
