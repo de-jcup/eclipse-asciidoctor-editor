@@ -36,12 +36,10 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorAdmonitionParagraphKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorIncludeKeywords;
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSectionTitleKeyWords;
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
+import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.StartLineAndHavingDoubleColonsDocumentKeyword;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 
@@ -210,17 +208,7 @@ public class AsciiDoctorEditorSimpleWordContentAssistProcessor implements IConte
 	}
 
 	protected void addAllAsciiDoctorKeyWords() {
-		for (DocumentKeyWord keyword : AsciiDoctorCommandKeyWords.values()) {
-			addKeyWord(keyword);
-		}
-		for (DocumentKeyWord keyword : AsciiDoctorSectionTitleKeyWords.values()) {
-			addKeyWord(keyword);
-		}
-		
-		for (DocumentKeyWord keyword : AsciiDoctorSpecialAttributesKeyWords.values()) {
-			addKeyWord(keyword);
-		}
-		for (DocumentKeyWord keyword : AsciiDoctorAdmonitionParagraphKeyWords.values()) {
+		for (DocumentKeyWord keyword : DocumentKeyWords.getAll()) {
 			addKeyWord(keyword);
 		}
 	}
@@ -230,10 +218,37 @@ public class AsciiDoctorEditorSimpleWordContentAssistProcessor implements IConte
 		if (keyword instanceof StartLineAndHavingDoubleColonsDocumentKeyword){
 			if (keyword instanceof AsciiDoctorIncludeKeywords){
 				text+="fileName";
+				if (keyword==AsciiDoctorIncludeKeywords.INCLUDE){
+					text+=".adoc";
+				}else if (keyword==AsciiDoctorIncludeKeywords.PLANTUML){
+					/* we add different examples*/
+					simpleWordCompletion.add(text+".plantuml[format=svg, title=\"title\"]");
+					simpleWordCompletion.add(text+".plantuml[]");
+					simpleWordCompletion.add(text+".puml[]");
+					simpleWordCompletion.add(text+".iuml[]");
+					simpleWordCompletion.add(text+".pu[]");
+					return;
+				}else if (keyword==AsciiDoctorIncludeKeywords.DITAA){
+					/* we add different examples*/
+					simpleWordCompletion.add(text+".ditaa[]");
+					simpleWordCompletion.add(text+".ditaa[format=png, title=\"title\"]");
+					return;
+				} 
+				
 			}else if (keyword==AsciiDoctorCommandKeyWords.IFDEF || keyword==AsciiDoctorCommandKeyWords.IFNDEF){
 				text+="attributeName";
 			}else if (keyword==AsciiDoctorCommandKeyWords.IMAGE){
+//				== PNG Image
+//				image::asciidoctor-editor-logo.png[title="AsciiDoctor Editor Logo" opts="inline"]
+//				== SVG image
+//				image::if_7_Pen_write_writer_2991007.svg[title="A SVG pen for writers...." opts="interactive,inline", 200,200]
+				/* we add different examples*/
 				text+="imageName";
+				simpleWordCompletion.add(text+".png[]");
+				simpleWordCompletion.add(text+".png[title=\"title\" opts=\"inline\"]");
+				simpleWordCompletion.add(text+".svg[title=\"title\" title=\"title\" opts=\"interactive,inline\" width=\"200\" height=\"200\"]");
+				simpleWordCompletion.add(text+".svg[title=\"title\" opts=\"interactive,inline\"]");
+				return;
 			}
 			text+="[]";
 		}
