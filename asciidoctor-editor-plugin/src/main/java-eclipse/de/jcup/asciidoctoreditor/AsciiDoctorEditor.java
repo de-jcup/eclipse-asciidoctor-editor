@@ -1273,7 +1273,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	private boolean requestCreateOfMissingFile(File file) {
-		String message = String.format("Cannot open %s!\n\nWould you like to create the file?", file.getAbsolutePath());
+		String message = String.format("Cannot open\n%s\nbecause it does not exist!\n\nWould you like to create the file?", file.getAbsolutePath());
 		boolean userWantsToCreateFile = MessageDialog.openQuestion(getActiveWorkbenchShell(), "Not able to load",
 				message);
 
@@ -1290,6 +1290,15 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	 */
 	private boolean createMissingFile(File file) {
 		try {
+			if (file.exists()){
+				return true;
+			}
+			File parentFile = file.getParentFile();
+			if (! parentFile.exists()){
+				if (!parentFile.mkdirs()){
+					throw new IOException("Unable to create parent folder:"+parentFile.getAbsolutePath());
+				}
+			}
 			if (file.createNewFile()){
 				return true;
 			}				
