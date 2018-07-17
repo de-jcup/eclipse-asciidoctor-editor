@@ -38,12 +38,14 @@ import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
@@ -166,7 +168,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private File editorFile;
 
 	public AsciiDoctorEditor() {
-		this.editorTempIdentifier=System.nanoTime();
+		this.editorTempIdentifier = System.nanoTime();
 		setSourceViewerConfiguration(createSourceViewerConfig());
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
 		asciidoctorWrapper = new AsciiDoctorWrapper(editorTempIdentifier, AsciiDoctorEclipseLogAdapter.INSTANCE);
@@ -264,7 +266,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		asciiDocToolBarManager.add(new NewLinkInsertAction(this));
 		asciiDocToolBarManager.add(new InsertAdmonitionAction(this));
 		asciiDocToolBarManager.add(new NewCodeBlockInsertAction(this));
-		
+
 		IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
 		viewToolBarManager.add(new ChangeLayoutAction(this));
 		viewToolBarManager.add(new RebuildAsciiDocViewAction(this));
@@ -431,7 +433,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			if (configuration instanceof AsciiDoctorSourceViewerConfiguration) {
 				AsciiDoctorSourceViewerConfiguration gconf = (AsciiDoctorSourceViewerConfiguration) configuration;
 				gconf.updateTextScannerDefaultColorToken();
-			}else if (configuration instanceof AsciiDoctorPlantUMLSourceViewerConfiguration) {
+			} else if (configuration instanceof AsciiDoctorPlantUMLSourceViewerConfiguration) {
 				AsciiDoctorPlantUMLSourceViewerConfiguration gconf = (AsciiDoctorPlantUMLSourceViewerConfiguration) configuration;
 				gconf.updateTextScannerDefaultColorToken();
 			}
@@ -640,7 +642,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private void fullBuildTemporaryHTMLFilesAndShowAfter(IProgressMonitor monitor) {
 		String htmlInternalPreview = null;
 		String htmlExternalBrowser = null;
-		if (isCanceled(monitor)){
+		if (isCanceled(monitor)) {
 			return;
 		}
 		try {
@@ -659,13 +661,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			if (fileToConvertIntoHTML == null) {
 				return;
 			}
-			if (isCanceled(monitor)){
+			if (isCanceled(monitor)) {
 				return;
 			}
-			
+
 			/* content exists as simple file */
 			asciidoctorWrapper.convertToHTML(fileToConvertIntoHTML);
-			if (isCanceled(monitor)){
+			if (isCanceled(monitor)) {
 				return;
 			}
 			content = readFileCreatedByAsciiDoctor(fileToConvertIntoHTML);
@@ -673,10 +675,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 					.getAutoRefreshInSecondsForExternalBrowser();
 			htmlInternalPreview = asciidoctorWrapper.buildHTMLWithCSS(content, 0);
 			htmlExternalBrowser = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
-			if (isCanceled(monitor)){
+			if (isCanceled(monitor)) {
 				return;
 			}
-			try{
+			try {
 				AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, temporaryInternalPreviewFile);
 				AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, temporaryExternalPreviewFile);
 
@@ -723,10 +725,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	protected File resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(String asciiDoc) throws IOException {
 		File fileToConvertIntoHTML;
 		String text;
-		if (contentTransformer.isTransforming(asciiDoc)){
-			text=contentTransformer.transform(asciiDoc);
-		}else{
-			text=asciiDoc;
+		if (contentTransformer.isTransforming(asciiDoc)) {
+			text = contentTransformer.transform(asciiDoc);
+		} else {
+			text = asciiDoc;
 		}
 		fileToConvertIntoHTML = resolveFileToConvertToHTML("no_origin_file_defined", text);
 		return fileToConvertIntoHTML;
@@ -751,23 +753,19 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(editorTempIdentifier, filename);
 
 		String transformed = contentTransformer.transform(text);
-		try{
-			return AsciiDocStringUtils.writeTextToUTF8File(transformed,newTempFile);
+		try {
+			return AsciiDocStringUtils.writeTextToUTF8File(transformed, newTempFile);
 		} catch (IOException e) {
 			logError("Was not able to write transformed file:" + filename, e);
 			return null;
 		}
 	}
 
-	
-
-	
-
 	protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML) {
 		File generatedFile = asciidoctorWrapper.getTempFileFor(fileToConvertIntoHTML, TemporaryFileType.ORIGIN);
-		try{
+		try {
 			return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
-		}catch(IOException e){
+		} catch (IOException e) {
 			AsciiDoctorEditorUtil.logError("Was not able to build new full html variant", e);
 			return "";
 		}
@@ -797,18 +795,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
 	}
-	
+
 	protected File getEditorFileOrNull() {
-		if (editorFile==null){
-			editorFile=resolveEditorFileOrNull();
+		if (editorFile == null) {
+			editorFile = resolveEditorFileOrNull();
 		}
 		return editorFile;
 	}
-	
+
 	protected File resolveEditorFileOrNull() {
 		IEditorInput input = getEditorInput();
 		File editorFile = null;
-		
+
 		if (input instanceof FileEditorInput) {
 			/* standard opening with eclipse IDE inside */
 			FileEditorInput finput = (FileEditorInput) input;
@@ -818,8 +816,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			} catch (CoreException e) {
 				AsciiDoctorEditorUtil.logError("Was not able to fetch file of current editor", e);
 			}
-		}else if (input instanceof FileStoreEditorInput){
-			/* command line : eclipse xyz.adoc does use file store editor input ....*/
+		} else if (input instanceof FileStoreEditorInput) {
+			/*
+			 * command line : eclipse xyz.adoc does use file store editor input
+			 * ....
+			 */
 			FileStoreEditorInput fsInput = (FileStoreEditorInput) input;
 			editorFile = fsInput.getAdapter(File.class);
 		}
@@ -885,7 +886,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					monitor.beginTask("Building document " + getSafeFileName(), IProgressMonitor.UNKNOWN);
-					
+
 					fullBuildTemporaryHTMLFilesAndShowAfter(monitor);
 
 					ensureInternalBrowserShowsURL(monitor);
@@ -909,7 +910,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	protected void initPreview(SashForm sashForm) {
 		File editorFileOrNull = getEditorFileOrNull();
-		if (editorFileOrNull==null){
+		if (editorFileOrNull == null) {
 			setErrorMessage("Asciidoctor Editor: preview not available because no editor file found");
 			return;
 		}
@@ -945,7 +946,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		if (!isPreviewVisible()) {
 			return;
 		}
-		if (isCanceled(monitor)){
+		if (isCanceled(monitor)) {
 			return;
 		}
 		Thread t = new Thread(new WaitForGeneratedFileAndShowInsideIternalPreviewRunner(monitor));
@@ -958,33 +959,33 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		t.setName("asciidoctor-editor-ensure:" + name);
 		t.start();
 	}
-	
-	private boolean isNotCanceled(IProgressMonitor monitor){
-		return ! isCanceled(monitor);
+
+	private boolean isNotCanceled(IProgressMonitor monitor) {
+		return !isCanceled(monitor);
 	}
-	
-	private boolean isCanceled(IProgressMonitor monitor){
-		if (monitor==null){
+
+	private boolean isCanceled(IProgressMonitor monitor) {
+		if (monitor == null) {
 			return false; // no chance to cancel...
 		}
 		return monitor.isCanceled();
 	}
 
 	private class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements Runnable {
-		
+
 		private IProgressMonitor monitor;
 
-		WaitForGeneratedFileAndShowInsideIternalPreviewRunner(IProgressMonitor monitor){
-			this.monitor=monitor;
+		WaitForGeneratedFileAndShowInsideIternalPreviewRunner(IProgressMonitor monitor) {
+			this.monitor = monitor;
 		}
-		
-		
+
 		@Override
 		public void run() {
 			long start = System.currentTimeMillis();
 			boolean aquired = false;
 			try {
-				while ( isNotCanceled(monitor) && (temporaryInternalPreviewFile == null || !temporaryInternalPreviewFile.exists())) {
+				while (isNotCanceled(monitor)
+						&& (temporaryInternalPreviewFile == null || !temporaryInternalPreviewFile.exists())) {
 					if (System.currentTimeMillis() - start > 20000) {
 						// after 20 seconds there seems to be no chance to get
 						// the generated preview file back
@@ -1234,10 +1235,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	public void openInclude(String fileName) {
-	
+
 		File editorFileOrNull = getEditorFileOrNull();
-		if (editorFileOrNull==null){
-			MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to resolve editor file", "Not able to resolve editor file, so Cannot open " + fileName);
+		if (editorFileOrNull == null) {
+			MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to resolve editor file",
+					"Not able to resolve editor file, so Cannot open " + fileName);
 			return;
 		}
 		File file = new File(editorFileOrNull.getParentFile(), fileName);
@@ -1248,22 +1250,20 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	protected void openFileWithEclipseDefault(File file) {
 		IWorkbenchPage activePage = getActivePage();
 		if (!file.exists()) {
-			String message = String.format("Cannot open %s! Would you like to create the file?", file.getAbsolutePath());
-			boolean createFile = MessageDialog.openQuestion(getActiveWorkbenchShell(), "Not able to load", message);
-			if (createFile) {
-				createFile(file);
-			}
-			else {
+			boolean fileCreated = requestCreateOfMissingFile(file);
+			if (!fileCreated) {
+				/* file creation not possible or not wanted */
 				return;
 			}
 		}
 		try {
 			IFile iFile = EclipseResourceHelper.DEFAULT.toIFile(file);
 			/*
-			 * after creating the file, refresh project to show the newly created file in the current workspace
+			 * after creating the file, refresh project to show the newly
+			 * created file in the current workspace
 			 */
 			iFile.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-			IDE.openEditor(activePage, iFile,true);
+			IDE.openEditor(activePage, iFile, true);
 			return;
 		} catch (PartInitException e) {
 			AsciiDoctorEditorUtil.logError("Not able to open include", e);
@@ -1271,19 +1271,38 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			AsciiDoctorEditorUtil.logError("CoreException", e);
 		}
 	}
-	
-	private void createFile(File file) {
+
+	private boolean requestCreateOfMissingFile(File file) {
+		String message = String.format("Cannot open %s!\n\nWould you like to create the file?", file.getAbsolutePath());
+		boolean userWantsToCreateFile = MessageDialog.openQuestion(getActiveWorkbenchShell(), "Not able to load",
+				message);
+
+		if (!userWantsToCreateFile) {
+			return false;
+		}
+		return createMissingFile(file);
+	}
+
+	/**
+	 * Create a missing file
+	 * @param file
+	 * @return <code>false</code> when file not accessible after this method call. <code>true</code> when file is no longer missing after calling this method. If the file is created meanwhile the method will return <code>true</code> also... 
+	 */
+	private boolean createMissingFile(File file) {
 		try {
-			boolean fileCreated = file.createNewFile();
-			if (!fileCreated) {
-				MessageDialog.openInformation(getActiveWorkbenchShell(), "File already exists", "The file already exists");
-			}
+			if (file.createNewFile()){
+				return true;
+			}				
+			MessageDialog.openInformation(getActiveWorkbenchShell(), "File already exists", "The file already exists");
+			return true;
 		} catch (IOException e) {
 			AsciiDoctorEditorUtil.logError("There was an Error while creating the file", e);
-			
-			String message = String.format("An Error occured while creating the file %s with errormessage \"%s\"",file.getAbsolutePath(), e.getMessage());
-			MessageDialog.openError(getActiveWorkbenchShell(), "Error while creating file", message);
+
+			String message = String.format("An Error occured while creating the file %s", file.getAbsolutePath());
+			ErrorDialog.openError(getActiveWorkbenchShell(), "Unable to create file", null,
+					new Status(Status.ERROR, AsciiDoctorEditorActivator.PLUGIN_ID, message, e));
 		}
+		return false;
 	}
 
 	public void resetCache() {
@@ -1323,26 +1342,26 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	public void openImage(String fileName) {
-		if (fileName==null){
+		if (fileName == null) {
 			return;
 		}
-		String imagespath=asciidoctorWrapper.getContext().getImageProvider().getCachedSourceImagesPath();
-		File file = new File(imagespath,fileName);
+		String imagespath = asciidoctorWrapper.getContext().getImageProvider().getCachedSourceImagesPath();
+		File file = new File(imagespath, fileName);
 		openFileWithEclipseDefault(file);
 	}
 
 	public void openDiagram(String fileName) {
-		if (fileName==null){
+		if (fileName == null) {
 			return;
 		}
-		File diagramRootDirectory=asciidoctorWrapper.getContext().getDiagramProvider().getDiagramRootDirectory();
-		if (diagramRootDirectory==null){
+		File diagramRootDirectory = asciidoctorWrapper.getContext().getDiagramProvider().getDiagramRootDirectory();
+		if (diagramRootDirectory == null) {
 			return;
 		}
-		if (!diagramRootDirectory.exists()){
+		if (!diagramRootDirectory.exists()) {
 			return;
 		}
-		File file = new File(diagramRootDirectory,fileName);
+		File file = new File(diagramRootDirectory, fileName);
 		openFileWithEclipseDefault(file);
 	}
 
