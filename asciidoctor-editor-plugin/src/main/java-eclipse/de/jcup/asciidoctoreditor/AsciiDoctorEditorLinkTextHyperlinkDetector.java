@@ -67,6 +67,7 @@ public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlin
 		append(hyperlinks, resolveLinkToInclude(linkTextData, editor));
 		append(hyperlinks, resolveLinkToImage(linkTextData, editor));
 		append(hyperlinks, resolveLinkToHeadline(linkTextData, editor));
+		append(hyperlinks, resolveLinkToDiagram(linkTextData, editor));
 
 		if (hyperlinks.isEmpty()) {
 			return null;
@@ -116,11 +117,24 @@ public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlin
 	protected IHyperlink[] resolveLinkToInclude(LinkTextData linkTextData, AsciiDoctorEditor editor) {
 
 		String foundText = linkTextData.text;
-		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrDiagram(foundText);
+		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrNull(foundText);
 		if (includeFileName != null) {
 			Region targetRegion = createTargetRegion(linkTextData);
 			return new IHyperlink[] {
 					new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, editor) };
+		}
+		
+		return null;
+	}
+	
+	protected IHyperlink[] resolveLinkToDiagram(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+
+		String foundText = linkTextData.text;
+		String diagramFileName = AsciiDocStringUtils.resolveFilenameOfDiagramMacroOrNull(foundText);
+		if (diagramFileName != null) {
+			Region targetRegion = createTargetRegion(linkTextData);
+			return new IHyperlink[] {
+					new AsciiDoctorEditorOpenDiagramHyperlink(targetRegion, diagramFileName, editor) };
 		}
 		
 		return null;

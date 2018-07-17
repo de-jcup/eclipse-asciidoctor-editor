@@ -32,6 +32,7 @@ public class AsciiDoctorProviderContext {
 
 	private AsciiDoctorBaseDirectoryProvider baseDirProvider;
 	private AsciiDoctorImageProvider imageProvider;
+	private AsciiDoctorDiagramProvider diagramProvider;
 	private AsciiDoctorAttributesProvider attributesProvider;
 	private Asciidoctor asciidoctor;
 	private AsciiDoctorOptionsProvider optionsProvider;
@@ -66,6 +67,10 @@ public class AsciiDoctorProviderContext {
 		return imageProvider;
 	}
 	
+	public AsciiDoctorDiagramProvider getDiagramProvider() {
+		return diagramProvider;
+	}
+	
 	public AsciiDoctorAttributesProvider getAttributesProvider() {
 		return attributesProvider;
 	}
@@ -85,6 +90,7 @@ public class AsciiDoctorProviderContext {
 		imageProvider = new AsciiDoctorImageProvider(this);
 		optionsProvider = new AsciiDoctorOptionsProvider(this);
 		baseDirProvider = new AsciiDoctorBaseDirectoryProvider(this);
+		diagramProvider = new AsciiDoctorDiagramProvider(this);
 	}
 
 	public void setOutputFolder(Path outputFolder) {

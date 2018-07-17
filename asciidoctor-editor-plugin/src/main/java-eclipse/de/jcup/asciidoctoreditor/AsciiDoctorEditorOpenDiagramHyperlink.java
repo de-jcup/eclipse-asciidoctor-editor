@@ -20,14 +20,14 @@ import static org.eclipse.core.runtime.Assert.*;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 
-public class AsciiDoctorEditorOpenImageHyperlink implements IHyperlink {
+public class AsciiDoctorEditorOpenDiagramHyperlink implements IHyperlink {
 
 	private IRegion region;
 	private AsciiDoctorEditor editor;
 	private String fileName;
 	
 
-	public AsciiDoctorEditorOpenImageHyperlink(IRegion region, String fileName, AsciiDoctorEditor editor) {
+	public AsciiDoctorEditorOpenDiagramHyperlink(IRegion region, String fileName, AsciiDoctorEditor editor) {
 		isNotNull(region, "Hyperlink region may not be null!");
 		isNotNull(fileName, "fileName may not be null!");
 		isNotNull(editor, "editor may not be null!");
@@ -43,18 +43,18 @@ public class AsciiDoctorEditorOpenImageHyperlink implements IHyperlink {
 
 	@Override
 	public String getTypeLabel() {
-		return "Open image";
+		return "Open included diagram";
 	}
 
 	@Override
 	public String getHyperlinkText() {
-		return "Opens image:"+fileName;
+		return "Opens diagram:"+fileName;
 	}
 
 
 	@Override
 	public void open() {
-		editor.openImage(fileName);
+		editor.openDiagram(fileName);
 	}
 
 }
