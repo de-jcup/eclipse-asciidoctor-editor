@@ -30,14 +30,6 @@ public class AsciiDocStringUtils {
 	private static final String INCLUDE_PREFIX = "include::";
 	private static final String UTF_8 = "UTF-8";
 
-	public static String resolveFilenameOfIncludeOrDiagram(String potentialInclude) {
-		String fileName = resolveFilenameOfIncludeOrNull(potentialInclude);
-		if (fileName != null) {
-			return fileName;
-		}
-		return resolveFilenameOfDiagramMacroOrNull(potentialInclude);
-	}
-
 	public static String resolveFilenameOfDiagramMacroOrNull(String potentialInclude) {
 		if (potentialInclude == null) {
 			return null;

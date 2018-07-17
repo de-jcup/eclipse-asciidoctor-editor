@@ -1331,4 +1331,19 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		openFileWithEclipseDefault(file);
 	}
 
+	public void openDiagram(String fileName) {
+		if (fileName==null){
+			return;
+		}
+		File diagramRootDirectory=asciidoctorWrapper.getContext().getDiagramProvider().getDiagramRootDirectory();
+		if (diagramRootDirectory==null){
+			return;
+		}
+		if (!diagramRootDirectory.exists()){
+			return;
+		}
+		File file = new File(diagramRootDirectory,fileName);
+		openFileWithEclipseDefault(file);
+	}
+
 }
