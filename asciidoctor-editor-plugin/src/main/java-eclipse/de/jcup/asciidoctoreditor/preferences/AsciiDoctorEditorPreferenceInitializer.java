@@ -88,7 +88,8 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		preferences.setDefaultColor(COLOR_TEXT_ITALIC, BLACK);
 
 		preferences.setDefaultColor(COLOR_PLANTUML_KEYWORD, KEYWORD_DEFAULT_PURPLE);
-		preferences.setDefaultColor(COLOR_PLANTUML_NOTE, GREEN_JAVA);
+		preferences.setDefaultColor(COLOR_PLANTUML_NOTE, CADET_BLUE);
+		preferences.setDefaultColor(COLOR_PLANTUML_COMMENT, GREEN_JAVA);
 		preferences.setDefaultColor(COLOR_PLANTUML_PREPROCESSOR, DARK_GRAY);
 		preferences.setDefaultColor(COLOR_PLANTUML_SKINPARAMETER, DARK_GRAY);
 		preferences.setDefaultColor(COLOR_PLANTUML_TYPE, KEYWORD_DEFAULT_PURPLE);

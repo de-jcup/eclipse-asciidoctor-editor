@@ -41,6 +41,7 @@ public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartit
 
 	public AsciiDoctorPlantUMLDocumentPartitionScanner() {
 		IToken note = createToken(PLANTUML_NOTE);
+		IToken comment = createToken(PLANTUML_COMMENT);
 
 		IToken color = createToken(PLANTUML_COLOR);
 		IToken skinparameter = createToken(PLANTUML_SKINPARAMETER);
@@ -52,6 +53,9 @@ public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartit
 		IToken keyword = createToken(PLANTUML_KEYWORD);
 
 		List<IPredicateRule> rules = new ArrayList<>();
+		rules.add(new SingleLineRule("'", "", comment, (char) -1, true));
+		rules.add(new MultiLineRule("/'", "'/", comment, (char) -1, true));
+		
 		rules.add(new SingleLineRule("\"", "\"", string, (char) -1, true));
 		rules.add(new SingleLineRule("note", " ", note, (char) -1, true));
 		rules.add(new SingleLineRule("end note", " ", note, (char) -1, true));

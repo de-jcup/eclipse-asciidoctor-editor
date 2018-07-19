@@ -80,7 +80,8 @@ public class AsciiDoctorPlantUMLEditorSyntaxColorPreferencePage extends FieldEdi
 				changeColor(editorMap, COLOR_PLANTUML_NORMAL_TEXT, AsciiDoctorEditorColorConstants.GRAY_JAVA);
 				changeColor(editorMap, COLOR_PLANTUML_KEYWORD, AsciiDoctorEditorColorConstants.DARK_THEME_LIHT_RED);
 				
-				changeColor(editorMap, COLOR_PLANTUML_NOTE, AsciiDoctorEditorColorConstants.GREEN_JAVA);
+				changeColor(editorMap, COLOR_PLANTUML_NOTE, AsciiDoctorEditorColorConstants.DARK_THEME_BRIGHT_CYAN);
+				changeColor(editorMap, COLOR_PLANTUML_COMMENT, AsciiDoctorEditorColorConstants.GREEN_JAVA);
 				changeColor(editorMap, COLOR_PLANTUML_TYPE, AsciiDoctorEditorColorConstants.TASK_CYAN);
 				changeColor(editorMap, COLOR_PLANTUML_SKINPARAMETER, AsciiDoctorEditorColorConstants.DARK_THEME_GRAY);
 				changeColor(editorMap, COLOR_PLANTUML_COLOR, AsciiDoctorEditorColorConstants.BRIGHT_CYAN);
