@@ -18,7 +18,6 @@ package de.jcup.asciidoctoreditor;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -152,6 +151,14 @@ public class AsciiDoctorWrapper {
 		tempFolder = AsciiDocFileUtils.createTempFolderForEditor(tempIdentifier);
 	}
 
+	/**
+	 * Returns temp folder which cannot be null because of {@link #initTempFolderOrFail(long)} called on constructor time
+	 * @return temp folder never <code>null</code>
+	 */
+	public Path getTempFolder() {
+		return tempFolder;
+	}
+	
 	public File getTempFileFor(File editorFile, TemporaryFileType type) {
 		File parent = null;
 		if (tempFolder == null) {

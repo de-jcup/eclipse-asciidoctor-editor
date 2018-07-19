@@ -34,6 +34,11 @@ public class AsciiDocFileUtils {
 		return newTempFile;
 	}
 
+	/**
+	 * Any IO problem will throw an {@link IllegalStateException}
+	 * @param tempId
+	 * @return path, never <code>null</code>
+	 */
 	public static Path createTempFolderForEditor(long tempId) {
 		try {
 			File newTempSubFolder = createSelfDeletingTempSubFolder(tempId, "asciidoctor-editor-gen");
