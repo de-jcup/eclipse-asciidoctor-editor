@@ -22,10 +22,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -166,6 +170,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private long editorTempIdentifier;
 
 	private File editorFile;
+
+	private Pattern tempFolderPattern;
 
 	public AsciiDoctorEditor() {
 		this.editorTempIdentifier = System.nanoTime();
@@ -671,6 +677,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 				return;
 			}
 			content = readFileCreatedByAsciiDoctor(fileToConvertIntoHTML);
+			/*
+			 * Calling Asciidoctor generates output with absolute pathes - we
+			 * keep the originally generated asciidoc file as is
+			 * (fileToConvertIntoHTML) but the preview files will be changed.
+			 */
+			content = transformAbsolutePathesToRelatives(content);
+
 			int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance()
 					.getAutoRefreshInSecondsForExternalBrowser();
 			htmlInternalPreview = asciidoctorWrapper.buildHTMLWithCSS(content, 0);
@@ -695,7 +708,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			 */
 			/*
 			 * This means the ASCIIDOCTOR wrapper was not able to convert - so
-			 * we have to clean the former ouptput and show up a marker for
+			 * we have to clean the former output and show up a marker for
 			 * complete file
 			 */
 			StringBuilder htmlSb = new StringBuilder();
@@ -720,6 +733,30 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		}
 
+	}
+
+	/**
+	 * Transforms absolute pathes to relative pathes of current temp folder in
+	 * given html.
+	 * 
+	 * @param html
+	 * @return
+	 */
+	protected String transformAbsolutePathesToRelatives(String html) {
+		if (tempFolderPattern==null){
+			/* store the pattern for this editor and reuse it, temp folder will not change */
+			tempFolderPattern = createRemoveAbsolutePathToTempFolderPattern();
+		}
+		String newHTML = tempFolderPattern.matcher(html).replaceAll("");
+		return newHTML;
+	}
+
+	protected Pattern createRemoveAbsolutePathToTempFolderPattern() {
+		Path tempFolder = this.asciidoctorWrapper.getTempFolder();
+		String absolutePathToTempFolder = tempFolder.toFile().getAbsolutePath();
+		String asciidocOutputAbsolutePath = absolutePathToTempFolder.replace('\\', '/');
+		asciidocOutputAbsolutePath += "/"; // relative path is without leading /
+		return Pattern.compile(asciidocOutputAbsolutePath);
 	}
 
 	protected File resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(String asciiDoc) throws IOException {
@@ -1273,7 +1310,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	private boolean requestCreateOfMissingFile(File file) {
-		String message = String.format("Cannot open\n%s\nbecause it does not exist!\n\nWould you like to create the file?", file.getAbsolutePath());
+		String message = String.format(
+				"Cannot open\n%s\nbecause it does not exist!\n\nWould you like to create the file?",
+				file.getAbsolutePath());
 		boolean userWantsToCreateFile = MessageDialog.openQuestion(getActiveWorkbenchShell(), "Not able to load",
 				message);
 
@@ -1285,23 +1324,27 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	/**
 	 * Create a missing file
+	 * 
 	 * @param file
-	 * @return <code>false</code> when file not accessible after this method call. <code>true</code> when file is no longer missing after calling this method. If the file is created meanwhile the method will return <code>true</code> also... 
+	 * @return <code>false</code> when file not accessible after this method
+	 *         call. <code>true</code> when file is no longer missing after
+	 *         calling this method. If the file is created meanwhile the method
+	 *         will return <code>true</code> also...
 	 */
 	private boolean createMissingFile(File file) {
 		try {
-			if (file.exists()){
+			if (file.exists()) {
 				return true;
 			}
 			File parentFile = file.getParentFile();
-			if (! parentFile.exists()){
-				if (!parentFile.mkdirs()){
-					throw new IOException("Unable to create parent folder:"+parentFile.getAbsolutePath());
+			if (!parentFile.exists()) {
+				if (!parentFile.mkdirs()) {
+					throw new IOException("Unable to create parent folder:" + parentFile.getAbsolutePath());
 				}
 			}
-			if (file.createNewFile()){
+			if (file.createNewFile()) {
 				return true;
-			}				
+			}
 			MessageDialog.openInformation(getActiveWorkbenchShell(), "File already exists", "The file already exists");
 			return true;
 		} catch (IOException e) {

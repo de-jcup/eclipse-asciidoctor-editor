@@ -1,0 +1,1 @@
+image::asciidoctor-editor-logo.png[] 
