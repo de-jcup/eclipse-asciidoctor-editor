@@ -1,0 +1,15 @@
+title Title
+
+( )
+note left : Note
+
+[  ]
+note right : Note
+
+' single-line comment
+
+/'
+  block comment
+'/
+
+note left : comments are now working  :-)

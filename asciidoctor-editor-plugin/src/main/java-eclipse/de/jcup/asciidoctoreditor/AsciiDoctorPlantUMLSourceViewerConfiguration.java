@@ -194,6 +194,7 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 		addPresentation(reconciler, PLANTUML_DOUBLE_STRING.getId(), getPreferences().getColor(COLOR_PLANTUML_DOUBLESTRING), SWT.NONE);
 		addPresentation(reconciler, PLANTUML_KEYWORD.getId(), getPreferences().getColor(COLOR_PLANTUML_KEYWORD), SWT.BOLD);
 		addPresentation(reconciler, PLANTUML_NOTE.getId(), getPreferences().getColor(COLOR_PLANTUML_NOTE), SWT.BOLD);
+		addPresentation(reconciler, PLANTUML_COMMENT.getId(), getPreferences().getColor(COLOR_PLANTUML_COMMENT), SWT.NONE);
 		addPresentation(reconciler, PLANTUML_SKINPARAMETER.getId(), getPreferences().getColor(COLOR_PLANTUML_SKINPARAMETER), SWT.BOLD);
 		addPresentation(reconciler, PLANTUML_COLOR.getId(), getPreferences().getColor(COLOR_PLANTUML_COLOR), SWT.BOLD);
 		addPresentation(reconciler, PLANTUML_TYPE.getId(), getPreferences().getColor(COLOR_PLANTUML_TYPE), SWT.BOLD);
