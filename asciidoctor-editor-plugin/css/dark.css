@@ -3,12 +3,12 @@ IEclipsePreferences#de-jcup-asciidoctoreditor:de-jcup-asciidoctoreditor { /* pse
 		'colorHyperlink=49,98,98'
 		'colorTextItalic=88,98,98'
 		'colorTextBold=85,255,255'
-		'colorTextBlocks=49,98,98'
+		'colorTextBlocks=206,145,120'
 		'colorNormalText=204,204,204'
 		'colorHeadlines=86,156,214'
 		'colorComments=63,127,95',
 		'colorIncludeKeywords=128,128,0'
-		'colorCommands=0,128,128'
+		'colorCommands=156,219,254'
 		'colorKnownVariables=97,97,97'
 		'colorPlantUMLKeyword=49,98,98'
 		'colorPlantUMLNormalText=192,192,192'
@@ -19,4 +19,5 @@ IEclipsePreferences#de-jcup-asciidoctoreditor:de-jcup-asciidoctoreditor { /* pse
 		'colorPlantUMLSkinparameter=97,97,97'
 		'colorPlantUMLDoubleString=237,127,0'
 }
+
 
