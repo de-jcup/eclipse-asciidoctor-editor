@@ -32,6 +32,7 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.ColorUtil;
 import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.PreviewLayout;
 
 public class AsciiDoctorEditorPreferences {
 
@@ -52,13 +53,15 @@ public class AsciiDoctorEditorPreferences {
 					return;
 				}
 				ChangeContext context = new ChangeContext();
-				for (AsciiDoctorEditorSyntaxColorPreferenceConstants c : AsciiDoctorEditorSyntaxColorPreferenceConstants.values()) {
+				for (AsciiDoctorEditorSyntaxColorPreferenceConstants c : AsciiDoctorEditorSyntaxColorPreferenceConstants
+						.values()) {
 					if (property.equals(c.getId())) {
 						context.colorChanged = true;
 						break;
 					}
 				}
-				for (AsciiDoctorEditorValidationPreferenceConstants c : AsciiDoctorEditorValidationPreferenceConstants.values()) {
+				for (AsciiDoctorEditorValidationPreferenceConstants c : AsciiDoctorEditorValidationPreferenceConstants
+						.values()) {
 					if (property.equals(c.getId())) {
 						context.validationChanged = true;
 						break;
@@ -88,10 +91,10 @@ public class AsciiDoctorEditorPreferences {
 						continue;
 					}
 					AsciiDoctorEditor geditor = (AsciiDoctorEditor) editor;
-					if (context.colorChanged){
+					if (context.colorChanged) {
 						geditor.handleColorSettingsChanged();
 					}
-					if (context.validationChanged){
+					if (context.validationChanged) {
 						geditor.rebuildOutline();
 					}
 				}
@@ -118,7 +121,7 @@ public class AsciiDoctorEditorPreferences {
 		}
 		return data;
 	}
-	
+
 	public int getIntegerPreference(AsciiDoctorEditorPreferenceConstants id) {
 		int data = getPreferenceStore().getInt(id.getId());
 		return data;
@@ -136,11 +139,11 @@ public class AsciiDoctorEditorPreferences {
 	public boolean isLinkOutlineWithEditorEnabled() {
 		return getBooleanPreference(P_LINK_OUTLINE_WITH_EDITOR);
 	}
-	
+
 	public boolean isAutoBuildEnabledForExternalPreview() {
 		return getBooleanPreference(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED);
 	}
-	
+
 	public IPreferenceStore getPreferenceStore() {
 		return store;
 	}
@@ -179,13 +182,23 @@ public class AsciiDoctorEditorPreferences {
 	}
 
 	public int getAutoRefreshInSecondsForExternalBrowser() {
-		if (! isAutoBuildEnabledForExternalPreview()){
-			/* when disabled auto build a refresh does not make any sense... so always return 0 seconds*/
+		if (!isAutoBuildEnabledForExternalPreview()) {
+			/*
+			 * when disabled auto build a refresh does not make any sense... so
+			 * always return 0 seconds
+			 */
 			return 0;
 		}
 		return getPreferenceStore().getInt(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId());
 	}
 
-	
+	public PreviewLayout getInitialLayoutModeForNewEditors() {
+		String layoutMode = getStringPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT);
+		PreviewLayout layout = PreviewLayout.fromId(layoutMode);
+		if (layout == null) {
+			layout = PreviewLayout.VERTICAL;
+		}
+		return layout;
+	}
 
 }
