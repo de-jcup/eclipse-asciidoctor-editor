@@ -37,7 +37,7 @@ public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlin
 	AsciiDoctorEditorLinkTextHyperlinkDetector(IAdaptable editor) {
 		this.adaptable = editor;
 	}
-
+	
 	@Override
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
 		if (adaptable == null) {
@@ -47,6 +47,10 @@ public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlin
 		if (editor == null) {
 			return null;
 		}
+		return resolveHyperlinks(textViewer, region, editor);
+	}
+
+	public IHyperlink[] resolveHyperlinks(ITextViewer textViewer, IRegion region, AsciiDoctorEditor editor) {
 		IDocument document = textViewer.getDocument();
 		int offset = region.getOffset();
 

@@ -179,6 +179,12 @@
             categoryId="asciidoctoreditor.commands.category"
             id="asciidoctoreditor.editor.commands.formattext.monospaced">
       </command>
+      <command
+            name="Open link"
+            description="Tries to idenify current cursorposition as link and open it"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.openlink">
+      </command>
       
 	</extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -215,6 +221,10 @@
       <handler
             commandId="asciidoctoreditor.editor.commands.formattext.monospaced"
             class="de.jcup.asciidoctoreditor.handlers.MakeTextMonospacedHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.editor.commands.openlink"
+            class="de.jcup.asciidoctoreditor.handlers.OpenLinkHandler">
       </handler>
     </extension> 
     
@@ -259,6 +269,12 @@
             commandId="asciidoctoreditor.editor.commands.formattext.monospaced"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
 		</key>
+		<key
+            sequence="F3"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.openlink"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
     </extension> 
     
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -282,6 +298,9 @@
             />
             <command commandId="asciidoctoreditor.editor.commands.formattext.monospaced"
             		 icon="icons/toolbar/format_monospaced.png"
+             />
+            <command commandId="asciidoctoreditor.editor.commands.openlink"
+            		 icon="icons/toolbar/link.png"
              />
                
       </menuContribution>
@@ -314,6 +333,9 @@
             	commandId="asciidoctoreditor.editor.commands.source.validate" 
             	icon="icons/asciidoctor-editor.png">
             </command>
+            <command commandId="asciidoctoreditor.editor.commands.openlink"
+            		 icon="icons/toolbar/link.png"
+             />
          </menu>
       </menuContribution>
       
