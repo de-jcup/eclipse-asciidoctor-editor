@@ -839,6 +839,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		rebuildOutline();
 
+		boolean autobuildEnabled=true;
+		if (getLayoutMode().isExternal()){
+			autobuildEnabled = getPreferences().isAutoBuildEnabledForExternalPreview();
+		}
+		if (!autobuildEnabled){
+			return;
+		}
 		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
 	}
 

@@ -137,6 +137,10 @@ public class AsciiDoctorEditorPreferences {
 		return getBooleanPreference(P_LINK_OUTLINE_WITH_EDITOR);
 	}
 	
+	public boolean isAutoBuildEnabledForExternalPreview() {
+		return getBooleanPreference(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED);
+	}
+	
 	public IPreferenceStore getPreferenceStore() {
 		return store;
 	}
@@ -175,6 +179,10 @@ public class AsciiDoctorEditorPreferences {
 	}
 
 	public int getAutoRefreshInSecondsForExternalBrowser() {
+		if (! isAutoBuildEnabledForExternalPreview()){
+			/* when disabled auto build a refresh does not make any sense... so always return 0 seconds*/
+			return 0;
+		}
 		return getPreferenceStore().getInt(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId());
 	}
 
