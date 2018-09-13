@@ -589,6 +589,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		int endLine = ts.getEndLine();
 
 		/* do comment /uncomment */
+		String toggleCommentCodePart = getToggleCommentCodePart();
+		int toggleCommentCodePartLength = toggleCommentCodePart.length();
+
 		for (int i = startLine; i <= endLine; i++) {
 			IRegion info;
 			try {
@@ -606,17 +609,17 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 					} else {
 						foundCode.append(ch);
 					}
-					if (foundCode.length() > 1) {
+					if (foundCode.length() > toggleCommentCodePartLength-1) {
 						break;
 					}
 				}
 				int whitespaceOffsetAdd = whitespaces.length();
-				if ("//".equals(foundCode.toString())) {
+				if (toggleCommentCodePart.equals(foundCode.toString())) {
 					/* comment before */
-					doc.replace(offset + whitespaceOffsetAdd, 2, "");
+					doc.replace(offset + whitespaceOffsetAdd, toggleCommentCodePartLength, "");
 				} else {
 					/* not commented */
-					doc.replace(offset, 0, "//");
+					doc.replace(offset, 0, toggleCommentCodePart);
 				}
 
 			} catch (BadLocationException e) {
@@ -639,6 +642,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		} catch (BadLocationException e) {
 			/* ignore */
 		}
+	}
+
+	protected String getToggleCommentCodePart() {
+		return "//";
 	}
 
 	public void refreshAsciiDocView() {
