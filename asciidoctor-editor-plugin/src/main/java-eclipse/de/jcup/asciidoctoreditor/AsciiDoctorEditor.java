@@ -52,6 +52,8 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.IVerticalRuler;
@@ -609,7 +611,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 					} else {
 						foundCode.append(ch);
 					}
-					if (foundCode.length() > toggleCommentCodePartLength-1) {
+					if (foundCode.length() > toggleCommentCodePartLength - 1) {
 						break;
 					}
 				}
@@ -754,8 +756,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	 * @return
 	 */
 	protected String transformAbsolutePathesToRelatives(String html) {
-		if (tempFolderPattern==null){
-			/* store the pattern for this editor and reuse it, temp folder will not change */
+		if (tempFolderPattern == null) {
+			/*
+			 * store the pattern for this editor and reuse it, temp folder will
+			 * not change
+			 */
 			tempFolderPattern = createRemoveAbsolutePathToTempFolderPattern();
 		}
 		String newHTML = tempFolderPattern.matcher(html).replaceAll("");
@@ -883,22 +888,22 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(mode, false);
 	}
 
-	private enum BuildAsciiDocMode{
-		ALWAYS,
-		NOT_WHEN_EXTERNAL_PREVIEW_DISABLED
-		
-	}
-	
-	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode, boolean forceInitialize) {
+	private enum BuildAsciiDocMode {
+		ALWAYS, NOT_WHEN_EXTERNAL_PREVIEW_DISABLED
 
-		boolean rebuildEnabled=true;
-		if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED==mode && ! isInternalPreview()){
+	}
+
+	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode,
+			boolean forceInitialize) {
+
+		boolean rebuildEnabled = true;
+		if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !isInternalPreview()) {
 			rebuildEnabled = isAutoBuildEnabledForExternalPreview();
 		}
-		if (!rebuildEnabled){
+		if (!rebuildEnabled) {
 			return;
 		}
-		
+
 		if (!forceInitialize && outputBuildSemaphore.availablePermits() == 0) {
 			/* already rebuilding -so ignore */
 			return;
@@ -1008,7 +1013,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		if (isCanceled(monitor)) {
 			return;
 		}
-		startEnsureFileThread(temporaryInternalPreviewFile, new WaitForGeneratedFileAndShowInsideIternalPreviewRunner(this, monitor));
+		startEnsureFileThread(temporaryInternalPreviewFile,
+				new WaitForGeneratedFileAndShowInsideIternalPreviewRunner(this, monitor));
 	}
 
 	protected void startEnsureFileThread(File file, EnsureFileRunnable runnable) {
@@ -1348,9 +1354,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		browserAccess.setEnabled(internalPreview);
 		sashForm.layout(); // after this the browser will be hidden/shown ...
 							// otherwise we got an empty space appearing
-		if (wasExternalBefore && ! isAutoBuildEnabledForExternalPreview()){
+		if (wasExternalBefore && !isAutoBuildEnabledForExternalPreview()) {
 			showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS);
-		}else{
+		} else {
 			ensureInternalBrowserShowsURL(null);
 		}
 	}
@@ -1390,20 +1396,63 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	public void makeSelectedTextBold() {
 		boldFormatAction.run();
 	}
-	
+
 	public void makeSelectedTextItalic() {
 		italicFormatAction.run();
 	}
-	
+
 	public void makeSelectedTextMonoSpaced() {
 		monoSpacedFormatAction.run();
 	}
 
 	public void openInExternalBrowser() {
-		if (! isAutoBuildEnabledForExternalPreview()){
+		if (!isAutoBuildEnabledForExternalPreview()) {
 			refreshAsciiDocView();
 		}
-		startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
+		startEnsureFileThread(temporaryExternalPreviewFile,
+				new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
+	}
+
+	/**
+	 * Tries to resolve current cursor location as hyperlink and open it. When more then one possibilities are found, only first one is used
+	 */
+	public void openHyperlinkAtCurrentCursorPosition() {
+		SourceViewerConfiguration conf = getSourceViewerConfiguration();
+		if (!(conf instanceof AsciiDoctorSourceViewerConfiguration)) {
+			return;
+		}
+		AsciiDoctorSourceViewerConfiguration asciiConf = (AsciiDoctorSourceViewerConfiguration) conf;
+		IHyperlinkDetector[] detectors = asciiConf.getHyperlinkDetectors(getSourceViewer());
+		if (detectors==null){
+			return;
+		}
+		IRegion region = new IRegion() {
+			
+			@Override
+			public int getOffset() {
+				return lastCaretPosition;
+			}
+			
+			@Override
+			public int getLength() {
+				return 0;
+			}
+		};
+		for (IHyperlinkDetector detector: detectors){
+			if (detector==null){
+				continue;
+			}
+			IHyperlink[] hyperlinks = detector.detectHyperlinks(getSourceViewer(), region, false);
+			if (hyperlinks==null){
+				continue;
+			}
+			for (IHyperlink hyperLink: hyperlinks){
+				if (hyperLink!=null){
+					hyperLink.open();
+					return;
+				}
+			}
+		}
 	}
 
 }
