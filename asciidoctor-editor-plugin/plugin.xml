@@ -158,12 +158,35 @@
             categoryId="asciidoctoreditor.commands.category"
             id="asciidoctoreditor.editor.commands.gotomatchingbracket">
       </command>
+      <!-- additional commands inside editor -->
+      <command
+            name="Make text bold"
+            description="Make the selected text bold"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.formattext.bold">
+      </command>
+      
+      <command
+            name="Make text italic"
+            description="Make the selected text italic"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.formattext.italic">
+      </command>
+      
+      <command
+            name="Make text mono spaced"
+            description="Make the selected text mono spaced"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.formattext.monospaced">
+      </command>
+      
 	</extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          HANDLERS                                    -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->^
 	
 	<extension point="org.eclipse.ui.handlers">
+	
 	 <handler
             commandId="asciidoctoreditor.editor.commands.quickoutline"
             class="de.jcup.asciidoctoreditor.handlers.OpenQuickOutlineHandler">
@@ -179,6 +202,19 @@
       <handler
             commandId="asciidoctoreditor.command.openWithAsciiDoctorEditor"
             class="de.jcup.asciidoctoreditor.handlers.OpenWithAsciiDoctorEditor">
+      </handler>
+      
+      <handler
+            commandId="asciidoctoreditor.editor.commands.formattext.bold"
+            class="de.jcup.asciidoctoreditor.handlers.MakeTextBoldHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.editor.commands.formattext.italic"
+            class="de.jcup.asciidoctoreditor.handlers.MakeTextItalicHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.editor.commands.formattext.monospaced"
+            class="de.jcup.asciidoctoreditor.handlers.MakeTextMonospacedHandler">
       </handler>
     </extension> 
     
@@ -204,6 +240,25 @@
             commandId="asciidoctoreditor.editor.commands.gotomatchingbracket"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
 		</key>
+		
+		<key
+            sequence="M1+B"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.formattext.bold"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+		<key
+            sequence="M1+I"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.formattext.italic"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
+		<key
+            sequence="M1+X"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.formattext.monospaced"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
     </extension> 
     
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -213,11 +268,22 @@
       <menuContribution
             locationURI="popup:asciidoctoreditor.editors.AsciiDoctorEditor.context?after=additions">
          <command
-               commandId="asciidoctoreditor.editor.commands.source.validate" icon="icons/asciidoctor-editor.png"
+               commandId="asciidoctoreditor.editor.commands.source.validate" 
+               icon="icons/asciidoctor-editor.png" 
                />
          <command
                commandId="asciidoctoreditor.editor.commands.quickoutline"
                />
+            <command commandId="asciidoctoreditor.editor.commands.formattext.bold"
+            		 icon="icons/toolbar/format_bold.png"
+             />
+            <command commandId="asciidoctoreditor.editor.commands.formattext.italic" 
+            		 icon="icons/toolbar/format_italic.png"
+            />
+            <command commandId="asciidoctoreditor.editor.commands.formattext.monospaced"
+            		 icon="icons/toolbar/format_monospaced.png"
+             />
+               
       </menuContribution>
       
       <menuContribution
@@ -234,6 +300,15 @@
                             value="de.jcup.asciidoctoreditor.AsciiDoctorEditor"/>
                      </with>
                </visibleWhen>
+            <command commandId="asciidoctoreditor.editor.commands.formattext.bold"
+            		 icon="icons/toolbar/format_bold.png"
+             />
+            <command commandId="asciidoctoreditor.editor.commands.formattext.italic" 
+            		 icon="icons/toolbar/format_italic.png"
+            />
+            <command commandId="asciidoctoreditor.editor.commands.formattext.monospaced"
+            		 icon="icons/toolbar/format_monospaced.png"
+             />
             <command commandId="asciidoctoreditor.editor.commands.source.toggleComment" />
             <command 
             	commandId="asciidoctoreditor.editor.commands.source.validate" 
