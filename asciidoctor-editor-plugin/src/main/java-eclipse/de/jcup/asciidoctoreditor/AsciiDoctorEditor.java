@@ -173,6 +173,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private Pattern tempFolderPattern;
 
+	private ItalicFormatAction italicFormatAction;
+
+	private BoldFormatAction boldFormatAction;
+
+	private MonospacedFormatAction monoSpacedFormatAction;
+
 	public AsciiDoctorEditor() {
 		this.editorTempIdentifier = System.nanoTime();
 		setSourceViewerConfiguration(createSourceViewerConfig());
@@ -260,13 +266,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void initToolbar() {
+		italicFormatAction = new ItalicFormatAction(this);
+		boldFormatAction = new BoldFormatAction(this);
+		monoSpacedFormatAction = new MonospacedFormatAction(this);
 
 		IToolBarManager asciiDocToolBarManager = new ToolBarManager(coolBarManager.getStyle());
 		asciiDocToolBarManager.add(new InsertSectionTitleAction(this));
 
-		asciiDocToolBarManager.add(new ItalicFormatAction(this));
-		asciiDocToolBarManager.add(new BoldFormatAction(this));
-		asciiDocToolBarManager.add(new MonospacedFormatAction(this));
+		asciiDocToolBarManager.add(italicFormatAction);
+		asciiDocToolBarManager.add(boldFormatAction);
+		asciiDocToolBarManager.add(monoSpacedFormatAction);
 
 		asciiDocToolBarManager.add(new NewTableInsertAction(this));
 		asciiDocToolBarManager.add(new NewLinkInsertAction(this));
@@ -1415,6 +1424,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		}
 		File file = new File(diagramRootDirectory, fileName);
 		openFileWithEclipseDefault(file);
+	}
+
+	public void makeSelectedTextBold() {
+		boldFormatAction.run();
+	}
+	
+	public void makeSelectedTextItalic() {
+		italicFormatAction.run();
+	}
+	
+	public void makeSelectedTextMonoSpaced() {
+		monoSpacedFormatAction.run();
 	}
 
 }
