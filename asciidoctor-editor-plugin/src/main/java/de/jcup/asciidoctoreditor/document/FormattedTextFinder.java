@@ -10,6 +10,11 @@ public class FormattedTextFinder {
 
 	private static boolean TRACE_MODE = Boolean.getBoolean("de.jcup.trace.formattedtextfinder");
 
+	/**
+	 * Creates a finder which is able to find text between <code>start</code> and <code>end</code> tags
+	 * @param start
+	 * @param end
+	 */
 	public FormattedTextFinder(String start, String end) {
 		this.starting = start.toCharArray();
 		this.ending = end.toCharArray();
@@ -32,7 +37,7 @@ public class FormattedTextFinder {
 			/* Check data before */
 			scanner.unread();
 			int before = scanner.read();
-			boolean acceptableBefore = isSpace(before) || isLineBreak(before, scanner);
+			boolean acceptableBefore = !Character.isAlphabetic(before);// isSpace(before) || isLineBreak(before, scanner);
 			if (!acceptableBefore) {
 				return false;
 			}
@@ -114,7 +119,7 @@ public class FormattedTextFinder {
 			 */
 			return true;
 		}
-		if (isTerminatingLine(read) || isSpace(read)) {
+		if (isTerminatingLine(read) || !Character.isAlphabetic(read)) {
 			/* remove the line terminator for token */
 			scanner.unread();
 			return true;

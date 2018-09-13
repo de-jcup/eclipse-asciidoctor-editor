@@ -6,6 +6,44 @@ import org.junit.Test;
 
 public class FormattedTextFinderTest {
 
+	@Test
+	public void bugfix_139__handle_formatted_parts_when_ended_by_expected_chars__must_NOT_be_found() {
+		bugfix_139_must_be_found("a",0,false);
+		bugfix_139_must_be_found("A",0,false);
+		bugfix_139_must_be_found("ü",0,false);
+	}
+	
+	
+	@Test
+	public void bugfix_139__handle_formatted_parts_when_ended_by_expected_chars__must_be_found() {
+		bugfix_139_must_be_found(" ");
+		bugfix_139_must_be_found("\n");
+		
+		bugfix_139_must_be_found(".");
+		bugfix_139_must_be_found(",");
+		bugfix_139_must_be_found(";");
+		bugfix_139_must_be_found(":");
+		bugfix_139_must_be_found("!");
+		bugfix_139_must_be_found("?");
+		bugfix_139_must_be_found("-");
+	}
+	
+	private void bugfix_139_must_be_found(String terminator) {
+		bugfix_139_must_be_found(terminator, 27,true);
+	}
+	private void bugfix_139_must_be_found(String terminator,int expectedPos, boolean mustBeFound) {
+		// see https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/139
+		/* prepare */
+		FormattedTextFinder finderToTest = new FormattedTextFinder("_","_");
+		TestStringScanner scanner = new TestStringScanner("_Configure Global Security_"+terminator);
+		
+		/* execute */
+		boolean found = finderToTest.isFound(scanner);
+		
+		/* test */
+		assertEquals(mustBeFound,found);
+		assertEquals(expectedPos,scanner.pos);
+	}
 	
 	@Test
 	public void alpha_bravo_is_not_recognized_for_start_x_end_y() {
