@@ -39,6 +39,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.asciidoctoreditor.PreviewLayout;
+import de.jcup.asciidoctoreditor.presentation.AccessibleBooleanFieldEditor;
 
 /**
  * Parts are inspired by <a href=
@@ -65,10 +66,12 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	private BooleanFieldEditor toolTipsEnabled;
 
 	private ComboFieldEditor previewDefaultTypeRadioButton;
-	
+
 	private IntegerFieldEditor autorefreshSeconds;
 
 	private IntegerFieldEditor tocLevels;
+
+	private AccessibleBooleanFieldEditor autobuildForExternalPreviewEnabled;
 
 	public AsciiDoctorEditorPreferencePage() {
 		super(GRID);
@@ -112,30 +115,54 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		uiLayout.marginHeight = 0;
 		uiComposite.setLayout(uiLayout);
 
-		String[][] entryNamesAndValues = new String[][] {
-				new String[] { "Vertical", PreviewLayout.VERTICAL.getId() },
-				new String[] { "Horizontal", PreviewLayout.HORIZONTAL.getId()},
+		String[][] entryNamesAndValues = new String[][] { new String[] { "Vertical", PreviewLayout.VERTICAL.getId() },
+				new String[] { "Horizontal", PreviewLayout.HORIZONTAL.getId() },
 				new String[] { "Hide preview, use external browser", PreviewLayout.EXTERNAL_BROWSER.getId() } };
 		/* @formatter:on */
-		previewDefaultTypeRadioButton = new ComboFieldEditor(P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT.getId(), "Default preview layout",
-				entryNamesAndValues, uiComposite);
+		previewDefaultTypeRadioButton = new ComboFieldEditor(P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT.getId(),
+				"Default preview layout", entryNamesAndValues, uiComposite);
 
 		addField(previewDefaultTypeRadioButton);
 
-		
-		autorefreshSeconds=new IntegerFieldEditor(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), "Auto refresh (in seconds)", uiComposite);
-		autorefreshSeconds.setValidRange(0, 30);
-		autorefreshSeconds.setTextLimit(2);
-		autorefreshSeconds.getLabelControl(uiComposite).setToolTipText("This setup is for external browser preview only. 0 will turn off auto refresh.");
-		addField(autorefreshSeconds);
-		
-		
 		tocLevels = new IntegerFieldEditor(P_EDITOR_TOC_LEVELS.getId(), "TOC levels shown in preview", uiComposite);
 		tocLevels.setValidRange(0, 7);
 		tocLevels.setTextLimit(1);
-		tocLevels.getLabelControl(uiComposite).setToolTipText("0 keeps defaults from asciidoctor, other will set the wanted depth for TOC on preview only!");
-		
+		tocLevels.getLabelControl(uiComposite).setToolTipText(
+				"0 keeps defaults from asciidoctor, other will set the wanted depth for TOC on preview only!");
+
 		addField(tocLevels);
+
+		/* --------------------- */
+		/* -- External preview-- */
+		/* --------------------- */
+		GridData externalPreviewGroupLayoutData = new GridData();
+		externalPreviewGroupLayoutData.horizontalSpan = 2;
+		externalPreviewGroupLayoutData.widthHint = 400;
+
+		Group externalPreviewGroup = new Group(appearanceComposite, SWT.NONE);
+		externalPreviewGroup.setText("External preview");
+		externalPreviewGroup.setLayout(new GridLayout());
+		externalPreviewGroup.setLayoutData(externalPreviewGroupLayoutData);
+
+		autobuildForExternalPreviewEnabled = new AccessibleBooleanFieldEditor(
+				P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED.getId(), "Auto build for external preview",
+				externalPreviewGroup);
+		autobuildForExternalPreviewEnabled.getDescriptionControl(externalPreviewGroup).setToolTipText(
+				"When enabled the asciidoctor integration will be called on every change in document. As done in internal previews.\n\n"
+				+ "If disabled only a click to 'refresh' or 'show in external browser' buttons inside the toolbar will rebuild the document.\n\n");
+		addField(autobuildForExternalPreviewEnabled);
+
+		autorefreshSeconds = new IntegerFieldEditor(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(),
+				"Auto refresh in external preview (in seconds)", externalPreviewGroup);
+		autorefreshSeconds.setValidRange(0, 30);
+		autorefreshSeconds.setTextLimit(2);
+		autorefreshSeconds.getLabelControl(externalPreviewGroup)
+				.setToolTipText("0 will turn off auto refresh for external previews.\n\nIf auto build has been disabled, this value will be ignored!");
+		addField(autorefreshSeconds);
+
+		createDependency(autobuildForExternalPreviewEnabled.getChangeControl(externalPreviewGroup),
+				autorefreshSeconds.getTextControl(externalPreviewGroup));
+
 		/* OTHER */
 		Composite otherComposite = new Composite(appearanceComposite, SWT.NONE);
 		GridLayout otherLayout = new GridLayout();

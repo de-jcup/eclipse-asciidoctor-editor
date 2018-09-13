@@ -42,6 +42,7 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	
 	P_EDITOR_TOC_LEVELS("tocLevels"),
 	
+	P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED("autoBuildForExternalPreviewEnabled"),
 	;
 
 	private String id;
