@@ -51,7 +51,7 @@ public class ChangeLayoutAction extends ToolbarAction implements IMenuCreator {
 	}
 
 	private void initImageAndText() {
-		if (asciiDoctorEditor.isPreviewVisible()) {
+		if (asciiDoctorEditor.isInternalPreview()) {
 			setImageDescriptor(this.asciiDoctorEditor.isVerticalSplit() ? IMG_LAYOUT_VERTICAL : IMG_LAYOUT_HORIZONTAL);
 			setText(this.asciiDoctorEditor.isVerticalSplit() ? SWITCH_TO_VERTICAL_LAYOUT: SWITCH_TO_HORIZONTAL_LAYOUT);
 		} else {
@@ -81,20 +81,20 @@ public class ChangeLayoutAction extends ToolbarAction implements IMenuCreator {
 		Action switchToHorizontal = new Action(SWITCH_TO_HORIZONTAL_LAYOUT, IMG_LAYOUT_HORIZONTAL) {
 			public void run() {
 				asciiDoctorEditor.setVerticalSplit(false);
-				asciiDoctorEditor.setPreviewVisible(true);
+				asciiDoctorEditor.setInternalPreview(true);
 				initImageAndText();
 			}
 		};
 		Action switchToVertical = new Action(SWITCH_TO_VERTICAL_LAYOUT, IMG_LAYOUT_VERTICAL) {
 			public void run() {
 				asciiDoctorEditor.setVerticalSplit(true);
-				asciiDoctorEditor.setPreviewVisible(true);
+				asciiDoctorEditor.setInternalPreview(true);
 				initImageAndText();
 			}
 		};
 		Action switchToExternal = new Action(SWITCH_TO_EXTERNAL_LAYOUT, IMG_LAYOUT_EXTERNAL) {
 			public void run() {
-				asciiDoctorEditor.setPreviewVisible(false);
+				asciiDoctorEditor.setInternalPreview(false);
 				initImageAndText();
 			}
 		};

@@ -21,15 +21,11 @@ import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationP
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -96,7 +92,6 @@ import de.jcup.asciidoctoreditor.outline.AsciiDoctorContentOutlinePage;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorQuickOutlineDialog;
 import de.jcup.asciidoctoreditor.outline.Item;
-import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
@@ -149,9 +144,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private boolean quickOutlineOpened;
 
-	private File temporaryInternalPreviewFile;
+	File temporaryInternalPreviewFile;
 
-	private BrowserAccess browserAccess;
+	BrowserAccess browserAccess;
 
 	private SashForm sashForm;
 
@@ -159,9 +154,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	protected CoolBarManager coolBarManager;
 
-	private boolean previewVisible;
+	private boolean internalPreview;
 
-	private Semaphore outputBuildSemaphore = new Semaphore(1);
+	Semaphore outputBuildSemaphore = new Semaphore(1);
 
 	private File temporaryExternalPreviewFile;
 
@@ -647,7 +642,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	public void refreshAsciiDocView() {
-		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS);
 	}
 
 	public void validate() {
@@ -830,7 +825,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			 */
 			return;
 		}
-		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
 	}
 
 	@Override
@@ -839,14 +834,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		rebuildOutline();
 
-		boolean autobuildEnabled=true;
-		if (getLayoutMode().isExternal()){
-			autobuildEnabled = getPreferences().isAutoBuildEnabledForExternalPreview();
-		}
-		if (!autobuildEnabled){
-			return;
-		}
-		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
 	}
 
 	protected File getEditorFileOrNull() {
@@ -880,23 +868,30 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		return editorFile;
 	}
 
-	protected PreviewLayout getLayoutMode() {
+	protected PreviewLayout getInitialLayoutMode() {
+		return getPreferences().getInitialLayoutModeForNewEditors();
+	}
 
-		String layoutMode = AsciiDoctorEditorPreferences.getInstance()
-				.getStringPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT);
-		PreviewLayout layout = PreviewLayout.fromId(layoutMode);
-		if (layout == null) {
-			layout = PreviewLayout.VERTICAL;
+	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode) {
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(mode, false);
+	}
+
+	private enum BuildAsciiDocMode{
+		ALWAYS,
+		NOT_WHEN_EXTERNAL_PREVIEW_DISABLED
+		
+	}
+	
+	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode, boolean forceInitialize) {
+
+		boolean rebuildEnabled=true;
+		if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED==mode && ! isInternalPreview()){
+			rebuildEnabled = isAutoBuildEnabledForExternalPreview();
 		}
-		return layout;
-	}
-
-	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob() {
-		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(false);
-	}
-
-	protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(boolean forceInitialize) {
-
+		if (!rebuildEnabled){
+			return;
+		}
+		
 		if (!forceInitialize && outputBuildSemaphore.availablePermits() == 0) {
 			/* already rebuilding -so ignore */
 			return;
@@ -961,6 +956,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		job.schedule();
 	}
 
+	protected boolean isAutoBuildEnabledForExternalPreview() {
+		return getPreferences().isAutoBuildEnabledForExternalPreview();
+	}
+
 	protected void initPreview(SashForm sashForm) {
 		File editorFileOrNull = getEditorFileOrNull();
 		if (editorFileOrNull == null) {
@@ -980,14 +979,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			}
 		});
 
-		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob();
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
 
-		PreviewLayout layout = getLayoutMode();
-		if (layout.isExternal()) {
-			setPreviewVisible(false);
+		PreviewLayout initialLayout = getInitialLayoutMode();
+		if (initialLayout.isExternal()) {
+			setInternalPreview(false);
 		} else {
-			setPreviewVisible(true);
-			setVerticalSplit(layout.isVertical());
+			setInternalPreview(true);
+			setVerticalSplit(initialLayout.isVertical());
 		}
 	}
 
@@ -996,16 +995,20 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	}
 
 	protected void ensureInternalBrowserShowsURL(IProgressMonitor monitor) {
-		if (!isPreviewVisible()) {
+		if (!isInternalPreview()) {
 			return;
 		}
 		if (isCanceled(monitor)) {
 			return;
 		}
-		Thread t = new Thread(new WaitForGeneratedFileAndShowInsideIternalPreviewRunner(monitor));
+		startEnsureFileThread(temporaryInternalPreviewFile, new WaitForGeneratedFileAndShowInsideIternalPreviewRunner(this, monitor));
+	}
+
+	protected void startEnsureFileThread(File file, EnsureFileRunnable runnable) {
+		Thread t = new Thread(runnable);
 		String name = "";
-		if (temporaryExternalPreviewFile != null) {
-			name = temporaryInternalPreviewFile.getName();
+		if (file != null) {
+			name = file.getName();
 		} else {
 			name = "undefined";
 		}
@@ -1013,7 +1016,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		t.start();
 	}
 
-	private boolean isNotCanceled(IProgressMonitor monitor) {
+	boolean isNotCanceled(IProgressMonitor monitor) {
 		return !isCanceled(monitor);
 	}
 
@@ -1022,67 +1025,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			return false; // no chance to cancel...
 		}
 		return monitor.isCanceled();
-	}
-
-	private class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements Runnable {
-
-		private IProgressMonitor monitor;
-
-		WaitForGeneratedFileAndShowInsideIternalPreviewRunner(IProgressMonitor monitor) {
-			this.monitor = monitor;
-		}
-
-		@Override
-		public void run() {
-			long start = System.currentTimeMillis();
-			boolean aquired = false;
-			try {
-				while (isNotCanceled(monitor)
-						&& (temporaryInternalPreviewFile == null || !temporaryInternalPreviewFile.exists())) {
-					if (System.currentTimeMillis() - start > 20000) {
-						// after 20 seconds there seems to be no chance to get
-						// the generated preview file back
-						browserAccess.safeBrowserSetText(
-								"<html><body><h3>Preview file generation timed out, so preview not available.</h3></body></html>");
-						return;
-					}
-					Thread.sleep(300);
-				}
-				aquired = outputBuildSemaphore.tryAcquire(5, TimeUnit.SECONDS);
-
-				safeAsyncExec(() -> {
-
-					try {
-						URL url = temporaryInternalPreviewFile.toURI().toURL();
-						String foundURL = browserAccess.getUrl();
-						try {
-							URL formerURL = new URL(browserAccess.getUrl());
-							foundURL = formerURL.toExternalForm();
-						} catch (MalformedURLException e) {
-							/* ignore - about pages etc. */
-						}
-						String externalForm = url.toExternalForm();
-						if (!externalForm.equals(foundURL)) {
-							browserAccess.setUrl(externalForm);
-						} else {
-							browserAccess.refresh();
-						}
-
-					} catch (MalformedURLException e) {
-						AsciiDoctorEditorUtil.logError("Was not able to use malformed URL", e);
-						browserAccess.safeBrowserSetText("<html><body><h3>URL malformed</h3></body></html>");
-					}
-				});
-
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			} finally {
-				if (aquired == true) {
-					outputBuildSemaphore.release();
-				}
-			}
-
-		}
 	}
 
 	@Override
@@ -1386,23 +1328,28 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		 * TOC building does always lead to a long time running task, at least
 		 * inside preview - so we show the initializing info with progressbar
 		 */
-		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(true);
+		showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
 	}
 
 	public boolean isTOCShown() {
 		return asciidoctorWrapper.isTocVisible();
 	}
 
-	public void setPreviewVisible(boolean visible) {
-		this.previewVisible = visible;
-		browserAccess.setEnabled(previewVisible);
+	public void setInternalPreview(boolean internalPreview) {
+		boolean wasExternalBefore = !this.internalPreview && internalPreview;
+		this.internalPreview = internalPreview;
+		browserAccess.setEnabled(internalPreview);
 		sashForm.layout(); // after this the browser will be hidden/shown ...
 							// otherwise we got an empty space appearing
-		ensureInternalBrowserShowsURL(null);
+		if (wasExternalBefore && ! isAutoBuildEnabledForExternalPreview()){
+			showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS);
+		}else{
+			ensureInternalBrowserShowsURL(null);
+		}
 	}
 
-	public boolean isPreviewVisible() {
-		return previewVisible;
+	public boolean isInternalPreview() {
+		return internalPreview;
 	}
 
 	public void navgigateToTopOfView() {
@@ -1443,6 +1390,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	
 	public void makeSelectedTextMonoSpaced() {
 		monoSpacedFormatAction.run();
+	}
+
+	public void openInExternalBrowser() {
+		if (! isAutoBuildEnabledForExternalPreview()){
+			refreshAsciiDocView();
+		}
+		startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
 	}
 
 }
