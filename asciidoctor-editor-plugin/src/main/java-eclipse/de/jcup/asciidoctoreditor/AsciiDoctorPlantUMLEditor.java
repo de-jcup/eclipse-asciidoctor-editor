@@ -69,6 +69,11 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor {
 
 	}
 	
+	@Override
+	protected String getToggleCommentCodePart() {
+		return "'";
+	}
+	
 	protected SourceViewerConfiguration createSourceViewerConfig() {
 		return new AsciiDoctorPlantUMLSourceViewerConfiguration(this);
 	}
