@@ -186,6 +186,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		if (contentTransformer == null) {
 			contentTransformer = NotChangingContentTransformer.INSTANCE;
 		}
+		this.synchronizer=new ScrollSynchronizer(this);
 	}
 
 	protected SourceViewerConfiguration createSourceViewerConfig() {
@@ -507,11 +508,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 					/* fall back */
 					length = 1;
 				}
+				/* ignore next caret move - to prevent endless loop between tree and editor...*/
 				ignoreNextCaretMove = true;
 				selectAndReveal(offset, length);
 				if (grabFocus) {
 					setFocus();
 				}
+				/* caret movement was ignored for tree so call synchronizer alone here:*/
+				synchronizer.onEditorCaretMoved(offset);
 			}
 		}
 	}
@@ -1234,13 +1238,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 				ignoreNextCaretMove = false;
 				return;
 			}
+			synchronizer.onEditorCaretMoved(event.caretOffset);
+			
 			if (outlinePage == null) {
 				return;
 			}
 			outlinePage.onEditorCaretMoved(event.caretOffset);
+			
 		}
 
 	}
+	
+	private ScrollSynchronizer synchronizer;
 
 	public void openInclude(String fileName) {
 

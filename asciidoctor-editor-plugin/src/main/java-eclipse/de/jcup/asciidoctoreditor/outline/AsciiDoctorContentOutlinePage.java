@@ -160,14 +160,19 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 		editor.openSelectedTreeItemInEditor(selection, false);
 	}
 
+	/**
+	 * This method is called when editor cursor is moved. When linking between editor and outline is disabled a guard close is made.<br><br>
+	 * When an item in tree is found at caret offset the tree item is selected 
+	 * @param caretOffset
+	 */
 	public void onEditorCaretMoved(int caretOffset) {
 		if (!linkingWithEditorEnabled) {
 			return;
 		}
 		ignoreNextSelectionEvents = true;
 		if (contentProvider instanceof AsciiDoctorEditorTreeContentProvider) {
-			AsciiDoctorEditorTreeContentProvider gcp = (AsciiDoctorEditorTreeContentProvider) contentProvider;
-			Item item = gcp.tryToFindByOffset(caretOffset);
+			AsciiDoctorEditorTreeContentProvider provider = (AsciiDoctorEditorTreeContentProvider) contentProvider;
+			Item item = provider.tryToFindByOffset(caretOffset);
 			if (item != null) {
 				StructuredSelection selection = new StructuredSelection(item);
 				getTreeViewer().setSelection(selection, true);

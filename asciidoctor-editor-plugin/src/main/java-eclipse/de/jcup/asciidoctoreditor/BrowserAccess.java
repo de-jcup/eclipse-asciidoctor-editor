@@ -64,12 +64,9 @@ public class BrowserAccess {
 	}
 
 	public void navgigateToTopOfView() {
-		if (isBrowserNotAvailable()) {
-			return;
-		}
-		browser.evaluate("scroll(0,0)");
+		safeBrowserExecuteJavascript("scroll(0,0)");
 	}
-
+	
 	public void dispose() {
 		if (browser == null) {
 			return;
@@ -111,6 +108,25 @@ public class BrowserAccess {
 					return;
 				}
 				browser.setText(html);
+			}
+		});
+	}
+	
+	public void safeBrowserExecuteJavascript(final String javascript) {
+		if (isBrowserNotAvailable()) {
+			return;
+		}
+		EclipseUtil.safeAsyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (isBrowserNotAvailable()) {
+					return;
+				}
+				if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED){
+					AsciiDoctorEclipseLogAdapter.INSTANCE.logInfo("safeBrowserExecuteJavascript, sending javascript:"+javascript);
+				}
+				browser.evaluate(javascript);
 			}
 		});
 	}

@@ -30,6 +30,7 @@ public class Item {
 	List<Item> children=new ArrayList<>();
 	Item parent;
 	String fullString;
+	String id;
 	
 	public List<Item> getChildren() {
 		return children;
@@ -86,5 +87,8 @@ public class Item {
 	
 	public String getFullString() {
 		return fullString == null ? name : fullString;
+	}
+	public String getId() {
+		return id;
 	}
 }

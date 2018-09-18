@@ -15,11 +15,15 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.System.getProperty;
+
 public interface EclipseDevelopmentSettings {
 
-	public static final boolean DEBUG_TOOLBAR_ENABLED = Boolean
-			.parseBoolean(System.getProperty("asciidoctor.editor.debug.toolbar"));
-	public static final boolean OLD_STUFF_ENABLED_DARK_PREFERENCE_DEFAULTS = Boolean
-			.parseBoolean(System.getProperty("asciidoctor.editor.oldstuff.darkdefaultpreferences"));
+	public static final boolean DEBUG_LOGGING_ENABLED = parseBoolean(getProperty("asciidoctor.editor.debug.logging"));
+	
+	public static final boolean DEBUG_TOOLBAR_ENABLED = parseBoolean(getProperty("asciidoctor.editor.debug.toolbar"));
+	
+	public static final boolean OLD_STUFF_ENABLED_DARK_PREFERENCE_DEFAULTS = parseBoolean(getProperty("asciidoctor.editor.oldstuff.darkdefaultpreferences"));
 
 }

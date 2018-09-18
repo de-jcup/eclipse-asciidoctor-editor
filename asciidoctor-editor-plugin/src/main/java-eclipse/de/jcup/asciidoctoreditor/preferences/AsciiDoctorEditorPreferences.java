@@ -139,6 +139,9 @@ public class AsciiDoctorEditorPreferences {
 	public boolean isLinkOutlineWithEditorEnabled() {
 		return getBooleanPreference(P_LINK_OUTLINE_WITH_EDITOR);
 	}
+	public boolean isLinkEditorWithPreviewEnabled() {
+		return getBooleanPreference(P_LINK_EDITOR_WITH_PREVIEW);
+	}
 
 	public boolean isAutoBuildEnabledForExternalPreview() {
 		return getBooleanPreference(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED);
