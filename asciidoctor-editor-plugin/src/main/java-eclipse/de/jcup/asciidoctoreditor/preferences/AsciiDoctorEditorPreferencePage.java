@@ -65,6 +65,8 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	private BooleanFieldEditor codeAssistWithSimpleWords;
 	private BooleanFieldEditor toolTipsEnabled;
 
+	private BooleanFieldEditor linkEditorWithPreviewEnabled;
+
 	private ComboFieldEditor previewDefaultTypeRadioButton;
 
 	private IntegerFieldEditor autorefreshSeconds;
@@ -131,6 +133,11 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 				"0 keeps defaults from asciidoctor, other will set the wanted depth for TOC on preview only!");
 
 		addField(tocLevels);
+		
+		linkEditorWithPreviewEnabled = new BooleanFieldEditor(P_LINK_EDITOR_WITH_PREVIEW.getId(), "Link editor with internal preview", uiComposite);
+		linkEditorWithPreviewEnabled.getDescriptionControl(uiComposite)
+		.setToolTipText("When enabled editor caret movements are scrolled in internal preview. This works only in same situations e.g. when cursor moves to a headline");
+		addField(linkEditorWithPreviewEnabled);
 
 		/* --------------------- */
 		/* -- External preview-- */
@@ -215,6 +222,9 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 				.setToolTipText("When enabled tool tips will occure for keywords");
 		addField(toolTipsEnabled);
 
+
+		
+		
 	}
 
 	@Override

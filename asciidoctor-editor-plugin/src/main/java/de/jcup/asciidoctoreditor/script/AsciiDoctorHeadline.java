@@ -15,13 +15,18 @@
  */
  package de.jcup.asciidoctoreditor.script;
 
+import java.util.regex.Pattern;
+
 public class AsciiDoctorHeadline {
 
+	private static final String REGEXP_STRING = "[^a-zA-Z0-9_]";
+	private static final Pattern REGEXP= Pattern.compile(REGEXP_STRING);
 	String name;
 	int position;
 	int lengthToNameEnd;
 	public int end;
 	private int deep;
+	private String id;
 	
 	public AsciiDoctorHeadline(int deep, String name, int position, int end, int lengthTonNameEnd){
 		this.deep=deep;
@@ -30,6 +35,25 @@ public class AsciiDoctorHeadline {
 		this.position=position;
 		this.end=end;
 		this.lengthToNameEnd=lengthTonNameEnd;
+		this.id=calculateId(name);
+	}
+
+	static String calculateId(String name) {
+		if (name==null){
+			return "";
+		}
+		String id = REGEXP.matcher(name).replaceAll("_");
+		id= "_"+id.toLowerCase();
+		/* remove ending _ */
+		while(id.length()>1 && id.endsWith("_")){
+			id=id.substring(0,id.length()-1);
+		}
+		/* remove double _ */
+		while(id.indexOf("__")!=-1){
+			id=id.replaceAll("__", "_");
+		}
+		return id;
+		
 	}
 
 	public int getLengthToNameEnd() {
@@ -50,6 +74,10 @@ public class AsciiDoctorHeadline {
 	
 	public int getEnd() {
 		return end;
+	}
+	
+	public String getId(){
+		return id;
 	}
 	
 	@Override

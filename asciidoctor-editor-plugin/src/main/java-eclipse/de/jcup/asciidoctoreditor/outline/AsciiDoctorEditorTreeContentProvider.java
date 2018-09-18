@@ -16,6 +16,7 @@
 package de.jcup.asciidoctoreditor.outline;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,10 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 
 	private static final String ASCIIDOCTOR_SCRIPT_CONTAINS_ERRORS = "AsciiDoctorWrapper script contains errors.";
 	private static final String ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS = "Your document has no includes or headlines";
-	private static final Object[] RESULT_WHEN_EMPTY = new Object[] { ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS };
+	private static final Object[] RESULT_WHEN_EMPTY = new Object[] {
+			ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS };
 	private Object[] items;
+	private Item cachedLastFoundItemByOffset;
 	private Object monitor = new Object();
 
 	AsciiDoctorEditorTreeContentProvider() {
@@ -55,7 +58,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 
 	@Override
 	public Object[] getChildren(Object parentElement) {
-		if (parentElement instanceof Item){
+		if (parentElement instanceof Item) {
 			Item item = (Item) parentElement;
 			return item.getChildren().toArray();
 		}
@@ -64,7 +67,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 
 	@Override
 	public Object getParent(Object element) {
-		if (element instanceof Item){
+		if (element instanceof Item) {
 			Item item = (Item) element;
 			return item.getParent();
 		}
@@ -73,9 +76,9 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 
 	@Override
 	public boolean hasChildren(Object element) {
-		if (element instanceof Item){
+		if (element instanceof Item) {
 			Item item = (Item) element;
-			return ! item.getChildren().isEmpty();
+			return !item.getChildren().isEmpty();
 		}
 		return false;
 	}
@@ -128,8 +131,8 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 			item.offset = include.getPosition();
 			item.length = include.getLengthToNameEnd();
 			item.endOffset = include.getEnd();
-			item.fullString=include.getFullExpression();
-			
+			item.fullString = include.getFullExpression();
+
 			list.add(item);
 		}
 	}
@@ -138,8 +141,13 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 		for (AsciiDoctorHeadline headline : model.getHeadlines()) {
 			Item item = new Item();
 			item.name = headline.getName();
-			int deep = headline.getDeep()-1;// = is level 0 so -1
-			item.prefix = "H"+deep+":";
+			if (headline.getDeep()>1){
+				/* only when not tile set id */
+				item.id=headline.getId();
+			}
+			
+			int deep = headline.getDeep() - 1;// = is level 0 so -1
+			item.prefix = "H" + deep + ":";
 			item.type = ItemType.HEADLINE;
 			item.offset = headline.getPosition();
 			item.length = headline.getLengthToNameEnd();
@@ -147,17 +155,17 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 			/* register as next parent at this deep */
 			parents.put(deep, item);
 			/* when not root deep, try to fetch parent */
-			if (deep>1){
-				Item parent = parents.get(deep-1);
-				if (parent==null){
+			if (deep > 1) {
+				Item parent = parents.get(deep - 1);
+				if (parent == null) {
 					list.add(item);
 					continue;
-				}else{
+				} else {
 					parent.getChildren().add(item);
-					item.parent=parent;
+					item.parent = parent;
 					/* no add to list */
 				}
-			}else{
+			} else {
 				list.add(item);
 			}
 		}
@@ -167,6 +175,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 		synchronized (monitor) {
 			if (model == null) {
 				items = null;
+				cachedLastFoundItemByOffset = null;
 				return;
 			}
 			items = createItems(model);
@@ -178,21 +187,42 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 			if (items == null) {
 				return null;
 			}
-			for (Object oitem : items) {
-				if (!(oitem instanceof Item)) {
-					continue;
-				}
-				Item item = (Item) oitem;
-				int itemStart = item.getOffset();
-				int itemEnd = item.getEndOffset();// old:
-													// itemStart+item.getLength();
-				if (offset >= itemStart && offset <= itemEnd) {
-					return item;
+			if (cachedLastFoundItemByOffset != null) {
+				if (cachedLastFoundItemByOffset.offset == offset) {
+					return cachedLastFoundItemByOffset;
+
 				}
 			}
+			/* not existing or offset differernt, so reset always to null */
+			cachedLastFoundItemByOffset = null;
 
+			List<Item> list = new ArrayList<>();
+			for (Object oItem: items){
+				if (oItem instanceof Item){
+					list.add((Item)oItem);
+				}
+			}
+			inspectUntilNextCachedItem(offset,list);
+
+			return cachedLastFoundItemByOffset;
 		}
-		return null;
 	}
 
+	protected void inspectUntilNextCachedItem(int offset, List<Item> itemsToSearch) {
+		if (cachedLastFoundItemByOffset!=null){
+			return;
+		}
+		for (Item item: itemsToSearch) {
+			int itemStart = item.getOffset();
+			int itemEnd = item.getEndOffset();// old:
+												// itemStart+item.getLength();
+			if (offset >= itemStart && offset <= itemEnd) {
+				cachedLastFoundItemByOffset = item;
+				return;
+			}
+			/* check childern - endpos of parent contains not endpos of children!*/
+			inspectUntilNextCachedItem(offset,item.getChildren());
+			
+		}
+	}
 }
