@@ -136,7 +136,8 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		
 		linkEditorWithPreviewEnabled = new BooleanFieldEditor(P_LINK_EDITOR_WITH_PREVIEW.getId(), "Link editor with internal preview", uiComposite);
 		linkEditorWithPreviewEnabled.getDescriptionControl(uiComposite)
-		.setToolTipText("When enabled editor caret movements are scrolled in internal preview. This works only in same situations e.g. when cursor moves to a headline");
+		.setToolTipText("When enabled editor caret movements are scrolled in internal preview.\n"
+				+ "This works only in some situations e.g. when cursor moves to a headline");
 		addField(linkEditorWithPreviewEnabled);
 
 		/* --------------------- */

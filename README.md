@@ -21,6 +21,20 @@ For more information
 - about the plugin take a look at https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki
 - about asciidoctor please  look at https://asciidoctor.org/docs/asciidoc-syntax-quick-reference
 
+# Plugin developers
+## How to build this plugin ?
+### Setup 
+- call `git clone https://github.com/de-jcup/eclipse-asciidoctor-editor.git` 
+- open a shell and go into `eclipse-asciidoctor-editor` folder
+- call `gradlew eclipse`
+- After this is done open your eclipse and import *ALL* existing eclipse projects from `eclipse-asciidoctor-editor` into your workspace
+### Build
+- Gradle parts are only used for automated testing
+- To build the editor plugin, please open "asciidoctor-editor-updatesite/site.xml"
+  with eclipse site editor and build Editor feature by pressing "Build" button inside.
+### Execute (development phase)
+- Simply start as Eclipse Application by a new launch configuration in eclipse 
+
 
 ## License
 Eclipse asciidoctor editor is under Apache 2.0 license (http://www.apache.org/licenses/LICENSE-2.0)
