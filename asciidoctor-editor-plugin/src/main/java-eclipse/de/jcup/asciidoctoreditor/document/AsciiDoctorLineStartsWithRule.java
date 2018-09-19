@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Albert Tregnaghi
+ * Copyright 2018 Albert Tregnaghi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,26 @@ import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
+import de.jcup.asciidoctoreditor.EndlessLoopPreventer;
+
 public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
 
 	private IToken successToken;
 	private char[] startsWith;
 	private char[] endsWith;
 	private boolean multiLines;
-
+	private boolean mustHaveWhitespaceAfter;
+	
 	public AsciiDoctorLineStartsWithRule(String startsWith, String endsWith, boolean multiLines, IToken token) {
+		this(startsWith,endsWith,multiLines,token,false);
+	}
+	
+	public AsciiDoctorLineStartsWithRule(String startsWith, String endsWith, boolean multiLines, IToken token, boolean mustHaveWhitespaceAfter) {
 		this.successToken = token;
 		this.multiLines = multiLines;
 		this.startsWith = startsWith.toCharArray();
 		this.endsWith = endsWith == null ? new char[0] : endsWith.toCharArray();
+		this.mustHaveWhitespaceAfter=mustHaveWhitespaceAfter;
 	}
 
 	@Override
@@ -42,6 +50,16 @@ public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
 	@Override
 	public IToken getSuccessToken() {
 		return successToken;
+	}
+	
+	private boolean isTerminatedByWhitespaceOrEOF(ICharacterScanner scanner){
+		int n = scanner.read();
+		if (n!=ICharacterScanner.EOF){
+			scanner.unread();
+		}
+		char c = (char) n;
+		boolean isOkay = (n == ICharacterScanner.EOF || Character.isWhitespace(c));
+		return isOkay;
 	}
 
 	@Override
@@ -67,10 +85,19 @@ public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
 			}
 		}
 		/* found start word */
+		if (mustHaveWhitespaceAfter){
+			if (!isTerminatedByWhitespaceOrEOF(scanner)){
+				return resetScannerAndReturnUndefined(scanner, count);
+			}
+		}
+		EndlessLoopPreventer preventer = new EndlessLoopPreventer(100000);
+		
 		boolean noEndsWithScanNecessary = endsWith.length == 0;
 		int c = -1;
 		int endsWithPos = 0;
 		while (true) {
+			preventer.assertNoEndlessLoop();
+			
 			c = scanner.read();
 			count++;
 			if (c == ICharacterScanner.EOF) {
@@ -114,6 +141,13 @@ public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
 					}
 					if (endsWithPos == endsWith.length) {
 						/* found exact so success */
+						if (mustHaveWhitespaceAfter){
+							if (!isTerminatedByWhitespaceOrEOF(scanner)){
+								/* not multi line end - so keep on searching...*/
+								endsWithPos= endsWith.length+1;
+								continue;
+							}
+						}
 						return getSuccessToken();
 					}
 				} else {
@@ -127,6 +161,13 @@ public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
 						endsWithPos++;
 					}
 					if (endsWithPos == endsWith.length) {
+						if (mustHaveWhitespaceAfter){
+							if (!isTerminatedByWhitespaceOrEOF(scanner)){
+								/* not single line end - so keep on searching...*/
+								endsWithPos= endsWith.length+1;
+								continue;
+							}
+						}
 						/* found so success */
 						return getSuccessToken();
 					}

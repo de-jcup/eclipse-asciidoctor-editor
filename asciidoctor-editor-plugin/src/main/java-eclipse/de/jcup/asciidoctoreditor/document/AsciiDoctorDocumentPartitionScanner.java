@@ -74,7 +74,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new AsciiDoctorLineStartsWithRule("////", "////",true, comment));
 		rules.add(new AsciiDoctorLineStartsWithRule("//", null,false, comment));
 		
-		rules.add(new AsciiDoctorLineStartsWithRule("----", "----", true, textBlock));
+		rules.add(new AsciiDoctorLineStartsWithRule("----", "----", true, textBlock,true));
 		
 		rules.add(new AsciiDoctorFormattedTextRule("`", "`", monospacedText)); 
 		rules.add(new AsciiDoctorFormattedTextRule("**", "**", boldText));
