@@ -28,12 +28,18 @@ public class AsciiDoctorScriptModelBuilderTest {
 	public void before() {
 		builderToTest = new AsciiDoctorScriptModelBuilder();
 	}
+	@Test
+	public void a_headline_with_anker_before_gets_id_of_anker() throws Exception {
+		AsciiDoctorScriptModel asciidoctorScriptModel = builderToTest.build("[[anker1]]\n== Headline1");
+		/* test */
+		assertThat(asciidoctorScriptModel).hasHeadlines(1).hasHeadline("Headline1").hasHeadlineWithId("anker1");
 
+	}
 	@Test
 	public void a_line_with_5_spaces_and_Xfunction_test_is_NOT_recognized() throws Exception {
 		AsciiDoctorScriptModel asciidoctorScriptModel = builderToTest.build("     Xfunction test {}");
 		/* test */
-		assertThat(asciidoctorScriptModel).hasNoFunctions();
+		assertThat(asciidoctorScriptModel).hasNoHeadlines();
 
 	}
 

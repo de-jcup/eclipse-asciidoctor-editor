@@ -126,7 +126,11 @@ public class BrowserAccess {
 				if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED){
 					AsciiDoctorEclipseLogAdapter.INSTANCE.logInfo("safeBrowserExecuteJavascript, sending javascript:"+javascript);
 				}
-				browser.evaluate(javascript);
+				try{
+					browser.evaluate(javascript);
+				}catch(RuntimeException e){
+					AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to execute javascript:"+javascript,e);
+				}
 			}
 		});
 	}
