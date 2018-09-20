@@ -26,6 +26,7 @@ public class AsciiDoctorScriptModel {
 	Collection<AsciiDoctorHeadline> headlines = new ArrayList<>();
 	Collection<AsciiDoctorInclude> includes = new ArrayList<>(); 
 	Collection<AsciiDoctorError> errors = new ArrayList<>();
+	Collection<AsciiDoctorInlineAnchor> inlineAnchors = new ArrayList<>();
 	List<ParseToken> debugTokenList;
 
 	public Collection<AsciiDoctorHeadline> getHeadlines() {
@@ -34,6 +35,10 @@ public class AsciiDoctorScriptModel {
 
 	public Collection<AsciiDoctorInclude> getIncludes() {
 		return includes;
+	}
+	
+	public Collection<AsciiDoctorInlineAnchor> getInlineAnchors() {
+		return inlineAnchors;
 	}
 
 	public Collection<AsciiDoctorError> getErrors() {
@@ -59,5 +64,6 @@ public class AsciiDoctorScriptModel {
 	public boolean hasDebugTokens() {
 		return debugTokenList != null;
 	}
+
 
 }

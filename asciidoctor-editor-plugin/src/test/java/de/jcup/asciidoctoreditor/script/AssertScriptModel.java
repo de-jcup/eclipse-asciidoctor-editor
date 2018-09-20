@@ -38,46 +38,58 @@ public class AssertScriptModel {
 		this.model = model;
 	}
 
-	public AssertScriptModel hasNoFunctions() {
-		return hasFunctions(0);
+	public AssertScriptModel hasNoHeadlines() {
+		return hasHeadlines(0);
 	}
 		
-	public AssertScriptModel hasFunctions(int amount) {
-		Collection<AsciiDoctorHeadline> functions = getFunctions();
-		if (amount!=functions.size()){
-			assertEquals("asciidoc file model has not expected amount of headlines \nfunctions found:"+functions,amount, functions.size());
+	public AssertScriptModel hasHeadlines(int amount) {
+		Collection<AsciiDoctorHeadline> headlines = getHeadlines();
+		if (amount!=headlines.size()){
+			assertEquals("asciidoc file model has not expected amount of headlines \nheadlines found:"+headlines,amount, headlines.size());
 		}
 		return this;
 	}
 
-	public AssertScriptModel hasNoFunction(String functionName) {
-		return hasFunction(functionName, false, -1);
+	public AssertScriptModel hasNoHeadline(String headlineName) {
+		return hasHeadline(SearchMode.BY_NAME, headlineName, false, -1);
+	}
+	
+	public AssertScriptModel hasHeadline(String headlineName) {
+		return hasHeadline(SearchMode.BY_NAME,headlineName, true, -1);
+	}
+	
+	public AssertScriptModel hasHeadlineWithId(String id) {
+		return hasHeadline(SearchMode.BY_ID,id, true, -1);
 	}
 
-	public AssertScriptModel hasFunction(String functionName) {
-		return hasFunction(functionName, true, -1);
-	}
-
-	public AssertScriptModel hasFunctionWithPosition(String functionName, int expectedPosition) {
-		return hasFunction(functionName, true, expectedPosition);
+	public AssertScriptModel hasHeadlineWithPosition(String headlineName, int expectedPosition) {
+		return hasHeadline(SearchMode.BY_NAME, headlineName, true, expectedPosition);
 
 	}
+	
+	private enum SearchMode{
+		BY_NAME,
+		BY_ID,
+	}
 
-	private AssertScriptModel hasFunction(String functionName, boolean excpectedFunctionExists, int expectedPosition) {
+	public AssertScriptModel hasHeadline(SearchMode mode, String text, boolean excpectedFunctionExists, int expectedPosition) {
 		AsciiDoctorHeadline found = null;
 
-		for (AsciiDoctorHeadline function : getFunctions()) {
-			if (function.getName().equals(functionName)) {
-				found = function;
+		for (AsciiDoctorHeadline headline : getHeadlines()) {
+			
+			if (mode==SearchMode.BY_NAME && headline.getName().equals(text)) {
+				found = headline;
+			}else if (mode==SearchMode.BY_ID && headline.getId().equals(text)) {
+				found = headline;
 			}
 			if (found != null) {
 				break;
 			}
 		}
-		/* assert function available or not */
+		/* assert headline available or not */
 		if (found != null) {
 			if (!excpectedFunctionExists) {
-				fail("Did not expect, but script has function with label:" + functionName);
+				fail("Did not expect, but script has headline with label:" + text);
 			}
 
 			/* assert start if wanted */
@@ -85,18 +97,22 @@ public class AssertScriptModel {
 
 		} else {
 			if (excpectedFunctionExists) {
-				fail("This script has NO function with label:" + functionName+". But it contains following headlines:"+createFunctionStringList());
+				fail(mode.toString()+" failed: Did not found with text:" + text+". But it contains following headlines:"+createHeadlineStringList(mode));
 			}
 		}
 
 		return this;
 	}
 
-	private StringBuilder createFunctionStringList() {
+	private StringBuilder createHeadlineStringList(SearchMode mode) {
 		StringBuilder sb = new StringBuilder();
-		for (AsciiDoctorHeadline function : getFunctions()){
+		for (AsciiDoctorHeadline headline : getHeadlines()){
 			sb.append('\'');
-			sb.append(function.name);
+			if (mode==SearchMode.BY_NAME){
+				sb.append(headline.name);
+			}else if (mode==SearchMode.BY_ID){
+				sb.append(headline.id);
+			}
 			sb.append('\'');
 			sb.append(',');
 		}
@@ -110,14 +126,14 @@ public class AssertScriptModel {
 		if (expectedPosition == -1) {
 			return;
 		}
-		assertEquals("Position of function is not as expected!", expectedPosition, found.position);
+		assertEquals("Position of headline is not as expected!", expectedPosition, found.position);
 
 	}
 
-	private Collection<AsciiDoctorHeadline> getFunctions() {
-		Collection<AsciiDoctorHeadline> functions = model.getHeadlines();
-		assertNotNull(functions);
-		return functions;
+	private Collection<AsciiDoctorHeadline> getHeadlines() {
+		Collection<AsciiDoctorHeadline> headlines = model.getHeadlines();
+		assertNotNull(headlines);
+		return headlines;
 	}
 	
 	private Collection<AsciiDoctorError> getErrors() {

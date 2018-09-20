@@ -30,14 +30,28 @@ public class ScrollSynchronizer {
 		}
 
 		handleScrollToHeadlineIfPossible(item);
+		handleScrollToAnchorIfPossible(item);
 	}
 
 	private void handleScrollToHeadlineIfPossible(Item item) {
-		if (!ItemType.HEADLINE.equals(item.getItemType())) {
+		ItemType itemType = item.getItemType();
+		if (!ItemType.HEADLINE.equals(itemType)){
 			return;
 		}
-		String headlineId = item.getId();
-		if (headlineId == null) {
+		jumpToElementWithItemId(item);
+	}
+	
+	private void handleScrollToAnchorIfPossible(Item item) {
+		ItemType itemType = item.getItemType();
+		if (!ItemType.INLINE_ANCHOR.equals(itemType)){
+			return;
+		}
+		jumpToElementWithItemId(item);
+	}
+
+	protected void jumpToElementWithItemId(Item item) {
+		String anchorId = item.getId();
+		if (anchorId == null) {
 			/* means title */
 			editor.browserAccess.navgigateToTopOfView();
 			return;
@@ -45,7 +59,7 @@ public class ScrollSynchronizer {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("document.getElementById('");
-		sb.append(headlineId);
+		sb.append(anchorId);
 		sb.append("').scrollIntoView();");
 
 		String javascript = sb.toString();

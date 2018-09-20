@@ -21,6 +21,8 @@ public enum ItemType {
 	
 	INCLUDE,
 	
+	INLINE_ANCHOR,
+	
 	META_INFO, 
 	
 	META_ERROR,

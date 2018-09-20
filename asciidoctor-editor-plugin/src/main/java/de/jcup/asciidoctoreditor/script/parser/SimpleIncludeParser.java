@@ -44,7 +44,7 @@ public class SimpleIncludeParser {
 			}
 			if (current != null) {
 				current.append(c);
-				if (current.charAt(0) != 'i') {
+				if (current.length()==1 && current.charAt(0) != 'i') {
 					// short break - line must start with i, otherwise no include
 					current = null;
 				}

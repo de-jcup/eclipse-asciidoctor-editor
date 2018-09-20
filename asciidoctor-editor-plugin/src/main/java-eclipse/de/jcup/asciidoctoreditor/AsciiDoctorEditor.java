@@ -141,6 +141,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 	private AsciiDoctorScriptModelBuilder modelBuilder;
 
 	private Object monitor = new Object();
+	private ScrollSynchronizer synchronizer;
 
 	private AsciiDoctorContentOutlinePage outlinePage;
 
@@ -1249,8 +1250,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	}
 	
-	private ScrollSynchronizer synchronizer;
-
 	public void openInclude(String fileName) {
 
 		File editorFileOrNull = getEditorFileOrNull();

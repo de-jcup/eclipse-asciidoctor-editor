@@ -24,9 +24,9 @@ public class AsciiDoctorHeadline {
 	String name;
 	int position;
 	int lengthToNameEnd;
-	public int end;
-	private int deep;
-	private String id;
+	int end;
+	int deep;
+	String id;
 	
 	public AsciiDoctorHeadline(int deep, String name, int position, int end, int lengthTonNameEnd){
 		this.deep=deep;

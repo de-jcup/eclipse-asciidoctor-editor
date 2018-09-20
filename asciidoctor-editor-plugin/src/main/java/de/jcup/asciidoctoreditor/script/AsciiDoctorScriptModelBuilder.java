@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import de.jcup.asciidoctoreditor.script.parser.SimpleHeadlineParser;
 import de.jcup.asciidoctoreditor.script.parser.SimpleIncludeParser;
+import de.jcup.asciidoctoreditor.script.parser.SimpleInlineAnchorParser;
 
 /**
  * A asciidoc file model builder
@@ -27,58 +28,80 @@ import de.jcup.asciidoctoreditor.script.parser.SimpleIncludeParser;
  *
  */
 public class AsciiDoctorScriptModelBuilder {
-	
+
 	private GraphvizCheckSupport graphVizCheckSupport;
+
+	private SimpleHeadlineParser headlineParser = new SimpleHeadlineParser();
+	private SimpleIncludeParser includeParser = new SimpleIncludeParser();
+	private SimpleInlineAnchorParser inlineAnchorParser = new SimpleInlineAnchorParser();
 
 	/**
 	 * Parses given script and creates a asciidoc file model
 	 * 
 	 * @param asciidoctorScript
 	 * @return a simple model with some information about asciidoc file
-	 * @throws AsciiDoctorScriptModelException 
+	 * @throws AsciiDoctorScriptModelException
 	 */
-	public AsciiDoctorScriptModel build(String asciidoctorScript) throws AsciiDoctorScriptModelException{
+	public AsciiDoctorScriptModel build(String asciidoctorScript) throws AsciiDoctorScriptModelException {
 		AsciiDoctorScriptModel model = new AsciiDoctorScriptModel();
 
-		SimpleHeadlineParser parser = new SimpleHeadlineParser();
-		Collection<AsciiDoctorHeadline> headlines=parser.parse(asciidoctorScript);
+		Collection<AsciiDoctorHeadline> headlines = headlineParser.parse(asciidoctorScript);
+		Collection<AsciiDoctorInclude> includes = includeParser.parse(asciidoctorScript);
+		Collection<AsciiDoctorInlineAnchor> inlineAnchors = inlineAnchorParser.parse(asciidoctorScript);
 
-		SimpleIncludeParser includeParser = new SimpleIncludeParser();
-		Collection<AsciiDoctorInclude> includes=includeParser.parse(asciidoctorScript);
-		
 		model.getHeadlines().addAll(headlines);
 		model.getIncludes().addAll(includes);
-		
-		if (isGaphvizCheckNecessary(asciidoctorScript)){
-			boolean graphvizAvailable= graphVizCheckSupport.checkInstalled();
-			if (!graphvizAvailable){
+		model.getInlineAnchors().addAll(inlineAnchors);
+
+		handleHeadlinesWithAnchorsBefore(model);
+
+		if (isGaphvizCheckNecessary(asciidoctorScript)) {
+			boolean graphvizAvailable = graphVizCheckSupport.checkInstalled();
+			if (!graphvizAvailable) {
 				int index = getIndexWhereGraphvizBecomesNecessary(asciidoctorScript);
-				
-				AsciiDoctorError error = new AsciiDoctorError(index, index+9, "No GraphViz installation found but necessary.\n"
-						+ "Please install GraphViz on your machine if\nyou want the diagramm correct generated!");
+
+				AsciiDoctorError error = new AsciiDoctorError(index, index + 9,
+						"No GraphViz installation found but necessary.\n"
+								+ "Please install GraphViz on your machine if\nyou want the diagramm correct generated!");
 				model.getErrors().add(error);
 			}
 		}
 		return model;
 	}
 
+	protected void handleHeadlinesWithAnchorsBefore(AsciiDoctorScriptModel model) {
+		/* headlines having an anchor befor do use the ID of the anker! */
+		for (AsciiDoctorHeadline headline : model.getHeadlines()) {
+			int headlinePosition = headline.getPosition();
+
+			for (AsciiDoctorInlineAnchor anchor : model.getInlineAnchors()) {
+				int anchorEnd = anchor.getEnd();
+				if (anchorEnd+2==headlinePosition){ /* +2 necessary because of new line+one more*/
+					headline.id=anchor.getId();
+					break;
+				}
+			}
+		}
+
+	}
+
 	protected boolean isGaphvizCheckNecessary(String asciidoctorScript) {
-		if (graphVizCheckSupport==null){
+		if (graphVizCheckSupport == null) {
 			return false;
 		}
-		return getIndexWhereGraphvizBecomesNecessary(asciidoctorScript)!=-1;
+		return getIndexWhereGraphvizBecomesNecessary(asciidoctorScript) != -1;
 	}
 
 	protected int getIndexWhereGraphvizBecomesNecessary(String asciidoctorScript) {
 		int index = asciidoctorScript.indexOf("[plantuml");
-		if (index==-1){
+		if (index == -1) {
 			index = asciidoctorScript.indexOf("[graphviz");
 		}
 		return index;
 	}
 
 	public void setGraphVizCheckSupport(GraphvizCheckSupport validateGraphviz) {
-		this.graphVizCheckSupport=validateGraphviz;
+		this.graphVizCheckSupport = validateGraphviz;
 	}
 
 }

@@ -37,6 +37,7 @@ public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider imp
 	private static final String ICON_INCLUDE=  "gotoobj_tsk.png";
 	private static final String ICON_ERROR ="error_tsk.png";
 	private static final String ICON_INFO ="info_tsk.png";
+	private static final String ICON_INLINE_ANCHOR = "inline_anchor.gif";
 
 	private Styler outlineItemTypeStyler = new Styler() {
 
@@ -74,6 +75,8 @@ public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider imp
 			switch (type) {
 			case HEADLINE:
 				return getOutlineImage(ICON_HEADLINE);
+			case INLINE_ANCHOR:
+				return getOutlineImage(ICON_INLINE_ANCHOR);
 			case INCLUDE:
 				return getOutlineImage(ICON_INCLUDE);
 			case META_ERROR:
@@ -104,6 +107,8 @@ public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider imp
 			}else if (itemType==ItemType.META_DEBUG){
 				StyledString typeString = new StyledString(item.getOffset()+": ", outlineItemTypeStyler);
 				styled.append(typeString);
+			}else if (itemType==ItemType.INLINE_ANCHOR){
+				/* no special handling */
 			}
 			String name = item.getName();
 			if (name != null) {

@@ -26,6 +26,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import de.jcup.asciidoctoreditor.SimpleStringUtils;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInclude;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 
@@ -88,6 +89,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 		List<Item> list = new ArrayList<>();
 		addIncludes(model, list);
 		addHeadlines(model, parents, list);
+		addAnchors(model, list);
 		if (list.isEmpty()) {
 			Item item = new Item();
 			item.name = ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS;
@@ -141,11 +143,11 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 		for (AsciiDoctorHeadline headline : model.getHeadlines()) {
 			Item item = new Item();
 			item.name = headline.getName();
-			if (headline.getDeep()>1){
+			if (headline.getDeep() > 1) {
 				/* only when not tile set id */
-				item.id=headline.getId();
+				item.id = headline.getId();
 			}
-			
+
 			int deep = headline.getDeep() - 1;// = is level 0 so -1
 			item.prefix = "H" + deep + ":";
 			item.type = ItemType.HEADLINE;
@@ -168,6 +170,21 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 			} else {
 				list.add(item);
 			}
+		}
+	}
+
+	protected void addAnchors(AsciiDoctorScriptModel model, List<Item> list) {
+		for (AsciiDoctorInlineAnchor anchor : model.getInlineAnchors()) {
+			Item item = new Item();
+			item.name = anchor.getId();
+			item.id=anchor.getId();
+
+			item.prefix = "";
+			item.type = ItemType.INLINE_ANCHOR;
+			item.offset = anchor.getPosition();
+			item.length = anchor.getLabel().length();
+			item.endOffset = anchor.getEnd();
+			list.add(item);
 		}
 	}
 
@@ -197,22 +214,22 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 			cachedLastFoundItemByOffset = null;
 
 			List<Item> list = new ArrayList<>();
-			for (Object oItem: items){
-				if (oItem instanceof Item){
-					list.add((Item)oItem);
+			for (Object oItem : items) {
+				if (oItem instanceof Item) {
+					list.add((Item) oItem);
 				}
 			}
-			inspectUntilNextCachedItem(offset,list);
+			inspectUntilNextCachedItem(offset, list);
 
 			return cachedLastFoundItemByOffset;
 		}
 	}
 
 	protected void inspectUntilNextCachedItem(int offset, List<Item> itemsToSearch) {
-		if (cachedLastFoundItemByOffset!=null){
+		if (cachedLastFoundItemByOffset != null) {
 			return;
 		}
-		for (Item item: itemsToSearch) {
+		for (Item item : itemsToSearch) {
 			int itemStart = item.getOffset();
 			int itemEnd = item.getEndOffset();// old:
 												// itemStart+item.getLength();
@@ -220,9 +237,12 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 				cachedLastFoundItemByOffset = item;
 				return;
 			}
-			/* check childern - endpos of parent contains not endpos of children!*/
-			inspectUntilNextCachedItem(offset,item.getChildren());
-			
+			/*
+			 * check childern - endpos of parent contains not endpos of
+			 * children!
+			 */
+			inspectUntilNextCachedItem(offset, item.getChildren());
+
 		}
 	}
 }
