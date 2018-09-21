@@ -185,6 +185,12 @@
             categoryId="asciidoctoreditor.commands.category"
             id="asciidoctoreditor.editor.commands.openlink">
       </command>
+      <command
+            name="Rebuild asciidoc output"
+            description="Rebuilds / refreshes asciidoc output of editor"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.rebuild">
+      </command>
       
 	</extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -225,6 +231,10 @@
       <handler
             commandId="asciidoctoreditor.editor.commands.openlink"
             class="de.jcup.asciidoctoreditor.handlers.OpenLinkHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.editor.commands.rebuild"
+            class="de.jcup.asciidoctoreditor.handlers.RebuildHandler">
       </handler>
     </extension> 
     
@@ -275,6 +285,12 @@
             commandId="asciidoctoreditor.editor.commands.openlink"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
 		</key>
+		<key
+            sequence="F5"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.rebuild"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
+		</key>
     </extension> 
     
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -301,6 +317,9 @@
              />
             <command commandId="asciidoctoreditor.editor.commands.openlink"
             		 icon="icons/toolbar/link.png"
+             />
+            <command commandId="asciidoctoreditor.editor.commands.rebuild"
+            		 icon="icons/toolbar/refresh.png"
              />
                
       </menuContribution>
@@ -336,6 +355,9 @@
             <command commandId="asciidoctoreditor.editor.commands.openlink"
             		 icon="icons/toolbar/link.png"
              />
+            <command commandId="asciidoctoreditor.editor.commands.rebuild"
+            		 icon="icons/toolbar/refresh.png"
+            />
          </menu>
       </menuContribution>
       

@@ -177,6 +177,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 	private MonospacedFormatAction monoSpacedFormatAction;
 
+	private RebuildAsciiDocViewAction rebuildAction;
+
 	public AsciiDoctorEditor() {
 		this.editorTempIdentifier = System.nanoTime();
 		setSourceViewerConfiguration(createSourceViewerConfig());
@@ -268,6 +270,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		italicFormatAction = new ItalicFormatAction(this);
 		boldFormatAction = new BoldFormatAction(this);
 		monoSpacedFormatAction = new MonospacedFormatAction(this);
+		rebuildAction = new RebuildAsciiDocViewAction(this);
 
 		IToolBarManager asciiDocToolBarManager = new ToolBarManager(coolBarManager.getStyle());
 		asciiDocToolBarManager.add(new InsertSectionTitleAction(this));
@@ -283,7 +286,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 		IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
 		viewToolBarManager.add(new ChangeLayoutAction(this));
-		viewToolBarManager.add(new RebuildAsciiDocViewAction(this));
+		viewToolBarManager.add(rebuildAction);
 		viewToolBarManager.add(new ToggleTOCAction(this));
 		viewToolBarManager.add(new Separator("simple"));
 		viewToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
@@ -1461,6 +1464,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 				}
 			}
 		}
+	}
+
+	public void rebuild() {
+		this.rebuildAction.run();		
 	}
 
 }

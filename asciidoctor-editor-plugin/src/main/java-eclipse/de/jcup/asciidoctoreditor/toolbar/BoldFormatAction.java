@@ -24,7 +24,7 @@ public class BoldFormatAction extends FormatTextAction{
 	private static ImageDescriptor IMG_DESCRIPTOR_BOLD = createToolbarImageDescriptor("format_bold.png");
 
 	public BoldFormatAction(AsciiDoctorEditor editor) {
-		super(editor, "Bold", IMG_DESCRIPTOR_BOLD);
+		super(editor, "Bold (Ctrl + b)", IMG_DESCRIPTOR_BOLD);
 	}
 
 	@Override

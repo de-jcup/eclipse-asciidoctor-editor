@@ -45,7 +45,7 @@ public class RebuildAsciiDocViewAction extends ToolbarAction {
 	}
 
 	private void initText() {
-		setText("Rebuild ascii doc view (e.g. when includes or imageDir have been changed)");
+		setText("Rebuild ascii doc view (F5)\n(e.g. when includes or imageDir have been changed)");
 	}
 
 }

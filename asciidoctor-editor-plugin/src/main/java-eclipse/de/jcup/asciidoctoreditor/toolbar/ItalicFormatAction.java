@@ -24,7 +24,7 @@ public class ItalicFormatAction extends FormatTextAction{
 	private static ImageDescriptor IMG_DESCRIPTOR_ITALIC = createToolbarImageDescriptor("format_italic.png");
 
 	public ItalicFormatAction(AsciiDoctorEditor editor) {
-		super(editor, "Italic", IMG_DESCRIPTOR_ITALIC);
+		super(editor, "Italic (Ctrl + i)", IMG_DESCRIPTOR_ITALIC);
 	}
 
 	@Override
