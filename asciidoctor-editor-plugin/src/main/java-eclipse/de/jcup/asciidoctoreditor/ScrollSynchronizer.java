@@ -52,7 +52,7 @@ public class ScrollSynchronizer {
 	protected void jumpToElementWithItemId(Item item) {
 		String anchorId = item.getId();
 		if (anchorId == null) {
-			/* means title */
+			/* means first title */
 			editor.browserAccess.navgigateToTopOfView();
 			return;
 		}
