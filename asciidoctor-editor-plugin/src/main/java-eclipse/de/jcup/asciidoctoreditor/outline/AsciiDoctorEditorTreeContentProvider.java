@@ -140,15 +140,19 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 	}
 
 	protected void addHeadlines(AsciiDoctorScriptModel model, Map<Integer, Item> parents, List<Item> list) {
+		boolean alreadyOneDeep1 = false;
 		for (AsciiDoctorHeadline headline : model.getHeadlines()) {
 			Item item = new Item();
 			item.name = headline.getName();
-			if (headline.getDeep() > 1) {
-				/* only when not tile set id */
+			int originDeep = headline.getDeep();
+			if (!alreadyOneDeep1 && originDeep == 1) {
+				alreadyOneDeep1 = true;
+			} else {
+				/* only when not first tile set id */
 				item.id = headline.getId();
 			}
 
-			int deep = headline.getDeep() - 1;// = is level 0 so -1
+			int deep = originDeep - 1;// = is level 0 so -1
 			item.prefix = "H" + deep + ":";
 			item.type = ItemType.HEADLINE;
 			item.offset = headline.getPosition();
@@ -157,18 +161,13 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 			/* register as next parent at this deep */
 			parents.put(deep, item);
 			/* when not root deep, try to fetch parent */
-			if (deep > 1) {
-				Item parent = parents.get(deep - 1);
-				if (parent == null) {
-					list.add(item);
-					continue;
-				} else {
-					parent.getChildren().add(item);
-					item.parent = parent;
-					/* no add to list */
-				}
-			} else {
+			Item parent = parents.get(deep - 1);
+			if (parent == null) {
 				list.add(item);
+			} else {
+				parent.getChildren().add(item);
+				item.parent = parent;
+				/* no add to list */
 			}
 		}
 	}
@@ -177,7 +176,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 		for (AsciiDoctorInlineAnchor anchor : model.getInlineAnchors()) {
 			Item item = new Item();
 			item.name = anchor.getId();
-			item.id=anchor.getId();
+			item.id = anchor.getId();
 
 			item.prefix = "";
 			item.type = ItemType.INLINE_ANCHOR;
