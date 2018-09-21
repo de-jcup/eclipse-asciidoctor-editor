@@ -264,7 +264,7 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
 		</key>
 		<key
-            sequence="M1+X"
+            sequence="M1+M2+X"
             contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
             commandId="asciidoctoreditor.editor.commands.formattext.monospaced"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
