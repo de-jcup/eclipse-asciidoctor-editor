@@ -35,6 +35,24 @@ public class AsciiDoctorScriptModelBuilderTest {
 		assertThat(asciidoctorScriptModel).hasHeadlines(1).hasHeadline("Headline1").hasHeadlineWithId("anker1");
 
 	}
+	
+	@Test
+	public void three_headlines_with_same_name_got_numbering_first_has_no_number() throws Exception {
+		
+		/* execute */
+		AsciiDoctorScriptModel asciidoctorScriptModel = builderToTest.build("== Headline1\nsometext\n\n== Headline1\nsometext\n\n== Headline1\nsometext\n\n");
+		
+		/* test */
+		/* @formatter:off*/
+		assertThat(asciidoctorScriptModel).
+			hasHeadlines(3).
+			hasHeadlineWithId("_headline1").
+			hasHeadlineWithId("_headline1_2").
+			hasHeadlineWithId("_headline1_3");
+		/* @formatter:on*/
+
+	}
+	
 	@Test
 	public void a_line_with_5_spaces_and_Xfunction_test_is_NOT_recognized() throws Exception {
 		AsciiDoctorScriptModel asciidoctorScriptModel = builderToTest.build("     Xfunction test {}");

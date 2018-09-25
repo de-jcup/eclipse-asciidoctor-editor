@@ -111,7 +111,7 @@ public class AssertScriptModel {
 			if (mode==SearchMode.BY_NAME){
 				sb.append(headline.name);
 			}else if (mode==SearchMode.BY_ID){
-				sb.append(headline.id);
+				sb.append(headline.getId());
 			}
 			sb.append('\'');
 			sb.append(',');

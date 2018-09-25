@@ -16,6 +16,10 @@
 package de.jcup.asciidoctoreditor.script;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import de.jcup.asciidoctoreditor.script.parser.SimpleHeadlineParser;
 import de.jcup.asciidoctoreditor.script.parser.SimpleIncludeParser;
@@ -53,7 +57,9 @@ public class AsciiDoctorScriptModelBuilder {
 		model.getIncludes().addAll(includes);
 		model.getInlineAnchors().addAll(inlineAnchors);
 
+		
 		handleHeadlinesWithAnchorsBefore(model);
+		handleHeadlinesWithSameCalculatedIdsWhereNoIdSet(model);
 
 		if (isGaphvizCheckNecessary(asciidoctorScript)) {
 			boolean graphvizAvailable = graphVizCheckSupport.checkInstalled();
@@ -69,20 +75,47 @@ public class AsciiDoctorScriptModelBuilder {
 		return model;
 	}
 
-	protected void handleHeadlinesWithAnchorsBefore(AsciiDoctorScriptModel model) {
-		/* headlines having an anchor befor do use the ID of the anker! */
+	private void handleHeadlinesWithAnchorsBefore(AsciiDoctorScriptModel model) {
+		/* headlines having an anchor before do use the ID of the anchor! */
 		for (AsciiDoctorHeadline headline : model.getHeadlines()) {
 			int headlinePosition = headline.getPosition();
 
 			for (AsciiDoctorInlineAnchor anchor : model.getInlineAnchors()) {
 				int anchorEnd = anchor.getEnd();
 				if (anchorEnd+2==headlinePosition){ /* +2 necessary because of new line+one more*/
-					headline.id=anchor.getId();
+					headline.setId(anchor.getId());
 					break;
 				}
 			}
 		}
 
+	}
+
+	/*
+	 * Handle at last - when other id calculation is done!
+	 */
+	private void handleHeadlinesWithSameCalculatedIdsWhereNoIdSet(AsciiDoctorScriptModel model) {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		Set<String> firstTagged = new HashSet<>();
+		for (AsciiDoctorHeadline headline : model.getHeadlines()) {
+			String calculatedId = headline.getCalculatedId();
+			if (calculatedId==null){
+				continue; // should never happen but...
+			}
+			/* always increment and get back*/
+			Integer count = map.compute(calculatedId, (k,v) -> v==null? 1 : v+1);
+			/* when id is already set - do not change it*/
+			if (headline.isIdSet()){
+				continue;
+			}
+			if (firstTagged.contains(calculatedId)){
+				headline.setId(calculatedId+"_"+count);
+			}else{
+				headline.setId(calculatedId);
+				firstTagged.add(calculatedId);
+			}
+		}
+		
 	}
 
 	protected boolean isGaphvizCheckNecessary(String asciidoctorScript) {

@@ -45,7 +45,14 @@ public class RebuildAsciiDocViewAction extends ToolbarAction {
 	}
 
 	private void initText() {
-		setText("Rebuild ascii doc view (F5)\n(e.g. when includes or imageDir have been changed)");
+		StringBuilder sb = new StringBuilder();
+		sb.append("Rebuild Asciidoc preview content (F5)\n\n");
+		sb.append("When to use? \n");
+		sb.append(" 1. When included files or resources have been changed outside the editor\n");
+		sb.append(" 2. You are using external browser instead of of internal view and you \n");
+		sb.append("    want to update the external view in browser - but be aware: you still have to\n");
+		sb.append("    refresh your external browser view too");
+		setText(sb.toString());
 	}
 
 }
