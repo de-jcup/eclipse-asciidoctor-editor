@@ -2,18 +2,14 @@
 <feature
       id="de.jcup.asciidoctoreditor"
       label="Asciidoctor Editor"
-      version="1.1.0.beta1"
+      version="1.1.0"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/asciidoctor-editor">
       AsciiDoctor Editor is a eclipse plugin to edit asciidoc files
-(.sh)
-It supports 
-- Syntax coloring which is customizeable and has additional defaults
-for dark theme
-- Block commenting (CTRL+7)
-- Validation
-- Outline + Quickoutline
+
+For details about the plugin please refer to
+https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki
    </description>
 
    <copyright>
