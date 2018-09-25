@@ -26,7 +26,8 @@ public class AsciiDoctorHeadline {
 	int lengthToNameEnd;
 	int end;
 	int deep;
-	String id;
+	private String calculatedId;
+	private String id;
 	
 	public AsciiDoctorHeadline(int deep, String name, int position, int end, int lengthTonNameEnd){
 		this.deep=deep;
@@ -35,9 +36,20 @@ public class AsciiDoctorHeadline {
 		this.position=position;
 		this.end=end;
 		this.lengthToNameEnd=lengthTonNameEnd;
-		this.id=calculateId(name);
+		this.calculatedId=calculateId(name);
 	}
-
+	
+	void setId(String id) {
+		this.id = id;
+	}
+	
+	boolean isIdSet(){
+		return id!=null;
+	}
+	public String getCalculatedId() {
+		return calculatedId;
+	}
+	
 	static String calculateId(String name) {
 		if (name==null){
 			return "";
@@ -77,6 +89,9 @@ public class AsciiDoctorHeadline {
 	}
 	
 	public String getId(){
+		if (id==null){
+			return calculatedId;
+		}
 		return id;
 	}
 	
