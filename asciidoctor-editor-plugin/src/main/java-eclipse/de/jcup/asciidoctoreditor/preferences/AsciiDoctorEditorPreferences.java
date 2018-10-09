@@ -204,4 +204,12 @@ public class AsciiDoctorEditorPreferences {
 		return layout;
 	}
 
+	public boolean isUsingInstalledAsciidoctor() {
+		return getBooleanPreference(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED);
+	}
+	
+	public String getArgumentsForInstalledAsciidoctor(){
+		return getStringPreference(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS);
+	}
+
 }

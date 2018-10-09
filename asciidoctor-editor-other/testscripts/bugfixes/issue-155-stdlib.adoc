@@ -1,0 +1,9 @@
+[plantuml, sample-plantuml-diagram-u1, alt="Use case diagram 1"]
+---- 
+@startuml AWS icon test
+!include <aws/common>
+!include <aws/ApplicationServices/AmazonAPIGateway/AmazonAPIGateway>
+AMAZONAPIGATEWAY(gateway,"",rectangle)
+
+@enduml
+----
