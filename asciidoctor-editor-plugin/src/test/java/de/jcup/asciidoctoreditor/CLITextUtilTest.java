@@ -9,10 +9,14 @@ import org.junit.Test;
 
 public class CLITextUtilTest {
 
-	
 	@Test
 	public void alpha_newline_omega_results_in_two_entries() {
 		List<String> commands = CLITextUtil.convertToList("alpha\nomega");
+		assertContains(commands, "alpha","omega");
+	}
+	@Test
+	public void alpha_cr_newline_omega_results_in_two_entries() {
+		List<String> commands = CLITextUtil.convertToList("alpha\r\nomega");
 		assertContains(commands, "alpha","omega");
 	}
 	@Test
@@ -81,7 +85,7 @@ public class CLITextUtilTest {
 	}
 	
 	private void assertContains(List<String> commands, String ...expected){
-		assertEquals(Arrays.asList(expected),commands);
+		assertEquals(Arrays.asList(expected).toString(),commands.toString());
 	}
 
 }

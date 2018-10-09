@@ -2,6 +2,7 @@ package de.jcup.asciidoctoreditor;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -22,8 +23,6 @@ import org.asciidoctor.extension.ExtensionGroup;
 import org.asciidoctor.extension.JavaExtensionRegistry;
 import org.asciidoctor.extension.RubyExtensionRegistry;
 
-import com.kenai.jffi.internal.StubLoader.OS;
-
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 
 /**
@@ -35,117 +34,115 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
  */
 public class InstalledAsciidoctor implements Asciidoctor {
 
-	/*
-	 * -------------------------------------------------------------------------
-	 */
-	/*
-	 * +++++++++++++++++++++++++++++++ used++ ++++++++++++++++++++++++++++++++++
-	 */
-	/*
-	 * -------------------------------------------------------------------------
-	 */
 	
+	/*
+	 * -------------------------------------------------------------------------
+	 * +++++++++++++++++++++++++++++++ used++ ++++++++++++++++++++++++++++++++++
+	 * -------------------------------------------------------------------------
+	 */
+
 	@Override
 	public DocumentHeader readDocumentHeader(File filename) {
 		return AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().readDocumentHeader(filename);
 	}
+
 	@Override
 	public String convertFile(File filename, Map<String, Object> options) {
 
 		List<String> commands = new ArrayList<String>();
-		if (OSUtil.isWindows()){
+		if (OSUtil.isWindows()) {
 			commands.add("cmd.exe");
 			commands.add("/C");
 		}
 		commands.add("asciidoctor");
-//		for (String key : options.keySet()) {
-//			commands.add("-"+key);
-//			commands.add(""+options.get(key));
-//		}
-		
+
 		String outDir = null;
-		
+
 		@SuppressWarnings("unchecked")
-		Map<String,String>attributes =(Map<String, String>) options.get("attributes");
+		Map<String, String> attributes = (Map<String, String>) options.get("attributes");
 		for (String key : attributes.keySet()) {
 			Object value = attributes.get(key);
-			if (value==null){
+			if (value == null) {
 				continue;
 			}
-			String v= value.toString();
+			String v = value.toString();
 			String attrib = key;
-			if (v.isEmpty()){
+			if (v.isEmpty()) {
 				continue;
 			}
 			commands.add("-a");
 			String safeValue = toWindowsSafeVariant(value);
-			if (key.equals("outdir")){
-				outDir=safeValue;
+			if (key.equals("outdir")) {
+				outDir = safeValue;
 			}
-			attrib+="="+safeValue;
+			attrib += "=" + safeValue;
 			commands.add(attrib);
 		}
-		
-//		commands.add("-b");
-//		commands.add("html5");
-//		commands.add("-s");
-//		commands.add("unsafe");
-		
-//		commands.add("--base-dir");
-//		commands.add(toWindowsSafeVariant(options.get("base_dir")));
-		
-//		commands.add("--source-dir");
-//		commands.add(""+options.get("base_dir"));
-		List<String> preferenceCLICommands = CLITextUtil.convertToList(AsciiDoctorEditorPreferences.getInstance().getArgumentsForInstalledAsciidoctor());
+
+		String argumentsForInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance()
+				.getArgumentsForInstalledAsciidoctor();
+		List<String> preferenceCLICommands = CLITextUtil.convertToList(argumentsForInstalledAsciidoctor);
 		commands.addAll(preferenceCLICommands);
-		if (outDir!=null){
+		if (outDir != null) {
 			commands.add("-D");
 			commands.add(outDir);
 		}
-		
-//		commands.add("--no-header-footer");
-//		commands.add("-r");
-//		commands.add("asciidoctor-diagram");
-		
+
 		commands.add(toWindowsSafeVariant(filename.getAbsolutePath()));
-		StringBuilder sb = new StringBuilder();
-		for (String command: commands){
-			if ("cmd.exe".equals(command) || "/C".equals(command)){
-				continue;
-			}
-			sb.append(command);
-			sb.append(" ");
+		StringBuilder commandLine = new StringBuilder();
+		for (String command : commands) {
+			commandLine.append(command);
+			commandLine.append(" ");
 		}
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
-		System.out.println("installed ascidoctor >>>> executing:"+sb.toString());
+		AsciiDoctorConsole.output(">> rendering:"+filename.getName());
 		ProcessBuilder pb = new ProcessBuilder(commands);
-		pb.inheritIO();
 		try {
+			StringBuffer sbx=null;
 			Process process = pb.start();
-			process.waitFor(2, TimeUnit.MINUTES);
-		} catch (InterruptedException | IOException e) {
-			e.printStackTrace();
+			try (InputStream is = process.getErrorStream();) {
+				int c;
+				sbx = new StringBuffer();
+				while ((c = is.read()) != -1) {
+					sbx.append((char) c);
+				}
+				String line = sbx.toString();
+				if (line.isEmpty()){
+					AsciiDoctorConsole.output(line);
+				}else{
+					AsciiDoctorConsole.error(line);
+				}
+			}
+			boolean exitdone = process.waitFor(2, TimeUnit.MINUTES);
+			int exitCode =-1;
+			if (exitdone){
+				exitCode=process.exitValue();
+			}
+			if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED){
+				AsciiDoctorConsole.output("Called:" + commandLine.toString());
+				AsciiDoctorConsole.output("Exitcode:"+exitCode);
+			}
+			if (exitCode>0){
+				AsciiDoctorEclipseLogAdapter.INSTANCE.logWarn("Installed Asciidoctor rendering failed for '"+filename.getName()+"'\n\nCommandLine was:\n"+commandLine.toString()+"\n\nResulted in exitcode:"+exitCode+", \nLast output:"+sbx);
+			}
+		} catch (Exception e) {
+			AsciiDoctorEditorUtil.logError("Cannot execute installed asciidoctor\n\nCommandline was:\n"+commandLine.toString(), e);
 		}
 
 		return null;
 	}
 
-	private String toWindowsSafeVariant(Object obj){
-		String command = ""+obj;
-		boolean windowsPath = command.indexOf('\\')!=-1;
-		if (!windowsPath){
+	private String toWindowsSafeVariant(Object obj) {
+		String command = "" + obj;
+		boolean windowsPath = command.indexOf('\\') != -1;
+		if (!windowsPath) {
 			return command;
 		}
-		return "\""+command+"\"";
+		return "\"" + command + "\"";
 	}
 
 	/*
 	 * -------------------------------------------------------------------------
-	 */
-	/*
 	 * +++++++++++++++++++++++++++++++ unused ++++++++++++++++++++++++++++++++++
-	 */
-	/*
 	 * -------------------------------------------------------------------------
 	 */
 

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class CLITextUtil {
-	private static final Pattern P = Pattern.compile("[\n\t]");
+	private static final Pattern P = Pattern.compile("[\n\r\t]");
 	
 	public static List<String> convertToList(String string) {
 		List<String> list = new ArrayList<String>();

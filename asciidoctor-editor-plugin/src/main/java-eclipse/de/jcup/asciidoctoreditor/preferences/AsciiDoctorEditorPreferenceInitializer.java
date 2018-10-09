@@ -73,6 +73,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		store.setDefault(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), false);
 		store.setDefault(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS.getId(),
 				"-r asciidoctor-diagram\n--no-header-footer\n");
+		store.setDefault(P_SHOW_ASCIIDOC_CONSOLE_ON_OUTPUT.getId(), true);
 		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */
