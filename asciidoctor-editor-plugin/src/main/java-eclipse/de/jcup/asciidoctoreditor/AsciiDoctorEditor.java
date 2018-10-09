@@ -183,7 +183,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		this.editorTempIdentifier = System.nanoTime();
 		setSourceViewerConfiguration(createSourceViewerConfig());
 		this.modelBuilder = new AsciiDoctorScriptModelBuilder();
-		asciidoctorWrapper = new AsciiDoctorWrapper(editorTempIdentifier, AsciiDoctorEclipseLogAdapter.INSTANCE);
+		asciidoctorWrapper = new AsciiDoctorWrapper(editorTempIdentifier, AsciiDoctorEclipseLogAdapter.INSTANCE, AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor());
 
 		contentTransformer = createCustomContentTransformer();
 		if (contentTransformer == null) {
@@ -922,7 +922,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 		try {
 			outputBuildSemaphore.acquire();
 			if (initializing) {
-				File previewInitializingFile = new File(AsciiDoctorOSGIWrapper.INSTANCE.getAddonsFolder(),
+				File previewInitializingFile = new File(asciidoctorWrapper.getAddonsFolder(),
 						"html/initialize/preview_initializing.html");
 				boolean previewInitializingFileFound = false;
 				try {

@@ -33,7 +33,6 @@ import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 
 public class AsciiDoctorWrapper {
-	
 
 	private LogAdapter logAdapter;
 
@@ -41,39 +40,45 @@ public class AsciiDoctorWrapper {
 
 	private AsciiDoctorProviderContext context;
 
-	public AsciiDoctorWrapper(long tempIdentifier, LogAdapter logAdapter) {
-		if (logAdapter==null){
+	public AsciiDoctorWrapper(long tempIdentifier, LogAdapter logAdapter, boolean useInstalled) {
+		if (logAdapter == null) {
 			throw new IllegalArgumentException("log adapter may not be null!");
 		}
-		this.logAdapter=logAdapter;
+		this.logAdapter = logAdapter;
 		initTempFolderOrFail(tempIdentifier);
-		this.context = new AsciiDoctorProviderContext(AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor(), AsciiDoctorEclipseLogAdapter.INSTANCE);
+		Asciidoctor asciidoctor = null;
+		if (useInstalled) {
+			asciidoctor = new InstalledAsciidoctor();
+		} else {
+			asciidoctor = AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
+		}
+		this.context = new AsciiDoctorProviderContext(asciidoctor, AsciiDoctorEclipseLogAdapter.INSTANCE);
 		context.setOutputFolder(tempFolder);
-		
+
 	}
-	
+
 	public AsciiDoctorProviderContext getContext() {
 		return context;
 	}
 
-	public void convertToHTML(File asciiDocFile) throws Exception{
+	public void convertToHTML(File asciiDocFile) throws Exception {
 		context.setAsciidocFile(asciiDocFile);
 		AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
 		int tocLevels = preferences.getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
 		context.setTocLevels(tocLevels);
-		try{
+		try {
 			AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
 			Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions();
-			
+
 			Asciidoctor asciiDoctor = context.getAsciiDoctor();
 			asciiDoctor.convertFile(asciiDocFile, defaultOptions);
-		}catch(Exception e){
-			logAdapter.logError("Cannot convert to html:"+asciiDocFile, e);
+
+		} catch (Exception e) {
+			logAdapter.logError("Cannot convert to html:" + asciiDocFile, e);
 			throw e;
 		}
 	}
 
-	
 	/**
 	 * Resets cached values: baseDir, imagesDir
 	 */
@@ -82,14 +87,13 @@ public class AsciiDoctorWrapper {
 		context.setOutputFolder(tempFolder);
 	}
 
-	
-
 	public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(buildPrefixHTML(refreshAutomaticallyInSeconds));
 		sb.append(html);
 		if (refreshAutomaticallyInSeconds > 0) {
-			sb.append("<script type=\"text/javascript\">pageloadEvery("+refreshAutomaticallyInSeconds*1000+");</script>");
+			sb.append("<script type=\"text/javascript\">pageloadEvery(" + refreshAutomaticallyInSeconds * 1000
+					+ ");</script>");
 		}
 		sb.append("</body>");
 		sb.append("</html>");
@@ -123,8 +127,7 @@ public class AsciiDoctorWrapper {
 			prefixSb.append(createLinkToFile(file));
 		}
 		prefixSb.append("</head>\n");
-		
-		
+
 		prefixSb.append("<body ");
 		if (context.isTOCVisible()) {
 			prefixSb.append("class=\"article toc2 toc-left\">");
@@ -152,13 +155,15 @@ public class AsciiDoctorWrapper {
 	}
 
 	/**
-	 * Returns temp folder which cannot be null because of {@link #initTempFolderOrFail(long)} called on constructor time
+	 * Returns temp folder which cannot be null because of
+	 * {@link #initTempFolderOrFail(long)} called on constructor time
+	 * 
 	 * @return temp folder never <code>null</code>
 	 */
 	public Path getTempFolder() {
 		return tempFolder;
 	}
-	
+
 	public File getTempFileFor(File editorFile, TemporaryFileType type) {
 		File parent = null;
 		if (tempFolder == null) {
@@ -196,5 +201,9 @@ public class AsciiDoctorWrapper {
 
 	public boolean isTocVisible() {
 		return context.isTOCVisible();
+	}
+
+	public File getAddonsFolder() {
+		return AsciiDoctorOSGIWrapper.INSTANCE.getAddonsFolder();
 	}
 }
