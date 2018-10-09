@@ -7,3 +7,26 @@ AMAZONAPIGATEWAY(gateway,"",rectangle)
 
 @enduml
 ----
+
+[plantuml, sample-plantuml-diagram-u2, alt="Use case diagram 2"]
+----
+@startuml
+!include <cloudinsight/tomcat>
+!include <cloudinsight/kafka>
+!include <cloudinsight/java>
+!include <cloudinsight/cassandra>
+
+title Cloudinsight sprites example
+
+skinparam monochrome true
+
+rectangle "<$tomcat>\nwebapp" as webapp
+queue "<$kafka>" as kafka
+rectangle "<$java>\ndaemon" as daemon
+database "<$cassandra>" as cassandra
+
+webapp -> kafka
+kafka -> daemon
+daemon --> cassandra 
+@enduml
+---- 

@@ -25,7 +25,6 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
-import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -214,7 +213,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
 	protected void createAsciidoctorGroup(Composite composite) {
 		GridData groupLayoutData = new GridData();
-		groupLayoutData.horizontalSpan = 2;
+		groupLayoutData.horizontalSpan = 1;
 		groupLayoutData.widthHint = 400;
 
 		Group group = new Group(composite, SWT.NONE);
@@ -226,25 +225,30 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 				P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), "Use installed asciidoctor",
 				group);
 		useInstalledAsciidoctor.getDescriptionControl(group).setToolTipText(
-				"When enabled the asciidoctor will be used instead of embedded variant.\n\n"
-				+ "Using the installed version enables you to use templates,  newer asciidoctor features etc.\n\n");
+				"When enabled the installed asciidoctor will be used instead of embedded variant.\n\n"
+				+ "Using the installed version enables you to use templates,  newer asciidoctor features etc. Just setup your behaviour in CLI arguments.\n\n");
 		addField(useInstalledAsciidoctor);
 
 		MultiLineStringFieldEditor cliArguments = new MultiLineStringFieldEditor(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS.getId(),
 				"Additional\nCLI-Arguments", group);
 		cliArguments.getTextControl().setToolTipText("Setup arguments which shall be added to CLI call of installed asciidoctor instance.\n\nYou can use multiple lines.");
 		GridData data = new GridData();
-		data.verticalAlignment = SWT.CENTER;
+		data.verticalAlignment = SWT.BEGINNING;
 		data.grabExcessHorizontalSpace = true;
 		data.grabExcessVerticalSpace = true;
 		data.heightHint=75;
 		data.widthHint=250;
-		
-		cliArguments.getTextControl().setLayoutData(data);
+
+//		cliArguments.getTextControl().setLayoutData(data);
 		addField(cliArguments);
 
 		createDependency(useInstalledAsciidoctor.getChangeControl(group),
 				cliArguments.getTextControl(group));
+	
+		AccessibleBooleanFieldEditor consoleEnabled = new AccessibleBooleanFieldEditor(P_SHOW_ASCIIDOC_CONSOLE_ON_OUTPUT.getId(), "Show console when asciidoctor writes to standard error", group);
+		addField(consoleEnabled);
+		
+	
 	}
 
 	@Override
