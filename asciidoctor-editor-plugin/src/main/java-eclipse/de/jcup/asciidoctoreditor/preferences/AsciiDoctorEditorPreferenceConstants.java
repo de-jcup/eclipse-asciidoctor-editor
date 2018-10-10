@@ -49,7 +49,7 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	
 	P_INSTALLED_ASCIICDOCTOR_ARGUMENTS("installedAsciidoctorArguments"),
 	
-	P_SHOW_ASCIIDOC_CONSOLE_ON_OUTPUT("showAsciidoctorConsoleOnOutput"),
+	P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT("showConsoleOnErrorOutput"),
 	;
 
 	private String id;

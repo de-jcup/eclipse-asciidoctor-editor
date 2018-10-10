@@ -212,8 +212,8 @@ public class AsciiDoctorEditorPreferences {
 		return getStringPreference(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS);
 	}
 
-	public boolean isConsoleAlwaysShownOnOutput() {
-		return getBooleanPreference(P_SHOW_ASCIIDOC_CONSOLE_ON_OUTPUT);
+	public boolean isConsoleAlwaysShownOnError() {
+		return getBooleanPreference(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT);
 	}
 
 }

@@ -15,6 +15,13 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -32,7 +39,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin {
 	private static AsciiDoctorEditorActivator plugin;
 	private ColorManager colorManager;
 
-
+	private Map<StyledText, IConsolePageParticipant> viewers = new HashMap<StyledText, IConsolePageParticipant>();
 	/**
 	 * The constructor
 	 */
@@ -63,6 +70,25 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin {
 	 */
 	public static AsciiDoctorEditorActivator getDefault() {
 		return plugin;
+	}
+
+	public void addViewer(StyledText viewer,IConsolePageParticipant participant) {
+		viewers.put(viewer, participant);
+	}
+
+	public void removeViewerWithPageParticipant(IConsolePageParticipant participant) {
+		Set<StyledText> toRemove = new HashSet<StyledText>();
+
+		for (StyledText viewer : viewers.keySet()) {
+			if (viewers.get(viewer) == participant){
+				toRemove.add(viewer);
+			}
+		}
+
+		for (StyledText viewer : toRemove){
+			viewers.remove(viewer);
+		}
+		
 	}
 
 }
