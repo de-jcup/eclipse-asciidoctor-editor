@@ -94,7 +94,7 @@ public class InstalledAsciidoctor implements Asciidoctor {
 			commandLine.append(command);
 			commandLine.append(" ");
 		}
-		AsciiDoctorConsole.output(">> rendering:"+filename.getName());
+		AsciiDoctorConsoleUtil.output(">> rendering:"+filename.getName());
 		ProcessBuilder pb = new ProcessBuilder(commands);
 		try {
 			StringBuffer sbx=null;
@@ -107,9 +107,9 @@ public class InstalledAsciidoctor implements Asciidoctor {
 				}
 				String line = sbx.toString();
 				if (line.isEmpty()){
-					AsciiDoctorConsole.output(line);
+					AsciiDoctorConsoleUtil.output(line);
 				}else{
-					AsciiDoctorConsole.error(line);
+					AsciiDoctorConsoleUtil.error(line);
 				}
 			}
 			boolean exitdone = process.waitFor(2, TimeUnit.MINUTES);
@@ -118,14 +118,22 @@ public class InstalledAsciidoctor implements Asciidoctor {
 				exitCode=process.exitValue();
 			}
 			if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED){
-				AsciiDoctorConsole.output("Called:" + commandLine.toString());
-				AsciiDoctorConsole.output("Exitcode:"+exitCode);
+				AsciiDoctorConsoleUtil.output("Called:" + commandLine.toString());
+				AsciiDoctorConsoleUtil.output("Exitcode:"+exitCode);
 			}
 			if (exitCode>0){
 				AsciiDoctorEclipseLogAdapter.INSTANCE.logWarn("Installed Asciidoctor rendering failed for '"+filename.getName()+"'\n\nCommandLine was:\n"+commandLine.toString()+"\n\nResulted in exitcode:"+exitCode+", \nLast output:"+sbx);
+				throw new InstalledAsciidoctorException("FAILED - Asciidoctor exitcode:"+exitCode+" - last output:"+sbx);
+				
 			}
 		} catch (Exception e) {
-			AsciiDoctorEditorUtil.logError("Cannot execute installed asciidoctor\n\nCommandline was:\n"+commandLine.toString(), e);
+			if (e instanceof InstalledAsciidoctorException){
+				InstalledAsciidoctorException iae = (InstalledAsciidoctorException) e;
+				throw iae; // just rethrow
+			}else{
+				AsciiDoctorEditorUtil.logError("Cannot execute installed asciidoctor\n\nCommandline was:\n"+commandLine.toString(), e);
+				throw new InstalledAsciidoctorException("FAILED - Installed Asciidoctor instance was not executable, reason:"+e.getMessage());
+			}
 		}
 
 		return null;

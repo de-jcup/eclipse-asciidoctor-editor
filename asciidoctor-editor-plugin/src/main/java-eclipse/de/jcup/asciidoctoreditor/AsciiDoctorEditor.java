@@ -734,8 +734,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 			 */
 			StringBuilder htmlSb = new StringBuilder();
 			htmlSb.append("<h4");
-			if (e.getClass().getName().startsWith("org.asciidoctor")) {
-				htmlSb.append("AsciiDoctor error");
+			if (isAsciiDoctorError(e)) {
+				htmlSb.append("Asciidoctor error");
 			} else {
 				htmlSb.append("Unknown error");
 			}
@@ -743,17 +743,47 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
 			safeAsyncExec(() -> {
 
-				String errorMessage = e.getClass().getSimpleName() + ": " + SimpleExceptionUtils.getRootMessage(e);
+				String errorMessage = fetchAsciidoctorErrorMessage(e);
 
 				AsciiDoctorErrorBuilder builder = new AsciiDoctorErrorBuilder();
 				AsciiDoctorError error = builder.build(errorMessage);
 				browserAccess.safeBrowserSetText(htmlSb.toString());
 				AsciiDoctorEditorUtil.addScriptError(AsciiDoctorEditor.this, -1, error, IMarker.SEVERITY_ERROR);
-				AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:" + e.getMessage(), e);
+				
+				if (isLoggingNecessary(e)){
+					AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:" + e.getMessage(), e);
+				}
 			});
 
 		}
 
+	}
+
+	private boolean isLoggingNecessary(Throwable e) {
+		if (e==null || e instanceof InstalledAsciidoctorException){
+			/* InstalledAsciidoctorException is already logged */
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean isAsciiDoctorError(Throwable e) {
+		if (e==null){
+			return false;
+		}
+		boolean error= e instanceof InstalledAsciidoctorException || e.getClass().getName().startsWith("org.asciidoctor");
+		
+		return error;
+	}
+
+	protected String fetchAsciidoctorErrorMessage(Throwable e) {
+		if (e==null){
+			return null;
+		}
+		if (e instanceof InstalledAsciidoctorException){
+			return e.getMessage();
+		}
+		return e.getClass().getSimpleName() + ": " + SimpleExceptionUtils.getRootMessage(e);
 	}
 
 	/**

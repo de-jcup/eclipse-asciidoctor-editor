@@ -104,7 +104,23 @@
         <super type="org.eclipse.core.resources.textmarker"/>
         <persistent value="false"/>
     </extension>
-   
+   <extension point="org.eclipse.ui.console.consolePageParticipants">
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          CONSOLE                                     -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	<consolePageParticipant class="de.jcup.asciidoctoreditor.console.AsciiDoctorConsolePageParticipant" id="de.jcup.asciidoctor.AsciiDoctorConsolePageParticipant">
+		<enablement>
+			<instanceof value="de.jcup.asciidoctoreditor.console.AsciiDoctorConsole" />
+		</enablement>
+	</consolePageParticipant>
+  </extension>
+   <extension point="org.eclipse.ui.console.consoleFactories">
+	   <consoleFactory
+	         class="de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleFactory"
+	         icon="icons/asciidoctor-editor.png"
+	         label="Asciidoctor Console">
+	   </consoleFactory>
+   </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          CONTEXT                                     -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->

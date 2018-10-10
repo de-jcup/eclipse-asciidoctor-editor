@@ -245,7 +245,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		createDependency(useInstalledAsciidoctor.getChangeControl(group),
 				cliArguments.getTextControl(group));
 	
-		AccessibleBooleanFieldEditor consoleEnabled = new AccessibleBooleanFieldEditor(P_SHOW_ASCIIDOC_CONSOLE_ON_OUTPUT.getId(), "Show console when asciidoctor writes to standard error", group);
+		AccessibleBooleanFieldEditor consoleEnabled = new AccessibleBooleanFieldEditor(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT.getId(), "Show console when asciidoctor writes to standard error", group);
 		addField(consoleEnabled);
 		
 	
