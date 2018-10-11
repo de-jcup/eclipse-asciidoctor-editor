@@ -23,6 +23,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.JFacePreferences;
+import org.eclipse.jface.resource.ColorDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextAttribute;
@@ -54,6 +57,8 @@ import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
+import de.jcup.eclipse.commons.ui.ColorUtil;
+import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 /**
  * 
@@ -180,12 +185,25 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		addPresentation(reconciler, COMMENT.getId(), getPreferences().getColor(COLOR_COMMENT), SWT.NONE);
 		addPresentation(reconciler, ASCIIDOCTOR_COMMAND.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_COMMAND), SWT.NONE);
 		addPresentation(reconciler, HEADLINE.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_HEADLINES), SWT.BOLD);
-		addPresentation(reconciler, INCLUDE_KEYWORD.getId(), getPreferences().getColor(COLOR_INCLUDE_KEYWORD),
-				SWT.BOLD);
+		RGB managedLinkColor = fetchLinkColor();
+		if (managedLinkColor!=null){
+			addPresentation(reconciler, INCLUDE_KEYWORD.getId(), managedLinkColor, SWT.BOLD);
+		}
 		addPresentation(reconciler, KNOWN_VARIABLES.getId(), getPreferences().getColor(COLOR_KNOWN_VARIABLES),
 				SWT.BOLD);
 
 		return reconciler;
+	}
+
+	protected RGB fetchLinkColor() {
+		RGB managedLinkColor = null;
+		ColorDescriptor linkColorDescriptor = JFaceResources.getColorRegistry().getColorDescriptor(JFacePreferences.HYPERLINK_COLOR);
+		if (linkColorDescriptor!=null){
+			Color color = linkColorDescriptor.createColor(EclipseUtil.getSafeDisplay());
+			managedLinkColor = color.getRGB();
+			linkColorDescriptor.destroyColor(color);
+		}
+		return managedLinkColor;
 	}
 
 	private void addDefaultPresentation(PresentationReconciler reconciler) {

@@ -116,6 +116,7 @@ import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
+import de.jcup.eclipse.commons.ui.ColorUtil;
 
 @AdaptedFromEGradle
 public class AsciiDoctorEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
