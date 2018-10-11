@@ -34,6 +34,7 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferenceConstants;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
+import de.jcup.eclipse.commons.ui.ColorUtil;
 import de.jcup.eclipse.commons.ui.ReducedBrowserInformationControl;
 
 public class AsciiDoctorTextHover implements ITextHover, ITextHoverExtension {
