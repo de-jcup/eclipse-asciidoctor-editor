@@ -175,19 +175,21 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
+		RGB jfaceHyperlinkColor = fetchLinkColor();
 
 		addDefaultPresentation(reconciler);
 		addPresentation(reconciler, TEXT_BLOCK.getId(), getPreferences().getColor(COLOR_TEXT_BLOCKS), SWT.BOLD);
 		addPresentation(reconciler, TEXT_MONOSPACED.getId(), getPreferences().getColor(COLOR_TEXT_BLOCKS), SWT.BOLD);
-		addPresentation(reconciler, HYPERLINK.getId(), getPreferences().getColor(COLOR_HYPERLINK), SWT.NONE);
+		if (jfaceHyperlinkColor!=null){
+			addPresentation(reconciler, HYPERLINK.getId(), jfaceHyperlinkColor, SWT.NONE);
+		}
 		addPresentation(reconciler, TEXT_BOLD.getId(), getPreferences().getColor(COLOR_TEXT_BOLD), SWT.BOLD);
 		addPresentation(reconciler, TEXT_ITALIC.getId(), getPreferences().getColor(COLOR_TEXT_ITALIC), SWT.ITALIC);
 		addPresentation(reconciler, COMMENT.getId(), getPreferences().getColor(COLOR_COMMENT), SWT.NONE);
 		addPresentation(reconciler, ASCIIDOCTOR_COMMAND.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_COMMAND), SWT.NONE);
 		addPresentation(reconciler, HEADLINE.getId(), getPreferences().getColor(COLOR_ASCIIDOCTOR_HEADLINES), SWT.BOLD);
-		RGB managedLinkColor = fetchLinkColor();
-		if (managedLinkColor!=null){
-			addPresentation(reconciler, INCLUDE_KEYWORD.getId(), managedLinkColor, SWT.BOLD);
+		if (jfaceHyperlinkColor!=null){
+			addPresentation(reconciler, INCLUDE_KEYWORD.getId(), jfaceHyperlinkColor, SWT.BOLD);
 		}
 		addPresentation(reconciler, KNOWN_VARIABLES.getId(), getPreferences().getColor(COLOR_KNOWN_VARIABLES),
 				SWT.BOLD);
