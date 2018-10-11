@@ -25,7 +25,8 @@ import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import de.jcup.asciidoctoreditor.document.keywords.TooltipTextSupport;
+import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
+import de.jcup.eclipse.commons.resource.EclipseResourceInputStreamProvider;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -40,12 +41,13 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin {
 	private ColorManager colorManager;
 
 	private Map<StyledText, IConsolePageParticipant> viewers = new HashMap<StyledText, IConsolePageParticipant>();
+	
 	/**
 	 * The constructor
 	 */
 	public AsciiDoctorEditorActivator() {
 		colorManager = new ColorManager();
-		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider());
+		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
 	}
 
 	public ColorManager getColorManager() {

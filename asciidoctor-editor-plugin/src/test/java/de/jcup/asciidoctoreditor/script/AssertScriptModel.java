@@ -19,10 +19,6 @@ import static org.junit.Assert.*;
 
 import java.util.Collection;
 
-import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
-
 public class AssertScriptModel {
 
 	public static AssertScriptModel assertThat(AsciiDoctorScriptModel model) {

@@ -19,8 +19,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
-import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWords;
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 public class DocumentKeyWordsTest {
 

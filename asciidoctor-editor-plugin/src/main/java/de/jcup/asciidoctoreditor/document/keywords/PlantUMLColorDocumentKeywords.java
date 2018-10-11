@@ -15,6 +15,8 @@
  */
 package de.jcup.asciidoctoreditor.document.keywords;
 
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
+
 /**
 * 
 * PlantUMLColorDocumentKeywords is a generated java class. Please look into PlantUMLKeywordsGenerator.java

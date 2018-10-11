@@ -16,7 +16,6 @@
 package de.jcup.asciidoctoreditor.outline;
 
 import de.jcup.asciidoctoreditor.AbstractTreeViewerFilter;
-import de.jcup.asciidoctoreditor.outline.Item;
 
 class ItemTextViewerFilter extends AbstractTreeViewerFilter<Item> {
 	

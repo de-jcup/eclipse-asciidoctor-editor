@@ -28,8 +28,6 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorColorConstants;
 import de.jcup.asciidoctoreditor.ColorManager;
 import de.jcup.asciidoctoreditor.EclipseUtil;
-import de.jcup.asciidoctoreditor.outline.Item;
-import de.jcup.asciidoctoreditor.outline.ItemType;
 
 public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider {
 

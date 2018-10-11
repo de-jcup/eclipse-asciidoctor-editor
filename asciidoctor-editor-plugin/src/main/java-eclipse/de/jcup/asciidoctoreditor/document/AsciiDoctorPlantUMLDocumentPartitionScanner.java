@@ -27,13 +27,13 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
-import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLColorDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLKeywordDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLMissingKeywordDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLPreprocessorDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLSkinparameterDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLTypeDocumentKeywords;
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartitionScanner {
 

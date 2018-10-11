@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
+
 public class DocumentKeyWords {
 	private static final DocumentKeyWord[] ALL_KEYWORDS = createAllKeywords();
 	

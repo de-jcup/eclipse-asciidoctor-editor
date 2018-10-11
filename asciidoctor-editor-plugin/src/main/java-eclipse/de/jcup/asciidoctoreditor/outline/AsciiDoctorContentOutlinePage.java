@@ -38,7 +38,6 @@ import de.jcup.asciidoctoreditor.AsciiDocStringUtils;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.EclipseUtil;
-import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 
 public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements IDoubleClickListener {

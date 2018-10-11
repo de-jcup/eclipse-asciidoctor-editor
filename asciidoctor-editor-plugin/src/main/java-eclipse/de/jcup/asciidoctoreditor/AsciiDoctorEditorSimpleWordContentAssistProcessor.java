@@ -38,10 +38,10 @@ import org.eclipse.swt.graphics.Point;
 
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorIncludeKeywords;
-import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.StartLineAndHavingDoubleColonsDocumentKeyword;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 public class AsciiDoctorEditorSimpleWordContentAssistProcessor implements IContentAssistProcessor, ICompletionListener {
 

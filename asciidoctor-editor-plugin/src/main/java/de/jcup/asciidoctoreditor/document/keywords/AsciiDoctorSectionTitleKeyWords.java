@@ -15,6 +15,9 @@
  */
 package de.jcup.asciidoctoreditor.document.keywords;
 
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
+import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
+
 public enum AsciiDoctorSectionTitleKeyWords implements DocumentKeyWord {
 
 	H0("=", "Document Title", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"),
