@@ -24,7 +24,6 @@ public enum AsciiDoctorEditorSyntaxColorPreferenceConstants implements Preferenc
 	COLOR_TEXT_BLOCKS("colorTextBlocks", "Text blocks"),
 	COLOR_TEXT_BOLD("colorTextBold","Bold text"),
 	COLOR_TEXT_ITALIC("colorTextItalic","Italic"),
-	COLOR_HYPERLINK("colorHyperlink","Hyperlinks"),
 	COLOR_COMMENT("colorComments", "Comments"),
 //	COLOR_INCLUDE_KEYWORD("colorIncludeKeywords","Includes"),
 	COLOR_ASCIIDOCTOR_COMMAND("colorCommands","Special AsciiDoctor commands"),
