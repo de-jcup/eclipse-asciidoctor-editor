@@ -15,10 +15,10 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import static de.jcup.asciidoctoreditor.AsciiDocStringUtils.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import static de.jcup.asciidoctoreditor.AsciiDocStringUtils.*;
 
 public class AsciiDocStringUtilsTest {
 	

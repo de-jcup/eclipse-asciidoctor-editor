@@ -15,14 +15,9 @@
  */
  package de.jcup.asciidoctoreditor.toolbar;
 
-import java.io.File;
-
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
-import de.jcup.asciidoctoreditor.EclipseUtil;
 
 public class OpenInExternalBrowserAction extends ToolbarAction {
 	

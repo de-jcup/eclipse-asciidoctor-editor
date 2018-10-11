@@ -15,6 +15,8 @@
  */
 package de.jcup.asciidoctoreditor.document.keywords;
 
+import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
+
 public enum AsciiDoctorCommandKeyWords implements StartLineAndHavingDoubleColonsDocumentKeyword {
 
 

@@ -29,8 +29,6 @@ import de.jcup.asciidoctoreditor.AbstractTreeViewerFilter;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.FilterPatternMatcher;
-import de.jcup.asciidoctoreditor.outline.Item;
-import de.jcup.asciidoctoreditor.outline.ItemTextMatcher;
 
 /**
  * This dialog is inspired by: <a href=

@@ -19,8 +19,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import de.jcup.asciidoctoreditor.SimpleStringUtils;
-
 public class SimpleStringUtilsTest {
 
 	@Test

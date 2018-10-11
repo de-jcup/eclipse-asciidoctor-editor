@@ -15,6 +15,9 @@
  */
 package de.jcup.asciidoctoreditor.document.keywords;
 
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
+import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
+
 public enum AsciiDoctorAdmonitionBlockKeyWords implements DocumentKeyWord {
 
 	TIP("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#admon-bl"),

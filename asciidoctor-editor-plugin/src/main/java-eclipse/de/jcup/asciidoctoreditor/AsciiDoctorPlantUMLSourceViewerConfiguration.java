@@ -50,7 +50,6 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLDocumentIdentifiers;
-import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLColorDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLKeywordDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLMissingKeywordDocumentKeywords;
@@ -59,6 +58,7 @@ import de.jcup.asciidoctoreditor.document.keywords.PlantUMLSkinparameterDocument
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLTypeDocumentKeywords;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 /**
  * 

@@ -23,9 +23,6 @@ import org.eclipse.jface.text.rules.Token;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.jcup.asciidoctoreditor.document.ExactWordPatternRule;
-import de.jcup.asciidoctoreditor.document.OnlyLettersKeyWordDetector;
-
 /**
  * Sorrowly not executable by gradle because of eclipse dependencies. But
  * at least executable in eclipse environment. Tests exact word pattern rule works

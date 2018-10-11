@@ -15,6 +15,8 @@
  */
 package de.jcup.asciidoctoreditor.document.keywords;
 
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
+
 public interface StartLineAndHavingDoubleColonsDocumentKeyword extends DocumentKeyWord {
 
 }

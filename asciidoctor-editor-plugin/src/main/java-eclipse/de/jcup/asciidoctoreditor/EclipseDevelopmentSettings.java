@@ -15,8 +15,8 @@
  */
 package de.jcup.asciidoctoreditor;
 
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.System.getProperty;
+import static java.lang.Boolean.*;
+import static java.lang.System.*;
 
 public interface EclipseDevelopmentSettings {
 

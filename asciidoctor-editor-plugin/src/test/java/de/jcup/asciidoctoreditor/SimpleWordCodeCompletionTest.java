@@ -23,8 +23,6 @@ import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import de.jcup.asciidoctoreditor.SimpleWordCodeCompletion;
 public class SimpleWordCodeCompletionTest {
 
 	private SimpleWordCodeCompletion completionToTest;

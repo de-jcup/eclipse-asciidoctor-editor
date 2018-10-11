@@ -28,4 +28,5 @@ Import-Package: org.apache.commons.io,
  org.eclipse.ui.texteditor.spelling,
  org.jruby,
  org.jruby.javasupport
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/de-jcup-eclipse-commons.jar

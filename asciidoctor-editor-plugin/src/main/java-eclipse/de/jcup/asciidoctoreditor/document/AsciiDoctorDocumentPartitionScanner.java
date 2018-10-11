@@ -30,7 +30,7 @@ import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorAdmonitionParagrap
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorIncludeKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
-import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWord;
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScanner {
 

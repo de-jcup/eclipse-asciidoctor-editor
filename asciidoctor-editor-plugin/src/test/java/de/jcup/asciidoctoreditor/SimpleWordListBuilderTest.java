@@ -23,8 +23,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.jcup.asciidoctoreditor.SimpleWordListBuilder;
-
 public class SimpleWordListBuilderTest {
 
 	private SimpleWordListBuilder builderToTest;
