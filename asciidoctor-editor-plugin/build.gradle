@@ -3,7 +3,9 @@ dependencies {
     compile 'org.asciidoctor:asciidoctorj-diagram:1.5.4.1'
     compile 'commons-io:commons-io:2.4'
 	compile 'org.jruby:jruby-complete:1.7.13'
+    compile fileTree(dir: 'lib', include: '*.jar')
 }
+
 
 /**
  * Important: Only necessary when new asciidoctorj /jruby dependencies are necessary!
