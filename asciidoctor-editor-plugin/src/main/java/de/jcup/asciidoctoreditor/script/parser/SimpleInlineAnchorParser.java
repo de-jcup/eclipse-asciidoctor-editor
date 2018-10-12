@@ -45,12 +45,12 @@ public class SimpleInlineAnchorParser {
 			if (current != null) {
 				current.append(c);
 				if (current.length() == 1 && current.charAt(0) != '[') {
-					// short break - line must start with [[, otherwise no
-					// include
+					// short break - line must start with [[/[#, otherwise no
+					// anchor
 					current = null;
-				} else if (current.length() == 2 && current.charAt(1) != '[') {
-					// short break - line must start with [[, otherwise no
-					// include
+				} else if (current.length() == 2 && (current.charAt(1) != '[' && current.charAt(1) != '#')) {
+					// short break - line must start with [[/[#, otherwise no
+					// anchor
 					current = null;
 				}
 			}
@@ -88,6 +88,8 @@ public class SimpleInlineAnchorParser {
 		}
 		String anchor = identified.trim();
 		if (anchor.startsWith("[[") && anchor.endsWith("]]")) {
+			return anchor;
+		}else if (anchor.startsWith("[#") && anchor.endsWith("]")) {
 			return anchor;
 		}
 		return null;
