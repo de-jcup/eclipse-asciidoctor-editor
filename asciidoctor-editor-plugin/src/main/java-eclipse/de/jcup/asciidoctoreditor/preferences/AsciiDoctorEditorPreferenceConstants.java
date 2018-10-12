@@ -48,6 +48,8 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	P_USE_INSTALLED_ASCIIDOCTOR_ENABLED("useInstalledAsciidoctorEnabled"),
 	
 	P_INSTALLED_ASCIICDOCTOR_ARGUMENTS("installedAsciidoctorArguments"),
+
+	P_PATH_TO_INSTALLED_ASCIICDOCTOR("pathToInstalledAsciidoctor"),
 	
 	P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT("showConsoleOnErrorOutput"),
 	;

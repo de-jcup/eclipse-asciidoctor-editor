@@ -60,7 +60,7 @@ public class MultiLineStringFieldEditor extends FieldEditor {
     /**
      * The text field, or <code>null</code> if none.
      */
-    Text textField;
+    Text  textField;
 
     /**
      * Width of text field in characters; initially unlimited.
@@ -291,7 +291,7 @@ public class MultiLineStringFieldEditor extends FieldEditor {
      * @return the text control, or <code>null</code> if no
      * text field is created yet
      */
-    protected Text getTextControl() {
+    protected Text  getTextControl() {
         return textField;
     }
 
@@ -304,9 +304,9 @@ public class MultiLineStringFieldEditor extends FieldEditor {
      * @param parent the parent
      * @return the text control
      */
-    public Text getTextControl(Composite parent) {
+    public Text  getTextControl(Composite parent) {
         if (textField == null) {
-            textField = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
+            textField = new Text (parent, SWT.MULTI |SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
             textField.setFont(parent.getFont());
             switch (validateStrategy) {
             case VALIDATE_ON_KEY_STROKE:
