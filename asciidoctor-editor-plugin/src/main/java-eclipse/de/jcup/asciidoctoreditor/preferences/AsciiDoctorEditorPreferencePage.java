@@ -25,7 +25,10 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
+import org.eclipse.jface.preference.JFacePreferences;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -40,6 +43,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.asciidoctoreditor.PreviewLayout;
 import de.jcup.asciidoctoreditor.presentation.AccessibleBooleanFieldEditor;
+import de.jcup.asciidoctoreditor.presentation.AccessibleDirectoryFieldEditor;
 
 /**
  * Parts are inspired by <a href=
@@ -54,13 +58,12 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	protected static final int INDENT = 20;
 
 	protected static void indent(Control control) {
-		((GridData) control.getLayoutData()).horizontalIndent += INDENT;
+		if (control.getLayoutData() instanceof GridData){
+			((GridData) control.getLayoutData()).horizontalIndent += INDENT;
+		}
 	}
 
-	// private BooleanFieldEditor linkEditorWithOutline;
-
 	private ArrayList<MasterButtonSlaveSelectionListener> masterSlaveListeners = new ArrayList<>();
-
 
 	public AsciiDoctorEditorPreferencePage() {
 		super(GRID);
@@ -75,8 +78,8 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	@Override
 	public void performDefaults() {
 		super.performDefaults();
-		masterSlaveListeners.forEach( (a)->a.updateSlaveComponent());
-		
+		masterSlaveListeners.forEach((a) -> a.updateSlaveComponent());
+
 	}
 
 	@Override
@@ -84,10 +87,14 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		boolean ok = super.performOk();
 		return ok;
 	}
-
 	protected void createDependency(Button master, Control slave) {
+		createDependency(master, slave,true);
+	}
+	protected void createDependency(Button master, Control slave, boolean indent) {
 		Assert.isNotNull(slave);
-		indent(slave);
+		if (indent){
+			indent(slave);
+		}
 		MasterButtonSlaveSelectionListener listener = new MasterButtonSlaveSelectionListener(master, slave);
 		master.addSelectionListener(listener);
 		this.masterSlaveListeners.add(listener);
@@ -102,14 +109,14 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		createAsciidoctorGroup(composite);
 		createSpacer(composite);
 		createCodeAssistencGroup(composite);
-		
+
 	}
 
 	protected Composite createComposite() {
 		Composite composite = new Composite(getFieldEditorParent(), SWT.NONE);
 		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
 		composite.setLayout(layout);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		return composite;
 	}
 
@@ -122,30 +129,33 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	}
 
 	protected void createCodeAssistencGroup(Composite composite) {
-
-		GridData codeAssistGroupLayoutData = new GridData();
-		codeAssistGroupLayoutData.horizontalSpan = 2;
-		codeAssistGroupLayoutData.widthHint = 400;
-
 		Group codeAssistGroup = new Group(composite, SWT.NONE);
 		codeAssistGroup.setText("Code assistence");
 		codeAssistGroup.setLayout(new GridLayout());
-		codeAssistGroup.setLayoutData(codeAssistGroupLayoutData);
+		codeAssistGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		BooleanFieldEditor codeAssistWithAsciiDoctorKeywords = new BooleanFieldEditor(P_CODE_ASSIST_ADD_KEYWORDS.getId(),
-				"AsciiDoctor keywords", codeAssistGroup);
-		codeAssistWithAsciiDoctorKeywords.getDescriptionControl(codeAssistGroup).setToolTipText(
+		// why devNull ? because of layout problems on field editors + groups.
+		// See
+		// https://stackoverflow.com/questions/490015/layout-problems-in-fieldeditorpreferencepage
+		Composite devNull = new Composite(codeAssistGroup, SWT.NONE);
+
+		BooleanFieldEditor codeAssistWithAsciiDoctorKeywords = new BooleanFieldEditor(
+				P_CODE_ASSIST_ADD_KEYWORDS.getId(), "AsciiDoctor keywords", devNull);
+		codeAssistWithAsciiDoctorKeywords.getDescriptionControl(devNull).setToolTipText(
 				"When enabled the standard keywords supported by asciidoctor editor are always automatically available as code proposals");
 		addField(codeAssistWithAsciiDoctorKeywords);
 
-		BooleanFieldEditor codeAssistWithSimpleWords = new BooleanFieldEditor(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(), "Existing words",
-				codeAssistGroup);
-		codeAssistWithSimpleWords.getDescriptionControl(codeAssistGroup).setToolTipText(
+		devNull = new Composite(codeAssistGroup, SWT.NONE);
+		BooleanFieldEditor codeAssistWithSimpleWords = new BooleanFieldEditor(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(),
+				"Existing words", devNull);
+		codeAssistWithSimpleWords.getDescriptionControl(devNull).setToolTipText(
 				"When enabled the current source will be scanned for words. The existing words will be available as code proposals");
 		addField(codeAssistWithSimpleWords);
 
-		BooleanFieldEditor toolTipsEnabled = new BooleanFieldEditor(P_TOOLTIPS_ENABLED.getId(), "Tooltips for keywords", codeAssistGroup);
-		toolTipsEnabled.getDescriptionControl(codeAssistGroup)
+		devNull = new Composite(codeAssistGroup, SWT.NONE);
+		BooleanFieldEditor toolTipsEnabled = new BooleanFieldEditor(P_TOOLTIPS_ENABLED.getId(), "Tooltips for keywords",
+				devNull);
+		toolTipsEnabled.getDescriptionControl(devNull)
 				.setToolTipText("When enabled tool tips will occure for keywords");
 		addField(toolTipsEnabled);
 	}
@@ -157,96 +167,122 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		uiLayout.marginHeight = 0;
 		uiComposite.setLayout(uiLayout);
 
+		uiComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		Composite devNull = new Composite(uiComposite, SWT.NONE);
 		String[][] entryNamesAndValues = new String[][] { new String[] { "Vertical", PreviewLayout.VERTICAL.getId() },
 				new String[] { "Horizontal", PreviewLayout.HORIZONTAL.getId() },
 				new String[] { "Hide preview, use external browser", PreviewLayout.EXTERNAL_BROWSER.getId() } };
 		/* @formatter:on */
 		ComboFieldEditor previewDefaultTypeRadioButton = new ComboFieldEditor(P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT.getId(),
-				"Default preview layout", entryNamesAndValues, uiComposite);
+				"Default preview layout", entryNamesAndValues, devNull);
 
 		addField(previewDefaultTypeRadioButton);
 
-		IntegerFieldEditor tocLevels = new IntegerFieldEditor(P_EDITOR_TOC_LEVELS.getId(), "TOC levels shown in preview", uiComposite);
+		devNull = new Composite(uiComposite, SWT.NONE);
+		IntegerFieldEditor tocLevels = new IntegerFieldEditor(P_EDITOR_TOC_LEVELS.getId(),
+				"TOC levels shown in preview", devNull);
 		tocLevels.setValidRange(0, 7);
 		tocLevels.setTextLimit(1);
-		tocLevels.getLabelControl(uiComposite).setToolTipText(
+		tocLevels.getLabelControl(devNull).setToolTipText(
 				"0 keeps defaults from asciidoctor, other will set the wanted depth for TOC on preview only!");
 
 		addField(tocLevels);
-		
-		BooleanFieldEditor linkEditorWithPreviewEnabled = new BooleanFieldEditor(P_LINK_EDITOR_WITH_PREVIEW.getId(), "Link editor with internal preview", uiComposite);
-		linkEditorWithPreviewEnabled.getDescriptionControl(uiComposite)
-		.setToolTipText("When enabled editor caret movements are scrolled in internal preview.\n"
-				+ "This works only in some situations e.g. when cursor moves to a headline");
+
+		devNull = new Composite(uiComposite, SWT.NONE);
+		BooleanFieldEditor linkEditorWithPreviewEnabled = new BooleanFieldEditor(P_LINK_EDITOR_WITH_PREVIEW.getId(),
+				"Link editor with internal preview", devNull);
+		linkEditorWithPreviewEnabled.getDescriptionControl(devNull)
+				.setToolTipText("When enabled editor caret movements are scrolled in internal preview.\n"
+						+ "This works only in some situations e.g. when cursor moves to a headline");
 		addField(linkEditorWithPreviewEnabled);
 	}
 
 	protected void createExternalPreviewParts(Composite composite) {
-		GridData externalPreviewGroupLayoutData = new GridData();
-		externalPreviewGroupLayoutData.horizontalSpan = 2;
-		externalPreviewGroupLayoutData.widthHint = 400;
-
 		Group externalPreviewGroup = new Group(composite, SWT.NONE);
 		externalPreviewGroup.setText("External preview");
 		externalPreviewGroup.setLayout(new GridLayout());
-		externalPreviewGroup.setLayoutData(externalPreviewGroupLayoutData);
+		externalPreviewGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
+		Composite devNull1 = new Composite(externalPreviewGroup, SWT.NONE);
 		AccessibleBooleanFieldEditor autobuildForExternalPreviewEnabled = new AccessibleBooleanFieldEditor(
-				P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED.getId(), "Auto build for external preview",
-				externalPreviewGroup);
-		autobuildForExternalPreviewEnabled.getDescriptionControl(externalPreviewGroup).setToolTipText(
+				P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED.getId(), "Auto build for external preview", devNull1);
+		autobuildForExternalPreviewEnabled.getDescriptionControl(devNull1).setToolTipText(
 				"When enabled the asciidoctor integration will be called on every change in document. As done in internal previews.\n\n"
-				+ "If disabled only a click to 'refresh' or 'show in external browser' buttons inside the toolbar will rebuild the document.\n\n");
+						+ "If disabled only a click to 'refresh' or 'show in external browser' buttons inside the toolbar will rebuild the document.\n\n");
 		addField(autobuildForExternalPreviewEnabled);
 
-		IntegerFieldEditor autorefreshSeconds = new IntegerFieldEditor(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(),
-				"Auto refresh in external preview (in seconds)", externalPreviewGroup);
+		Composite devNull2 = new Composite(externalPreviewGroup, SWT.NONE);
+		IntegerFieldEditor autorefreshSeconds = new IntegerFieldEditor(
+				P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(),
+				"Auto refresh in external preview (in seconds)", devNull2);
 		autorefreshSeconds.setValidRange(0, 30);
 		autorefreshSeconds.setTextLimit(2);
-		autorefreshSeconds.getLabelControl(externalPreviewGroup)
-				.setToolTipText("0 will turn off auto refresh for external previews.\n\nIf auto build has been disabled, this value will be ignored!");
+		autorefreshSeconds.getLabelControl(devNull2).setToolTipText(
+				"0 will turn off auto refresh for external previews.\n\nIf auto build has been disabled, this value will be ignored!");
 		addField(autorefreshSeconds);
 
-		createDependency(autobuildForExternalPreviewEnabled.getChangeControl(externalPreviewGroup),
-				autorefreshSeconds.getTextControl(externalPreviewGroup));
+		createDependency(autobuildForExternalPreviewEnabled.getChangeControl(devNull1),
+				autorefreshSeconds.getTextControl(devNull2));
 	}
 
 	protected void createAsciidoctorGroup(Composite composite) {
-		GridData groupLayoutData = new GridData();
-		groupLayoutData.horizontalSpan = 1;
-		groupLayoutData.widthHint = 400;
 
 		Group group = new Group(composite, SWT.NONE);
 		group.setText("Asciidoctor");
-		group.setLayout(new GridLayout());
-		group.setLayoutData(groupLayoutData);
+		group.setLayout(new GridLayout(1,false));
+		group.setLayoutData(new GridData(SWT.FILL,SWT.TOP, true,false));
 
+		Composite devNull1 = new Composite(group,SWT.NONE);
 		AccessibleBooleanFieldEditor useInstalledAsciidoctor = new AccessibleBooleanFieldEditor(
 				P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), "Use installed asciidoctor",
-				group);
-		useInstalledAsciidoctor.getDescriptionControl(group).setToolTipText(
+				devNull1);
+		useInstalledAsciidoctor.getDescriptionControl(devNull1).setToolTipText(
 				"When enabled the installed asciidoctor will be used instead of embedded variant.\n\n"
 				+ "Using the installed version enables you to use templates,  newer asciidoctor features etc. Just setup your behaviour in CLI arguments.\n\n");
 		addField(useInstalledAsciidoctor);
+		
+		Composite group2 = new Composite(group,SWT.NONE);
+		GridData group2Data = new GridData(SWT.FILL,SWT.TOP, true,false);
+		group2.setLayoutData(group2Data);
+		group2.setLayout(new GridLayout());
 
+//		Composite devNull2a = new Composite(group2,SWT.NONE);
+//		AccessibleDirectoryFieldEditor pathToAsciidocFieldEditor = new AccessibleDirectoryFieldEditor(P_PATH_TO_INSTALLED_ASCIICDOCTOR.getId(),
+//				"Path to Asciidoctor", devNull2a);
+//		devNull2a.setLayout(new GridLayout());
+//		devNull2a.setLayoutData(new GridData(SWT.FILL,SWT.TOP, true,false));  
+//		
+//		addField(pathToAsciidocFieldEditor);
+//		
+//		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+//				pathToAsciidocFieldEditor.getTextControl(devNull2a));
+//		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+//				pathToAsciidocFieldEditor.getLabelControl(devNull2a));
+//		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+//				pathToAsciidocFieldEditor.getChangeControl(devNull2a));
+		
+		Composite devNull2 = new Composite(group2,SWT.NONE);
 		MultiLineStringFieldEditor cliArguments = new MultiLineStringFieldEditor(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS.getId(),
-				"Additional\nCLI-Arguments", group);
+				"Custom arguments for Asciidoctor CLI call", devNull2);
 		cliArguments.getTextControl().setToolTipText("Setup arguments which shall be added to CLI call of installed asciidoctor instance.\n\nYou can use multiple lines.");
-		GridData data = new GridData();
-		data.verticalAlignment = SWT.BEGINNING;
-		data.grabExcessHorizontalSpace = true;
-		data.grabExcessVerticalSpace = true;
-		data.heightHint=75;
-		data.widthHint=250;
-
-//		cliArguments.getTextControl().setLayoutData(data);
+		GridData cliTextLayoutData = new GridData(SWT.FILL,SWT.TOP, true,false);
+		cliArguments.getTextControl().setLayoutData(cliTextLayoutData);
+		devNull2.setLayoutData(new GridData(SWT.FILL,SWT.TOP, true,false));
+		devNull2.setLayout(new GridLayout());
 		addField(cliArguments);
 
-		createDependency(useInstalledAsciidoctor.getChangeControl(group),
-				cliArguments.getTextControl(group));
-	
-		AccessibleBooleanFieldEditor consoleEnabled = new AccessibleBooleanFieldEditor(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT.getId(), "Show console when asciidoctor writes to standard error", group);
-		addField(consoleEnabled);
+		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+				cliArguments.getTextControl(devNull2),false);
+		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+				cliArguments.getLabelControl(devNull2),false);
+		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+				group2,false);
+		
+		Composite devNull3 = new Composite(group2,SWT.NONE);
+		AccessibleBooleanFieldEditor consoleEnabled = new AccessibleBooleanFieldEditor(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT.getId(), "Show console when asciidoctor writes to standard error", devNull3);
+		addField(consoleEnabled);	
+		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+				consoleEnabled.getChangeControl(devNull3),false);
 		
 	
 	}
@@ -287,8 +323,6 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 			listener.updateSlaveComponent();
 		}
 	}
-	
-	
 
 	private class MasterButtonSlaveSelectionListener implements SelectionListener {
 		private Button master;
