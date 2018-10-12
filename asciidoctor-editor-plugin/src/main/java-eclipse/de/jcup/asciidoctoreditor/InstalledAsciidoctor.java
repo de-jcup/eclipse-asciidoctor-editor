@@ -49,12 +49,72 @@ public class InstalledAsciidoctor implements Asciidoctor {
 	@Override
 	public String convertFile(File filename, Map<String, Object> options) {
 
+		List<String> commands = buildCommands(filename, options);
+		String commandLineString = createCommandLineString(commands);
+		
+		ProcessBuilder pb = new ProcessBuilder(commands);
+		AsciiDoctorConsoleUtil.output(">> rendering:"+filename.getName());
+		try {
+			StringBuffer lineStringBuffer=null;
+			Process process = pb.start();
+			try (InputStream is = process.getErrorStream();) {
+				int c;
+				lineStringBuffer = new StringBuffer();
+				while ((c = is.read()) != -1) {
+					lineStringBuffer.append((char) c);
+				}
+				String line = lineStringBuffer.toString();
+				if (line.isEmpty()){
+					AsciiDoctorConsoleUtil.output(line);
+				}else{
+					AsciiDoctorConsoleUtil.error(line);
+				}
+			}
+			boolean exitdone = process.waitFor(2, TimeUnit.MINUTES);
+			int exitCode =-1;
+			if (exitdone){
+				exitCode=process.exitValue();
+			}
+			if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED){
+				AsciiDoctorConsoleUtil.output("Called:" + commandLineString);
+				AsciiDoctorConsoleUtil.output("Exitcode:"+exitCode);
+			}
+			if (exitCode>0){
+				AsciiDoctorEclipseLogAdapter.INSTANCE.logWarn("Installed Asciidoctor rendering failed for '"+filename.getName()+"'\n\nCommandLine was:\n"+commandLineString+"\n\nResulted in exitcode:"+exitCode+", \nLast output:"+lineStringBuffer);
+				throw new InstalledAsciidoctorException("FAILED - Asciidoctor exitcode:"+exitCode+" - last output:"+lineStringBuffer);
+				
+			}
+		} catch (Exception e) {
+			if (e instanceof InstalledAsciidoctorException){
+				InstalledAsciidoctorException iae = (InstalledAsciidoctorException) e;
+				throw iae; // already an exception from installed asciidoctor so just re-throw
+			}else{
+				AsciiDoctorEditorUtil.logError("Cannot execute installed asciidoctor\n\nCommandline was:\n"+commandLineString, e);
+				throw new InstalledAsciidoctorException("FAILED - Installed Asciidoctor instance was not executable, reason:"+e.getMessage());
+			}
+		}
+
+		return null;
+	}
+
+	protected String createCommandLineString(List<String> commands) {
+		StringBuilder commandLine = new StringBuilder();
+		for (String command : commands) {
+			commandLine.append(command);
+			commandLine.append(" ");
+		}
+		String commandLineString = commandLine.toString();
+		return commandLineString;
+	}
+
+	protected List<String> buildCommands(File filename, Map<String, Object> options) {
 		List<String> commands = new ArrayList<String>();
 		if (OSUtil.isWindows()) {
 			commands.add("cmd.exe");
 			commands.add("/C");
 		}
-		commands.add("asciidoctor");
+		String asciidoctorCall = createAsciidoctorCall();
+		commands.add(asciidoctorCall);
 
 		String outDir = null;
 
@@ -89,56 +149,23 @@ public class InstalledAsciidoctor implements Asciidoctor {
 		}
 
 		commands.add(toWindowsSafeVariant(filename.getAbsolutePath()));
-		StringBuilder commandLine = new StringBuilder();
-		for (String command : commands) {
-			commandLine.append(command);
-			commandLine.append(" ");
-		}
-		AsciiDoctorConsoleUtil.output(">> rendering:"+filename.getName());
-		ProcessBuilder pb = new ProcessBuilder(commands);
-		try {
-			StringBuffer sbx=null;
-			Process process = pb.start();
-			try (InputStream is = process.getErrorStream();) {
-				int c;
-				sbx = new StringBuffer();
-				while ((c = is.read()) != -1) {
-					sbx.append((char) c);
-				}
-				String line = sbx.toString();
-				if (line.isEmpty()){
-					AsciiDoctorConsoleUtil.output(line);
-				}else{
-					AsciiDoctorConsoleUtil.error(line);
-				}
-			}
-			boolean exitdone = process.waitFor(2, TimeUnit.MINUTES);
-			int exitCode =-1;
-			if (exitdone){
-				exitCode=process.exitValue();
-			}
-			if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED){
-				AsciiDoctorConsoleUtil.output("Called:" + commandLine.toString());
-				AsciiDoctorConsoleUtil.output("Exitcode:"+exitCode);
-			}
-			if (exitCode>0){
-				AsciiDoctorEclipseLogAdapter.INSTANCE.logWarn("Installed Asciidoctor rendering failed for '"+filename.getName()+"'\n\nCommandLine was:\n"+commandLine.toString()+"\n\nResulted in exitcode:"+exitCode+", \nLast output:"+sbx);
-				throw new InstalledAsciidoctorException("FAILED - Asciidoctor exitcode:"+exitCode+" - last output:"+sbx);
-				
-			}
-		} catch (Exception e) {
-			if (e instanceof InstalledAsciidoctorException){
-				InstalledAsciidoctorException iae = (InstalledAsciidoctorException) e;
-				throw iae; // just rethrow
-			}else{
-				AsciiDoctorEditorUtil.logError("Cannot execute installed asciidoctor\n\nCommandline was:\n"+commandLine.toString(), e);
-				throw new InstalledAsciidoctorException("FAILED - Installed Asciidoctor instance was not executable, reason:"+e.getMessage());
-			}
-		}
-
-		return null;
+		return commands;
 	}
 
+	protected String createAsciidoctorCall() {
+		StringBuilder sb = new StringBuilder();
+		String path =AsciiDoctorEditorPreferences.getInstance().getPathToInstalledAsciidoctor();
+		if (path!=null && !path.trim().isEmpty()){
+			sb.append(path);
+			if (! path.endsWith(File.separator)){
+				sb.append(File.separator);
+			}
+		}
+		sb.append("asciidoctor");
+		String callPath = sb.toString();
+		return callPath;
+	}
+	
 	private String toWindowsSafeVariant(Object obj) {
 		String command = "" + obj;
 		boolean windowsPath = command.indexOf('\\') != -1;

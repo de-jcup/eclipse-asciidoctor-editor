@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
+import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
-import org.eclipse.jface.preference.JFacePreferences;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -64,12 +64,19 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	}
 
 	private ArrayList<MasterButtonSlaveSelectionListener> masterSlaveListeners = new ArrayList<>();
+	private AccessibleDirectoryFieldEditor pathToAsciidocFieldEditor;
 
 	public AsciiDoctorEditorPreferencePage() {
 		super(GRID);
 		setPreferenceStore(getPreferences().getPreferenceStore());
 	}
 
+	@Override
+	protected Control createContents(Composite parent) {
+		Control control = super.createContents(parent);
+		return control;
+	}
+	
 	@Override
 	public void init(IWorkbench workbench) {
 
@@ -78,13 +85,16 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 	@Override
 	public void performDefaults() {
 		super.performDefaults();
+		pathToAsciidocFieldEditor.setStringValue("");
 		masterSlaveListeners.forEach((a) -> a.updateSlaveComponent());
-
+		
 	}
 
 	@Override
 	public boolean performOk() {
 		boolean ok = super.performOk();
+		// we handle the directory field special, not added as field, so setting default in this way
+		AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR,pathToAsciidocFieldEditor.getStringValue());
 		return ok;
 	}
 	protected void createDependency(Button master, Control slave) {
@@ -225,6 +235,15 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 				autorefreshSeconds.getTextControl(devNull2));
 	}
 
+	@Override
+	protected void checkState() {
+		super.checkState();
+		// we handle the directory field special, not added as field, so validating value in this way
+		if (! pathToAsciidocFieldEditor.checkState()) {
+			setValid(false);
+		}
+	}
+	
 	protected void createAsciidoctorGroup(Composite composite) {
 
 		Group group = new Group(composite, SWT.NONE);
@@ -246,22 +265,42 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		group2.setLayoutData(group2Data);
 		group2.setLayout(new GridLayout());
 
-//		Composite devNull2a = new Composite(group2,SWT.NONE);
-//		AccessibleDirectoryFieldEditor pathToAsciidocFieldEditor = new AccessibleDirectoryFieldEditor(P_PATH_TO_INSTALLED_ASCIICDOCTOR.getId(),
-//				"Path to Asciidoctor", devNull2a);
-//		devNull2a.setLayout(new GridLayout());
-//		devNull2a.setLayoutData(new GridData(SWT.FILL,SWT.TOP, true,false));  
-//		
-//		addField(pathToAsciidocFieldEditor);
-//		
-//		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
-//				pathToAsciidocFieldEditor.getTextControl(devNull2a));
-//		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
-//				pathToAsciidocFieldEditor.getLabelControl(devNull2a));
-//		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
-//				pathToAsciidocFieldEditor.getChangeControl(devNull2a));
+		Composite devNull2a = new Composite(group2,SWT.NONE);
+		pathToAsciidocFieldEditor = new AccessibleDirectoryFieldEditor(P_PATH_TO_INSTALLED_ASCIICDOCTOR.getId(),
+				"Path to Asciidoctor", devNull2a);
+		pathToAsciidocFieldEditor.getTextControl(devNull2a).setMessage("Not defined");
+		pathToAsciidocFieldEditor.getTextControl(devNull2a).setToolTipText("If not defined, installed asciidoctor instance must\nbe available from PATH in environment - otherwise it must be a valid directory.");
+		pathToAsciidocFieldEditor.setEmptyStringAllowed(true);
+		pathToAsciidocFieldEditor.setErrorMessage("Invalid path to installed Asciidoctor");
+		devNull2a.setLayout(new GridLayout(3,false));
+		devNull2a.setLayoutData(new GridData(SWT.FILL,SWT.TOP, true,false));  
+		
+		
+//		not:addField(pathToAsciidocFieldEditor); >>>> when not adding field as field editor it looks good. so text must be set to preferences by special code * field editors s...cks!
+		pseudoAddField(pathToAsciidocFieldEditor);
+		pathToAsciidocFieldEditor.getTextControl(devNull2a).addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				/* when focus lost we must check */
+				checkState();
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				
+			}
+		});
+
+		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+				pathToAsciidocFieldEditor.getTextControl(devNull2a),false);
+		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+				pathToAsciidocFieldEditor.getLabelControl(devNull2a),false);
+		createDependency(useInstalledAsciidoctor.getChangeControl(devNull1),
+				pathToAsciidocFieldEditor.getChangeControl(devNull2a),false);
 		
 		Composite devNull2 = new Composite(group2,SWT.NONE);
+		
 		MultiLineStringFieldEditor cliArguments = new MultiLineStringFieldEditor(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS.getId(),
 				"Custom arguments for Asciidoctor CLI call", devNull2);
 		cliArguments.getTextControl().setToolTipText("Setup arguments which shall be added to CLI call of installed asciidoctor instance.\n\nYou can use multiple lines.");
@@ -285,6 +324,14 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 				consoleEnabled.getChangeControl(devNull3),false);
 		
 	
+	}
+
+	private void pseudoAddField(FieldEditor pe) {
+		 pe.setPage(this);
+         pe.setPropertyChangeListener(this);
+         pe.setPreferenceStore(getPreferenceStore());
+         pe.load();
+		
 	}
 
 	@Override
