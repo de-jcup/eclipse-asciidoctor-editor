@@ -135,6 +135,12 @@ public class AsciiDoctorEditorPreferences {
 	public void setBooleanPreference(AsciiDoctorEditorPreferenceConstants id, boolean value) {
 		getPreferenceStore().setValue(id.getId(), value);
 	}
+	
+
+	public void setStringPreference(AsciiDoctorEditorPreferenceConstants id,
+			String value) {
+		getPreferenceStore().setValue(id.getId(), value);
+	}
 
 	public boolean isLinkOutlineWithEditorEnabled() {
 		return getBooleanPreference(P_LINK_OUTLINE_WITH_EDITOR);
@@ -215,5 +221,10 @@ public class AsciiDoctorEditorPreferences {
 	public boolean isConsoleAlwaysShownOnError() {
 		return getBooleanPreference(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT);
 	}
+
+	public String getPathToInstalledAsciidoctor() {
+		return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR);
+	}
+
 
 }
