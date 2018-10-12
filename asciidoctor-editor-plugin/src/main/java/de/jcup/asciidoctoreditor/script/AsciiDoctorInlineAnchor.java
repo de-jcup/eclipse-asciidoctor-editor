@@ -26,23 +26,30 @@ public class AsciiDoctorInlineAnchor {
 		this.label = text;
 		this.end = end;
 		this.position = position;
-		
+
 		this.id = createIDByLabel();
 	}
 
 	private String createIDByLabel() {
-		if (label==null){
+		if (label == null) {
 			return null;
 		}
-		if (!label.startsWith("[[")){
-			return "illegal-nostart-"+System.nanoTime();
+		if (label.startsWith("[[")){
+			if (! label.endsWith("]]")){
+				return "illegal-noend-" + System.nanoTime(); 
+			}
+			return label.substring(2, label.length() - 2);
+		}else if (label.startsWith("[#")){
+			if ( label.endsWith("]]")){
+				return "illegal-noend-" + System.nanoTime(); 
+			}
+			if (!label.endsWith("]")){
+				return "illegal-noend-" + System.nanoTime(); 
+			}
+			return label.substring(2, label.length() - 1);
 		}
-		if (!label.endsWith("]]")){
-			return "illegal-noend-"+System.nanoTime();
-		}
-		return label.substring(2,label.length()-2);
+		return "illegal-nostart-" + System.nanoTime(); 
 	}
-
 
 	public String getLabel() {
 		return label;
