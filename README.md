@@ -6,7 +6,7 @@
 
 # In a nutshell
 
-This an eclipse plugin for editing asciidoctor files
+This an Eclipse plugin for editing .asciidoc (as well as .plantuml, .ditaa) files
 
 Features:
 
