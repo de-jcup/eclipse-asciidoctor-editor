@@ -6,7 +6,9 @@
 
 # In a nutshell
 
-This an eclipse plugin for editing asciidoctor files
+This an Eclipse plugin for editing [AsciiDoc](https://asciidoctor.org) files (`.adoc`, `.asciidoc`).  
+In addition it adds editors [PlantUML](http://plantuml.com/) (`.plantuml`,`.pu`,`.puml`,`.iuml`) 
+and [DITAA](http://ditaa.sourceforge.net/) (`.ditaa`) files as well.
 
 Features:
 
