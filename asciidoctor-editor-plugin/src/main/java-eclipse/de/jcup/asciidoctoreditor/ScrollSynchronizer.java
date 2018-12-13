@@ -72,14 +72,7 @@ public class ScrollSynchronizer {
 			return;
 		}
 		
-		StringBuilder sb = new StringBuilder();
-		sb.append("document.getElementById('");
-		sb.append(anchorId);
-		sb.append("').scrollIntoView();");
-
-		String javascript = sb.toString();
-
-		editor.browserAccess.safeBrowserExecuteJavascript(javascript);
+		editor.browserAccess.safeBrowserExecuteJavascript("doScrollTo('"+anchorId+"')");
 	}
 
 }

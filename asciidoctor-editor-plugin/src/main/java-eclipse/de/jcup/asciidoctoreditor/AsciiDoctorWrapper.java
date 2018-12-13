@@ -95,6 +95,14 @@ public class AsciiDoctorWrapper {
 			sb.append("<script type=\"text/javascript\">pageloadEvery(" + refreshAutomaticallyInSeconds * 1000
 					+ ");</script>");
 		}
+        sb.append("<script type=\"text/javascript\">\n");
+        sb.append("function doScrollTo(anchorId){\n");
+        sb.append("   element = document.getElementById(anchorId);\n");
+        sb.append("   if (element !=null) {\n");
+        sb.append("        element.scrollIntoView();\n");
+        sb.append("   }\n");
+        sb.append("}\n");
+        sb.append("</script>");
 		sb.append("</body>");
 		sb.append("</html>");
 
