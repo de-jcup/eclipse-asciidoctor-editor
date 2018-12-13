@@ -290,7 +290,7 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
 		</key>
 		<key
-            sequence="M1+M2+X"
+            sequence="M3+X"
             contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
             commandId="asciidoctoreditor.editor.commands.formattext.monospaced"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  

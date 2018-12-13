@@ -24,7 +24,7 @@ public class MonospacedFormatAction extends FormatTextAction{
 	private static ImageDescriptor IMG_DESCRIPTOR_MONOSPACED = createToolbarImageDescriptor("format_monospaced.png");
 
 	public MonospacedFormatAction(AsciiDoctorEditor editor) {
-		super(editor, "Monospaced (Ctrl + Shift + m)", IMG_DESCRIPTOR_MONOSPACED);
+		super(editor, "Monospaced (Alt + x)", IMG_DESCRIPTOR_MONOSPACED);
 	}
 
 	@Override
