@@ -28,10 +28,12 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ICoreRunnable;
@@ -133,7 +135,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public static final String EDITOR_RULER_CONTEXT_MENU_ID = EDITOR_CONTEXT_MENU_ID + ".ruler";
 
     private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
-    private AsciiDoctorWrapper asciidoctorWrapper;
+    private AsciiDoctorWrapper wrapper;
+    private IProject project;
     private String bgColor;
 
     private String fgColor;
@@ -166,8 +169,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     private ContentTransformer contentTransformer;
 
-    private long editorTempIdentifier;
-
     private File editorFile;
 
     private Pattern tempFolderPattern;
@@ -180,12 +181,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     private RebuildAsciiDocViewAction rebuildAction;
 
+    private String editorTempIdentifier;
+
     public AsciiDoctorEditor() {
-        this.editorTempIdentifier = System.nanoTime();
         setSourceViewerConfiguration(createSourceViewerConfig());
+        editorTempIdentifier=""+System.nanoTime();
         this.modelBuilder = new AsciiDoctorScriptModelBuilder();
-        asciidoctorWrapper = new AsciiDoctorWrapper(editorTempIdentifier, AsciiDoctorEclipseLogAdapter.INSTANCE,
-                getPreferences().isUsingInstalledAsciidoctor());
+       
 
         contentTransformer = createCustomContentTransformer();
         if (contentTransformer == null) {
@@ -339,13 +341,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
         return orientation == SWT.HORIZONTAL;
     }
-
+    public AsciiDoctorWrapper getWrapper() {
+        if (wrapper==null){
+            wrapper =  new AsciiDoctorWrapper(this, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        }
+        return wrapper;
+    }
     @Override
     public void dispose() {
         super.dispose();
         browserAccess.dispose();
 
-        asciidoctorWrapper.dispose();
+        getWrapper().dispose();
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
     }
 
@@ -584,10 +591,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
     }
 
-    public void selectFunction(String text) {
-        System.out.println("should select functin:" + text);
-
-    }
 
     public void setErrorMessage(String message) {
         super.setStatusLineErrorMessage(message);
@@ -686,7 +689,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
             File editorFileOrNull = getEditorFileOrNull();
 
-            String content = null;
+            String asciiDocHtml = null;
             File fileToConvertIntoHTML = null;
             if (editorFileOrNull == null) {
                 String asciiDoc = getDocumentText();
@@ -702,21 +705,22 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             }
 
             /* content exists as simple file */
-            asciidoctorWrapper.convertToHTML(fileToConvertIntoHTML);
+            getWrapper().convertToHTML(fileToConvertIntoHTML);
             if (isCanceled(monitor)) {
                 return;
             }
-            content = readFileCreatedByAsciiDoctor(fileToConvertIntoHTML);
+            asciiDocHtml = readFileCreatedByAsciiDoctor(fileToConvertIntoHTML);
             /*
              * Calling Asciidoctor generates output with absolute pathes - we
              * keep the originally generated asciidoc file as is
              * (fileToConvertIntoHTML) but the preview files will be changed.
              */
-            content = transformAbsolutePathesToRelatives(content);
+            asciiDocHtml = transformAbsolutePathesToRelatives(asciiDocHtml);
 
             int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
-            htmlInternalPreview = asciidoctorWrapper.buildHTMLWithCSS(content, 0);
-            htmlExternalBrowser = asciidoctorWrapper.buildHTMLWithCSS(content, refreshAutomaticallyInSeconds);
+            AsciiDoctorWrapper wrapper = getWrapper();
+            htmlInternalPreview = wrapper.buildHTMLWithCSS(asciiDocHtml, 0);
+            htmlExternalBrowser = wrapper.buildHTMLWithCSS(asciiDocHtml, refreshAutomaticallyInSeconds);
             if (isCanceled(monitor)) {
                 return;
             }
@@ -814,7 +818,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     protected Pattern createRemoveAbsolutePathToTempFolderPattern() {
-        Path tempFolder = this.asciidoctorWrapper.getTempFolder();
+        Path tempFolder = getWrapper().getTempFolder();
         String absolutePathToTempFolder = tempFolder.toFile().getAbsolutePath();
         String asciidocOutputAbsolutePath = absolutePathToTempFolder.replace('\\', '/');
         asciidocOutputAbsolutePath += "/"; // relative path is without leading /
@@ -861,7 +865,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML) {
-        File generatedFile = asciidoctorWrapper.getTempFileFor(fileToConvertIntoHTML, TemporaryFileType.ORIGIN);
+        File generatedFile = getWrapper().getTempFileFor(fileToConvertIntoHTML, TemporaryFileType.ORIGIN);
         try {
             return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
         } catch (IOException e) {
@@ -900,6 +904,42 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             editorFile = resolveEditorFileOrNull();
         }
         return editorFile;
+    }
+    
+    protected IProject getProject() {
+        if (project!=null){
+            return project;
+        }
+        IEditorInput input = getEditorInput();
+        
+        IPath location = null;
+        
+        IFile iFile=null;
+        if (input instanceof FileEditorInput) {
+            /* standard opening with eclipse IDE inside */
+            FileEditorInput finput = (FileEditorInput) input;
+            iFile = finput.getFile();
+        } else if (input instanceof FileStoreEditorInput) {
+            /*
+             * command line : eclipse xyz.adoc does use file store editor input
+             * ....
+             */
+            FileStoreEditorInput fsInput = (FileStoreEditorInput) input;
+            iFile = fsInput.getAdapter(IFile.class);
+        }
+        if (iFile==null){
+            return null;
+        }
+        location = iFile.getFullPath();
+        if (location==null){
+            return null;
+        }
+        IWorkspaceRoot root = getWorkspace().getRoot();
+        IFile f = root.getFile(location);
+        if (f!=null){
+            project = f.getProject();
+        }
+        return project;
     }
 
     protected File resolveEditorFileOrNull() {
@@ -953,12 +993,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             /* already rebuilding -so ignore */
             return;
         }
-        boolean initializing = forceInitialize || temporaryInternalPreviewFile == null || !temporaryExternalPreviewFile.exists();
+        boolean initializing = forceInitialize || isFileNotAvailable(temporaryInternalPreviewFile);
 
         try {
             outputBuildSemaphore.acquire();
             if (initializing) {
-                File previewInitializingFile = new File(asciidoctorWrapper.getAddonsFolder(), "html/initialize/preview_initializing.html");
+                File previewInitializingFile = new File(getWrapper().getAddonsFolder(), "html/initialize/preview_initializing.html");
                 boolean previewInitializingFileFound = false;
                 try {
                     if (previewInitializingFile.exists()) {
@@ -1017,6 +1057,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         job.schedule();
     }
 
+    private boolean isFileNotAvailable(File file) {
+        if (file==null){
+            return true;
+        }
+        return ! file.exists();
+    }
+
     protected boolean isAutoBuildEnabledForExternalPreview() {
         return getPreferences().isAutoBuildEnabledForExternalPreview();
     }
@@ -1027,8 +1074,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             setErrorMessage("Asciidoctor Editor: preview not available because no editor file found");
             return;
         }
-        temporaryInternalPreviewFile = asciidoctorWrapper.getTempFileFor(editorFileOrNull, TemporaryFileType.INTERNAL_PREVIEW);
-        temporaryExternalPreviewFile = asciidoctorWrapper.getTempFileFor(editorFileOrNull, TemporaryFileType.EXTERNAL_PREVIEW);
+        AsciiDoctorWrapper wrapper = getWrapper();
+        temporaryInternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, TemporaryFileType.INTERNAL_PREVIEW);
+        temporaryExternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, TemporaryFileType.EXTERNAL_PREVIEW);
 
         browserAccess.ensureBrowser(new BrowserContentInitializer() {
 
@@ -1400,14 +1448,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void resetCache() {
-        asciidoctorWrapper.resetCaches();
+        getWrapper().resetCaches();
     }
 
     public void setTOCShown(boolean shown) {
-        if (shown == asciidoctorWrapper.isTocVisible()) {
+        if (shown == getWrapper().isTocVisible()) {
             return;
         }
-        asciidoctorWrapper.setTocVisible(shown);
+        getWrapper().setTocVisible(shown);
         /*
          * TOC building does always lead to a long time running task, at least
          * inside preview - so we show the initializing info with progressbar
@@ -1416,7 +1464,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public boolean isTOCShown() {
-        return asciidoctorWrapper.isTocVisible();
+        return getWrapper().isTocVisible();
     }
 
     public void setInternalPreview(boolean internalPreview) {
@@ -1444,7 +1492,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         if (fileName == null) {
             return;
         }
-        String imagespath = asciidoctorWrapper.getContext().getImageProvider().getCachedSourceImagesPath();
+        String imagespath = getWrapper().getContext().getImageProvider().getCachedSourceImagesPath();
         File file = new File(imagespath, fileName);
         openFileWithEclipseDefault(file);
     }
@@ -1453,7 +1501,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         if (fileName == null) {
             return;
         }
-        File diagramRootDirectory = asciidoctorWrapper.getContext().getDiagramProvider().getDiagramRootDirectory();
+        File diagramRootDirectory = getWrapper().getContext().getDiagramProvider().getDiagramRootDirectory();
         if (diagramRootDirectory == null) {
             return;
         }
@@ -1529,5 +1577,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public void rebuild() {
         this.rebuildAction.run();
     }
+
+
 
 }

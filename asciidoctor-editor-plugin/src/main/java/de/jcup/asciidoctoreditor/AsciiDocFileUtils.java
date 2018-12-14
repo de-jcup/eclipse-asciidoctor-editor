@@ -21,7 +21,7 @@ import java.nio.file.Path;
 
 public class AsciiDocFileUtils {
 
-	public static File createTempFileForConvertedContent(long tempId, String filename) throws IOException {
+	public static File createTempFileForConvertedContent(String tempId, String filename) throws IOException {
 		File newTempSubFolder = createSelfDeletingTempSubFolder(tempId, "asciidoctor-editor-temp");
 
 		File newTempFile = new File(newTempSubFolder, filename);
@@ -36,28 +36,28 @@ public class AsciiDocFileUtils {
 
 	/**
 	 * Any IO problem will throw an {@link IllegalStateException}
-	 * @param tempId
+	 * @param projectId
 	 * @return path, never <code>null</code>
 	 */
-	public static Path createTempFolderForEditor(long tempId) {
+	public static Path createTempFolderForEditor(String projectId) {
 		try {
-			File newTempSubFolder = createSelfDeletingTempSubFolder(tempId, "asciidoctor-editor-gen");
+			File newTempSubFolder = createSelfDeletingTempSubFolder(projectId, "asciidoctor-editor-gen");
 			return newTempSubFolder.toPath();
 		} catch (IOException e) {
 			throw new IllegalStateException("Not able to create temp folder for editor", e);
 		}
 	}
 
-	protected static File createSelfDeletingTempSubFolder(long tempId, String child) throws IOException {
+	protected static File createSelfDeletingTempSubFolder(String tempId, String parentFolderName) throws IOException {
 		String tempDir = System.getProperty("java.io.tmpdir");
-		File newTempFolder = new File(tempDir, child);
+		File newTempFolder = new File(tempDir, parentFolderName);
 
 		if (!newTempFolder.exists() && !newTempFolder.mkdirs()) {
 			throw new IOException("Was not able to create folder:" + newTempFolder);
 		}
 		newTempFolder.deleteOnExit();
 		
-		File newTempSubFolder = new File(newTempFolder, "editor_" + tempId);
+		File newTempSubFolder = new File(newTempFolder, "project_" + tempId);
 		if (!newTempSubFolder.exists() && !newTempSubFolder.mkdirs()) {
 			throw new IOException("not able to create temp folder:" + newTempSubFolder);
 		}

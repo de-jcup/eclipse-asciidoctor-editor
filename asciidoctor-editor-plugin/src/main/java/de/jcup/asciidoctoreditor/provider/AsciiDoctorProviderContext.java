@@ -20,9 +20,15 @@ import java.nio.file.Path;
 
 import org.asciidoctor.Asciidoctor;
 
+import de.jcup.asciidoctoreditor.AsciiDoctorOSGIWrapper;
+import de.jcup.asciidoctoreditor.InstalledAsciidoctor;
 import de.jcup.asciidoctoreditor.LogAdapter;
 
 public class AsciiDoctorProviderContext {
+    
+    private static Asciidoctor asciidoctorInstalled = new InstalledAsciidoctor();
+    private static Asciidoctor asciidoctorEmbedded = AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
+    
 	
 	private LogAdapter logAdapter;
 	private File asciidocFile;
@@ -34,19 +40,15 @@ public class AsciiDoctorProviderContext {
 	private AsciiDoctorImageProvider imageProvider;
 	private AsciiDoctorDiagramProvider diagramProvider;
 	private AsciiDoctorAttributesProvider attributesProvider;
-	private Asciidoctor asciidoctor;
 	private AsciiDoctorOptionsProvider optionsProvider;
 	File targetImagesDir;
 	int tocLevels;
+    private boolean useInstalled;
 
-	public AsciiDoctorProviderContext(Asciidoctor asciidoctor, LogAdapter logAdapter) {
-		if (asciidoctor==null ){
-			throw new IllegalArgumentException("asciidoctor may never be null!");
-		}
+	public AsciiDoctorProviderContext(LogAdapter logAdapter) {
 		if (logAdapter==null ){
 			throw new IllegalArgumentException("logAdapter may never be null!");
 		}
-		this.asciidoctor=asciidoctor;
 		this.logAdapter=logAdapter;
 		init();
 	}
@@ -108,7 +110,11 @@ public class AsciiDoctorProviderContext {
 	}
 
 	public Asciidoctor getAsciiDoctor() {
-		return asciidoctor;
+	    if (useInstalled){
+	        return asciidoctorInstalled;
+	    }else{
+	        return asciidoctorEmbedded;
+	    }
 	}
 
 	public void setTOCVisible(boolean visible) {
@@ -133,5 +139,13 @@ public class AsciiDoctorProviderContext {
 	public File getAsciiDocFile() {
 		return asciidocFile;
 	}
+
+    public void setUseInstalled(boolean usingInstalledAsciidoctor) {
+        useInstalled = usingInstalledAsciidoctor;
+    }
+
+    public boolean isUsingInstalledAsciiDoctor() {
+        return useInstalled;
+    }
 
 }
