@@ -23,7 +23,7 @@ public class OpenQuickOutlineHandler extends AbstractAsciiDoctorEditorHandler {
 
 	@Override
 	protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
-		asciidoctorEditor.openQuickOutline();
+		asciidoctorEditor.getOutlineSupport().openQuickOutline();
 		
 	}
 	

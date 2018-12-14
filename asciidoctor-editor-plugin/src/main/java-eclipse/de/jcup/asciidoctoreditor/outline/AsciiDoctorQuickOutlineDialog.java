@@ -75,14 +75,14 @@ public class AsciiDoctorQuickOutlineDialog extends AbstractFilterableTreeQuickDi
 		if (editor == null) {
 			return;
 		}
-		AsciiDoctorContentOutlinePage outlinePage = editor.getOutlinePage();
+		AsciiDoctorContentOutlinePage outlinePage = editor.getOutlineSupport().getOutlinePage();
 		boolean outlineAvailable = outlinePageVisible(outlinePage);
 		if (outlineAvailable){
 			/*
 			 * select part in editor - grab focus not necessary, because this will
 			 * close quick outline dialog as well, so editor will get focus back
 			 */
-			editor.openSelectedTreeItemInEditor(selection, false);
+			editor.getOutlineSupport().openSelectedTreeItemInEditor(selection, false);
 		}else{
 			outlinePage.setSelection(selection);
 		}

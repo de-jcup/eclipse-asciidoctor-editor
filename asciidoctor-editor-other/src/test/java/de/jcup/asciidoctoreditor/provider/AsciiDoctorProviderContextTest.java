@@ -39,26 +39,32 @@ public class AsciiDoctorProviderContextTest {
 
 	private Asciidoctor asciidoctor;
 	private LogAdapter logAdapter;
+    private AsciiDoctorProvider provider;
 
 	
 	@Before
 	public void before(){
 		asciidoctor=mock(Asciidoctor.class);
 		logAdapter = mock(LogAdapter.class);
+		provider = mock(AsciiDoctorProvider.class);
+		
+		when(provider.getAsciiDoctor(true)).thenReturn(asciidoctor);
+		when(provider.getAsciiDoctor(false)).thenReturn(asciidoctor);
 	}
 	
 	@Test
 	public void test_normal_creating_context_creates_internal_providers() {
 		/* execute */
-		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(asciidoctor,logAdapter);
+		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(logAdapter);
+		context.setProvider(provider);
 	
 		/* test */
 		assertNotNull(context.getAsciiDoctor());
-		assertEquals(asciidoctor, context.getAsciiDoctor());
 		assertNotNull(context.getAttributesProvider());
 		assertNotNull(context.getBaseDirProvider());
 		assertNotNull(context.getImageProvider());
 		assertNotNull(context.getOptionsProvider());
+		
 	}
 	
 	@Test
@@ -109,7 +115,9 @@ public class AsciiDoctorProviderContextTest {
 
 	private Set<File> testInternalImages(boolean imageDirSet) throws IOException {
 		/* before */
-		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(asciidoctor, logAdapter);
+		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(logAdapter);
+		context.setProvider(provider);
+		
 		File testFile = TestscriptsUtil.assertFileInTestscripts("09_includes.adoc");
 		context.setAsciidocFile(testFile);
 		Path tempDirectory = Files.createTempDirectory("junittest");

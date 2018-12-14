@@ -101,7 +101,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 		 * (async)
 		 */
 		if (input == null && editor != null) {
-			editor.rebuildOutline();
+			editor.getOutlineSupport().rebuildOutline();
 		}
 
 	}
@@ -121,7 +121,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 			// selection itself is already handled by single click
 			return;
 		}
-		editor.openSelectedTreeItemInEditor(selection, true);
+		editor.getOutlineSupport().openSelectedTreeItemInEditor(selection, true);
 	}
 
 	private boolean isAnIncludedAndHandled(ISelection selection) {
@@ -156,7 +156,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 			return;
 		}
 		ISelection selection = event.getSelection();
-		editor.openSelectedTreeItemInEditor(selection, false);
+		editor.getOutlineSupport().openSelectedTreeItemInEditor(selection, false);
 	}
 
 	/**

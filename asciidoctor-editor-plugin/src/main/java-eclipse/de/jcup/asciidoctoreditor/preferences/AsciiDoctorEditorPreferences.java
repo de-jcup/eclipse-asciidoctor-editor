@@ -95,7 +95,7 @@ public class AsciiDoctorEditorPreferences {
 						geditor.handleColorSettingsChanged();
 					}
 					if (context.validationChanged) {
-						geditor.rebuildOutline();
+						geditor.getOutlineSupport().rebuildOutline();
 					}
 				}
 			}

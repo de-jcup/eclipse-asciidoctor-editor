@@ -20,14 +20,11 @@ import java.nio.file.Path;
 
 import org.asciidoctor.Asciidoctor;
 
-import de.jcup.asciidoctoreditor.AsciiDoctorOSGIWrapper;
-import de.jcup.asciidoctoreditor.InstalledAsciidoctor;
 import de.jcup.asciidoctoreditor.LogAdapter;
 
 public class AsciiDoctorProviderContext {
     
-    private static Asciidoctor asciidoctorInstalled = new InstalledAsciidoctor();
-    private static Asciidoctor asciidoctorEmbedded = AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
+   
     
 	
 	private LogAdapter logAdapter;
@@ -35,6 +32,7 @@ public class AsciiDoctorProviderContext {
 	private File baseDir;
 	private Path outputFolder;
 	private boolean tocVisible;
+	private AsciiDoctorProvider provider;
 
 	private AsciiDoctorBaseDirectoryProvider baseDirProvider;
 	private AsciiDoctorImageProvider imageProvider;
@@ -110,13 +108,20 @@ public class AsciiDoctorProviderContext {
 	}
 
 	public Asciidoctor getAsciiDoctor() {
-	    if (useInstalled){
-	        return asciidoctorInstalled;
-	    }else{
-	        return asciidoctorEmbedded;
-	    }
+	    return getProvider().getAsciiDoctor(useInstalled);
 	}
 
+	protected AsciiDoctorProvider getProvider(){
+        if (provider==null){
+	        provider=new DefaultAsciidoctorProvider();
+	    }
+	    return provider;
+	}
+	
+	void setProvider(AsciiDoctorProvider provider) {
+        this.provider = provider;
+    }
+	
 	public void setTOCVisible(boolean visible) {
 		this.tocVisible=visible;
 	}

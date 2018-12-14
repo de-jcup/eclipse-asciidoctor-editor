@@ -16,15 +16,11 @@
 package de.jcup.asciidoctoreditor;
 
 import static de.jcup.asciidoctoreditor.EclipseUtil.*;
-import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferenceConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.concurrent.Semaphore;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -36,12 +32,10 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
@@ -49,7 +43,6 @@ import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -61,7 +54,6 @@ import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -74,7 +66,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -94,16 +85,11 @@ import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorContentOutlinePage;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
-import de.jcup.asciidoctoreditor.outline.AsciiDoctorQuickOutlineDialog;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
-import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.BoldFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
@@ -134,22 +120,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     /** The COMMAND_ID of the editor ruler context menu */
     public static final String EDITOR_RULER_CONTEXT_MENU_ID = EDITOR_CONTEXT_MENU_ID + ".ruler";
 
-    private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
     private AsciiDoctorWrapper wrapper;
     private IProject project;
     private String bgColor;
 
     private String fgColor;
-    private boolean ignoreNextCaretMove;
-    private int lastCaretPosition;
-    private AsciiDoctorScriptModelBuilder modelBuilder;
 
-    private Object monitor = new Object();
-    private ScrollSynchronizer synchronizer;
+    private int lastCaretPosition;
+
+    private AsciidoctorEditorOutlineSupport outlineSupport;
+    ScrollSynchronizer synchronizer;
 
     private AsciiDoctorContentOutlinePage outlinePage;
-
-    private boolean quickOutlineOpened;
 
     File temporaryInternalPreviewFile;
 
@@ -165,13 +147,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     Semaphore outputBuildSemaphore = new Semaphore(1);
 
-    private File temporaryExternalPreviewFile;
+    File temporaryExternalPreviewFile;
 
-    private ContentTransformer contentTransformer;
+    ContentTransformer contentTransformer;
 
     private File editorFile;
-
-    private Pattern tempFolderPattern;
 
     private ItalicFormatAction italicFormatAction;
 
@@ -181,13 +161,17 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     private RebuildAsciiDocViewAction rebuildAction;
 
-    private String editorTempIdentifier;
+    String editorTempIdentifier;
+
+    private AsciiDoctorEditorBuildSupport buildSupport;
 
     public AsciiDoctorEditor() {
+        outlineSupport = new AsciidoctorEditorOutlineSupport(this);
+        buildSupport = new AsciiDoctorEditorBuildSupport(this);
+
+        editorTempIdentifier = "" + System.nanoTime();
+
         setSourceViewerConfiguration(createSourceViewerConfig());
-        editorTempIdentifier=""+System.nanoTime();
-        this.modelBuilder = new AsciiDoctorScriptModelBuilder();
-       
 
         contentTransformer = createCustomContentTransformer();
         if (contentTransformer == null) {
@@ -202,6 +186,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     protected ContentTransformer createCustomContentTransformer() {
         return null;
+    }
+
+    public AsciidoctorEditorOutlineSupport getOutlineSupport() {
+        return outlineSupport;
     }
 
     /**
@@ -341,12 +329,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
         return orientation == SWT.HORIZONTAL;
     }
+
     public AsciiDoctorWrapper getWrapper() {
-        if (wrapper==null){
-            wrapper =  new AsciiDoctorWrapper(this, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        if (wrapper == null) {
+            wrapper = new AsciiDoctorWrapper(this, AsciiDoctorEclipseLogAdapter.INSTANCE);
         }
         return wrapper;
     }
+
     @Override
     public void dispose() {
         super.dispose();
@@ -360,7 +350,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         if (functionName == null) {
             return null;
         }
-        AsciiDoctorScriptModel model = buildModelWithoutValidation();
+        AsciiDoctorScriptModel model = outlineSupport.buildModelWithoutValidation();
         Collection<AsciiDoctorHeadline> functions = model.getHeadlines();
         for (AsciiDoctorHeadline function : functions) {
             if (functionName.equals(function.getName())) {
@@ -377,7 +367,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             return (T) this;
         }
         if (IContentOutlinePage.class.equals(adapter)) {
-            return (T) getOutlinePage();
+            return (T) getOutlineSupport().getOutlinePage();
         }
         if (ColorManager.class.equals(adapter)) {
             return (T) getColorManager();
@@ -439,13 +429,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         return lastCaretPosition;
     }
 
-    public AsciiDoctorContentOutlinePage getOutlinePage() {
-        if (outlinePage == null) {
-            outlinePage = new AsciiDoctorContentOutlinePage(this);
-        }
-        return outlinePage;
-    }
-
     public AsciiDoctorEditorPreferences getPreferences() {
         return AsciiDoctorEditorPreferences.getInstance();
     }
@@ -485,104 +468,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     }
 
-    /**
-     * Opens quick outline
-     */
-    public void openQuickOutline() {
-        synchronized (monitor) {
-            if (quickOutlineOpened) {
-                /*
-                 * already opened - this is in future the anker point for
-                 * ctrl+o+o...
-                 */
-                return;
-            }
-            quickOutlineOpened = true;
-        }
-        Shell shell = getEditorSite().getShell();
-        AsciiDoctorScriptModel model = buildModelWithoutValidation();
-        AsciiDoctorQuickOutlineDialog dialog = new AsciiDoctorQuickOutlineDialog(this, shell, "Quick outline");
-        dialog.setInput(model);
-
-        dialog.open();
-        synchronized (monitor) {
-            quickOutlineOpened = false;
-        }
-    }
-
-    public void openSelectedTreeItemInEditor(ISelection selection, boolean grabFocus) {
-        if (selection instanceof IStructuredSelection) {
-            IStructuredSelection ss = (IStructuredSelection) selection;
-            Object firstElement = ss.getFirstElement();
-            if (firstElement instanceof Item) {
-                Item item = (Item) firstElement;
-                int offset = item.getOffset();
-                int length = item.getLength();
-                if (length == 0) {
-                    /* fall back */
-                    length = 1;
-                }
-                /*
-                 * ignore next caret move - to prevent endless loop between tree
-                 * and editor...
-                 */
-                ignoreNextCaretMove = true;
-                selectAndReveal(offset, length);
-                if (grabFocus) {
-                    setFocus();
-                }
-                /*
-                 * caret movement was ignored for tree so call synchronizer
-                 * alone here:
-                 */
-                synchronizer.onEditorCaretMoved(offset);
-            }
-        }
-    }
-
-    /**
-     * Does rebuild the outline - this is done asynchronous
-     */
-    public void rebuildOutline() {
-
-        String text = getDocumentText();
-
-        IPreferenceStore store = getPreferences().getPreferenceStore();
-
-        boolean validateGraphviz = store.getBoolean(VALIDATE_GRAPHVIZ.getId());
-        String errorLevelId = store.getString(VALIDATE_ERROR_LEVEL.getId());
-        AsciiDoctorEditorValidationErrorLevel errorLevel = AsciiDoctorEditorValidationErrorLevel.fromId(errorLevelId);
-
-        if (validateGraphviz) {
-            modelBuilder.setGraphVizCheckSupport(CheckGraphviz.INSTANCE);
-        } else {
-            modelBuilder.setGraphVizCheckSupport(null);
-        }
-        safeAsyncExec(() -> {
-            AsciiDoctorScriptModel model;
-            try {
-                model = modelBuilder.build(text);
-            } catch (AsciiDoctorScriptModelException e) {
-                AsciiDoctorEditorUtil.logError("Was not able to build validation model", e);
-                model = FALLBACK_MODEL;
-            }
-
-            getOutlinePage().rebuild(model);
-
-            if (model.hasErrors()) {
-                int severity;
-                if (AsciiDoctorEditorValidationErrorLevel.INFO.equals(errorLevel)) {
-                    severity = IMarker.SEVERITY_INFO;
-                } else if (AsciiDoctorEditorValidationErrorLevel.WARNING.equals(errorLevel)) {
-                    severity = IMarker.SEVERITY_WARNING;
-                } else {
-                    severity = IMarker.SEVERITY_ERROR;
-                }
-                addErrorMarkers(model, severity);
-            }
-        });
-    }
-
     public void resourceChanged(IResourceChangeEvent event) {
         if (isMarkerChangeForThisEditor(event)) {
             int severity = getSeverity();
@@ -590,7 +475,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             setTitleImageDependingOnSeverity(severity);
         }
     }
-
 
     public void setErrorMessage(String message) {
         super.setStatusLineErrorMessage(message);
@@ -671,112 +555,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void refreshAsciiDocView() {
-        showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS);
     }
 
     public void validate() {
-        rebuildOutline();
-    }
-
-    private void fullBuildTemporaryHTMLFilesAndShowAfter(IProgressMonitor monitor) {
-        String htmlInternalPreview = null;
-        String htmlExternalBrowser = null;
-        if (isCanceled(monitor)) {
-            return;
-        }
-        try {
-            safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(AsciiDoctorEditor.this));
-
-            File editorFileOrNull = getEditorFileOrNull();
-
-            String asciiDocHtml = null;
-            File fileToConvertIntoHTML = null;
-            if (editorFileOrNull == null) {
-                String asciiDoc = getDocumentText();
-                fileToConvertIntoHTML = resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(asciiDoc);
-            } else {
-                fileToConvertIntoHTML = resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(editorFileOrNull);
-            }
-            if (fileToConvertIntoHTML == null) {
-                return;
-            }
-            if (isCanceled(monitor)) {
-                return;
-            }
-
-            /* content exists as simple file */
-            getWrapper().convertToHTML(fileToConvertIntoHTML);
-            if (isCanceled(monitor)) {
-                return;
-            }
-            asciiDocHtml = readFileCreatedByAsciiDoctor(fileToConvertIntoHTML);
-            /*
-             * Calling Asciidoctor generates output with absolute pathes - we
-             * keep the originally generated asciidoc file as is
-             * (fileToConvertIntoHTML) but the preview files will be changed.
-             */
-            asciiDocHtml = transformAbsolutePathesToRelatives(asciiDocHtml);
-
-            int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
-            AsciiDoctorWrapper wrapper = getWrapper();
-            htmlInternalPreview = wrapper.buildHTMLWithCSS(asciiDocHtml, 0);
-            htmlExternalBrowser = wrapper.buildHTMLWithCSS(asciiDocHtml, refreshAutomaticallyInSeconds);
-            if (isCanceled(monitor)) {
-                return;
-            }
-            try {
-                AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, temporaryInternalPreviewFile);
-                AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, temporaryExternalPreviewFile);
-
-            } catch (IOException e1) {
-                AsciiDoctorEditorUtil.logError("Was not able to save temporary files for preview!", e1);
-            }
-
-        } catch (Throwable e) {
-            /*
-             * Normally I would do a catch(Exception e), but we must use
-             * catch(Throwable t) here. Reason (at least eclipse neon) we got
-             * full eclipse editor tab freeze problem when a jruby class not
-             * found error occurs!
-             */
-            /*
-             * This means the ASCIIDOCTOR wrapper was not able to convert - so
-             * we have to clean the former output and show up a marker for
-             * complete file
-             */
-            StringBuilder htmlSb = new StringBuilder();
-            htmlSb.append("<h4");
-            if (isAsciiDoctorError(e)) {
-                htmlSb.append("Asciidoctor error");
-            } else {
-                htmlSb.append("Unknown error");
-            }
-            htmlSb.append("</h4");
-
-            safeAsyncExec(() -> {
-
-                String errorMessage = fetchAsciidoctorErrorMessage(e);
-
-                AsciiDoctorErrorBuilder builder = new AsciiDoctorErrorBuilder();
-                AsciiDoctorError error = builder.build(errorMessage);
-                browserAccess.safeBrowserSetText(htmlSb.toString());
-                AsciiDoctorEditorUtil.addScriptError(AsciiDoctorEditor.this, -1, error, IMarker.SEVERITY_ERROR);
-
-                if (isLoggingNecessary(e)) {
-                    AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:" + e.getMessage(), e);
-                }
-            });
-
-        }
-
-    }
-
-    private boolean isLoggingNecessary(Throwable e) {
-        if (e == null || e instanceof InstalledAsciidoctorException) {
-            /* InstalledAsciidoctorException is already logged */
-            return false;
-        }
-        return true;
+        outlineSupport.rebuildOutline();
     }
 
     protected boolean isAsciiDoctorError(Throwable e) {
@@ -798,88 +581,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         return e.getClass().getSimpleName() + ": " + SimpleExceptionUtils.getRootMessage(e);
     }
 
-    /**
-     * Transforms absolute pathes to relative pathes of current temp folder in
-     * given html.
-     * 
-     * @param html
-     * @return
-     */
-    protected String transformAbsolutePathesToRelatives(String html) {
-        if (tempFolderPattern == null) {
-            /*
-             * store the pattern for this editor and reuse it, temp folder will
-             * not change
-             */
-            tempFolderPattern = createRemoveAbsolutePathToTempFolderPattern();
-        }
-        String newHTML = tempFolderPattern.matcher(html).replaceAll("");
-        return newHTML;
-    }
-
-    protected Pattern createRemoveAbsolutePathToTempFolderPattern() {
-        Path tempFolder = getWrapper().getTempFolder();
-        String absolutePathToTempFolder = tempFolder.toFile().getAbsolutePath();
-        String asciidocOutputAbsolutePath = absolutePathToTempFolder.replace('\\', '/');
-        asciidocOutputAbsolutePath += "/"; // relative path is without leading /
-        return Pattern.compile(asciidocOutputAbsolutePath);
-    }
-
-    protected File resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(String asciiDoc) throws IOException {
-        File fileToConvertIntoHTML;
-        String text;
-        if (contentTransformer.isTransforming(asciiDoc)) {
-            text = contentTransformer.transform(asciiDoc);
-        } else {
-            text = asciiDoc;
-        }
-        fileToConvertIntoHTML = resolveFileToConvertToHTML("no_origin_file_defined", text);
-        return fileToConvertIntoHTML;
-    }
-
-    protected File resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(File editorFile) throws IOException {
-        if (editorFile == null || !editorFile.exists()) {
-            return null;
-        }
-
-        String originText = AsciiDocStringUtils.readUTF8FileToString(editorFile);
-        if (originText == null) {
-            return null;
-        }
-        if (!contentTransformer.isTransforming(originText)) {
-            return editorFile;
-        }
-        return resolveFileToConvertToHTML(editorFile.getName(), originText);
-    }
-
-    public File resolveFileToConvertToHTML(String filename, String text) throws IOException {
-        File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(editorTempIdentifier, filename);
-
-        String transformed = contentTransformer.transform(text);
-        try {
-            return AsciiDocStringUtils.writeTextToUTF8File(transformed, newTempFile);
-        } catch (IOException e) {
-            logError("Was not able to write transformed file:" + filename, e);
-            return null;
-        }
-    }
-
-    protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML) {
-        File generatedFile = getWrapper().getTempFileFor(fileToConvertIntoHTML, TemporaryFileType.ORIGIN);
-        try {
-            return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
-        } catch (IOException e) {
-            AsciiDoctorEditorUtil.logError("Was not able to build new full html variant", e);
-            return "";
-        }
-    }
-
     @Override
     protected void doSetInput(IEditorInput input) throws CoreException {
         setDocumentProvider(createDocumentProvider(input));
         super.doSetInput(input);
 
-        rebuildOutline();
+        outlineSupport.rebuildOutline();
         if (browserAccess == null) {
             /*
              * happens when eclipse is starting editors opened before are
@@ -887,16 +594,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
              */
             return;
         }
-        showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
     }
 
     @Override
     protected void editorSaved() {
         super.editorSaved();
 
-        rebuildOutline();
+        outlineSupport.rebuildOutline();
 
-        showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
     }
 
     protected File getEditorFileOrNull() {
@@ -905,16 +612,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
         return editorFile;
     }
-    
+
     protected IProject getProject() {
-        if (project!=null){
+        if (project != null) {
             return project;
         }
         IEditorInput input = getEditorInput();
-        
+
         IPath location = null;
-        
-        IFile iFile=null;
+
+        IFile iFile = null;
         if (input instanceof FileEditorInput) {
             /* standard opening with eclipse IDE inside */
             FileEditorInput finput = (FileEditorInput) input;
@@ -927,16 +634,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             FileStoreEditorInput fsInput = (FileStoreEditorInput) input;
             iFile = fsInput.getAdapter(IFile.class);
         }
-        if (iFile==null){
+        if (iFile == null) {
             return null;
         }
         location = iFile.getFullPath();
-        if (location==null){
+        if (location == null) {
             return null;
         }
         IWorkspaceRoot root = getWorkspace().getRoot();
         IFile f = root.getFile(location);
-        if (f!=null){
+        if (f != null) {
             project = f.getProject();
         }
         return project;
@@ -970,104 +677,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         return getPreferences().getInitialLayoutModeForNewEditors();
     }
 
-    protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode) {
-        showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(mode, false);
-    }
-
-    private enum BuildAsciiDocMode {
-        ALWAYS, NOT_WHEN_EXTERNAL_PREVIEW_DISABLED
-
-    }
-
-    protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode, boolean forceInitialize) {
-
-        boolean rebuildEnabled = true;
-        if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !isInternalPreview()) {
-            rebuildEnabled = isAutoBuildEnabledForExternalPreview();
-        }
-        if (!rebuildEnabled) {
-            return;
-        }
-
-        if (!forceInitialize && outputBuildSemaphore.availablePermits() == 0) {
-            /* already rebuilding -so ignore */
-            return;
-        }
-        boolean initializing = forceInitialize || isFileNotAvailable(temporaryInternalPreviewFile);
-
-        try {
-            outputBuildSemaphore.acquire();
-            if (initializing) {
-                File previewInitializingFile = new File(getWrapper().getAddonsFolder(), "html/initialize/preview_initializing.html");
-                boolean previewInitializingFileFound = false;
-                try {
-                    if (previewInitializingFile.exists()) {
-                        previewInitializingFileFound = true;
-                    }
-                    String previewFileURL = previewInitializingFile.toURI().toURL().toExternalForm();
-                    browserAccess.setUrl(previewFileURL);
-                } catch (MalformedURLException e) {
-                    logError("Preview initializer html file not valid url", e);
-                }
-                if (!previewInitializingFileFound) {
-                    browserAccess.safeBrowserSetText("<html><body><h3>Initializing document</h3></body></html>");
-                }
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return;
-        }
-        String jobInfo = null;
-        if (initializing) {
-            jobInfo = "Asciidoctor editor preview initializing ";
-        } else {
-            jobInfo = "Asciidoctor editor full rebuild";
-        }
-        Job job = Job.create(jobInfo, new ICoreRunnable() {
-
-            @Override
-            public void run(IProgressMonitor monitor) throws CoreException {
-                try {
-                    monitor.beginTask("Building document " + getSafeFileName(), IProgressMonitor.UNKNOWN);
-
-                    fullBuildTemporaryHTMLFilesAndShowAfter(monitor);
-
-                    ensureInternalBrowserShowsURL(monitor);
-
-                    /*
-                     * do a "refocus" on safe - sometimes necessary on windows.
-                     * Seems browser grabs sometimes focus...
-                     */
-                    EclipseUtil.safeAsyncExec(() -> refocus());
-
-                    monitor.done();
-
-                } finally {
-                    outputBuildSemaphore.release();
-                }
-            }
-
-            protected String getSafeFileName() {
-                if (temporaryInternalPreviewFile == null) {
-                    return "<unknown>";
-                }
-                return temporaryInternalPreviewFile.getName();
-            }
-        });
-        job.schedule();
-    }
-
-    private boolean isFileNotAvailable(File file) {
-        if (file==null){
-            return true;
-        }
-        return ! file.exists();
-    }
-
-    protected boolean isAutoBuildEnabledForExternalPreview() {
-        return getPreferences().isAutoBuildEnabledForExternalPreview();
-    }
-
     protected void initPreview(SashForm sashForm) {
         File editorFileOrNull = getEditorFileOrNull();
         if (editorFileOrNull == null) {
@@ -1086,7 +695,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             }
         });
 
-        showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
 
         PreviewLayout initialLayout = getInitialLayoutMode();
         if (initialLayout.isExternal()) {
@@ -1127,7 +736,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         return !isCanceled(monitor);
     }
 
-    private boolean isCanceled(IProgressMonitor monitor) {
+    boolean isCanceled(IProgressMonitor monitor) {
         if (monitor == null) {
             return false; // no chance to cancel...
         }
@@ -1165,7 +774,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
     }
 
-    private void addErrorMarkers(AsciiDoctorScriptModel model, int severity) {
+    void addErrorMarkers(AsciiDoctorScriptModel model, int severity) {
         if (model == null) {
             return;
         }
@@ -1186,19 +795,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             AsciiDoctorEditorUtil.addScriptError(this, line, error, severity);
         }
 
-    }
-
-    private AsciiDoctorScriptModel buildModelWithoutValidation() {
-        String text = getDocumentText();
-
-        AsciiDoctorScriptModel model;
-        try {
-            model = modelBuilder.build(text);
-        } catch (AsciiDoctorScriptModelException e) {
-            AsciiDoctorEditorUtil.logError("Was not able to build script model", e);
-            model = FALLBACK_MODEL;
-        }
-        return model;
     }
 
     protected IDocumentProvider createDocumentProvider(IEditorInput input) {
@@ -1298,24 +894,24 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         return ((IFileEditorInput) input).getFile();
     }
 
-    private void refocus() {
+    void refocus() {
         if (!isInternalPreview()) {
             /* problem exists only at internal preview */
             return;
         }
         ISourceViewer sourceviewer = getSourceViewer();
-        if (sourceviewer==null){
+        if (sourceviewer == null) {
             return;
         }
         StyledText textWidget = sourceviewer.getTextWidget();
         if (textWidget == null || textWidget.isDisposed()) {
             return;
         }
-        if (!textWidget.isFocusControl()){
-            if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED){
+        if (!textWidget.isFocusControl()) {
+            if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
                 AsciiDoctorEclipseLogAdapter.INSTANCE.logInfo("not focus controlled! try to get it");
             }
-            if (!textWidget.setFocus()){
+            if (!textWidget.setFocus()) {
                 AsciiDoctorEclipseLogAdapter.INSTANCE.logInfo("cannot get focus?!?!?");
             }
         }
@@ -1350,8 +946,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         protected void handleCaretMoves(CaretEvent event) {
             lastCaretPosition = event.caretOffset;
-            if (ignoreNextCaretMove) {
-                ignoreNextCaretMove = false;
+            if (outlineSupport.ignoreNextCaretMove) {
+                outlineSupport.ignoreNextCaretMove = false;
                 return;
             }
             synchronizer.onEditorCaretMoved(event.caretOffset);
@@ -1460,7 +1056,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
          * TOC building does always lead to a long time running task, at least
          * inside preview - so we show the initializing info with progressbar
          */
-        showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
     }
 
     public boolean isTOCShown() {
@@ -1473,8 +1069,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         browserAccess.setEnabled(internalPreview);
         sashForm.layout(); // after this the browser will be hidden/shown ...
                            // otherwise we got an empty space appearing
-        if (wasExternalBefore && !isAutoBuildEnabledForExternalPreview()) {
-            showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS);
+        if (wasExternalBefore && !buildSupport.isAutoBuildEnabledForExternalPreview()) {
+            buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS);
         } else {
             ensureInternalBrowserShowsURL(null);
         }
@@ -1525,7 +1121,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void openInExternalBrowser() {
-        if (!isAutoBuildEnabledForExternalPreview()) {
+        /*
+         * remove old existing file to show browser only when ready... otherwise
+         * old files are shown while not rendered complete!
+         */
+        if (temporaryExternalPreviewFile != null && temporaryExternalPreviewFile.exists()) {
+            temporaryExternalPreviewFile.delete();
+        }
+        if (!buildSupport.isAutoBuildEnabledForExternalPreview()) {
             refreshAsciiDocView();
         }
         startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
@@ -1577,7 +1180,5 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public void rebuild() {
         this.rebuildAction.run();
     }
-
-
 
 }
