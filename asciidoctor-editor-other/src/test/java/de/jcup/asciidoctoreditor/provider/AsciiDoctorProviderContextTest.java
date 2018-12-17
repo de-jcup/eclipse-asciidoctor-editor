@@ -55,8 +55,7 @@ public class AsciiDoctorProviderContextTest {
 	@Test
 	public void test_normal_creating_context_creates_internal_providers() {
 		/* execute */
-		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(logAdapter);
-		context.setProvider(provider);
+		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
 	
 		/* test */
 		assertNotNull(context.getAsciiDoctor());
@@ -115,8 +114,7 @@ public class AsciiDoctorProviderContextTest {
 
 	private Set<File> testInternalImages(boolean imageDirSet) throws IOException {
 		/* before */
-		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(logAdapter);
-		context.setProvider(provider);
+		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
 		
 		File testFile = TestscriptsUtil.assertFileInTestscripts("09_includes.adoc");
 		context.setAsciidocFile(testFile);

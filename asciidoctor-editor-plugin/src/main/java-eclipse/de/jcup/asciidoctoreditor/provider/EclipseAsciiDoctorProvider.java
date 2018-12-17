@@ -5,11 +5,12 @@ import org.asciidoctor.Asciidoctor;
 import de.jcup.asciidoctoreditor.AsciiDoctorOSGIWrapper;
 import de.jcup.asciidoctoreditor.InstalledAsciidoctor;
 
-public class DefaultAsciidoctorProvider implements AsciiDoctorProvider{
+public class EclipseAsciiDoctorProvider implements AsciiDoctorProvider{
+    public static final EclipseAsciiDoctorProvider INSTANCE = new EclipseAsciiDoctorProvider();
     private static Asciidoctor asciidoctorInstalled;
     private static Asciidoctor asciidoctorEmbedded;
     
-    public DefaultAsciidoctorProvider(){
+    EclipseAsciiDoctorProvider(){
         asciidoctorInstalled = new InstalledAsciidoctor();
         asciidoctorEmbedded = AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
     }

@@ -27,6 +27,7 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstant
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
+import de.jcup.asciidoctoreditor.provider.EclipseAsciiDoctorProvider;
 
 public class AsciiDoctorWrapper {
 
@@ -44,7 +45,7 @@ public class AsciiDoctorWrapper {
         }
         this.logAdapter = logAdapter;
         this.editor=editor;
-        this.context = new AsciiDoctorProviderContext(AsciiDoctorEclipseLogAdapter.INSTANCE);
+        this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
         htmlBuilder = new AsciiDoctorWrapperHTMLBuilder(context);
 
     }

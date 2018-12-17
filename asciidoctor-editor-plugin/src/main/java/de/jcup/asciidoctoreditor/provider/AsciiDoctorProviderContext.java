@@ -23,9 +23,6 @@ import org.asciidoctor.Asciidoctor;
 import de.jcup.asciidoctoreditor.LogAdapter;
 
 public class AsciiDoctorProviderContext {
-    
-   
-    
 	
 	private LogAdapter logAdapter;
 	private File asciidocFile;
@@ -43,11 +40,16 @@ public class AsciiDoctorProviderContext {
 	int tocLevels;
     private boolean useInstalled;
 
-	public AsciiDoctorProviderContext(LogAdapter logAdapter) {
+	public AsciiDoctorProviderContext(AsciiDoctorProvider provider, LogAdapter logAdapter) {
 		if (logAdapter==null ){
 			throw new IllegalArgumentException("logAdapter may never be null!");
 		}
+		if (provider==null ){
+            throw new IllegalArgumentException("provider may never be null!");
+        }
 		this.logAdapter=logAdapter;
+		this.provider=provider;
+		
 		init();
 	}
 	
@@ -112,15 +114,8 @@ public class AsciiDoctorProviderContext {
 	}
 
 	protected AsciiDoctorProvider getProvider(){
-        if (provider==null){
-	        provider=new DefaultAsciidoctorProvider();
-	    }
 	    return provider;
 	}
-	
-	void setProvider(AsciiDoctorProvider provider) {
-        this.provider = provider;
-    }
 	
 	public void setTOCVisible(boolean visible) {
 		this.tocVisible=visible;
