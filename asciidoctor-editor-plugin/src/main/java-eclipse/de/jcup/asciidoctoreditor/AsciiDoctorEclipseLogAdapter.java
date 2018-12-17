@@ -44,4 +44,21 @@ public class AsciiDoctorEclipseLogAdapter implements LogAdapter {
 		ILog log = AsciiDoctorEditorActivator.getDefault().getLog();
 		return log;
 	}
+
+	private long lastTimeLog;
+	
+    @Override
+    public void logTimeDiff(String info) {
+        long current = System.currentTimeMillis();
+        if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
+            long time = current - lastTimeLog;
+            logInfo("elapsed " + time + " ms:"+info);
+        }
+        lastTimeLog=current;
+    }
+
+    @Override
+    public void resetTimeDiff() {
+        lastTimeLog=System.currentTimeMillis();
+    }
 }

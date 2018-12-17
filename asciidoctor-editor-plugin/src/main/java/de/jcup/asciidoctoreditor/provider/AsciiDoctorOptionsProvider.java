@@ -26,17 +26,17 @@ import org.asciidoctor.SafeMode;
 
 public class AsciiDoctorOptionsProvider {
 
-	private AsciiDoctorProviderContext context;
+    private AsciiDoctorProviderContext context;
 
-	AsciiDoctorOptionsProvider(AsciiDoctorProviderContext context) {
-		if (context==null ){
-			throw new IllegalArgumentException("context may never be null!");
-		}
-		this.context = context;
-	}
+    AsciiDoctorOptionsProvider(AsciiDoctorProviderContext context) {
+        if (context == null) {
+            throw new IllegalArgumentException("context may never be null!");
+        }
+        this.context = context;
+    }
 
-	public Map<String, Object> createDefaultOptions() {
-		/* @formatter:off*/
+    public Map<String, Object> createDefaultOptions() {
+        /* @formatter:off*/
 		Attributes attrs;
 		Path outputFolder = context.getOutputFolder();
 		if (outputFolder==null){
@@ -77,16 +77,10 @@ public class AsciiDoctorOptionsProvider {
 		
 		
 		attrs=attrBuilder.get();
-		if (outputFolder != null) {
 			System.out.println("Tempfolder:" + outputFolder);
 			attrs.setAttribute("outdir", createAbsolutePath(outputFolder));
-		}
-		File destionationFolder= null;
-		if (outputFolder!=null){
-			destionationFolder= outputFolder.toFile();
-		}else{
-			destionationFolder= context.getBaseDir();
-		}
+			
+		File destionationFolder= outputFolder.toFile();
 		
 		OptionsBuilder opts = OptionsBuilder.options().
 				toDir(destionationFolder).
@@ -98,15 +92,15 @@ public class AsciiDoctorOptionsProvider {
 				option("sourcemap", "true").
 				baseDir(context.getBaseDir());
 		/* @formatter:on*/
-		return opts.asMap();
-	}
+        return opts.asMap();
+    }
 
-	protected String createAbsolutePath(Path path) {
-		return path.toAbsolutePath().normalize().toString();
-	}
+    protected String createAbsolutePath(Path path) {
+        return path.toAbsolutePath().normalize().toString();
+    }
 
-	public void reset() {
-		
-	}
+    public void reset() {
+
+    }
 
 }

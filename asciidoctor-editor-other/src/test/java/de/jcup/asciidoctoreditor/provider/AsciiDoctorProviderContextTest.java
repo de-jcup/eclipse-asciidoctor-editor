@@ -39,14 +39,14 @@ public class AsciiDoctorProviderContextTest {
 
 	private Asciidoctor asciidoctor;
 	private LogAdapter logAdapter;
-    private AsciiDoctorProvider provider;
+    private AsciiDoctorInstanceProvider provider;
 
 	
 	@Before
 	public void before(){
 		asciidoctor=mock(Asciidoctor.class);
 		logAdapter = mock(LogAdapter.class);
-		provider = mock(AsciiDoctorProvider.class);
+		provider = mock(AsciiDoctorInstanceProvider.class);
 		
 		when(provider.getAsciiDoctor(true)).thenReturn(asciidoctor);
 		when(provider.getAsciiDoctor(false)).thenReturn(asciidoctor);

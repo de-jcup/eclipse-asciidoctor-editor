@@ -18,12 +18,11 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
 
-public class AsciiDoctorEditorBuildSupport {
+public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupport{
     private Pattern tempFolderPattern;
-    private AsciiDoctorEditor editor;
 
     public AsciiDoctorEditorBuildSupport(AsciiDoctorEditor editor) {
-        this.editor = editor;
+       super(editor);
     }
 
     private boolean isFileNotAvailable(File file) {
@@ -46,41 +45,41 @@ public class AsciiDoctorEditorBuildSupport {
     }
 
     protected boolean isAutoBuildEnabledForExternalPreview() {
-        return editor.getPreferences().isAutoBuildEnabledForExternalPreview();
+        return getEditor().getPreferences().isAutoBuildEnabledForExternalPreview();
     }
 
     protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode, boolean forceInitialize) {
 
         boolean rebuildEnabled = true;
-        if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !editor.isInternalPreview()) {
+        if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !getEditor().isInternalPreview()) {
             rebuildEnabled = isAutoBuildEnabledForExternalPreview();
         }
         if (!rebuildEnabled) {
             return;
         }
 
-        if (!forceInitialize && editor.outputBuildSemaphore.availablePermits() == 0) {
+        if (!forceInitialize && getEditor().outputBuildSemaphore.availablePermits() == 0) {
             /* already rebuilding -so ignore */
             return;
         }
-        boolean initializing = forceInitialize || isFileNotAvailable(editor.temporaryInternalPreviewFile);
+        boolean initializing = forceInitialize || isFileNotAvailable(getEditor().temporaryInternalPreviewFile);
 
         try {
-            editor.outputBuildSemaphore.acquire();
+            getEditor().outputBuildSemaphore.acquire();
             if (initializing) {
-                File previewInitializingFile = new File(editor.getWrapper().getAddonsFolder(), "html/initialize/preview_initializing.html");
+                File previewInitializingFile = new File(getEditor().getWrapper().getAddonsFolder(), "html/initialize/preview_initializing.html");
                 boolean previewInitializingFileFound = false;
                 try {
                     if (previewInitializingFile.exists()) {
                         previewInitializingFileFound = true;
                     }
                     String previewFileURL = previewInitializingFile.toURI().toURL().toExternalForm();
-                    editor.browserAccess.setUrl(previewFileURL);
+                    getEditor().browserAccess.setUrl(previewFileURL);
                 } catch (MalformedURLException e) {
                     logError("Preview initializer html file not valid url", e);
                 }
                 if (!previewInitializingFileFound) {
-                    editor.browserAccess.safeBrowserSetText("<html><body><h3>Initializing document</h3></body></html>");
+                    getEditor().browserAccess.safeBrowserSetText("<html><body><h3>Initializing document</h3></body></html>");
                 }
             }
         } catch (InterruptedException e) {
@@ -102,9 +101,9 @@ public class AsciiDoctorEditorBuildSupport {
 
                     fullBuildTemporaryHTMLFilesAndShowAfter(monitor);
 
-                    if (editor.isInternalPreview()){
+                    if (getEditor().isInternalPreview()){
                         monitor.subTask("show internal");
-                        editor.ensureInternalBrowserShowsURL(monitor);
+                        getEditor().ensureInternalBrowserShowsURL(monitor);
                     }
                     monitor.worked(7);
 
@@ -112,20 +111,20 @@ public class AsciiDoctorEditorBuildSupport {
                      * do a "refocus" on safe - sometimes necessary on windows.
                      * Seems browser grabs sometimes focus...
                      */
-                    EclipseUtil.safeAsyncExec(() -> editor.refocus());
+                    EclipseUtil.safeAsyncExec(() -> getEditor().refocus());
 
                     monitor.done();
 
                 } finally {
-                    editor.outputBuildSemaphore.release();
+                    getEditor().outputBuildSemaphore.release();
                 }
             }
 
             protected String getSafeFileName() {
-                if (editor.temporaryInternalPreviewFile == null) {
+                if (getEditor().temporaryInternalPreviewFile == null) {
                     return "<unknown>";
                 }
-                return editor.temporaryInternalPreviewFile.getName();
+                return getEditor().temporaryInternalPreviewFile.getName();
             }
         });
         job.schedule();
@@ -134,20 +133,20 @@ public class AsciiDoctorEditorBuildSupport {
     private void fullBuildTemporaryHTMLFilesAndShowAfter(IProgressMonitor monitor) {
         String htmlInternalPreview = null;
         String htmlExternalBrowser = null;
-        if (editor.isCanceled(monitor)) {
+        if (getEditor().isCanceled(monitor)) {
             return;
         }
         int worked = 0;
         try {
-            safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(editor));
+            safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(getEditor()));
 
-            File editorFileOrNull = editor.getEditorFileOrNull();
+            File editorFileOrNull = getEditor().getEditorFileOrNull();
 
             monitor.subTask("RESOLVE");
             String asciiDocHtml = null;
             File fileToConvertIntoHTML = null;
             if (editorFileOrNull == null) {
-                String asciiDoc = editor.getDocumentText();
+                String asciiDoc = getEditor().getDocumentText();
                 fileToConvertIntoHTML = resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(asciiDoc);
             } else {
                 fileToConvertIntoHTML = resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(editorFileOrNull);
@@ -155,18 +154,18 @@ public class AsciiDoctorEditorBuildSupport {
             if (fileToConvertIntoHTML == null) {
                 return;
             }
-            if (editor.isCanceled(monitor)) {
+            if (getEditor().isCanceled(monitor)) {
                 return;
             }
             monitor.worked(++worked);
 
             /* content exists as simple file */
             monitor.subTask("GENERATE");
-            editor.getWrapper().convertToHTML(fileToConvertIntoHTML);
+            getEditor().getWrapper().convertToHTML(fileToConvertIntoHTML);
 
             monitor.worked(++worked);
 
-            if (editor.isCanceled(monitor)) {
+            if (getEditor().isCanceled(monitor)) {
                 return;
             }
             monitor.subTask("READ AND TRANSFORM");
@@ -181,19 +180,19 @@ public class AsciiDoctorEditorBuildSupport {
             monitor.worked(++worked);
 
             int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
-            AsciiDoctorWrapper wrapper = editor.getWrapper();
+            AsciiDoctorWrapper wrapper = getEditor().getWrapper();
             htmlInternalPreview = wrapper.buildHTMLWithCSS(asciiDocHtml, 0);
             htmlExternalBrowser = wrapper.buildHTMLWithCSS(asciiDocHtml, refreshAutomaticallyInSeconds);
-            if (editor.isCanceled(monitor)) {
+            if (getEditor().isCanceled(monitor)) {
                 return;
             }
             try {
                 monitor.subTask("WRITE INTERNAL PREVIEW");
-                AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, editor.temporaryInternalPreviewFile);
+                AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, getEditor().temporaryInternalPreviewFile);
                 monitor.worked(++worked);
 
                 monitor.subTask("WRITE EXTERNAL PREVIEW");
-                AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, editor.temporaryExternalPreviewFile);
+                AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, getEditor().temporaryExternalPreviewFile);
                 monitor.worked(++worked);
 
             } catch (IOException e1) {
@@ -214,7 +213,7 @@ public class AsciiDoctorEditorBuildSupport {
              */
             StringBuilder htmlSb = new StringBuilder();
             htmlSb.append("<h4");
-            if (editor.isAsciiDoctorError(e)) {
+            if (getEditor().isAsciiDoctorError(e)) {
                 htmlSb.append("Asciidoctor error");
             } else {
                 htmlSb.append("Unknown error");
@@ -223,12 +222,12 @@ public class AsciiDoctorEditorBuildSupport {
 
             safeAsyncExec(() -> {
 
-                String errorMessage = editor.fetchAsciidoctorErrorMessage(e);
+                String errorMessage = getEditor().fetchAsciidoctorErrorMessage(e);
 
                 AsciiDoctorErrorBuilder builder = new AsciiDoctorErrorBuilder();
                 AsciiDoctorError error = builder.build(errorMessage);
-                editor.browserAccess.safeBrowserSetText(htmlSb.toString());
-                AsciiDoctorEditorUtil.addScriptError(editor, -1, error, IMarker.SEVERITY_ERROR);
+                getEditor().browserAccess.safeBrowserSetText(htmlSb.toString());
+                AsciiDoctorEditorUtil.addScriptError(getEditor(), -1, error, IMarker.SEVERITY_ERROR);
 
                 if (isLoggingNecessary(e)) {
                     AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:" + e.getMessage(), e);
@@ -243,7 +242,7 @@ public class AsciiDoctorEditorBuildSupport {
     }
 
     protected Pattern createRemoveAbsolutePathToTempFolderPattern() {
-        Path tempFolder = editor.getWrapper().getTempFolder();
+        Path tempFolder = getEditor().getWrapper().getTempFolder();
         String absolutePathToTempFolder = tempFolder.toFile().getAbsolutePath();
         String asciidocOutputAbsolutePath = absolutePathToTempFolder.replace('\\', '/');
         asciidocOutputAbsolutePath += "/"; // relative path is without leading /
@@ -251,7 +250,7 @@ public class AsciiDoctorEditorBuildSupport {
     }
 
     protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML) {
-        File generatedFile = editor.getWrapper().getTempFileFor(fileToConvertIntoHTML, TemporaryFileType.ORIGIN);
+        File generatedFile = getEditor().getWrapper().getTempFileFor(fileToConvertIntoHTML, TemporaryFileType.ORIGIN);
         try {
             return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
         } catch (IOException e) {
@@ -263,8 +262,8 @@ public class AsciiDoctorEditorBuildSupport {
     protected File resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(String asciiDoc) throws IOException {
         File fileToConvertIntoHTML;
         String text;
-        if (editor.contentTransformer.isTransforming(asciiDoc)) {
-            text = editor.contentTransformer.transform(asciiDoc);
+        if (getEditor().contentTransformer.isTransforming(asciiDoc)) {
+            text = getEditor().contentTransformer.transform(asciiDoc);
         } else {
             text = asciiDoc;
         }
@@ -300,16 +299,17 @@ public class AsciiDoctorEditorBuildSupport {
         if (originText == null) {
             return null;
         }
-        if (!editor.contentTransformer.isTransforming(originText)) {
+        if (!getEditor().contentTransformer.isTransforming(originText)) {
             return editorFile;
         }
         return resolveFileToConvertToHTML(editorFile.getName(), originText);
     }
 
     public File resolveFileToConvertToHTML(String filename, String text) throws IOException {
-        File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(editor.editorTempIdentifier, filename);
+        Path tempFolder = getEditor().getWrapper().getTempFolder();
+        File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, getEditor().editorTempIdentifier+"_"+filename);
 
-        String transformed = editor.contentTransformer.transform(text);
+        String transformed = getEditor().contentTransformer.transform(text);
         try {
             return AsciiDocStringUtils.writeTextToUTF8File(transformed, newTempFile);
         } catch (IOException e) {
@@ -317,4 +317,6 @@ public class AsciiDoctorEditorBuildSupport {
             return null;
         }
     }
+    
+   
 }

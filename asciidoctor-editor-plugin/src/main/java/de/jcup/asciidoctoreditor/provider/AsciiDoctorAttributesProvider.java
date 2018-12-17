@@ -44,24 +44,8 @@ public class AsciiDoctorAttributesProvider {
 		return cachedAttributes;
 	}
 
-	protected String resolveImagesDirPath(File baseDir) {
-
-		Object imagesDir = getCachedAttributes().get("imagesdir");
-
-		String imagesDirPath = null;
-		if (imagesDir != null) {
-			imagesDirPath = imagesDir.toString();
-			if (imagesDirPath.startsWith("./")) {
-				File imagePathNew = new File(baseDir, imagesDirPath.substring(2));
-				imagesDirPath = imagePathNew.getAbsolutePath();
-			}
-		} else {
-			imagesDirPath = baseDir.getAbsolutePath();
-		}
-		return imagesDirPath;
-	}
-
 	protected Map<String, Object> resolveAttributes(File baseDir) {
+	    context.getLogAdapter().resetTimeDiff();
 		Map<String, Object> map = new HashMap<>();
 		Set<DocumentHeader> documentIndex = new HashSet<DocumentHeader>();
 		DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
@@ -72,6 +56,7 @@ public class AsciiDoctorAttributesProvider {
 		for (DocumentHeader header : documentIndex) {
 			map.putAll(header.getAttributes());
 		}
+		context.getLogAdapter().logTimeDiff("resolved attributes from base dir:"+baseDir);
 		return map;
 	}
 

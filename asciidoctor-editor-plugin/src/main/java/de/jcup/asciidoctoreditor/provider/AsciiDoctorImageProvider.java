@@ -36,7 +36,7 @@ public class AsciiDoctorImageProvider {
 	}
 
 	private void copyImagesToOutputFolder(String sourcePath, File target) {
-		
+		context.getLogAdapter().resetTimeDiff();
 		File cachedImagesFile = new File(sourcePath);
 		if (!cachedImagesFile.exists()) {
 			return;
@@ -46,6 +46,7 @@ public class AsciiDoctorImageProvider {
 		} catch (IOException e) {
 			context.getLogAdapter().logError("Cannot copy images", e);
 		}
+		context.getLogAdapter().logTimeDiff("copied images to output folder:"+sourcePath);
 
 	}
 
@@ -110,7 +111,7 @@ public class AsciiDoctorImageProvider {
 	}
 
 	protected String resolveImagesDirPath(File baseDir) {
-
+	    context.getLogAdapter().resetTimeDiff();
 		Object imagesDir = context.getAttributesProvider().getCachedAttributes().get("imagesdir");
 
 		String imagesDirPath = null;
@@ -124,6 +125,7 @@ public class AsciiDoctorImageProvider {
 			/* fallback when not defined - as defined at https://asciidoctor.org/docs/asciidoctor-pdf/#image-paths*/
 			imagesDirPath = baseDir.getAbsolutePath();
 		}
+		context.getLogAdapter().logTimeDiff("resolveImagesDirPath, baseDir:"+baseDir);
 		return imagesDirPath;
 	}
 

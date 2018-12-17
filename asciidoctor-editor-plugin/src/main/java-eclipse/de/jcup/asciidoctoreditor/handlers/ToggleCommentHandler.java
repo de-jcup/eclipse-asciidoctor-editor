@@ -21,7 +21,7 @@ public class ToggleCommentHandler extends AbstractAsciiDoctorEditorHandler{
 
 	@Override
 	protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
-		asciidoctorEditor.toggleComment();
+		asciidoctorEditor.getCommentSupport().toggleComment();
 	}
 
 

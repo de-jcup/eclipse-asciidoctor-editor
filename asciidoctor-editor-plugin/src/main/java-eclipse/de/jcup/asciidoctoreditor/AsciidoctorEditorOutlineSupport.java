@@ -17,19 +17,18 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 
-public class AsciidoctorEditorOutlineSupport {
+public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSupport{
     private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
 
     private Object monitor = new Object();
     private boolean quickOutlineOpened;
     private AsciiDoctorScriptModelBuilder modelBuilder;
     boolean ignoreNextCaretMove;
-    private AsciiDoctorEditor editor;
 
     private AsciiDoctorContentOutlinePage outlinePage;
 
     public AsciidoctorEditorOutlineSupport(AsciiDoctorEditor editor) {
-        this.editor = editor;
+        super(editor);
         this.modelBuilder = new AsciiDoctorScriptModelBuilder();
     }
 
@@ -47,9 +46,9 @@ public class AsciidoctorEditorOutlineSupport {
             }
             quickOutlineOpened = true;
         }
-        Shell shell = editor.getEditorSite().getShell();
+        Shell shell = getEditor().getEditorSite().getShell();
         AsciiDoctorScriptModel model = buildModelWithoutValidation();
-        AsciiDoctorQuickOutlineDialog dialog = new AsciiDoctorQuickOutlineDialog(editor, shell, "Quick outline");
+        AsciiDoctorQuickOutlineDialog dialog = new AsciiDoctorQuickOutlineDialog(getEditor(), shell, "Quick outline");
         dialog.setInput(model);
 
         dialog.open();
@@ -72,18 +71,18 @@ public class AsciidoctorEditorOutlineSupport {
                 }
                 /*
                  * ignore next caret move - to prevent endless loop between tree
-                 * and editor...
+                 * and getEditor()...
                  */
                 ignoreNextCaretMove = true;
-                editor.selectAndReveal(offset, length);
+                getEditor().selectAndReveal(offset, length);
                 if (grabFocus) {
-                    editor.setFocus();
+                    getEditor().setFocus();
                 }
                 /*
                  * caret movement was ignored for tree so call synchronizer
                  * alone here:
                  */
-                editor.synchronizer.onEditorCaretMoved(offset);
+                getEditor().synchronizer.onEditorCaretMoved(offset);
             }
         }
     }
@@ -93,9 +92,9 @@ public class AsciidoctorEditorOutlineSupport {
      */
     public void rebuildOutline() {
 
-        String text = editor.getDocumentText();
+        String text = getEditor().getDocumentText();
 
-        IPreferenceStore store = editor.getPreferences().getPreferenceStore();
+        IPreferenceStore store = getEditor().getPreferences().getPreferenceStore();
 
         boolean validateGraphviz = store.getBoolean(VALIDATE_GRAPHVIZ.getId());
         String errorLevelId = store.getString(VALIDATE_ERROR_LEVEL.getId());
@@ -126,13 +125,13 @@ public class AsciidoctorEditorOutlineSupport {
                 } else {
                     severity = IMarker.SEVERITY_ERROR;
                 }
-                editor.addErrorMarkers(model, severity);
+                getEditor().addErrorMarkers(model, severity);
             }
         });
     }
 
     AsciiDoctorScriptModel buildModelWithoutValidation() {
-        String text = editor.getDocumentText();
+        String text = getEditor().getDocumentText();
 
         AsciiDoctorScriptModel model;
         try {
@@ -146,7 +145,7 @@ public class AsciidoctorEditorOutlineSupport {
 
     public AsciiDoctorContentOutlinePage getOutlinePage() {
         if (outlinePage == null) {
-            outlinePage = new AsciiDoctorContentOutlinePage(editor);
+            outlinePage = new AsciiDoctorContentOutlinePage(getEditor());
         }
         return outlinePage;
     }

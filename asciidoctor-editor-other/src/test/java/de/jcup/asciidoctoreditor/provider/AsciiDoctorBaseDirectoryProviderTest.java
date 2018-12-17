@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import de.jcup.asciidoctoreditor.AsciiDocFileUtils;
+import de.jcup.asciidoctoreditor.LogAdapter;
 
 import static org.mockito.Mockito.*;
 
@@ -35,11 +36,14 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	private AsciiDoctorBaseDirectoryProvider providerToTest;
 
 	@Rule
-	public ExpectedException expectedException = ExpectedException.none(); 
+	public ExpectedException expectedException = ExpectedException.none();
+    private LogAdapter logAdapter; 
 	
 	@Before
 	public void before(){
 		context = mock(AsciiDoctorProviderContext.class);
+		logAdapter = mock(LogAdapter.class);
+		when(context.getLogAdapter()).thenReturn(logAdapter);
 		providerToTest = new AsciiDoctorBaseDirectoryProvider(context);
 	}
 	
@@ -108,7 +112,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	@Test
 	public void converted_content_file_locations_to_base_dir_does_not_throw_an_exception_and_basedir_is_not_root_temp_dir() throws Exception {
 		
-		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(""+System.nanoTime(), "junit_testcase_temporary_file_for_issue_97.xyz");
+		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(null, System.nanoTime()+ "_junit_testcase_temporary_file_for_issue_97.xyz");
 		
 		/* prepare */
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);

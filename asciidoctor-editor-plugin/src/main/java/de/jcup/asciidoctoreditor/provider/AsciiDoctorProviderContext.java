@@ -23,122 +23,127 @@ import org.asciidoctor.Asciidoctor;
 import de.jcup.asciidoctoreditor.LogAdapter;
 
 public class AsciiDoctorProviderContext {
-	
-	private LogAdapter logAdapter;
-	private File asciidocFile;
-	private File baseDir;
-	private Path outputFolder;
-	private boolean tocVisible;
-	private AsciiDoctorProvider provider;
 
-	private AsciiDoctorBaseDirectoryProvider baseDirProvider;
-	private AsciiDoctorImageProvider imageProvider;
-	private AsciiDoctorDiagramProvider diagramProvider;
-	private AsciiDoctorAttributesProvider attributesProvider;
-	private AsciiDoctorOptionsProvider optionsProvider;
-	File targetImagesDir;
-	int tocLevels;
+    private LogAdapter logAdapter;
+    private File asciidocFile;
+    private File baseDir;
+    private Path outputFolder;
+    private boolean tocVisible;
+    private AsciiDoctorInstanceProvider provider;
+
+    private AsciiDoctorBaseDirectoryProvider baseDirProvider;
+    private AsciiDoctorImageProvider imageProvider;
+    private AsciiDoctorDiagramProvider diagramProvider;
+    private AsciiDoctorAttributesProvider attributesProvider;
+    private AsciiDoctorOptionsProvider optionsProvider;
+    File targetImagesDir;
+    int tocLevels;
     private boolean useInstalled;
 
-	public AsciiDoctorProviderContext(AsciiDoctorProvider provider, LogAdapter logAdapter) {
-		if (logAdapter==null ){
-			throw new IllegalArgumentException("logAdapter may never be null!");
-		}
-		if (provider==null ){
+    public AsciiDoctorProviderContext(AsciiDoctorInstanceProvider provider, LogAdapter logAdapter) {
+        if (logAdapter == null) {
+            throw new IllegalArgumentException("logAdapter may never be null!");
+        }
+        if (provider == null) {
             throw new IllegalArgumentException("provider may never be null!");
         }
-		this.logAdapter=logAdapter;
-		this.provider=provider;
-		
-		init();
-	}
-	
-	public Path getOutputFolder() {
-		return outputFolder;
-	}
-	
-	public void setTocLevels(int tocLevels) {
-		this.tocLevels = tocLevels;
-	}
-	
-	public AsciiDoctorBaseDirectoryProvider getBaseDirProvider() {
-		return baseDirProvider;
-	}
-	
-	public AsciiDoctorImageProvider getImageProvider() {
-		return imageProvider;
-	}
-	
-	public AsciiDoctorDiagramProvider getDiagramProvider() {
-		return diagramProvider;
-	}
-	
-	public AsciiDoctorAttributesProvider getAttributesProvider() {
-		return attributesProvider;
-	}
-	
-	
-	public AsciiDoctorOptionsProvider getOptionsProvider() {
-		return optionsProvider;
-	}
-	
-	public void setAsciidocFile(File asciidocFile) {
-		this.asciidocFile = asciidocFile;
-		this.baseDir = baseDirProvider.findBaseDir();
-	}
+        this.logAdapter = logAdapter;
+        this.provider = provider;
 
-	protected void init() {
-		attributesProvider = new AsciiDoctorAttributesProvider(this);
-		imageProvider = new AsciiDoctorImageProvider(this);
-		optionsProvider = new AsciiDoctorOptionsProvider(this);
-		baseDirProvider = new AsciiDoctorBaseDirectoryProvider(this);
-		diagramProvider = new AsciiDoctorDiagramProvider(this);
-	}
+        init();
+    }
 
-	public void setOutputFolder(Path outputFolder) {
-		this.outputFolder = outputFolder;
-	}
+    public Path getOutputFolder() {
+        return outputFolder;
+    }
 
-	public void reset() {
-		this.baseDir = null;
-		this.outputFolder = null;
-		this.asciidocFile = null;
-		
-		this.attributesProvider.reset();
-		this.optionsProvider.reset();
-		this.imageProvider.reset();
-	}
+    public void setTocLevels(int tocLevels) {
+        this.tocLevels = tocLevels;
+    }
 
-	public Asciidoctor getAsciiDoctor() {
-	    return getProvider().getAsciiDoctor(useInstalled);
-	}
+    public AsciiDoctorBaseDirectoryProvider getBaseDirProvider() {
+        return baseDirProvider;
+    }
 
-	protected AsciiDoctorProvider getProvider(){
-	    return provider;
-	}
-	
-	public void setTOCVisible(boolean visible) {
-		this.tocVisible=visible;
-	}
-	
-	public boolean isTOCVisible() {
-		return tocVisible;
-	}
+    public AsciiDoctorImageProvider getImageProvider() {
+        return imageProvider;
+    }
 
-	public File getBaseDir() {
-		if (baseDir==null){
-			baseDir=baseDirProvider.findBaseDir();
-		}
-		return baseDir;
-	}
+    public AsciiDoctorDiagramProvider getDiagramProvider() {
+        return diagramProvider;
+    }
 
-	public LogAdapter getLogAdapter() {
-		return logAdapter;
-	}
+    public AsciiDoctorAttributesProvider getAttributesProvider() {
+        return attributesProvider;
+    }
 
-	public File getAsciiDocFile() {
-		return asciidocFile;
-	}
+    public AsciiDoctorOptionsProvider getOptionsProvider() {
+        return optionsProvider;
+    }
+
+    public void setAsciidocFile(File asciidocFile) {
+        this.asciidocFile = asciidocFile;
+        this.baseDir = baseDirProvider.findBaseDir();
+    }
+
+    protected void init() {
+        logAdapter.resetTimeDiff();
+        attributesProvider = new AsciiDoctorAttributesProvider(this);
+        logAdapter.logTimeDiff("time to create attributes provider");
+        imageProvider = new AsciiDoctorImageProvider(this);
+        logAdapter.logTimeDiff("time to create images provider");
+        optionsProvider = new AsciiDoctorOptionsProvider(this);
+        logAdapter.logTimeDiff("time to create options provider");
+        baseDirProvider = new AsciiDoctorBaseDirectoryProvider(this);
+        logAdapter.logTimeDiff("time to create base dir provider");
+        diagramProvider = new AsciiDoctorDiagramProvider(this);
+        logAdapter.logTimeDiff("time to create diagram provider");
+    }
+
+    public void setOutputFolder(Path outputFolder) {
+        this.outputFolder = outputFolder;
+    }
+
+    public void reset() {
+        this.baseDir = null;
+        this.outputFolder = null;
+        this.asciidocFile = null;
+
+        this.attributesProvider.reset();
+        this.optionsProvider.reset();
+        this.imageProvider.reset();
+    }
+
+    public Asciidoctor getAsciiDoctor() {
+        return getProvider().getAsciiDoctor(useInstalled);
+    }
+
+    protected AsciiDoctorInstanceProvider getProvider() {
+        return provider;
+    }
+
+    public void setTOCVisible(boolean visible) {
+        this.tocVisible = visible;
+    }
+
+    public boolean isTOCVisible() {
+        return tocVisible;
+    }
+
+    public File getBaseDir() {
+        if (baseDir == null) {
+            baseDir = baseDirProvider.findBaseDir();
+        }
+        return baseDir;
+    }
+
+    public LogAdapter getLogAdapter() {
+        return logAdapter;
+    }
+
+    public File getAsciiDocFile() {
+        return asciidocFile;
+    }
 
     public void setUseInstalled(boolean usingInstalledAsciidoctor) {
         useInstalled = usingInstalledAsciidoctor;

@@ -22,6 +22,8 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.asciidoctor.Asciidoctor;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.runtime.CoreException;
 
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -35,18 +37,16 @@ public class AsciiDoctorWrapper {
     private AsciiDoctorWrapperHTMLBuilder htmlBuilder;
 
     private AsciiDoctorProviderContext context;
-    private AsciiDoctorEditor editor;
+    private Path tempFolder;
 
-    private static AsciiDoctorWrapperProjectTempFolderMapper mapper = new AsciiDoctorWrapperProjectTempFolderMapper();
-
-    public AsciiDoctorWrapper(AsciiDoctorEditor editor, LogAdapter logAdapter) {
+    public AsciiDoctorWrapper(IProject project, LogAdapter logAdapter) {
         if (logAdapter == null) {
             throw new IllegalArgumentException("log adapter may not be null!");
         }
         this.logAdapter = logAdapter;
-        this.editor=editor;
+        this.tempFolder = createTempPath(project);
         this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
-        htmlBuilder = new AsciiDoctorWrapperHTMLBuilder(context);
+        this.htmlBuilder = new AsciiDoctorWrapperHTMLBuilder(context);
 
     }
 
@@ -75,7 +75,7 @@ public class AsciiDoctorWrapper {
     }
 
     private void init(AsciiDoctorProviderContext context) {
-        context.setUseInstalled(editor.getPreferences().isUsingInstalledAsciidoctor());
+        context.setUseInstalled(AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor());
         context.setOutputFolder(getTempFolder());
     }
 
@@ -87,9 +87,21 @@ public class AsciiDoctorWrapper {
     }
 
     public Path getTempFolder() {
-        IProject project = editor.getProject();
-        Path tempFolder = mapper.getTempFolder(project);
         return tempFolder;
+    }
+    
+    private Path createTempPath(IProject project) {
+        String id = "fallback";
+        if (project != null) {
+            IProjectDescription description;
+            try {
+                description = project.getDescription();
+                id = description.getName()+ project.hashCode();
+            } catch (CoreException e) {
+                id = ""+ project.hashCode();
+            }
+        }
+        return AsciiDocFileUtils.createTempFolderForEditor(id);
     }
 
     public File getTempFileFor(File editorFile, TemporaryFileType type) {

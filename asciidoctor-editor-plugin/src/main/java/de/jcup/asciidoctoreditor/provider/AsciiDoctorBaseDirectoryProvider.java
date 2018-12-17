@@ -39,6 +39,7 @@ public class AsciiDoctorBaseDirectoryProvider {
 	}
 
 	private File findBaseDirNotCached(File startFrom) {
+	    context.getLogAdapter().resetTimeDiff();
 		File file = resolveUnSaveBaseDir(startFrom);
 		File tempFolder = new File(System.getProperty("java.io.tmpdir"));
 		if (tempFolder.equals(file)){
@@ -47,6 +48,7 @@ public class AsciiDoctorBaseDirectoryProvider {
 			 */
 			throw new IllegalStateException("Tempfolder may never be the base dir folder!");
 		}
+		context.getLogAdapter().logTimeDiff("findBaseDirNotCached, started from:"+startFrom+", result:"+file);
 		return file;
 	}
 

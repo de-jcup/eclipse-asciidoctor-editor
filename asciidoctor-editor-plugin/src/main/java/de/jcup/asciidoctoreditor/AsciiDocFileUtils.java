@@ -17,12 +17,16 @@ package de.jcup.asciidoctoreditor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class AsciiDocFileUtils {
 
-	public static File createTempFileForConvertedContent(String tempId, String filename) throws IOException {
-		File newTempSubFolder = createSelfDeletingTempSubFolder(tempId, "asciidoctor-editor-temp");
+	public static File createTempFileForConvertedContent(Path tempFolder, String filename) throws IOException {
+	    if (tempFolder==null){
+	        tempFolder = Files.createTempDirectory("__fallback__");
+	    }
+		File newTempSubFolder = tempFolder.toFile();
 
 		File newTempFile = new File(newTempSubFolder, filename);
 		if (newTempFile.exists()) {
@@ -41,7 +45,7 @@ public class AsciiDocFileUtils {
 	 */
 	public static Path createTempFolderForEditor(String projectId) {
 		try {
-			File newTempSubFolder = createSelfDeletingTempSubFolder(projectId, "asciidoctor-editor-gen");
+			File newTempSubFolder = createSelfDeletingTempSubFolder(projectId, "asciidoctor-editor-temp");
 			return newTempSubFolder.toPath();
 		} catch (IOException e) {
 			throw new IllegalStateException("Not able to create temp folder for editor", e);

@@ -23,7 +23,7 @@ public class OpenLinkHandler extends AbstractAsciiDoctorEditorHandler {
 
 	@Override
 	protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
-		asciidoctorEditor.openHyperlinkAtCurrentCursorPosition();
+		asciidoctorEditor.getLinkSupport().openHyperlinkAtCurrentCursorPosition();
 	}
 
 }

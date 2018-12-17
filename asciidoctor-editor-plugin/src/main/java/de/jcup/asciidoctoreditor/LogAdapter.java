@@ -22,4 +22,9 @@ public interface LogAdapter {
 	public void logWarn(String message);
 
 	public void logError(String string, Throwable t);
+
+	public void resetTimeDiff();
+
+	public void logTimeDiff(String info);
+    
 }
