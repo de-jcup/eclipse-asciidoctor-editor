@@ -18,15 +18,11 @@ package de.jcup.asciidoctoreditor.provider;
 import java.io.File;
 import java.io.FileFilter;
 
-public class AsciiDoctorBaseDirectoryProvider {
+public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvider {
 	private static FileFilter ADOC_FILE_FILTER = new ADocFilter();
-	private AsciiDoctorProviderContext context;
 
 	AsciiDoctorBaseDirectoryProvider(AsciiDoctorProviderContext context) {
-		if (context == null) {
-			throw new IllegalArgumentException("context may never be null!");
-		}
-		this.context = context;
+		super(context);
 	}
 
 	private File cachedBaseDir;
@@ -39,7 +35,7 @@ public class AsciiDoctorBaseDirectoryProvider {
 	}
 
 	private File findBaseDirNotCached(File startFrom) {
-	    context.getLogAdapter().resetTimeDiff();
+	    getContext().getLogAdapter().resetTimeDiff();
 		File file = resolveUnSaveBaseDir(startFrom);
 		File tempFolder = new File(System.getProperty("java.io.tmpdir"));
 		if (tempFolder.equals(file)){
@@ -48,7 +44,7 @@ public class AsciiDoctorBaseDirectoryProvider {
 			 */
 			throw new IllegalStateException("Tempfolder may never be the base dir folder!");
 		}
-		context.getLogAdapter().logTimeDiff("findBaseDirNotCached, started from:"+startFrom+", result:"+file);
+		getContext().getLogAdapter().logTimeDiff("findBaseDirNotCached, started from:"+startFrom+", result:"+file);
 		return file;
 	}
 
@@ -106,7 +102,7 @@ public class AsciiDoctorBaseDirectoryProvider {
 	}
 
 	public File findBaseDir() {
-		File asciiDocFile = context.getAsciiDocFile();
+		File asciiDocFile = getContext().getAsciiDocFile();
 		if (asciiDocFile == null) {
 			 throw new IllegalStateException("No asciidoc file set!");
 		}

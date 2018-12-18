@@ -25,38 +25,34 @@ import org.asciidoctor.AsciiDocDirectoryWalker;
 import org.asciidoctor.DirectoryWalker;
 import org.asciidoctor.ast.DocumentHeader;
 
-public class AsciiDoctorAttributesProvider {
+public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider{
 	
 	private Map<String, Object> cachedAttributes;
-	private AsciiDoctorProviderContext context;
 
 	AsciiDoctorAttributesProvider(AsciiDoctorProviderContext context){
-		if (context==null ){
-			throw new IllegalArgumentException("context may never be null!");
-		}
-		this.context=context;
+		super(context);
 	}
 
 	protected Map<String, Object> getCachedAttributes() {
 		if (cachedAttributes == null) {
-			cachedAttributes = resolveAttributes(context.getBaseDir());
+			cachedAttributes = resolveAttributes(getContext().getBaseDir());
 		}
 		return cachedAttributes;
 	}
 
 	protected Map<String, Object> resolveAttributes(File baseDir) {
-	    context.getLogAdapter().resetTimeDiff();
+	    getContext().getLogAdapter().resetTimeDiff();
 		Map<String, Object> map = new HashMap<>();
 		Set<DocumentHeader> documentIndex = new HashSet<DocumentHeader>();
 		DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
 
 		for (File file : directoryWalker.scan()) {
-			documentIndex.add(context.getAsciiDoctor().readDocumentHeader(file));
+			documentIndex.add(getContext().getAsciiDoctor().readDocumentHeader(file));
 		}
 		for (DocumentHeader header : documentIndex) {
 			map.putAll(header.getAttributes());
 		}
-		context.getLogAdapter().logTimeDiff("resolved attributes from base dir:"+baseDir);
+		getContext().getLogAdapter().logTimeDiff("resolved attributes from base dir:"+baseDir);
 		return map;
 	}
 

@@ -17,19 +17,20 @@ package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
 
-public class AsciiDoctorDiagramProvider {
+public class AsciiDoctorDiagramProvider extends AbstractAsciiDoctorProvider{
 
-	private AsciiDoctorProviderContext context;
 
 	public AsciiDoctorDiagramProvider(AsciiDoctorProviderContext context) {
-		if (context==null ){
-			throw new IllegalArgumentException("context may never be null!");
-		}
-		this.context = context;
+	    super(context);
 	}
 
 	public File getDiagramRootDirectory() {
-		return context.getBaseDir();
+		return getContext().getBaseDir();
 	}
+
+    @Override
+    protected void reset() {
+        /* nothing todo */
+    }
 
 }

@@ -16,11 +16,10 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.asciidoctor.Asciidoctor;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
@@ -92,15 +91,15 @@ public class AsciiDoctorProviderContext {
 
     protected void init() {
         logAdapter.resetTimeDiff();
-        attributesProvider = new AsciiDoctorAttributesProvider(this);
+        attributesProvider = register(new AsciiDoctorAttributesProvider(this));
         logAdapter.logTimeDiff("time to create attributes provider");
-        imageProvider = new AsciiDoctorImageProvider(this);
+        imageProvider = register(new AsciiDoctorImageProvider(this));
         logAdapter.logTimeDiff("time to create images provider");
-        optionsProvider = new AsciiDoctorOptionsProvider(this);
+        optionsProvider = register(new AsciiDoctorOptionsProvider(this));
         logAdapter.logTimeDiff("time to create options provider");
-        baseDirProvider = new AsciiDoctorBaseDirectoryProvider(this);
+        baseDirProvider = register(new AsciiDoctorBaseDirectoryProvider(this));
         logAdapter.logTimeDiff("time to create base dir provider");
-        diagramProvider = new AsciiDoctorDiagramProvider(this);
+        diagramProvider = register(new AsciiDoctorDiagramProvider(this));
         logAdapter.logTimeDiff("time to create diagram provider");
     }
 
@@ -108,14 +107,17 @@ public class AsciiDoctorProviderContext {
         this.outputFolder = outputFolder;
     }
 
+    /**
+     * Reset context. After this method is called all cached operations will be recalculated on next rendering time fo editor content
+     */
     public void reset() {
         this.baseDir = null;
         this.outputFolder = null;
         this.asciidocFile = null;
 
-        this.attributesProvider.reset();
-        this.optionsProvider.reset();
-        this.imageProvider.reset();
+        for (AbstractAsciiDoctorProvider provider: providers){
+            provider.reset();
+        }
     }
 
     public Asciidoctor getAsciiDoctor() {
@@ -163,6 +165,13 @@ public class AsciiDoctorProviderContext {
 
     public File getFileToRender() {
         return fileToRender;
+    }
+
+    private Set<AbstractAsciiDoctorProvider> providers = new LinkedHashSet<>();
+    
+    public <T extends AbstractAsciiDoctorProvider> T register(T  provider) {
+        providers.add(provider);
+        return provider;
     }
 
 }

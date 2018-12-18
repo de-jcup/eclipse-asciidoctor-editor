@@ -24,39 +24,34 @@ import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.SafeMode;
 
-public class AsciiDoctorOptionsProvider {
-
-    private AsciiDoctorProviderContext context;
+public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 
     AsciiDoctorOptionsProvider(AsciiDoctorProviderContext context) {
-        if (context == null) {
-            throw new IllegalArgumentException("context may never be null!");
-        }
-        this.context = context;
+        super(context);
     }
 
     public Map<String, Object> createDefaultOptions() {
         /* @formatter:off*/
 		Attributes attrs;
-		Path outputFolder = context.getOutputFolder();
+		Path outputFolder = getContext().getOutputFolder();
 		if (outputFolder==null){
 			throw new IllegalStateException("output folder not defined");
 		}
-		context.getImageProvider().ensureImages();
+		getContext().getImageProvider().ensureImages();
 		
 		AttributesBuilder attrBuilder = AttributesBuilder.
 				attributes().
 					showTitle(true).
 					sourceHighlighter("coderay").
-					attribute("eclipse-editor-basedir",context.getBaseDir().getAbsolutePath()).
-					attribute("imagesoutdir", createAbsolutePath(context.targetImagesDir.toPath())).
+					attribute("eclipse-editor-basedir",getContext().getBaseDir().getAbsolutePath()).
+					attribute("imagesoutdir", createAbsolutePath(getContext().targetImagesDir.toPath())).
 				    attribute("icons", "font").
 					attribute("source-highlighter","coderay").
 					attribute("coderay-css", "style").
 					attribute("env", "eclipse").
 					attribute("env-eclipse");
 		 /* @formatter:on*/
-        Map<String, Object> cachedAttributes = context.getAttributesProvider().getCachedAttributes();
+        Map<String, Object> cachedAttributes = getContext().getAttributesProvider().getCachedAttributes();
         for (String key : cachedAttributes.keySet()) {
             Object value = cachedAttributes.get(key);
             if (value != null && value.toString().isEmpty()) {
@@ -70,13 +65,13 @@ public class AsciiDoctorOptionsProvider {
                 attrBuilder.attribute(key, value);
             }
         }
-        if (context.isTOCVisible()) {
+        if (getContext().isTOCVisible()) {
             attrBuilder.attribute("toc", "left");
-            if (context.tocLevels > 0) {
-                attrBuilder.attribute("toclevels", "" + context.tocLevels);
+            if (getContext().tocLevels > 0) {
+                attrBuilder.attribute("toclevels", "" + getContext().tocLevels);
             }
         }
-        attrBuilder.imagesDir(context.targetImagesDir.getAbsolutePath());
+        attrBuilder.imagesDir(getContext().targetImagesDir.getAbsolutePath());
 
         attrs = attrBuilder.get();
         attrs.setAttribute("outdir", createAbsolutePath(outputFolder));
@@ -84,9 +79,9 @@ public class AsciiDoctorOptionsProvider {
         File destionationFolder = outputFolder.toFile();
 
         OptionsBuilder opts = OptionsBuilder.options().toDir(destionationFolder).safe(SafeMode.UNSAFE).backend("html5")
-                .headerFooter(context.isTOCVisible()).
+                .headerFooter(getContext().isTOCVisible()).
 
-                attributes(attrs).option("sourcemap", "true").baseDir(context.getBaseDir());
+                attributes(attrs).option("sourcemap", "true").baseDir(getContext().getBaseDir());
         /* @formatter:on*/
         return opts.asMap();
     }
@@ -96,7 +91,7 @@ public class AsciiDoctorOptionsProvider {
     }
 
     public void reset() {
-
+        /* nothing to do*/
     }
 
 }
