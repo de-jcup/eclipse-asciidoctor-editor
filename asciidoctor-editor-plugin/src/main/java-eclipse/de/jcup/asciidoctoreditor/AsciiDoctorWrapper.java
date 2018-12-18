@@ -16,9 +16,11 @@
 package de.jcup.asciidoctoreditor;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.asciidoctor.Asciidoctor;
 import org.eclipse.core.resources.IProject;
@@ -54,10 +56,18 @@ public class AsciiDoctorWrapper {
         return context;
     }
 
-    public void convertToHTML(File asciiDocFile) throws Exception {
+    public void convertToHTML(File asciiDocFile, long editorId, boolean useHiddenFile) throws Exception {
+        
         init(context);
         
+        
         context.setAsciidocFile(asciiDocFile);
+        if (useHiddenFile){
+            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(asciiDocFile,editorId,context.getBaseDir(), getTempFolder()));
+        }else{
+            context.setFileToRender(asciiDocFile);
+        }
+        
         AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
         int tocLevels = preferences.getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
         context.setTocLevels(tocLevels);
@@ -66,7 +76,7 @@ public class AsciiDoctorWrapper {
             Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions();
 
             Asciidoctor asciiDoctor = context.getAsciiDoctor();
-            asciiDoctor.convertFile(asciiDocFile, defaultOptions);
+            asciiDoctor.convertFile(context.getFileToRender(), defaultOptions);
 
         } catch (Exception e) {
             logAdapter.logError("Cannot convert to html:" + asciiDocFile, e);
@@ -101,14 +111,18 @@ public class AsciiDoctorWrapper {
                 id = ""+ project.hashCode();
             }
         }
-        return AsciiDocFileUtils.createTempFolderForEditor(id);
+        return AsciiDocFileUtils.createTempFolderForId(id);
     }
 
-    public File getTempFileFor(File editorFile, TemporaryFileType type) {
+    public File getTempFileFor(File editorFile, long editorId, TemporaryFileType type) {
         File parent = getTempFolder().toFile();
         
         String baseName = FilenameUtils.getBaseName(editorFile.getName());
         StringBuilder sb = new StringBuilder();
+        if (! (editorFile.getName().startsWith(""+editorId))){
+            sb.append(editorId);
+            sb.append("_");
+        }
         sb.append(type.getPrefix());
         sb.append(baseName);
         sb.append(".html");
@@ -135,4 +149,5 @@ public class AsciiDoctorWrapper {
     public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
         return htmlBuilder.buildHTMLWithCSS(html, refreshAutomaticallyInSeconds);
     }
+
 }

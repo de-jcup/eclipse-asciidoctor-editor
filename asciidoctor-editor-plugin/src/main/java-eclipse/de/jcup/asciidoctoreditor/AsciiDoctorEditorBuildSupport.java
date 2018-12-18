@@ -18,11 +18,11 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
 
-public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupport{
+public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupport {
     private Pattern tempFolderPattern;
 
     public AsciiDoctorEditorBuildSupport(AsciiDoctorEditor editor) {
-       super(editor);
+        super(editor);
     }
 
     private boolean isFileNotAvailable(File file) {
@@ -101,7 +101,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
 
                     fullBuildTemporaryHTMLFilesAndShowAfter(monitor);
 
-                    if (getEditor().isInternalPreview()){
+                    if (getEditor().isInternalPreview()) {
                         monitor.subTask("show internal");
                         getEditor().ensureInternalBrowserShowsURL(monitor);
                     }
@@ -136,6 +136,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         if (getEditor().isCanceled(monitor)) {
             return;
         }
+        AsciiDoctorWrapper wrapper = getEditor().getWrapper();
         int worked = 0;
         try {
             safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(getEditor()));
@@ -154,6 +155,8 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             if (fileToConvertIntoHTML == null) {
                 return;
             }
+            
+            // editorId, asciidocFile, tempFolder)
             if (getEditor().isCanceled(monitor)) {
                 return;
             }
@@ -161,7 +164,9 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
 
             /* content exists as simple file */
             monitor.subTask("GENERATE");
-            getEditor().getWrapper().convertToHTML(fileToConvertIntoHTML);
+
+            long editorId = getEditorId();
+            wrapper.convertToHTML(fileToConvertIntoHTML, editorId,isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML));
 
             monitor.worked(++worked);
 
@@ -169,7 +174,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                 return;
             }
             monitor.subTask("READ AND TRANSFORM");
-            asciiDocHtml = readFileCreatedByAsciiDoctor(fileToConvertIntoHTML);
+            asciiDocHtml = readFileCreatedByAsciiDoctor(wrapper.getContext().getFileToRender(),editorId);
             monitor.worked(++worked);
             /*
              * Calling Asciidoctor generates output with absolute pathes - we
@@ -180,7 +185,6 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             monitor.worked(++worked);
 
             int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
-            AsciiDoctorWrapper wrapper = getEditor().getWrapper();
             htmlInternalPreview = wrapper.buildHTMLWithCSS(asciiDocHtml, 0);
             htmlExternalBrowser = wrapper.buildHTMLWithCSS(asciiDocHtml, refreshAutomaticallyInSeconds);
             if (getEditor().isCanceled(monitor)) {
@@ -235,10 +239,31 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             });
 
         }
-        if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED){
-            System.out.println("worked:"+worked);
+        if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
+            System.out.println("worked:" + worked);
         }
 
+    }
+
+    protected long getEditorId() {
+        return getEditor().getEditorId();
+    }
+
+    /**
+     * Asciidoctor starts normally from a root document and resolves pathes etc.
+     * on the fly by using the base directory. So far so good. but when
+     * resolving base directory for e.g. images, diagrams etc. and setting it
+     * but rendering a sub file this does always break the includes, because either images do not longer work or the include.<br><br>
+     * To prevent this we do following trick. We always create a temporary hidden file which will include the corresponding real editor file
+     * This temporary file is always settled at base folder
+     */
+    protected boolean isNeedingAHiddenEditorFile(File editorFileOrNull, File fileToConvertIntoHTML) {
+        /*
+         * Still same file so not converted, means still same .adoc file for
+         * those files we do always create a temporary editor file which does
+         * include the origin one - reason see description in javadoc above
+         */
+        return fileToConvertIntoHTML.equals(editorFileOrNull);
     }
 
     protected Pattern createRemoveAbsolutePathToTempFolderPattern() {
@@ -249,8 +274,8 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         return Pattern.compile(asciidocOutputAbsolutePath);
     }
 
-    protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML) {
-        File generatedFile = getEditor().getWrapper().getTempFileFor(fileToConvertIntoHTML, TemporaryFileType.ORIGIN);
+    protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, long editorId) {
+        File generatedFile = getEditor().getWrapper().getTempFileFor(fileToConvertIntoHTML, editorId, TemporaryFileType.ORIGIN);
         try {
             return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
         } catch (IOException e) {
@@ -307,7 +332,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
 
     public File resolveFileToConvertToHTML(String filename, String text) throws IOException {
         Path tempFolder = getEditor().getWrapper().getTempFolder();
-        File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, getEditor().editorTempIdentifier+"_"+filename);
+        File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, getEditorId(), filename);
 
         String transformed = getEditor().contentTransformer.transform(text);
         try {
@@ -317,6 +342,5 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             return null;
         }
     }
-    
-   
+
 }

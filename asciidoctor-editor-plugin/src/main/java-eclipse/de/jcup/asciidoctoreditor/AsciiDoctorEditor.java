@@ -116,52 +116,37 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private static final int INITIAL_LAYOUT_ORIENTATION = SWT.HORIZONTAL;
 
     protected CoolBarManager coolBarManager;
+
     BrowserAccess browserAccess;
-
     ContentTransformer contentTransformer;
-
-    String editorTempIdentifier;
-
     Semaphore outputBuildSemaphore = new Semaphore(1);
     ScrollSynchronizer synchronizer;
-
     File temporaryExternalPreviewFile;
-
     File temporaryInternalPreviewFile;
 
+    private long editorId;
+    private long fallBackEditorId;
     private String bgColor;
-
     private BoldFormatAction boldFormatAction;
-
     private AsciiDoctorEditorBuildSupport buildSupport;
-
     private AsciiDoctorEditorCommentSupport commentSupport;
-
     private File editorFile;
-
     private String fgColor;
-
     private boolean internalPreview;
-
     private ItalicFormatAction italicFormatAction;
-
     private int lastCaretPosition;
-
     private AsciiDoctorEditorLinkSupport linkSupport;
-
     private MonospacedFormatAction monoSpacedFormatAction;
-
     private AsciiDoctorContentOutlinePage outlinePage;
-
     private AsciidoctorEditorOutlineSupport outlineSupport;
-
     private IProject project;
-
     private RebuildAsciiDocViewAction rebuildAction;
-
     private SashForm sashForm;
-
     private Composite topComposite;
+
+    public long getEditorId() {
+        return editorId;
+    }
 
     public AsciiDoctorEditor() {
         outlineSupport = new AsciidoctorEditorOutlineSupport(this);
@@ -169,8 +154,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         linkSupport = new AsciiDoctorEditorLinkSupport(this);
         commentSupport = new AsciiDoctorEditorCommentSupport(this);
 
-        editorTempIdentifier = "" + System.nanoTime();
-
+        fallBackEditorId = System.nanoTime(); // nano time just as fallback - we use hashcode of path normally
+        editorId=fallBackEditorId;
+        
         setSourceViewerConfiguration(createSourceViewerConfig());
 
         contentTransformer = createCustomContentTransformer();
@@ -234,7 +220,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         getWrapper().dispose();
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
     }
-    
+
     public AsciiDoctorHeadline findAsciiDoctorHeadline(String functionName) {
         if (functionName == null) {
             return null;
@@ -570,7 +556,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     protected void doSetInput(IEditorInput input) throws CoreException {
         setDocumentProvider(createDocumentProvider(input));
         super.doSetInput(input);
-
+        IFile file = resolveFileOrNull();
+        if (file==null){
+            editorId=fallBackEditorId;
+        }else{
+            editorId=file.getFullPath().toFile().hashCode();
+        }
         outlineSupport.rebuildOutline();
         if (browserAccess == null) {
             /*
@@ -626,6 +617,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         if (project != null) {
             return project;
         }
+        IFile f = resolveFileOrNull();
+        if (f != null) {
+            project = f.getProject();
+        }
+        return project;
+    }
+
+    private IFile resolveFileOrNull() {
         IEditorInput input = getEditorInput();
 
         IPath location = null;
@@ -652,10 +651,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
         IWorkspaceRoot root = getWorkspace().getRoot();
         IFile f = root.getFile(location);
-        if (f != null) {
-            project = f.getProject();
-        }
-        return project;
+        return f;
     }
 
     protected String getTitleImageName(int severity) {
@@ -689,8 +685,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             return;
         }
         AsciiDoctorWrapper wrapper = getWrapper();
-        temporaryInternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, TemporaryFileType.INTERNAL_PREVIEW);
-        temporaryExternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, TemporaryFileType.EXTERNAL_PREVIEW);
+        temporaryInternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, editorId, TemporaryFileType.INTERNAL_PREVIEW);
+        temporaryExternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, editorId, TemporaryFileType.EXTERNAL_PREVIEW);
 
         browserAccess.ensureBrowser(new BrowserContentInitializer() {
 

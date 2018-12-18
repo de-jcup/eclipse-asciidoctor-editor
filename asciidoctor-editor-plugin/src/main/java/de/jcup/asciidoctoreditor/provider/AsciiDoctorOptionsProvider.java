@@ -48,50 +48,46 @@ public class AsciiDoctorOptionsProvider {
 				attributes().
 					showTitle(true).
 					sourceHighlighter("coderay").
+					attribute("eclipse-editor-basedir",context.getBaseDir().getAbsolutePath()).
 					attribute("imagesoutdir", createAbsolutePath(context.targetImagesDir.toPath())).
 				    attribute("icons", "font").
 					attribute("source-highlighter","coderay").
 					attribute("coderay-css", "style").
 					attribute("env", "eclipse").
 					attribute("env-eclipse");
-		
-		Map<String, Object> cachedAttributes = context.getAttributesProvider().getCachedAttributes();
-		for (String key: cachedAttributes.keySet()){
-			Object value = cachedAttributes.get(key);
-			if (value!=null && value.toString().isEmpty()){
-				if ("toc".equals(key)){
-					// currently we always remove the TOC (we do show the TOC only by the internal boolean flag
-					// also the TOC is not correctly positioned - (always on top instead of being at left side)
-					continue;
-				}
-				attrBuilder.attribute(key,value);
-			}
-		}
-		if (context.isTOCVisible()){
-			attrBuilder.attribute("toc","left");
-			if (context.tocLevels>0){
-				attrBuilder.attribute("toclevels",""+context.tocLevels);
-			}
-		}
-		attrBuilder.imagesDir(context.targetImagesDir.getAbsolutePath());
-		
-		
-		attrs=attrBuilder.get();
-			System.out.println("Tempfolder:" + outputFolder);
-			attrs.setAttribute("outdir", createAbsolutePath(outputFolder));
-			
-		File destionationFolder= outputFolder.toFile();
-		
-		OptionsBuilder opts = OptionsBuilder.options().
-				toDir(destionationFolder).
-				safe(SafeMode.UNSAFE).
-				backend("html5").
-				headerFooter(context.isTOCVisible()).
-				
-				attributes(attrs).
-				option("sourcemap", "true").
-				baseDir(context.getBaseDir());
-		/* @formatter:on*/
+		 /* @formatter:on*/
+        Map<String, Object> cachedAttributes = context.getAttributesProvider().getCachedAttributes();
+        for (String key : cachedAttributes.keySet()) {
+            Object value = cachedAttributes.get(key);
+            if (value != null && value.toString().isEmpty()) {
+                if ("toc".equals(key)) {
+                    // currently we always remove the TOC (we do show the TOC
+                    // only by the internal boolean flag
+                    // also the TOC is not correctly positioned - (always on top
+                    // instead of being at left side)
+                    continue;
+                }
+                attrBuilder.attribute(key, value);
+            }
+        }
+        if (context.isTOCVisible()) {
+            attrBuilder.attribute("toc", "left");
+            if (context.tocLevels > 0) {
+                attrBuilder.attribute("toclevels", "" + context.tocLevels);
+            }
+        }
+        attrBuilder.imagesDir(context.targetImagesDir.getAbsolutePath());
+
+        attrs = attrBuilder.get();
+        attrs.setAttribute("outdir", createAbsolutePath(outputFolder));
+
+        File destionationFolder = outputFolder.toFile();
+
+        OptionsBuilder opts = OptionsBuilder.options().toDir(destionationFolder).safe(SafeMode.UNSAFE).backend("html5")
+                .headerFooter(context.isTOCVisible()).
+
+                attributes(attrs).option("sourcemap", "true").baseDir(context.getBaseDir());
+        /* @formatter:on*/
         return opts.asMap();
     }
 

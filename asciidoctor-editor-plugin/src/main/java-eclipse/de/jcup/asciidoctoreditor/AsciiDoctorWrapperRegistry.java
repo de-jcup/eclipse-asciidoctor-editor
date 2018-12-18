@@ -19,6 +19,7 @@ public class AsciiDoctorWrapperRegistry {
     }
 
     private AsciiDoctorWrapper createWrapper(IProject project) {
-        return new AsciiDoctorWrapper(project, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        AsciiDoctorWrapper wrapper = new AsciiDoctorWrapper(project, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        return wrapper;
     }
 }

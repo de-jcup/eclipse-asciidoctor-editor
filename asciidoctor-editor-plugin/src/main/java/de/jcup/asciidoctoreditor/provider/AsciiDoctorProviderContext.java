@@ -16,8 +16,11 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
 import org.asciidoctor.Asciidoctor;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
@@ -39,6 +42,7 @@ public class AsciiDoctorProviderContext {
     File targetImagesDir;
     int tocLevels;
     private boolean useInstalled;
+    private File fileToRender;
 
     public AsciiDoctorProviderContext(AsciiDoctorInstanceProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
@@ -151,6 +155,14 @@ public class AsciiDoctorProviderContext {
 
     public boolean isUsingInstalledAsciiDoctor() {
         return useInstalled;
+    }
+
+    public void setFileToRender(File fileToRender) {
+        this.fileToRender = fileToRender;
+    }
+
+    public File getFileToRender() {
+        return fileToRender;
     }
 
 }

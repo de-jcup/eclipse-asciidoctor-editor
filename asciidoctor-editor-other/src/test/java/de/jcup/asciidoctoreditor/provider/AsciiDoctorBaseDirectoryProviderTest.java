@@ -112,7 +112,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	@Test
 	public void converted_content_file_locations_to_base_dir_does_not_throw_an_exception_and_basedir_is_not_root_temp_dir() throws Exception {
 		
-		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(null, System.nanoTime()+ "_junit_testcase_temporary_file_for_issue_97.xyz");
+		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(null, System.nanoTime(),"junit_testcase_temporary_file_for_issue_97.xyz");
 		
 		/* prepare */
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
