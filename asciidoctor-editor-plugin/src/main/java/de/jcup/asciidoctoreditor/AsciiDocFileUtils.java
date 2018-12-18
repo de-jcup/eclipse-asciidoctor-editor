@@ -73,20 +73,27 @@ public class AsciiDocFileUtils {
         return newTempSubFolder;
     }
 
-    public static File createHiddenEditorFile(File asciidoctorFile, long editorId, File baseDir, Path tempFolder) throws IOException {
+    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, long editorId, File baseDir, Path tempFolder) throws IOException {
         File hiddenEditorFile = new File(tempFolder.toFile(), editorId + "_hidden-editorfile_" + asciidoctorFile.getName());
-
-        String relativePath= calculatePathToFileFromBase(asciidoctorFile,baseDir);
+        try{
+            String relativePath= calculatePathToFileFromBase(asciidoctorFile,baseDir);
+            StringBuilder sb= new StringBuilder();
+            sb.append("// origin :").append(asciidoctorFile.getAbsolutePath()).append("\n");
+            sb.append("// editor :").append(editorId).append("\n");
+            sb.append("// basedir:").append(baseDir.getAbsolutePath()).append("\n");
+            
+            sb.append("include::").append(relativePath).append("[]\n");
+            
+            FileUtils.writeStringToFile(hiddenEditorFile, sb.toString(), "UTF-8",false);
+            hiddenEditorFile.deleteOnExit();
+        }catch(NotInsideCurrentBaseDirException e){
+            /* fallback to orign file - maybe something does not work but at least
+             * content will be shown!
+             */
+            logAdapter.logWarn("File not in current base dir so copied origin as hidden file:"+asciidoctorFile.getAbsolutePath());
+            FileUtils.copyFile(asciidoctorFile, hiddenEditorFile);
+        }
         
-        StringBuilder sb= new StringBuilder();
-        sb.append("// origin :").append(asciidoctorFile.getAbsolutePath()).append("\n");
-        sb.append("// editor :").append(editorId).append("\n");
-        sb.append("// basedir:").append(baseDir.getAbsolutePath()).append("\n");
-        
-        sb.append("include::").append(relativePath).append("[]\n");
-        
-        FileUtils.writeStringToFile(hiddenEditorFile, sb.toString(), "UTF-8",false);
-        hiddenEditorFile.deleteOnExit();
         return hiddenEditorFile;
     }
 
@@ -98,7 +105,18 @@ public class AsciiDocFileUtils {
             return unixAsciiDocFilePath.substring(unixBasePath.length());
         }
         
-        return "pathProblems:"+unixAsciiDocFilePath+" not in "+unixBasePath;
+        throw new NotInsideCurrentBaseDirException("pathProblems:"+unixAsciiDocFilePath+" not in "+unixBasePath);
     }
 
+    
+    public static class NotInsideCurrentBaseDirException extends RuntimeException{
+
+        private static final long serialVersionUID = 1L;
+
+        public NotInsideCurrentBaseDirException(String string) {
+           super(string);
+        }
+
+        
+    }
 }

@@ -16,11 +16,9 @@
 package de.jcup.asciidoctoreditor;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.asciidoctor.Asciidoctor;
 import org.eclipse.core.resources.IProject;
@@ -63,7 +61,7 @@ public class AsciiDoctorWrapper {
         
         context.setAsciidocFile(asciiDocFile);
         if (useHiddenFile){
-            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(asciiDocFile,editorId,context.getBaseDir(), getTempFolder()));
+            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, asciiDocFile,editorId,context.getBaseDir(), getTempFolder()));
         }else{
             context.setFileToRender(asciiDocFile);
         }
