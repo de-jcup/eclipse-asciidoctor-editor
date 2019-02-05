@@ -137,7 +137,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private int lastCaretPosition;
     private AsciiDoctorEditorLinkSupport linkSupport;
     private MonospacedFormatAction monoSpacedFormatAction;
-    private AsciiDoctorContentOutlinePage outlinePage;
     private AsciidoctorEditorOutlineSupport outlineSupport;
     private IProject project;
     private RebuildAsciiDocViewAction rebuildAction;
@@ -262,10 +261,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             return (T) this;
         }
         if (ITreeContentProvider.class.equals(adapter) || AsciiDoctorEditorTreeContentProvider.class.equals(adapter)) {
-            if (outlinePage == null) {
-                return null;
-            }
-            return (T) outlinePage.getContentProvider();
+            return (T) outlineSupport.getOutlinePage().getContentProvider();
         }
         return super.getAdapter(adapter);
     }
@@ -289,10 +285,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public Item getItemAt(int offset) {
-        if (outlinePage == null) {
-            return null;
-        }
-        AsciiDoctorEditorTreeContentProvider contentProvider = outlinePage.getContentProvider();
+        AsciiDoctorEditorTreeContentProvider contentProvider = getOutlineSupport().getOutlinePage().getContentProvider();
         if (contentProvider == null) {
             return null;
         }
@@ -1069,10 +1062,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             }
             synchronizer.onEditorCaretMoved(event.caretOffset);
 
-            if (outlinePage == null) {
-                return;
-            }
-            outlinePage.onEditorCaretMoved(event.caretOffset);
+            getOutlineSupport().getOutlinePage().onEditorCaretMoved(event.caretOffset);
         }
 
     }

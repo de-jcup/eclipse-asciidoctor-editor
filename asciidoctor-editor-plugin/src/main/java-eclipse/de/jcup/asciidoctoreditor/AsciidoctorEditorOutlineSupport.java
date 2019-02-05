@@ -143,6 +143,9 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
         return model;
     }
 
+    /**
+     * @return outline page, never <code>null</code>. If non exists a new one will be created
+     */
     public AsciiDoctorContentOutlinePage getOutlinePage() {
         if (outlinePage == null) {
             outlinePage = new AsciiDoctorContentOutlinePage(getEditor());
