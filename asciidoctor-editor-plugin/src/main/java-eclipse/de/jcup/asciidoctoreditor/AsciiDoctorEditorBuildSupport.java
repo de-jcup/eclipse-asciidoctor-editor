@@ -107,11 +107,13 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                     }
                     monitor.worked(7);
 
-                    /*
-                     * do a "refocus" on safe - sometimes necessary on windows.
-                     * Seems browser grabs sometimes focus...
-                     */
-                    EclipseUtil.safeAsyncExec(() -> getEditor().refocus());
+                    if (getEditor().isInternalPreview()) {
+                    	/*
+                    	 * do a "refocus" on safe - sometimes necessary on windows.
+                    	 * Seems browser grabs sometimes focus...
+                    	 */
+                    	EclipseUtil.safeAsyncExec(() -> getEditor().refocus());
+                    }
 
                     monitor.done();
 

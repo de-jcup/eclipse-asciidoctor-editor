@@ -78,7 +78,6 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import de.jcup.asciidoctoreditor.BrowserAccess.BrowserContentInitializer;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
-import de.jcup.asciidoctoreditor.outline.AsciiDoctorContentOutlinePage;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
