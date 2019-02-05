@@ -1,0 +1,4 @@
+== Includer
+This is from includer document in subfolder 2
+
+include::../subfolder1/include_me_relative.adoc[] 
