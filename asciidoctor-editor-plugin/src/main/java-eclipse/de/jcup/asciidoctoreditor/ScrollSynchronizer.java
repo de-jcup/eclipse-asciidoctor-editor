@@ -17,7 +17,8 @@ package de.jcup.asciidoctoreditor;
 
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.outline.ItemType;
-
+import static de.jcup.asciidoctoreditor.EclipseDevelopmentSettings.*;
+import static de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter.INSTANCE;
 /**
  * A synchronizer for scrolling between editor and internal preview
  * 
@@ -43,7 +44,9 @@ public class ScrollSynchronizer {
 		if (item == null) {
 			return;
 		}
-
+		if (DEBUG_LOGGING_ENABLED) {
+			INSTANCE.logInfo("Editor caret moved to item:"+item);
+		}
 		handleScrollToHeadlineIfPossible(item);
 		handleScrollToAnchorIfPossible(item);
 	}
@@ -66,13 +69,20 @@ public class ScrollSynchronizer {
 
 	protected void jumpToElementWithItemId(Item item) {
 		String anchorId = item.getId();
+		if (DEBUG_LOGGING_ENABLED) {
+			INSTANCE.logInfo("Item has anchor id:"+anchorId);
+		}
 		if (anchorId == null) {
 			/* means first title */
 			editor.browserAccess.navgigateToTopOfView();
 			return;
 		}
 		
-		editor.browserAccess.safeBrowserExecuteJavascript("doScrollTo('"+anchorId+"')");
+		String javascript = "doScrollTo('"+anchorId+"')";
+		if (DEBUG_LOGGING_ENABLED) {
+			INSTANCE.logInfo("Call browser access with javascript:"+javascript);
+		}
+		editor.browserAccess.safeBrowserExecuteJavascript(javascript);
 	}
 
 }

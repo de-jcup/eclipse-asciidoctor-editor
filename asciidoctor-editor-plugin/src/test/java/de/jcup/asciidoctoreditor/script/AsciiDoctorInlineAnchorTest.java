@@ -22,6 +22,11 @@ import org.junit.Test;
 public class AsciiDoctorInlineAnchorTest {
 
 	@Test
+	public void label_umlauts_has_umlauts_also_in_id() {
+		assertEquals("my sectiön", new AsciiDoctorInlineAnchor("[[my sectiön]]", -1, -1).getId());
+	}
+	
+	@Test
 	public void label_alpha_has_alpha_as_id() {
 		assertEquals("alpha", new AsciiDoctorInlineAnchor("[[alpha]]", -1, -1).getId());
 	}

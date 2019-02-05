@@ -22,6 +22,14 @@ import org.junit.Test;
 public class AsciiDoctorHeadlineTest {
 
 	@Test
+	public void calculateId_contains_umlauts_as_well() {
+		assertEquals("_my_sectiön", AsciiDoctorHeadline.calculateId("My Sectiön"));
+		assertEquals("_äpfel", AsciiDoctorHeadline.calculateId("Äpfel"));
+		assertEquals("_würgreflex", AsciiDoctorHeadline.calculateId("Würgreflex"));
+		assertEquals("_beißen", AsciiDoctorHeadline.calculateId("Beißen"));
+	}
+	
+	@Test
 	public void calculateId_x_space_y_is__converted_to_underscore_x_underscore_y() {
 		assertEquals("_x_y",AsciiDoctorHeadline.calculateId("x y"));
 	}

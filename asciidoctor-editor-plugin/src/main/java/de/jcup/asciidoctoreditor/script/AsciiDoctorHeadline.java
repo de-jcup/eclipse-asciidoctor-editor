@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class AsciiDoctorHeadline {
 
-	private static final String REGEXP_STRING = "[^a-zA-Z0-9_]";
+	private static final String REGEXP_STRING = "[^a-zA-Z0-9öäüÖÄÜß_]";
 	private static final Pattern REGEXP= Pattern.compile(REGEXP_STRING);
 	String name;
 	int position;
