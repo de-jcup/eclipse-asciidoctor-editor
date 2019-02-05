@@ -31,24 +31,36 @@ public class AsciiDoctorInlineAnchor {
 	}
 
 	private String createIDByLabel() {
+		String id = createIDByLabelNoCommataCheck();
+		if (id == null) {
+			return null;
+		}
+		int index = id.indexOf(',');
+		if (index != -1) {
+			id = id.substring(0, index);
+		}
+		return id.trim();
+	}
+
+	private String createIDByLabelNoCommataCheck() {
 		if (label == null) {
 			return null;
 		}
-		if (label.startsWith("[[")){
-			if (! label.endsWith("]]")){
-				return "illegal-noend-" + System.nanoTime(); 
+		if (label.startsWith("[[")) {
+			if (!label.endsWith("]]")) {
+				return "illegal-noend-" + System.nanoTime();
 			}
 			return label.substring(2, label.length() - 2);
-		}else if (label.startsWith("[#")){
-			if ( label.endsWith("]]")){
-				return "illegal-noend-" + System.nanoTime(); 
+		} else if (label.startsWith("[#")) {
+			if (label.endsWith("]]")) {
+				return "illegal-noend-" + System.nanoTime();
 			}
-			if (!label.endsWith("]")){
-				return "illegal-noend-" + System.nanoTime(); 
+			if (!label.endsWith("]")) {
+				return "illegal-noend-" + System.nanoTime();
 			}
 			return label.substring(2, label.length() - 1);
 		}
-		return "illegal-nostart-" + System.nanoTime(); 
+		return "illegal-nostart-" + System.nanoTime();
 	}
 
 	public String getLabel() {

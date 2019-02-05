@@ -21,6 +21,19 @@ import org.junit.Test;
 
 public class AsciiDoctorInlineAnchorTest {
 
+
+	@Test
+	public void anchor_with_spaces_inside_are_trimmed() {
+		assertEquals("mysection", new AsciiDoctorInlineAnchor("[[    mysection   ]]", -1, -1).getId());
+	}
+	
+	@Test
+	public void anchor_containing_comma_will_use_only_first_one() {
+		assertEquals("mysection", new AsciiDoctorInlineAnchor("[[mysection,here]]", -1, -1).getId());
+		assertEquals("mysection", new AsciiDoctorInlineAnchor("[[mysection ,here]]", -1, -1).getId());
+		assertEquals("mysection", new AsciiDoctorInlineAnchor("[[mysection, here]]", -1, -1).getId());
+	}
+	
 	@Test
 	public void label_umlauts_has_umlauts_also_in_id() {
 		assertEquals("my sectiön", new AsciiDoctorInlineAnchor("[[my sectiön]]", -1, -1).getId());
