@@ -42,6 +42,7 @@ public class AsciiDoctorProviderContext {
     int tocLevels;
     private boolean useInstalled;
     private File fileToRender;
+    private boolean copyImages;
 
     public AsciiDoctorProviderContext(AsciiDoctorInstanceProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
@@ -166,6 +167,14 @@ public class AsciiDoctorProviderContext {
     public File getFileToRender() {
         return fileToRender;
     }
+    
+    public void setCopyImages(boolean copyImages) {
+		this.copyImages = copyImages;
+	}
+    
+    public boolean isCopyImages() {
+		return copyImages;
+	}
 
     private Set<AbstractAsciiDoctorProvider> providers = new LinkedHashSet<>();
     
