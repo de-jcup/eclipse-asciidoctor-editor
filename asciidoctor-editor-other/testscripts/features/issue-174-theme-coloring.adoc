@@ -1,13 +1,14 @@
-// Setup TOC which is a wellknonw varible so special highlighted, other as normal
+// Setup some parts
 :toc:
 :toclevels: 5
-:imagesdir: ./images
+:imagesdir: ./images 
 
 = Title
 include::issue-174-include1.adoc[] 
 
-[[#link-me]]
+[[link-me]]
 == Headline A1 - links and normal text
+
 TIP: You will find the issue at next link:
      https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/174
      
