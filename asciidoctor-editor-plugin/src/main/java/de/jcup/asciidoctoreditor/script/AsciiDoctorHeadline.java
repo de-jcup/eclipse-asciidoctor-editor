@@ -19,8 +19,9 @@ import java.util.regex.Pattern;
 
 public class AsciiDoctorHeadline {
 
-	private static final String REGEXP_STRING = "[^a-zA-Z0-9öäüÖÄÜß_]";
-	private static final Pattern REGEXP= Pattern.compile(REGEXP_STRING);
+	private static final String REGEXP_STRING = "\\W";
+	private static final Pattern REGEXP= Pattern.compile(REGEXP_STRING, Pattern.UNICODE_CHARACTER_CLASS);
+	
 	String name;
 	int position;
 	int lengthToNameEnd;

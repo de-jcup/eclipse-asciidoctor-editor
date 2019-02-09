@@ -22,6 +22,11 @@ import org.junit.Test;
 public class AsciiDoctorHeadlineTest {
 
 	@Test
+	public void calculateId_contains_additonal_umlauts_as_well() {
+		assertEquals("_my_sèctiön", AsciiDoctorHeadline.calculateId("My Sèctiön"));
+	}
+	
+	@Test
 	public void calculateId_contains_umlauts_as_well() {
 		assertEquals("_my_sectiön", AsciiDoctorHeadline.calculateId("My Sectiön"));
 		assertEquals("_äpfel", AsciiDoctorHeadline.calculateId("Äpfel"));
