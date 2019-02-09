@@ -1,0 +1,37 @@
+// Setup TOC which is a wellknonw varible so special highlighted, other as normal
+:toc:
+:toclevels: 5
+:imagesdir: ./images
+
+= Title
+include::issue-174-include1.adoc[] 
+
+[[#link-me]]
+== Headline A1 - links and normal text
+TIP: You will find the issue at next link:
+     https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/174
+     
+See <<link-me,linked text>> 
+
+== Headline B1x - formatting
+
+=== Text format
+some *bold* text
+some _italic_ text
+some `mono` text
+
+==== Table
+[options="header",cols="1,1,1"]
+|===
+|HeadA   |HeadB   |HeadC   
+//----------------------
+|Row1A   |Row1B   |Row1C   
+|===
+
+==== Text blocks
+[source,bash]
+----
+#!/bin/bash
+cd /home/albert/somewhere
+ls -all
+----
