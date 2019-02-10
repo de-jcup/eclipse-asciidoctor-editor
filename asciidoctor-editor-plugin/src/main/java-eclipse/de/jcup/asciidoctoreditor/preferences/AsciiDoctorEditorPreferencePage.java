@@ -199,6 +199,14 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		addField(tocLevels);
 
 		devNull = new Composite(uiComposite, SWT.NONE);
+		BooleanFieldEditor copyImagesEnabled = new BooleanFieldEditor(P_COPY_IMAGES_FOR_PREVIEW.getId(),
+				"Copy images for preview", devNull);
+		copyImagesEnabled.getDescriptionControl(devNull)
+				.setToolTipText("When enabled images are copied to a temporary folder and used for preview.\n"
+						+ "This does not work for images with a relative path.");
+		addField(copyImagesEnabled);
+
+		devNull = new Composite(uiComposite, SWT.NONE);
 		BooleanFieldEditor linkEditorWithPreviewEnabled = new BooleanFieldEditor(P_LINK_EDITOR_WITH_PREVIEW.getId(),
 				"Link editor with internal preview", devNull);
 		linkEditorWithPreviewEnabled.getDescriptionControl(devNull)

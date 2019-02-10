@@ -37,14 +37,12 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 		if (outputFolder==null){
 			throw new IllegalStateException("output folder not defined");
 		}
-		getContext().getImageProvider().ensureImages();
 		
 		AttributesBuilder attrBuilder = AttributesBuilder.
 				attributes().
 					showTitle(true).
 					sourceHighlighter("coderay").
 					attribute("eclipse-editor-basedir",getContext().getBaseDir().getAbsolutePath()).
-					attribute("imagesoutdir", createAbsolutePath(getContext().targetImagesDir.toPath())).
 				    attribute("icons", "font").
 					attribute("source-highlighter","coderay").
 					attribute("coderay-css", "style").
@@ -71,7 +69,13 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
                 attrBuilder.attribute("toclevels", "" + getContext().tocLevels);
             }
         }
-        attrBuilder.imagesDir(getContext().targetImagesDir.getAbsolutePath());
+        if (getContext().isCopyImages()) {
+    		getContext().getImageProvider().ensureImages();
+    		attrBuilder.attribute("imagesoutdir", createAbsolutePath(getContext().targetImagesDir.toPath()));
+    		attrBuilder.imagesDir(getContext().targetImagesDir.getAbsolutePath());
+        } else {
+            attrBuilder.imagesDir(getContext().getBaseDir().getAbsolutePath());
+        }
 
         attrs = attrBuilder.get();
         attrs.setAttribute("outdir", createAbsolutePath(outputFolder));

@@ -84,6 +84,7 @@ public class AsciiDoctorWrapper {
 
     private void init(AsciiDoctorProviderContext context) {
         context.setUseInstalled(AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor());
+        context.setCopyImages(AsciiDoctorEditorPreferences.getInstance().isCopyImagesForPreview());
         context.setOutputFolder(getTempFolder());
     }
 

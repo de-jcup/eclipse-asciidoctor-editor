@@ -226,5 +226,7 @@ public class AsciiDoctorEditorPreferences {
 		return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR);
 	}
 
-
+	public boolean isCopyImagesForPreview() {
+		return getBooleanPreference(P_COPY_IMAGES_FOR_PREVIEW);
+	}
 }
