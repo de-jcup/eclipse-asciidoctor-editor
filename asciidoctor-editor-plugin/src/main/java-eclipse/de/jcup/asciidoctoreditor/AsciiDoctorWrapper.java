@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.asciidoctor.Asciidoctor;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
@@ -34,129 +36,172 @@ import de.jcup.asciidoctoreditor.provider.ImageHandlingMode;
 
 public class AsciiDoctorWrapper {
 
-    private LogAdapter logAdapter;
-    private AsciiDoctorWrapperHTMLBuilder htmlBuilder;
+	private LogAdapter logAdapter;
+	private AsciiDoctorWrapperHTMLBuilder htmlBuilder;
 
-    private AsciiDoctorProviderContext context;
-    private Path tempFolder;
+	private AsciiDoctorProviderContext context;
+	private Path tempFolder;
 
-    public AsciiDoctorWrapper(IProject project, LogAdapter logAdapter) {
-        if (logAdapter == null) {
-            throw new IllegalArgumentException("log adapter may not be null!");
-        }
-        this.logAdapter = logAdapter;
-        this.tempFolder = createTempPath(project);
-        this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
-        this.htmlBuilder = new AsciiDoctorWrapperHTMLBuilder(context);
+	public AsciiDoctorWrapper(IProject project, LogAdapter logAdapter) {
+		if (logAdapter == null) {
+			throw new IllegalArgumentException("log adapter may not be null!");
+		}
+		this.logAdapter = logAdapter;
+		this.tempFolder = createTempPath(project);
+		this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
+		this.htmlBuilder = new AsciiDoctorWrapperHTMLBuilder(context);
 
-    }
+	}
 
-    public AsciiDoctorProviderContext getContext() {
-        return context;
-    }
+	public AsciiDoctorProviderContext getContext() {
+		return context;
+	}
 
-    public void convertToHTML(EditorType targetType, File asciiDocFile, long editorId, boolean useHiddenFile) throws Exception {
-        
-        init(context,targetType);
-        
-        
-        context.setAsciidocFile(asciiDocFile);
-        if (useHiddenFile){
-            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, asciiDocFile,editorId,context.getBaseDir(), getTempFolder()));
-        }else{
-            context.setFileToRender(asciiDocFile);
-        }
-        
-        AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
-        int tocLevels = preferences.getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
-        context.setTocLevels(tocLevels);
-        try {
-            AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
-            Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions();
+	public static class WrapperConvertData {
+		EditorType targetType = EditorType.ASCIIDOC;
+		File asciiDocFile;
+		long editorId;
+		boolean useHiddenFile;
+		File editorFileOrNull;
+	}
 
-            Asciidoctor asciiDoctor = context.getAsciiDoctor();
-            asciiDoctor.convertFile(context.getFileToRender(), defaultOptions);
+	public void convertToHTML(WrapperConvertData data) throws Exception {
 
-        } catch (Exception e) {
-            logAdapter.logError("Cannot convert to html:" + asciiDocFile, e);
-            throw e;
-        }
-    }
+		init(context, data);
 
-    private void init(AsciiDoctorProviderContext context, EditorType targetType) {
-        context.setUseInstalled(AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor());
-        if (targetType==EditorType.ASCIIDOC) {
-        	if (AsciiDoctorEditorPreferences.getInstance().isUsingPreviewImageDirectory()) {
-        		context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
-        	}else {
-        		context.setImageHandlingMode(ImageHandlingMode.RELATIVE_PATHES);
-        	}
-        }else {
-        	/* currently all other editor types (plantuml, ditaa) will use images dir approach */
-        	context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
-        }
-        context.setOutputFolder(getTempFolder());
-    }
+		context.setAsciidocFile(data.asciiDocFile);
+		if (data.useHiddenFile) {
+			context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder()));
+		} else {
+			context.setFileToRender(data.asciiDocFile);
+		}
 
-    /**
-     * Resets cached values: baseDir, imagesDir
-     */
-    public void resetCaches() {
-        context.reset();
-    }
+		AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+		int tocLevels = preferences.getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
+		context.setTocLevels(tocLevels);
+		try {
+			AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
+			Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions();
 
-    public Path getTempFolder() {
-        return tempFolder;
-    }
-    
-    private Path createTempPath(IProject project) {
-        String id = "fallback";
-        if (project != null) {
-            IProjectDescription description;
-            try {
-                description = project.getDescription();
-                id = description.getName()+ project.hashCode();
-            } catch (CoreException e) {
-                id = ""+ project.hashCode();
-            }
-        }
-        return AsciiDocFileUtils.createTempFolderForId(id);
-    }
+			Asciidoctor asciiDoctor = context.getAsciiDoctor();
+			asciiDoctor.convertFile(context.getFileToRender(), defaultOptions);
 
-    public File getTempFileFor(File editorFile, long editorId, TemporaryFileType type) {
-        File parent = getTempFolder().toFile();
-        
-        String baseName = FilenameUtils.getBaseName(editorFile.getName());
-        StringBuilder sb = new StringBuilder();
-        if (! (editorFile.getName().startsWith(""+editorId))){
-            sb.append(editorId);
-            sb.append("_");
-        }
-        sb.append(type.getPrefix());
-        sb.append(baseName);
-        sb.append(".html");
-        return new File(parent, sb.toString());
-    }
+			refreshParentFolderIfNecessary();
 
-    public void dispose() {
-        // no longer special handling -e.g. delete temp folder, because
-        // tempfolder for projects and not longer for only one single editor!
-    }
+		} catch (Exception e) {
+			logAdapter.logError("Cannot convert to html:" + data.asciiDocFile, e);
+			throw e;
+		}
+	}
 
-    public void setTocVisible(boolean tocVisible) {
-        this.context.setTOCVisible(tocVisible);
-    }
+	private void refreshParentFolderIfNecessary() {
+		if (context.getImageHandlingMode() != ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL) {
+			return;
+		}
+		File editorFileOrNull = context.getEditorFileOrNull();
+		if (editorFileOrNull == null) {
+			return;
+		}
+		IFile asFile = EclipseResourceHelper.DEFAULT.toIFile(editorFileOrNull);
+		if (asFile==null) {
+			return;
+		}
+		IContainer parent = asFile.getParent();
+		if (parent==null) {
+			return;
+		}
+		try {
+			parent.refreshLocal(IFile.DEPTH_ONE, null);
+		} catch (CoreException e) {
+			AsciiDoctorEditorUtil.logError("Refresh was not possible",e);
+		}
+	}
 
-    public boolean isTocVisible() {
-        return context.isTOCVisible();
-    }
+	private void init(AsciiDoctorProviderContext context, WrapperConvertData data) {
+		context.setUseInstalled(AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor());
+		context.setEditorFileOrNull(data.editorFileOrNull);
 
-    public File getAddonsFolder() {
-        return AsciiDoctorOSGIWrapper.INSTANCE.getAddonsFolder();
-    }
+		EditorType type = data.targetType;
+		if (type == EditorType.ASCIIDOC) {
+			if (AsciiDoctorEditorPreferences.getInstance().isUsingPreviewImageDirectory()) {
+				context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
+			} else {
+				context.setImageHandlingMode(ImageHandlingMode.RELATIVE_PATHES);
+			}
+		} else {
+			if (type == EditorType.PLANTUML) {
+				if (AsciiDoctorEditorPreferences.getInstance().isStoringPlantUmlFiles()) {
+					context.setImageHandlingMode(ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL);
+				} else {
+					context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
+				}
+			} else {
+				/* currently all other editor types ( ditaa) will use images dir approach */
+				context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
+			}
+		}
+		context.setOutputFolder(getTempFolder());
+	}
 
-    public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
-        return htmlBuilder.buildHTMLWithCSS(html, refreshAutomaticallyInSeconds);
-    }
+	/**
+	 * Resets cached values: baseDir, imagesDir
+	 */
+	public void resetCaches() {
+		context.reset();
+	}
+
+	public Path getTempFolder() {
+		return tempFolder;
+	}
+
+	private Path createTempPath(IProject project) {
+		String id = "fallback";
+		if (project != null) {
+			IProjectDescription description;
+			try {
+				description = project.getDescription();
+				id = description.getName() + project.hashCode();
+			} catch (CoreException e) {
+				id = "" + project.hashCode();
+			}
+		}
+		return AsciiDocFileUtils.createTempFolderForId(id);
+	}
+
+	public File getTempFileFor(File editorFile, long editorId, TemporaryFileType type) {
+		File parent = getTempFolder().toFile();
+
+		String baseName = FilenameUtils.getBaseName(editorFile.getName());
+		StringBuilder sb = new StringBuilder();
+		if (!(editorFile.getName().startsWith("" + editorId))) {
+			sb.append(editorId);
+			sb.append("_");
+		}
+		sb.append(type.getPrefix());
+		sb.append(baseName);
+		sb.append(".html");
+		return new File(parent, sb.toString());
+	}
+
+	public void dispose() {
+		// no longer special handling -e.g. delete temp folder, because
+		// tempfolder for projects and not longer for only one single editor!
+	}
+
+	public void setTocVisible(boolean tocVisible) {
+		this.context.setTOCVisible(tocVisible);
+	}
+
+	public boolean isTocVisible() {
+		return context.isTOCVisible();
+	}
+
+	public File getAddonsFolder() {
+		return AsciiDoctorOSGIWrapper.INSTANCE.getAddonsFolder();
+	}
+
+	public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
+		return htmlBuilder.buildHTMLWithCSS(html, refreshAutomaticallyInSeconds);
+	}
 
 }

@@ -15,14 +15,19 @@
  */
 package de.jcup.asciidoctoreditor;
 
-public class PlantUMLContentTransformer implements ContentTransformer{
+public class PlantUMLContentTransformer extends AbstractContentTransformer{
 
 	@Override
-	public String transform(String origin) {
+	protected String saveTransform(ContentTransformerData data) {
 		StringBuilder sb = new StringBuilder();
-		if (origin!=null){
-			sb.append("[plantuml]\n----\n");
-			sb.append(origin);
+		if (data.origin!=null){
+			sb.append("[plantuml");
+			if(data.filename!=null && !data.filename.isEmpty()) {
+				sb.append(",");
+				sb.append(data.filename);
+			}
+			sb.append("]\n----\n");
+			sb.append(data.origin);
 			sb.append("\n----\n");
 		}
 		return sb.toString();

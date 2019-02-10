@@ -229,4 +229,8 @@ public class AsciiDoctorEditorPreferences {
 	public boolean isUsingPreviewImageDirectory() {
 		return getBooleanPreference(P_USE_PREVIEW_IMAGEDIRECTORY);
 	}
+
+	public boolean isStoringPlantUmlFiles() {
+		return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
+	}
 }

@@ -6,11 +6,11 @@ public enum ImageHandlingMode{
 	 */
 	IMAGESDIR_FROM_PREVIEW_DIRECTORY,
 
-	/* Special variant for project having no 'imagesdir' set, but using relative path instead */
+	/** Special variant for project having no 'imagesdir' set, but using relative path instead */
 	RELATIVE_PATHES,
 	
-	/* Variant to keep generated diagram files - will be used by plantuml editor */
-	KEEP_DIAGRAM_FILES_LOCAL,
+	/** Variant to keep generated diagram files - will be used by plantuml editor */
+	STORE_DIAGRAM_FILES_LOCAL,
 	;
 	
 }

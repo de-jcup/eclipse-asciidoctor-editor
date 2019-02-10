@@ -384,7 +384,7 @@
    <extension
       point = "org.eclipse.ui.preferencePages">
       <page
-         id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorEditorPreferencePage"
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage"
          class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferencePage"
          name="Asciidoctor Editor"
          >
@@ -396,10 +396,10 @@
          </keywordReference>
       </page>
       <page
-         id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorEditorSyntaxColorPreferencePage"
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorSyntaxColorPreferencePage"
          class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferencePage"
          name="Syntax coloring"
-         category="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorEditorPreferencePage">
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
          <keywordReference
                id="asciidoctoreditor.preferences.keyword.asciidoctor">
          </keywordReference>
@@ -408,10 +408,10 @@
          </keywordReference>
       </page>
       <page
-         id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorValidationPreferencePage"
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorValidationPreferencePage"
          class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferencePage"
          name="Validation"
-         category="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorEditorEditorPreferencePage">
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
           <keywordReference
                id="asciidoctoreditor.preferences.keyword.asciidoctor">
          </keywordReference>
@@ -419,12 +419,24 @@
                id="asciidoctoreditor.preferences.keyword.validation">
          </keywordReference>
       </page>
-    <!-- plantuml -->
+      <!-- plantuml -->
       <page
-         id="asciidoctoreditor.eclipse.gradleeditor.preferences.AsciiDoctorPlantUMLEditorSyntaxColorPreferencePage"
-         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorPlantUMLEditorSyntaxColorPreferencePage"
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorPlantUMLEditorPreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorPlantUMLEditorPreferencePage"
          name="PlantUML Editor (Asciidoctor)"
          >
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.plantuml">
+         </keywordReference>
+      </page>
+      <page
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorPlantUMLEditorSyntaxColorPreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorPlantUMLEditorSyntaxColorPreferencePage"
+         name="Syntax coloring"
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorPlantUMLEditorPreferencePage">
          <keywordReference
                id="asciidoctoreditor.preferences.keyword.asciidoctor">
          </keywordReference>

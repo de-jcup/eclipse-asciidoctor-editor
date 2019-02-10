@@ -82,6 +82,14 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
         } else if (imageHandlingMode == ImageHandlingMode.RELATIVE_PATHES){
         	/* for relative pathes - without attribute ':imagedir:' set in asciidoc files this seems to be necessary */
             attrBuilder.imagesDir(getContext().getBaseDir().getAbsolutePath());
+        }else if (imageHandlingMode == ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL){
+        	String imagesoutpath = null;
+        	File editorFileOrNull = getContext().getEditorFileOrNull();
+			if (editorFileOrNull!=null) {
+        		imagesoutpath = createAbsolutePath(editorFileOrNull.getParentFile().toPath());
+        		attrBuilder.imagesDir(imagesoutpath);
+        		attrBuilder.attribute("imagesoutdir", imagesoutpath);
+        	}
         }else {
         	/* other mode(s) currently not implemented */
         }

@@ -178,10 +178,19 @@ public class AsciiDoctorProviderContext {
    
 
     private Set<AbstractAsciiDoctorProvider> providers = new LinkedHashSet<>();
+	private File editorFileOrNull;
     
     public <T extends AbstractAsciiDoctorProvider> T register(T  provider) {
         providers.add(provider);
         return provider;
     }
+
+	public void setEditorFileOrNull(File editorFileOrNull) {
+		this.editorFileOrNull=editorFileOrNull;
+	}
+	
+	public File getEditorFileOrNull() {
+		return editorFileOrNull;
+	}
 
 }

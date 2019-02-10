@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 
+import de.jcup.asciidoctoreditor.AsciiDoctorWrapper.WrapperConvertData;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
@@ -168,7 +169,13 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             monitor.subTask("GENERATE");
 
             long editorId = getEditorId();
-            wrapper.convertToHTML(getEditor().getType(), fileToConvertIntoHTML, editorId,isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML));
+            WrapperConvertData data = new WrapperConvertData();
+            data.targetType=getEditor().getType();
+            data.asciiDocFile=fileToConvertIntoHTML;
+            data.editorId=editorId;
+            data.useHiddenFile=isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML);
+            data.editorFileOrNull=editorFileOrNull;
+			wrapper.convertToHTML(data);
 
             monitor.worked(++worked);
 
@@ -290,7 +297,10 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         File fileToConvertIntoHTML;
         String text;
         if (getEditor().contentTransformer.isTransforming(asciiDoc)) {
-            text = getEditor().contentTransformer.transform(asciiDoc);
+        	
+            ContentTransformerData  data = new ContentTransformerData();
+            data.origin=asciiDoc;
+			text = getEditor().contentTransformer.transform(data);
         } else {
             text = asciiDoc;
         }
@@ -336,7 +346,11 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         Path tempFolder = getEditor().getWrapper().getTempFolder();
         File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, getEditorId(), filename);
 
-        String transformed = getEditor().contentTransformer.transform(text);
+        ContentTransformerData data = new ContentTransformerData();
+        data.origin=text;
+        data.filename=filename;
+        
+		String transformed = getEditor().contentTransformer.transform(data);
         try {
             return AsciiDocStringUtils.writeTextToUTF8File(transformed, newTempFile);
         } catch (IOException e) {

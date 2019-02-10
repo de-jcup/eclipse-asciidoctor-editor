@@ -15,7 +15,8 @@
  */
 package de.jcup.asciidoctoreditor;
 
-public class NotChangingContentTransformer implements ContentTransformer{
+public class NotChangingContentTransformer extends AbstractContentTransformer{
+
 
 	public static NotChangingContentTransformer INSTANCE = new NotChangingContentTransformer();
 	
@@ -24,8 +25,8 @@ public class NotChangingContentTransformer implements ContentTransformer{
 	}
 
 	@Override
-	public String transform(String origin) {
-		return origin;
+	protected String saveTransform(ContentTransformerData data) {
+		return data.origin;
 	}
 
 	@Override

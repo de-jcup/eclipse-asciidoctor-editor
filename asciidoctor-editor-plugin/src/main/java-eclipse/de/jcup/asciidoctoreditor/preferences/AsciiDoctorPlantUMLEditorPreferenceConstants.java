@@ -1,5 +1,7 @@
+package de.jcup.asciidoctoreditor.preferences;
+
 /*
- * Copyright 2018 Albert Tregnaghi
+ * Copyright 2017 Albert Tregnaghi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +15,24 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+ 
 
-public class DitaaContentTransformer extends AbstractContentTransformer{
+/**
+ * Constant definitions for plug-in preferences
+ */
+public enum AsciiDoctorPlantUMLEditorPreferenceConstants implements PreferenceIdentifiable{
 
-	@Override
-	protected String saveTransform(ContentTransformerData data) {
-		StringBuilder sb = new StringBuilder();
-		if (data.origin!=null){
-			sb.append("[ditaa]\n----\n");
-			sb.append(data.origin);
-			sb.append("\n----\n");
-		}
-		return sb.toString();
+	
+	P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT("pumlStoreDiagramsInProject"),
+	;
+
+	private String id;
+
+	private AsciiDoctorPlantUMLEditorPreferenceConstants(String id) {
+		this.id = id;
 	}
 
-	@Override
-	public boolean isTransforming(Object data) {
-		return true;
+	public String getId() {
+		return id;
 	}
-
 }
