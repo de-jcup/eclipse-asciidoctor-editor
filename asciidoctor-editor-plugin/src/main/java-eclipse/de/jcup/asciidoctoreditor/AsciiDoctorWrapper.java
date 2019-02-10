@@ -30,6 +30,7 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 import de.jcup.asciidoctoreditor.provider.EclipseAsciiDoctorProvider;
+import de.jcup.asciidoctoreditor.provider.ImageHandlingMode;
 
 public class AsciiDoctorWrapper {
 
@@ -54,9 +55,9 @@ public class AsciiDoctorWrapper {
         return context;
     }
 
-    public void convertToHTML(File asciiDocFile, long editorId, boolean useHiddenFile) throws Exception {
+    public void convertToHTML(EditorType targetType, File asciiDocFile, long editorId, boolean useHiddenFile) throws Exception {
         
-        init(context);
+        init(context,targetType);
         
         
         context.setAsciidocFile(asciiDocFile);
@@ -82,9 +83,18 @@ public class AsciiDoctorWrapper {
         }
     }
 
-    private void init(AsciiDoctorProviderContext context) {
+    private void init(AsciiDoctorProviderContext context, EditorType targetType) {
         context.setUseInstalled(AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor());
-        context.setCopyImages(AsciiDoctorEditorPreferences.getInstance().isCopyImagesForPreview());
+        if (targetType==EditorType.ASCIIDOC) {
+        	if (AsciiDoctorEditorPreferences.getInstance().isUsingPreviewImageDirectory()) {
+        		context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
+        	}else {
+        		context.setImageHandlingMode(ImageHandlingMode.RELATIVE_PATHES);
+        	}
+        }else {
+        	/* currently all other editor types (plantuml, ditaa) will use images dir approach */
+        	context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
+        }
         context.setOutputFolder(getTempFolder());
     }
 

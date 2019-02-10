@@ -41,7 +41,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		store.setDefault(P_LINK_OUTLINE_WITH_EDITOR.getId(), true);
 
 		/* Preview*/
-		store.setDefault(P_COPY_IMAGES_FOR_PREVIEW.getId(), true);
+		store.setDefault(P_USE_PREVIEW_IMAGEDIRECTORY.getId(), true);
 		store.setDefault(P_LINK_EDITOR_WITH_PREVIEW.getId(), true);
 
 		/* ++++++++++++ */

@@ -145,6 +145,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public long getEditorId() {
         return editorId;
     }
+    
+    public EditorType getType() {
+    	return EditorType.ASCIIDOC;
+    }
 
     public AsciiDoctorEditor() {
         outlineSupport = new AsciidoctorEditorOutlineSupport(this);

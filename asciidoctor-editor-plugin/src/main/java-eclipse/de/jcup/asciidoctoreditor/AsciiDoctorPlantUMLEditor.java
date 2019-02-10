@@ -43,6 +43,10 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor {
 		return "plantuml-asciidoctor-editor.png";
 	}
 
+	public EditorType getType() {
+		return EditorType.PLANTUML;
+	}
+
 	protected void initToolbar() {
 
 		IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
@@ -66,12 +70,12 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor {
 		coolBarManager.update(true);
 
 	}
-	
+
 	@Override
 	protected String getToggleCommentCodePart() {
 		return "'";
 	}
-	
+
 	protected SourceViewerConfiguration createSourceViewerConfig() {
 		return new AsciiDoctorPlantUMLSourceViewerConfiguration(this);
 	}

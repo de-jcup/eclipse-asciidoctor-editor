@@ -168,7 +168,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             monitor.subTask("GENERATE");
 
             long editorId = getEditorId();
-            wrapper.convertToHTML(fileToConvertIntoHTML, editorId,isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML));
+            wrapper.convertToHTML(getEditor().getType(), fileToConvertIntoHTML, editorId,isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML));
 
             monitor.worked(++worked);
 
