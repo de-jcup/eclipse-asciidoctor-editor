@@ -42,6 +42,7 @@ public class AsciiDoctorProviderContext {
     int tocLevels;
     private boolean useInstalled;
     private File fileToRender;
+    private ImageHandlingMode imageHandlingMode;
 
     public AsciiDoctorProviderContext(AsciiDoctorInstanceProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
@@ -88,7 +89,15 @@ public class AsciiDoctorProviderContext {
         this.asciidocFile = asciidocFile;
         this.baseDir = baseDirProvider.findBaseDir();
     }
-
+    
+    public void setImageHandlingMode(ImageHandlingMode imageHandlingMode) {
+		this.imageHandlingMode = imageHandlingMode;
+	}
+    
+    public ImageHandlingMode getImageHandlingMode() {
+		return imageHandlingMode;
+	}
+    
     protected void init() {
         logAdapter.resetTimeDiff();
         attributesProvider = register(new AsciiDoctorAttributesProvider(this));
@@ -166,6 +175,7 @@ public class AsciiDoctorProviderContext {
     public File getFileToRender() {
         return fileToRender;
     }
+   
 
     private Set<AbstractAsciiDoctorProvider> providers = new LinkedHashSet<>();
     

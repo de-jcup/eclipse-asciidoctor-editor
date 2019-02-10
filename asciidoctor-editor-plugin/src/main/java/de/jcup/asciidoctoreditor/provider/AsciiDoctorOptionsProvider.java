@@ -37,14 +37,12 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 		if (outputFolder==null){
 			throw new IllegalStateException("output folder not defined");
 		}
-		getContext().getImageProvider().ensureImages();
 		
 		AttributesBuilder attrBuilder = AttributesBuilder.
 				attributes().
 					showTitle(true).
 					sourceHighlighter("coderay").
 					attribute("eclipse-editor-basedir",getContext().getBaseDir().getAbsolutePath()).
-					attribute("imagesoutdir", createAbsolutePath(getContext().targetImagesDir.toPath())).
 				    attribute("icons", "font").
 					attribute("source-highlighter","coderay").
 					attribute("coderay-css", "style").
@@ -71,7 +69,22 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
                 attrBuilder.attribute("toclevels", "" + getContext().tocLevels);
             }
         }
-        attrBuilder.imagesDir(getContext().targetImagesDir.getAbsolutePath());
+        ImageHandlingMode imageHandlingMode = getContext().getImageHandlingMode();
+        if (imageHandlingMode== ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY) {
+        	/* when this is enabled, we do:<br>
+        	 * 1. Force images copied and available at target image directory, so images in html preview in same origin
+        	 * 2. Image output directory (e.g. for diagram generation) targets also this image output directory
+        	 * 3. Images directory attribute is set to target directory, so diagram output and existing images are in same folder
+        	 */
+    		getContext().getImageProvider().ensureImages();
+    		attrBuilder.attribute("imagesoutdir", createAbsolutePath(getContext().targetImagesDir.toPath()));
+    		attrBuilder.imagesDir(getContext().targetImagesDir.getAbsolutePath());
+        } else if (imageHandlingMode == ImageHandlingMode.RELATIVE_PATHES){
+        	/* for relative pathes - without attribute ':imagedir:' set in asciidoc files this seems to be necessary */
+            attrBuilder.imagesDir(getContext().getBaseDir().getAbsolutePath());
+        }else {
+        	/* other mode(s) currently not implemented */
+        }
 
         attrs = attrBuilder.get();
         attrs.setAttribute("outdir", createAbsolutePath(outputFolder));

@@ -42,6 +42,10 @@ public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 		return "ditaa-asciidoctor-editor.png";
 	}
 
+	public EditorType getType() {
+		return EditorType.DITAA;
+	}
+
 	protected void initToolbar() {
 
 		IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
@@ -65,7 +69,7 @@ public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 		coolBarManager.update(true);
 
 	}
-	
+
 	protected IDocumentProvider createDocumentProvider(IEditorInput input) {
 		if (input instanceof FileStoreEditorInput) {
 			return new TextFileDocumentProvider();

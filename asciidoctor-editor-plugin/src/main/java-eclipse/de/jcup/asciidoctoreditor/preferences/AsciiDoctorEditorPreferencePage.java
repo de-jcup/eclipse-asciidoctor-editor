@@ -199,6 +199,16 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		addField(tocLevels);
 
 		devNull = new Composite(uiComposite, SWT.NONE);
+		BooleanFieldEditor forceImageDirEnabled = new BooleanFieldEditor(P_USE_PREVIEW_IMAGEDIRECTORY.getId(),
+				"Use image directory in preview folder", devNull);
+		forceImageDirEnabled.getDescriptionControl(devNull)
+				.setToolTipText("Enable this when you are using the ':imagesdir:' attribute. \n"
+						+ "This will ensure imagesdir content and also generated diagrams are available in temp folder.\n\n"
+						+ "When you are using NOT attribute ':imagesdir:' but relative pathes you can turn off this option.\n"
+						+ "In this case the base dir will be set as image directory.");
+		addField(forceImageDirEnabled);
+
+		devNull = new Composite(uiComposite, SWT.NONE);
 		BooleanFieldEditor linkEditorWithPreviewEnabled = new BooleanFieldEditor(P_LINK_EDITOR_WITH_PREVIEW.getId(),
 				"Link editor with internal preview", devNull);
 		linkEditorWithPreviewEnabled.getDescriptionControl(devNull)

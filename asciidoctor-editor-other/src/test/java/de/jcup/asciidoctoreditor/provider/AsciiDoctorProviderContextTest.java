@@ -70,7 +70,7 @@ public class AsciiDoctorProviderContextTest {
 	public void image_provider_ensure_images__does_create_target_folder_and_contains_not_copied_images_when_no_headline_with_imagedir_attribute() throws Exception{
 		Set<File> files = testInternalImages(false);
 		/* test */
-		assertEquals(4,files.size()); // copies all parts from directory of current asciidocfile, means bugfixes,diagrams,images, issues
+		assertEquals(5,files.size()); // copies all parts from directory of current asciidocfile, means bugfixes,diagrams,images, issues
 		boolean foundLogo=false;
 		for (File file: files){
 			if (file.getName().equals("images")){
