@@ -605,7 +605,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     protected File getEditorFileOrNull() {
-        if (editorFile == null) {
+        /* !editorFileExists == true can happen when we got a rename of the file */
+        if (editorFile == null || ! editorFile.exists()) {
             editorFile = resolveEditorFileOrNull();
         }
         return editorFile;
