@@ -57,7 +57,6 @@ import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
-import de.jcup.eclipse.commons.ui.ColorUtil;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 /**
@@ -192,7 +191,7 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 			addPresentation(reconciler, INCLUDE_KEYWORD.getId(), jfaceHyperlinkColor, SWT.BOLD);
 		}
 		addPresentation(reconciler, KNOWN_VARIABLES.getId(), getPreferences().getColor(COLOR_KNOWN_VARIABLES),
-				SWT.BOLD);
+				SWT.NONE);
 
 		return reconciler;
 	}

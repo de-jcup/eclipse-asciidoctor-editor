@@ -29,7 +29,6 @@ import org.eclipse.jface.text.rules.Token;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorAdmonitionParagraphKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
 import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorIncludeKeywords;
-import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSpecialAttributesKeyWords;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScanner {
@@ -86,7 +85,9 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		buildLineStartsWithRule(rules, asciidoctorCommand, "]", AsciiDoctorCommandKeyWords.values());
 		buildLineStartsWithRule(rules, includeKeyword, "]", AsciiDoctorIncludeKeywords.values());
 
-		buildLineStartsWithRule(rules, knownVariables, "", AsciiDoctorSpecialAttributesKeyWords.values());
+//		buildLineStartsWithRule(rules, knownVariables, "", AsciiDoctorSpecialAttributesKeyWords.values());
+		rules.add(new AsciiDoctorLineStartsWithRule(":", ":", false, knownVariables));
+		rules.add(new SingleLineRule("{", "}", knownVariables, (char) -1, true));
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}

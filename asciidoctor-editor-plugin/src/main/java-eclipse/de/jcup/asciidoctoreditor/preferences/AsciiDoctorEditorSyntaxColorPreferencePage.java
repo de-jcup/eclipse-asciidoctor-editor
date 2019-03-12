@@ -33,7 +33,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorColorConstants;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
-import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 
 public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -55,19 +54,11 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
 			editorMap.put(colorIdentifier, editor);
 			addField(editor);
 		}
-		/*
-		 * It seems #60 #63 does work well. But I had a problem with an older version of eclipse where the CSS parts did not work well. So if there are
-		 * any users having the same problem I want to have the possibility to give them a fast workaround by setting system property on eclipse start
-		 */
-		if (EclipseDevelopmentSettings.OLD_STUFF_ENABLED_DARK_PREFERENCE_DEFAULTS){
-			addOldStuffDarkThemeDefaultsButton(parent, editorMap);
-		}
-			
-		
+		addDarkThemeDefaultsButton(parent, editorMap);
 	}
 
 	
-	private void addOldStuffDarkThemeDefaultsButton(Composite parent,
+	private void addDarkThemeDefaultsButton(Composite parent,
 			Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap) {
 		Button restoreDarkThemeColorsButton= new Button(parent,  SWT.PUSH);
 		restoreDarkThemeColorsButton.setText("Restore Defaults for Dark Theme");
@@ -77,16 +68,16 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
 			public void widgetSelected(SelectionEvent e) {
 
 				/* editor colors */
-				changeColor(editorMap, COLOR_NORMAL_TEXT, AsciiDoctorEditorColorConstants.GRAY_JAVA);
-				changeColor(editorMap, COLOR_ASCIIDOCTOR_HEADLINES, AsciiDoctorEditorColorConstants.DARK_THEME_LIHT_RED);
+			    changeColor(editorMap, COLOR_ASCIIDOCTOR_HEADLINES, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_HEADLINE);
+				changeColor(editorMap, COLOR_NORMAL_TEXT, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_TEXT);
+				changeColor(editorMap, COLOR_TEXT_BLOCKS, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_BLOCK_TEXT);
+
+				changeColor(editorMap, COLOR_TEXT_BOLD, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_TEXT_BOLD);
+				changeColor(editorMap, COLOR_TEXT_ITALIC, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_TEXT_ITALIC);
 				
-				changeColor(editorMap, COLOR_COMMENT, AsciiDoctorEditorColorConstants.GREEN_JAVA);
-				changeColor(editorMap, COLOR_ASCIIDOCTOR_COMMAND, AsciiDoctorEditorColorConstants.TASK_CYAN);
-				changeColor(editorMap, COLOR_KNOWN_VARIABLES, AsciiDoctorEditorColorConstants.DARK_THEME_GRAY);
-				changeColor(editorMap, COLOR_TEXT_BOLD, AsciiDoctorEditorColorConstants.BRIGHT_CYAN);
-				changeColor(editorMap, COLOR_TEXT_BLOCKS, AsciiDoctorEditorColorConstants.DARK_THEME_CYAN);
-				changeColor(editorMap, COLOR_TEXT_ITALIC, AsciiDoctorEditorColorConstants.BRIGHT_CYAN);
-				
+				changeColor(editorMap, COLOR_COMMENT, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_COMMENTS);
+				changeColor(editorMap, COLOR_ASCIIDOCTOR_COMMAND, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_COMMANDS);
+				changeColor(editorMap, COLOR_KNOWN_VARIABLES, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_KNOWN_VARIABLES);
 			}
 
 			private void changeColor(Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap,

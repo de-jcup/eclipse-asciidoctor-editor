@@ -112,10 +112,15 @@ public interface AsciiDoctorEditorColorConstants {
 	 * A special light blue color for here string on white themes
 	 */
 	public static final RGB LIGHT_THEME_LIGHT_BLUE = rgb(108,163,253);
-	
-	
 
-	
+    public static final RGB DARKTHEME_DEFAULT_TEXT_BOLD = rgb(245,121,0) ;
+    public static final RGB DARKTHEME_DEFAULT_TEXT_ITALIC = rgb(196,160,0) ;
+    public static final RGB DARKTHEME_DEFAULT_BLOCK_TEXT = rgb(136,138,133) ;
+    public static final RGB DARKTHEME_DEFAULT_TEXT = rgb(192,192,192) ;
+    public static final RGB DARKTHEME_DEFAULT_HEADLINE = rgb(191,63,63) ;
+    public static final RGB DARKTHEME_DEFAULT_COMMENTS = rgb(63,127,95) ;
+    public static final RGB DARKTHEME_DEFAULT_COMMANDS = rgb(77,154,6) ;
+    public static final RGB DARKTHEME_DEFAULT_KNOWN_VARIABLES = rgb(138,226,52);
 	
 	public static RGB rgb(int r, int g, int b) {
 		return new RGB(r, g, b);
