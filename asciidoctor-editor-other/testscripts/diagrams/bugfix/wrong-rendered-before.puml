@@ -1,0 +1,12 @@
+@startuml
+while ( TRUE )
+    if (A) then (yes)
+      break
+    endif
+    if (B) then (yes)
+      :return error;
+      detach
+    endif
+endwhile
+:return 0;
+@endum

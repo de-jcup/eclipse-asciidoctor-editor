@@ -1,0 +1,5 @@
+@startuml
+!pragma teoz true
+alice -> alice : A
+& alice -> bob : B
+@enduml

@@ -27,8 +27,11 @@ import java.util.TreeSet;
 import org.apache.commons.io.FileUtils;
 
 /**
- * Just a simple java code generator for plantuml keywords.
- * See http://plantuml.com/developers for more information
+ * Just a simple java code generator for plantuml keywords.<br>
+ * Before you can use the generator you have to execute <br>
+ * <pre>
+ * $projectDir/create-plantuml-language-textfile.sh
+ * </pre>
  * @author albert
  *
  */

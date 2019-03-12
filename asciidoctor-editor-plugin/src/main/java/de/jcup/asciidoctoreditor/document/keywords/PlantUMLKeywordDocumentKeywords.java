@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Albert Tregnaghi
+ * Copyright 2019 Albert Tregnaghi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,16 @@ import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 public enum PlantUMLKeywordDocumentKeywords implements DocumentKeyWord {
 
 	
+          ATSIGN_ENDDOT("@enddot"),
+          ATSIGN_ENDSALT("@endsalt"),
           ATSIGN_ENDUML("@enduml"),
+          ATSIGN_STARTDOT("@startdot"),
+          ATSIGN_STARTSALT("@startsalt"),
           ATSIGN_STARTUML("@startuml"),
           ACTIVATE("activate"),
           AGAIN("again"),
+          ALLOW_MIXING("allow_mixing"),
+          ALLOWMIXING("allowmixing"),
           ALSO("also"),
           ALT("alt"),
           AS("as"),
@@ -36,6 +42,7 @@ public enum PlantUMLKeywordDocumentKeywords implements DocumentKeyWord {
           BOTTOM("bottom"),
           BOX("box"),
           BREAK("break"),
+          CAPTION("caption"),
           CENTER("center"),
           CREATE("create"),
           CRITICAL("critical"),
@@ -53,18 +60,22 @@ public enum PlantUMLKeywordDocumentKeywords implements DocumentKeyWord {
           GROUP("group"),
           HEADER("header"),
           HIDE("hide"),
+          HNOTE("hnote"),
           IF("if"),
           IS("is"),
           KILL("kill"),
           LEFT("left"),
+          LEGEND("legend"),
           LINK("link"),
           LOOP("loop"),
+          MAINFRAME("mainframe"),
           NAMESPACE("namespace"),
           NEWPAGE("newpage"),
           NOTE("note"),
           OF("of"),
           ON("on"),
           OPT("opt"),
+          ORDER("order"),
           OVER("over"),
           PACKAGE("package"),
           PAGE("page"),
@@ -74,12 +85,14 @@ public enum PlantUMLKeywordDocumentKeywords implements DocumentKeyWord {
           REPEAT("repeat"),
           RETURN("return"),
           RIGHT("right"),
+          RNOTE("rnote"),
           ROTATE("rotate"),
           SHOW("show"),
           SKIN("skin"),
           SKINPARAM("skinparam"),
           START("start"),
           STOP("stop"),
+          TITLE("title"),
           TOP("top"),
           TOP_TO_BOTTOM_DIRECTION("top to bottom direction"),
           UP("up"),

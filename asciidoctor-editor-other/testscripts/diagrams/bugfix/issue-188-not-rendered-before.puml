@@ -1,0 +1,24 @@
+@startuml
+
+hide circle
+
+entity Entity {
+   * identifying_attribute
+   --
+   * mandatory_attribute
+   optional_attribute
+}
+
+' zero or one
+Entity |o--o| B
+
+' exactly one
+C ||--|| D
+
+' zero or many
+E }o--o{ Entity
+
+' one or many
+G }|--|{ H
+
+@enduml

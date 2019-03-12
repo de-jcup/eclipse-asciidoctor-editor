@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Albert Tregnaghi
+ * Copyright 2019 Albert Tregnaghi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ public enum PlantUMLTypeDocumentKeywords implements DocumentKeyWord {
           ABSTRACT("abstract"),
           ACTOR("actor"),
           AGENT("agent"),
+          ARCHIMATE("archimate"),
           ARTIFACT("artifact"),
           BOUNDARY("boundary"),
           CARD("card"),
@@ -36,15 +37,20 @@ public enum PlantUMLTypeDocumentKeywords implements DocumentKeyWord {
           COMPONENT("component"),
           CONTROL("control"),
           DATABASE("database"),
+          DIAMOND("diamond"),
           ENTITY("entity"),
           ENUM("enum"),
+          FILE("file"),
           FOLDER("folder"),
           FRAME("frame"),
           INTERFACE("interface"),
           NODE("node"),
           OBJECT("object"),
+          PACKAGE("package"),
           PARTICIPANT("participant"),
-          RECT("rect"),
+          QUEUE("queue"),
+          RECTANGLE("rectangle"),
+          STACK("stack"),
           STATE("state"),
           STORAGE("storage"),
           USECASE("usecase"),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Albert Tregnaghi
+ * Copyright 2019 Albert Tregnaghi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,13 @@ import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 public enum PlantUMLColorDocumentKeywords implements DocumentKeyWord {
 
 	
+          APPLICATION("APPLICATION"),
           ALICEBLUE("AliceBlue"),
           ANTIQUEWHITE("AntiqueWhite"),
           AQUA("Aqua"),
           AQUAMARINE("Aquamarine"),
           AZURE("Azure"),
+          BUSINESS("BUSINESS"),
           BEIGE("Beige"),
           BISQUE("Bisque"),
           BLACK("Black"),
@@ -84,6 +86,7 @@ public enum PlantUMLColorDocumentKeywords implements DocumentKeyWord {
           GREY("Grey"),
           HONEYDEW("HoneyDew"),
           HOTPINK("HotPink"),
+          IMPLEMENTATION("IMPLEMENTATION"),
           INDIANRED("IndianRed"),
           INDIGO("Indigo"),
           IVORY("Ivory"),
@@ -110,6 +113,7 @@ public enum PlantUMLColorDocumentKeywords implements DocumentKeyWord {
           LIME("Lime"),
           LIMEGREEN("LimeGreen"),
           LINEN("Linen"),
+          MOTIVATION("MOTIVATION"),
           MAGENTA("Magenta"),
           MAROON("Maroon"),
           MEDIUMAQUAMARINE("MediumAquaMarine"),
@@ -133,6 +137,7 @@ public enum PlantUMLColorDocumentKeywords implements DocumentKeyWord {
           ORANGE("Orange"),
           ORANGERED("OrangeRed"),
           ORCHID("Orchid"),
+          PHYSICAL("PHYSICAL"),
           PALEGOLDENROD("PaleGoldenRod"),
           PALEGREEN("PaleGreen"),
           PALETURQUOISE("PaleTurquoise"),
@@ -147,6 +152,7 @@ public enum PlantUMLColorDocumentKeywords implements DocumentKeyWord {
           RED("Red"),
           ROSYBROWN("RosyBrown"),
           ROYALBLUE("RoyalBlue"),
+          STRATEGY("STRATEGY"),
           SADDLEBROWN("SaddleBrown"),
           SALMON("Salmon"),
           SANDYBROWN("SandyBrown"),
@@ -161,6 +167,7 @@ public enum PlantUMLColorDocumentKeywords implements DocumentKeyWord {
           SNOW("Snow"),
           SPRINGGREEN("SpringGreen"),
           STEELBLUE("SteelBlue"),
+          TECHNOLOGY("TECHNOLOGY"),
           TAN("Tan"),
           TEAL("Teal"),
           THISTLE("Thistle"),

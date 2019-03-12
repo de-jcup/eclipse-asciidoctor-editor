@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Albert Tregnaghi
+ * Copyright 2019 Albert Tregnaghi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,16 @@ public enum PlantUMLPreprocessorDocumentKeywords implements DocumentKeyWord {
 
 	
           NOT_DEFINE("!define"),
+          NOT_DEFINELONG("!definelong"),
+          NOT_ELSE("!else"),
+          NOT_ENDDEFINELONG("!enddefinelong"),
           NOT_ENDIF("!endif"),
+          NOT_EXIT("!exit"),
+          NOT_IF("!if"),
           NOT_IFDEF("!ifdef"),
           NOT_IFNDEF("!ifndef"),
           NOT_INCLUDE("!include"),
+          NOT_PRAGMA("!pragma"),
           NOT_UNDEF("!undef"),
 	;
 
