@@ -85,6 +85,7 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
+import de.jcup.asciidoctoreditor.toolbar.AddLineBreakAction;
 import de.jcup.asciidoctoreditor.toolbar.BoldFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertAdmonitionAction;
@@ -127,6 +128,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private long fallBackEditorId;
     private String bgColor;
     private BoldFormatAction boldFormatAction;
+    private AddLineBreakAction addLineBreakAction;
     private AsciiDoctorEditorBuildSupport buildSupport;
     private AsciiDoctorEditorCommentSupport commentSupport;
     private File editorFile;
@@ -385,6 +387,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         boldFormatAction.run();
     }
 
+    public void addLineBreak() {
+        addLineBreakAction.run();
+    }
+    
     public void makeSelectedTextItalic() {
         italicFormatAction.run();
     }
@@ -709,12 +715,15 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         monoSpacedFormatAction = new MonospacedFormatAction(this);
         rebuildAction = new RebuildAsciiDocViewAction(this);
 
+        addLineBreakAction = new AddLineBreakAction(this);
+        
         IToolBarManager asciiDocToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         asciiDocToolBarManager.add(new InsertSectionTitleAction(this));
 
         asciiDocToolBarManager.add(italicFormatAction);
         asciiDocToolBarManager.add(boldFormatAction);
         asciiDocToolBarManager.add(monoSpacedFormatAction);
+        asciiDocToolBarManager.add(addLineBreakAction);
 
         asciiDocToolBarManager.add(new NewTableInsertAction(this));
         asciiDocToolBarManager.add(new NewLinkInsertAction(this));
@@ -1069,5 +1078,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
 
     }
+   
 
 }

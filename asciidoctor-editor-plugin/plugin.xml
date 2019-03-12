@@ -207,6 +207,12 @@
             categoryId="asciidoctoreditor.commands.category"
             id="asciidoctoreditor.editor.commands.rebuild">
       </command>
+      <command
+            name="Add linebreak"
+            description="Adds a linebreak"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.source.addlinebreak">
+      </command>
       
 	</extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -251,6 +257,10 @@
       <handler
             commandId="asciidoctoreditor.editor.commands.rebuild"
             class="de.jcup.asciidoctoreditor.handlers.RebuildHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.editor.commands.source.addlinebreak"
+            class="de.jcup.asciidoctoreditor.handlers.AddLineBreakHandler">
       </handler>
     </extension> 
     
@@ -307,6 +317,12 @@
             commandId="asciidoctoreditor.editor.commands.rebuild"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">	  
 		</key>
+		<key
+            sequence="M1+ENTER"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.source.addlinebreak"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">    
+        </key>
     </extension> 
     
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -336,6 +352,9 @@
              />
             <command commandId="asciidoctoreditor.editor.commands.rebuild"
             		 icon="icons/toolbar/refresh.png"
+             />
+            <command commandId="asciidoctoreditor.editor.commands.source.addlinebreak"
+            		 icon="icons/toolbar/add_linebreak.png"
              />
                
       </menuContribution>
@@ -374,6 +393,9 @@
             <command commandId="asciidoctoreditor.editor.commands.rebuild"
             		 icon="icons/toolbar/refresh.png"
             />
+            <command commandId="asciidoctoreditor.editor.commands.source.addlinebreak"
+                     icon="icons/toolbar/add_linebreak.png"
+             />
          </menu>
       </menuContribution>
       
