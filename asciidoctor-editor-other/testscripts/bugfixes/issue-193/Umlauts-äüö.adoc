@@ -1,0 +1,24 @@
+== About
+
+This file represents a problem case for https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/193
+
+To reproduce failure situation you can do following:
+
+- start your eclipse with file.encoding=cp1252 enabled +
+   _(should be done on a windows instance)_
+- open the file inside asciidoctor editor
+- before bugfix you got no preview but an asciidoc error about file name problems 
+
+=== What happens (without bugfix)?
+
+File.getName() does rely on the `file.enconding` system property. 
+But embedded asciidoctor instance seems to  rely on `UTF-8`.
+
+On startup there is a problem, because given filename String is no UTF-8 but another encoded char 
+sequence...
+
+As a bugfix / workaround the filename will be now normalized to ascii only chars when `file.encoding`
+is not `UTF-8`. Having an editor id inside name of hidden file even similar names do not matter. 
+
+
+include::included-umlauts2-äüö.adoc[]  

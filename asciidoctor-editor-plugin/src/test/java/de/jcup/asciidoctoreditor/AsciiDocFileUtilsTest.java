@@ -24,7 +24,18 @@ import org.junit.Test;
 public class AsciiDocFileUtilsTest {
 
     @Test
-    public void test() {
+    public void createSafeFilename(){
+        /* change when not standard ASCII code*/
+        assertEquals("Apfel-wurfeln-ist-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Äpfel-würfeln-ist-öffentlich-verböten.txt"));
+        assertEquals("monchere.txt", AsciiDocFileUtils.createEncodingSafeFileName("mon´chere.txt"));
+
+        /* keep ASCII special chars:*/
+        assertEquals("Apfel-wurfeln-ist-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Apfel-wurfeln-ist-offentlich-verboten.txt"));
+        assertEquals("de`juice.txt", AsciiDocFileUtils.createEncodingSafeFileName("de`juice.txt"));
+    }
+    
+    @Test
+    public void calculatePathToFileFromBase() {
        /* prepare */
        File file = new File("./");
        File asciiDocFile = new File(file,"basefolder/sub1/sub2/sub3/test.adoc");

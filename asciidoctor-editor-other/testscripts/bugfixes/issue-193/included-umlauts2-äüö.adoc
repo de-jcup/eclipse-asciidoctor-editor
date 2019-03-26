@@ -1,0 +1,4 @@
+=== Included parts and umlauts
+
+Included parts have no problems at all, because at this point UTF-8 must be used
+(Asciidoc files must always be UTF-8)
