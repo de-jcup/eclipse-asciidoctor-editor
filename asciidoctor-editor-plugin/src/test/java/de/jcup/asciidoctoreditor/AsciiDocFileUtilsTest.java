@@ -26,7 +26,8 @@ public class AsciiDocFileUtilsTest {
     @Test
     public void createSafeFilename(){
         /* change when not standard ASCII code*/
-        assertEquals("Apfel-wurfeln-ist-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Äpfel-würfeln-ist-öffentlich-verböten.txt"));
+        assertEquals("Apfel-wurfeln-it-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Äpfel-würfeln-ißt-öffentlich-verboten.txt"));
+        assertEquals("Apfel-wurfeln-ist-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Äpfel-würfeln-ist-öffentlich-verboten.txt"));
         assertEquals("monchere.txt", AsciiDocFileUtils.createEncodingSafeFileName("mon´chere.txt"));
 
         /* keep ASCII special chars:*/
