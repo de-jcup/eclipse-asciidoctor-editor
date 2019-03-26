@@ -110,7 +110,7 @@ public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlin
 
 	private IHyperlink[] resolveLinkToHeadline(LinkTextData linkTextData, AsciiDoctorEditor editor) {
 		String foundText = linkTextData.text;
-		AsciiDoctorHeadline headline = editor.findAsciiDoctorHeadline(foundText);
+		AsciiDoctorHeadline headline = editor.findAsciiDoctorHeadlineByName(foundText);
 		if (headline != null) {
 			Region targetRegion = createTargetRegion(linkTextData);
 			return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, headline, editor) };

@@ -21,136 +21,178 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
 
 /**
- * All browser access must be done over this class. So its easier to handle toggle off when external mode etc.
+ * All browser access must be done over this class. So its easier to handle
+ * toggle off when external mode etc.
+ * 
  * @author Albert Tregnaghi
  *
  */
 public class BrowserAccess {
-	private Browser browser;
-	private Object monitor = new Object();
-	private Composite sashForm;
+    private Browser browser;
+    private Object monitor = new Object();
+    private Composite sashForm;
+    private MouseListener listener;
 
-	/* FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if this could be removed */
-	public interface BrowserContentInitializer {
+    /*
+     * FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if
+     * this could be removed
+     */
+    public interface BrowserContentInitializer {
 
-		public void initialize(Browser browser);
+        public void initialize(Browser browser);
 
-	}
+    }
 
-	public void setEnabled(boolean enabled) {
-		safeSetBrowserVisible(enabled);
-	}
+    public void setEnabled(boolean enabled) {
+        safeSetBrowserVisible(enabled);
+    }
 
-	public BrowserAccess(Composite parent) {
-		this.sashForm = parent;
-	}
+    public BrowserAccess(Composite parent) {
+        this.sashForm = parent;
+    }
 
-	public void refresh() {
-		if (isBrowserNotAvailable()) {
-			return;
-		}
-		browser.refresh();
+    public void refresh() {
+        if (isBrowserNotAvailable()) {
+            return;
+        }
+        browser.refresh();
 
-	}
+    }
 
-	private void safeSetBrowserVisible(boolean visible) {
-		if (isBrowserNotAvailable()) {
-			return;
-		}
-		browser.setVisible(visible);
-	}
+    private void safeSetBrowserVisible(boolean visible) {
+        if (isBrowserNotAvailable()) {
+            return;
+        }
+        browser.setVisible(visible);
+    }
 
-	public void navgigateToTopOfView() {
-		safeBrowserExecuteJavascript("scroll(0,0)");
-	}
-	
-	public void dispose() {
-		if (browser == null) {
-			return;
-		}
-		if (!browser.isDisposed()) {
-			browser.dispose();
-		}
-	}
+    public void navgigateToTopOfView() {
+        safeBrowserExecuteJavascript("scroll(0,0)");
+    }
 
-	public Browser ensureBrowser(BrowserContentInitializer initializer) {
-		synchronized (monitor) {
-			if (browser == null) {
-				browser = new Browser(sashForm, SWT.CENTER);
-				/* FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if this could be removed */
-				Job job = Job.create("Init browser", new ICoreRunnable() {
+    public void dispose() {
+        if (browser == null) {
+            return;
+        }
+        if (this.listener != null && ! browser.isDisposed()) {
+            browser.removeMouseListener(this.listener);
+        }
+        if (!browser.isDisposed()) {
+            browser.dispose();
+        }
+    }
 
-					@Override
-					public void run(IProgressMonitor monitor) throws CoreException {
-						monitor.beginTask("Initializing browser", IProgressMonitor.UNKNOWN);
-						initializer.initialize(browser);
-						monitor.done();
-					}
-				});
-				job.schedule();
-			}
-			return browser;
-		}
-	}
+    public Browser ensureBrowser(BrowserContentInitializer initializer) {
+        synchronized (monitor) {
+            if (browser == null) {
+                browser = new Browser(sashForm, SWT.CENTER);
+                /*
+                 * FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if
+                 * this could be removed
+                 */
+                Job job = Job.create("Init browser", new ICoreRunnable() {
 
-	public void safeBrowserSetText(final String html) {
-		if (isBrowserNotAvailable()) {
-			return;
-		}
-		EclipseUtil.safeAsyncExec(new Runnable() {
-			
-			@Override
-			public void run() {
-				if (isBrowserNotAvailable()) {
-					return;
-				}
-				browser.setText(html);
-			}
-		});
-	}
-	
-	public void safeBrowserExecuteJavascript(final String javascript) {
-		if (isBrowserNotAvailable()) {
-			return;
-		}
-		EclipseUtil.safeAsyncExec(new Runnable() {
-			
-			@Override
-			public void run() {
-				if (isBrowserNotAvailable()) {
-					return;
-				}
-				if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED){
-					AsciiDoctorEclipseLogAdapter.INSTANCE.logInfo("safeBrowserExecuteJavascript, sending javascript:"+javascript);
-				}
-				try{
-					browser.evaluate(javascript);
-				}catch(RuntimeException e){
-					AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to execute javascript:"+javascript,e);
-				}
-			}
-		});
-	}
+                    @Override
+                    public void run(IProgressMonitor monitor) throws CoreException {
+                        monitor.beginTask("Initializing browser", IProgressMonitor.UNKNOWN);
+                        initializer.initialize(browser);
+                        monitor.done();
+                    }
+                });
+                job.schedule();
+            }
+            return browser;
+        }
+    }
 
-	public String getUrl() {
-		if (isBrowserNotAvailable()) {
-			return "";
-		}
-		return browser.getUrl();
-	}
+    public void safeBrowserSetText(final String html) {
+        if (isBrowserNotAvailable()) {
+            return;
+        }
+        EclipseUtil.safeAsyncExec(new Runnable() {
 
-	protected boolean isBrowserNotAvailable() {
-		return browser == null || browser.isDisposed();
-	}
+            @Override
+            public void run() {
+                if (isBrowserNotAvailable()) {
+                    return;
+                }
+                browser.setText(html);
+            }
+        });
+    }
 
-	public void setUrl(String url) {
-		if (isBrowserNotAvailable()) {
-			return;
-		}
-		browser.setUrl(url);
-	}
+    /**
+     * Installs a mouse listener - we do only suppport ONE mouse listener at same time. Calling this method multiple times will uninstall former one!
+     * @param mouseListener
+     */
+    public void install(MouseListener mouseListener) {
+        if (isBrowserNotAvailable()) {
+            return;
+        }
+        if (this.listener != null) {
+            browser.removeMouseListener(this.listener);
+        }
+        this.listener = mouseListener;
+        browser.addMouseListener(listener);
+    }
+
+    public void safeBrowserExecuteJavascript(final String javascript) {
+        if (isBrowserNotAvailable()) {
+            return;
+        }
+        EclipseUtil.safeAsyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                if (isBrowserNotAvailable()) {
+                    return;
+                }
+                if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
+                    AsciiDoctorEclipseLogAdapter.INSTANCE.logInfo("safeBrowserExecuteJavascript, sending javascript:" + javascript);
+                }
+                try {
+                    browser.evaluate(javascript);
+                } catch (RuntimeException e) {
+                    AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to execute javascript:" + javascript, e);
+                }
+            }
+        });
+    }
+
+    public String getUrl() {
+        if (isBrowserNotAvailable()) {
+            return "";
+        }
+        return browser.getUrl();
+    }
+
+    protected boolean isBrowserNotAvailable() {
+        return browser == null || browser.isDisposed();
+    }
+
+    public void setUrl(String url) {
+        if (isBrowserNotAvailable()) {
+            return;
+        }
+        browser.setUrl(url);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T safeBrowserEvaluateJavascript(String javascript) {
+        if (isBrowserNotAvailable()) {
+            return null;
+        }
+        Object result = null;
+        try {
+            result = browser.evaluate(javascript);
+        } catch (RuntimeException e) {
+            AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to execute javascript:" + javascript, e);
+        }
+        return (T) result;
+    }
 
 }

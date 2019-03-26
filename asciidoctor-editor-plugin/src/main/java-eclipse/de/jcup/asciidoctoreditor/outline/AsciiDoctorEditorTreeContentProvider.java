@@ -82,7 +82,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 		}
 		return false;
 	}
-
+	
 	private Item[] createItems(AsciiDoctorScriptModel model) {
 		Map<Integer, Item> parents = new HashMap<Integer, Item>();
 		List<Item> list = new ArrayList<>();

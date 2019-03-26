@@ -22,17 +22,20 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorContentOutlinePage;
+import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorQuickOutlineDialog;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
+import de.jcup.asciidoctoreditor.script.AsciidoctorTextSelectable;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 
-public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSupport{
+public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSupport {
     private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();
 
     private Object monitor = new Object();
@@ -54,8 +57,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
         synchronized (monitor) {
             if (quickOutlineOpened) {
                 /*
-                 * already opened - this is in future the anker point for
-                 * ctrl+o+o...
+                 * already opened - this is in future the anker point for ctrl+o+o...
                  */
                 return;
             }
@@ -77,29 +79,32 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
             IStructuredSelection ss = (IStructuredSelection) selection;
             Object firstElement = ss.getFirstElement();
             if (firstElement instanceof Item) {
-                Item item = (Item) firstElement;
-                int offset = item.getOffset();
-                int length = item.getLength();
-                if (length == 0) {
-                    /* fall back */
-                    length = 1;
-                }
-                /*
-                 * ignore next caret move - to prevent endless loop between tree
-                 * and getEditor()...
-                 */
-                ignoreNextCaretMove = true;
-                getEditor().selectAndReveal(offset, length);
-                if (grabFocus) {
-                    getEditor().setFocus();
-                }
-                /*
-                 * caret movement was ignored for tree so call synchronizer
-                 * alone here:
-                 */
-                getEditor().synchronizer.onEditorCaretMoved(offset);
+                openSelectedItemInEditor(grabFocus, firstElement);
             }
         }
+    }
+
+    private void openSelectedItemInEditor(boolean grabFocus, Object firstElement) {
+        Item item = (Item) firstElement;
+        int offset = item.getOffset();
+        int length = item.getLength();
+        if (length == 0) {
+            /* fall back */
+            length = 1;
+        }
+        /*
+         * ignore next caret move - to prevent endless loop between tree and
+         * getEditor()...
+         */
+        ignoreNextCaretMove = true;
+        getEditor().selectAndReveal(offset, length);
+        if (grabFocus) {
+            getEditor().setFocus();
+        }
+        /*
+         * caret movement was ignored for tree so call synchronizer alone here:
+         */
+        getEditor().synchronizer.onEditorCaretMoved(offset);
     }
 
     /**
@@ -159,12 +164,25 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
     }
 
     /**
-     * @return outline page, never <code>null</code>. If non exists a new one will be created
+     * @return outline page, never <code>null</code>. If non exists a new one will
+     *         be created
      */
     public AsciiDoctorContentOutlinePage getOutlinePage() {
         if (outlinePage == null) {
             outlinePage = new AsciiDoctorContentOutlinePage(getEditor());
         }
         return outlinePage;
+    }
+
+    public void selectItemPointingTo(int position) {
+        if (outlinePage == null) {
+            return;
+        }
+        AsciiDoctorEditorTreeContentProvider contentProvider = getOutlinePage().getContentProvider();
+        Item item = contentProvider.tryToFindByOffset(position);
+        if (item == null) {
+            return;
+        }
+        getOutlinePage().setSelection(new StructuredSelection(item));
     }
 }

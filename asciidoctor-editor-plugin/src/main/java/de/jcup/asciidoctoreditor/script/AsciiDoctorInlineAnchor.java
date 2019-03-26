@@ -15,19 +15,23 @@
  */
 package de.jcup.asciidoctoreditor.script;
 
-public class AsciiDoctorInlineAnchor {
+public class AsciiDoctorInlineAnchor implements AsciidoctorTextSelectable {
 
 	private int end;
 	private int position;
 	private String label;
 	private String id;
+    private int selectionLength;
 
 	public AsciiDoctorInlineAnchor(String text, int position, int end) {
+	    if (text==null) {
+	        text="";
+	    }
 		this.label = text;
 		this.end = end;
 		this.position = position;
-
 		this.id = createIDByLabel();
+		this.selectionLength=id.length();
 	}
 
 	private String createIDByLabel() {
@@ -67,6 +71,7 @@ public class AsciiDoctorInlineAnchor {
 		return label;
 	}
 
+	@Override
 	public int getPosition() {
 		return position;
 	}
@@ -78,5 +83,16 @@ public class AsciiDoctorInlineAnchor {
 	public String getId() {
 		return id;
 	}
+
+	@Override
+	public int getSelectionStart() {
+	    /* anker starts always with [[ so add 2 */
+	    return getPosition()+2;
+	}
+	
+    @Override
+    public int getSelectionLength() {
+        return selectionLength;
+    }
 
 }

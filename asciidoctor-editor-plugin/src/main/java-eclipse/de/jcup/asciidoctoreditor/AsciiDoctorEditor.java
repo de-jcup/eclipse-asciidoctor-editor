@@ -83,7 +83,9 @@ import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
+import de.jcup.asciidoctoreditor.script.AsciidoctorTextSelectable;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.AddLineBreakAction;
 import de.jcup.asciidoctoreditor.toolbar.BoldFormatAction;
@@ -225,15 +227,35 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
     }
 
-    public AsciiDoctorHeadline findAsciiDoctorHeadline(String functionName) {
-        if (functionName == null) {
+    public AsciiDoctorHeadline findAsciiDoctorHeadlineByName(String headlineName) {
+        if (headlineName == null) {
             return null;
         }
         AsciiDoctorScriptModel model = outlineSupport.buildModelWithoutValidation();
-        Collection<AsciiDoctorHeadline> functions = model.getHeadlines();
-        for (AsciiDoctorHeadline function : functions) {
-            if (functionName.equals(function.getName())) {
-                return function;
+        Collection<AsciiDoctorHeadline> headlines = model.getHeadlines();
+        for (AsciiDoctorHeadline headline : headlines) {
+            if (headlineName.equals(headline.getName())) {
+                return headline;
+            }
+        }
+        return null;
+    }
+    
+    public AsciidoctorTextSelectable findAsciiDoctorPositionByElementId(String elementId) {
+        if (elementId == null) {
+            return null;
+        }
+        AsciiDoctorScriptModel model = outlineSupport.buildModelWithoutValidation();
+        Collection<AsciiDoctorHeadline> headlines = model.getHeadlines();
+        for (AsciiDoctorHeadline headline : headlines) {
+            if (elementId.equals(headline.getCalculatedId())) {
+                return headline;
+            }
+        }
+        Collection<AsciiDoctorInlineAnchor> anchors = model.getInlineAnchors();
+        for (AsciiDoctorInlineAnchor anchor : anchors) {
+            if (elementId.equals(anchor.getId())) {
+                return anchor;
             }
         }
         return null;
@@ -700,7 +722,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         });
 
         buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
-
+        
+        synchronizer.installInBrowser();
+        
         PreviewLayout initialLayout = getInitialLayoutMode();
         if (initialLayout.isExternal()) {
             setInternalPreview(false);
@@ -1079,6 +1103,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
 
     }
+
    
 
 }

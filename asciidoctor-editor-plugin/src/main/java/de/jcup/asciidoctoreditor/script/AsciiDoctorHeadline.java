@@ -17,7 +17,7 @@
 
 import java.util.regex.Pattern;
 
-public class AsciiDoctorHeadline {
+public class AsciiDoctorHeadline implements AsciidoctorTextSelectable  {
 
 	private static final String REGEXP_STRING = "\\W";
 	private static final Pattern REGEXP= Pattern.compile(REGEXP_STRING, Pattern.UNICODE_CHARACTER_CLASS);
@@ -73,6 +73,16 @@ public class AsciiDoctorHeadline {
 		return lengthToNameEnd;
 	}
 	
+	@Override
+	public int getSelectionStart() {
+	    return getPosition();
+	}
+	
+	@Override
+	public int getSelectionLength() {
+	    return getLengthToNameEnd();
+	}
+	
 	public int getDeep() {
 		return deep;
 	}
@@ -81,6 +91,7 @@ public class AsciiDoctorHeadline {
 		return name;
 	}
 
+	@Override
 	public int getPosition() {
 		return position;
 	}
