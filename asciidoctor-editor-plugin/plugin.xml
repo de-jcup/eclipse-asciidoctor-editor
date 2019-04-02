@@ -29,6 +29,10 @@
         id="asciidoctoreditor.preferences.keyword.template"
         label="templates">
      </keyword>
+      <keyword
+        id="asciidoctoreditor.preferences.keyword.tasks"
+        label="tasks">
+     </keyword>
     
    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -391,7 +395,7 @@
             	commandId="asciidoctoreditor.editor.commands.source.validate" 
             	icon="icons/asciidoctor-editor.png">
             </command>
-            <command commandId="asciidoctoreditor.editor.commands.openlink"
+            <command commandId="asciidoctoreditorasciidoctoreditor.preferences.keyword.asciidoctor.editor.commands.openlink"
             		 icon="icons/toolbar/link.png"
              />
             <command commandId="asciidoctoreditor.editor.commands.rebuild"
@@ -457,6 +461,18 @@
                id="asciidoctoreditor.preferences.keyword.template">
          </keywordReference>
       </page>
+       <page
+         id="asciidoctoreditor.tasktags.AsciiDoctorEditorTaskTagsPreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorTaskTagsPreferencePage"
+         name="Tasks"
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
+          <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.tasks">
+         </keywordReference>
+      </page>
       <!-- plantuml -->
       <page
          id="asciidoctoreditor.eclipse.preferences.AsciiDoctorPlantUMLEditorPreferencePage"
@@ -491,6 +507,9 @@
       <initializer
             class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceInitializer">
       </initializer>
+      <initializer
+            class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorTaskTagsPreferenceInitializer">
+      </initializer>
    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          MARKER                          			 -->
@@ -503,7 +522,14 @@
         <super type="org.eclipse.core.resources.textmarker"/>
         <persistent value="true"/>
     </extension>
-    
+    <extension 
+        id="de.jcup.asciidoctoreditor.taskmarker"
+        point="org.eclipse.core.resources.markers"
+        name="Asciidoc task markers">
+        <super type="org.eclipse.core.resources.taskmarker"/>
+        <super type="org.eclipse.core.resources.textmarker"/>
+        <persistent value="true"/>
+    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          TEMPLATE                                    -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->

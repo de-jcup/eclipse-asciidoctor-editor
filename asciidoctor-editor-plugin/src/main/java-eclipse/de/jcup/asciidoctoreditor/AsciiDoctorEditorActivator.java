@@ -29,6 +29,7 @@ import de.jcup.asciidoctoreditor.template.AsciidoctorEditorTemplateSupportConfig
 import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 import de.jcup.eclipse.commons.resource.EclipseResourceInputStreamProvider;
+import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvider;
 import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
 
 /**
@@ -45,6 +46,8 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
 	private TemplateSupportProvider templateSupportProvider;
 	
 	private Map<StyledText, IConsolePageParticipant> viewers = new HashMap<StyledText, IConsolePageParticipant>();
+
+    private AsciiDoctorEditorTaskTagsSupportProvider taskSupportProvider;
 	
 	/**
 	 * The constructor
@@ -52,6 +55,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
 	public AsciiDoctorEditorActivator() {
 		colorManager = new ColorManager();
 		templateSupportProvider = new TemplateSupportProvider(new AsciidoctorEditorTemplateSupportConfig(),this);
+		taskSupportProvider = new AsciiDoctorEditorTaskTagsSupportProvider(this) ;
 		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
 	}
 
@@ -62,10 +66,12 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		taskSupportProvider.getTodoTaskSupport().install();
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+		taskSupportProvider.getTodoTaskSupport().uninstall();
 		colorManager.dispose();
 		super.stop(context);
 	}
@@ -110,6 +116,10 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     @Override
     public String getPluginID() {
         return PLUGIN_ID;
+    }
+
+    public AbstractConfigurableTaskTagsSupportProvider getTaskSupportProvider() {
+        return taskSupportProvider;
     }
 
 }
