@@ -30,6 +30,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
@@ -57,6 +58,8 @@ import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
+import de.jcup.eclipse.commons.codeassist.MultipleContentAssistProcessor;
+import de.jcup.eclipse.commons.templates.TemplateSupport;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 /**
@@ -66,7 +69,7 @@ import de.jcup.eclipse.commons.ui.EclipseUtil;
  */
 public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfiguration {
 
-	private AsciiDoctorDefaultTextScanner gradleScanner;
+    private AsciiDoctorDefaultTextScanner textScanner;
 	private ColorManager colorManager;
 
 	private TextAttribute defaultTextAttribute;
@@ -94,14 +97,20 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		contentAssistProcessor = new AsciiDoctorEditorSimpleWordContentAssistProcessor();
 		contentAssistant.enableColoredLabels(true);
 
-		contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
+	    TemplateSupport support = AsciiDoctorEditorActivator.getDefault().getTemplateSupportProvider().getSupport();
+        IContentAssistProcessor templateProcessor = support.getProcessor();
+      
+        /* first templates, then words etc. */
+        MultipleContentAssistProcessor multipProcessor = new MultipleContentAssistProcessor(templateProcessor,contentAssistProcessor);
+		
+		contentAssistant.setContentAssistProcessor(multipProcessor, IDocument.DEFAULT_CONTENT_TYPE);
 		for (AsciiDoctorDocumentIdentifier identifier : AsciiDoctorDocumentIdentifiers.values()) {
 			contentAssistant.setContentAssistProcessor(contentAssistProcessor, identifier.getId());
 		}
 
 		contentAssistant.addCompletionListener(contentAssistProcessor.getCompletionListener());
 
-		this.colorManager = adaptable.getAdapter(ColorManager.class);
+			this.colorManager = adaptable.getAdapter(ColorManager.class);
 		Assert.isNotNull(colorManager, " adaptable must support color manager");
 		defaultTextAttribute = new TextAttribute(
 				colorManager.getColor(getPreferences().getColor(COLOR_NORMAL_TEXT)));
@@ -109,10 +118,11 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		this.adaptable = adaptable;
 
 	}
-
 	
 
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+	    contentAssistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+        contentAssistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
 		return contentAssistant;
 	}
 
@@ -153,8 +163,7 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 			return super.getTextHover(sourceViewer, contentType);
 		}
 	}
-
-	@Override
+@Override
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
 		/* @formatter:off */
 		return allIdsToStringArray( 
@@ -208,7 +217,7 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 	}
 
 	private void addDefaultPresentation(PresentationReconciler reconciler) {
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getGradleDefaultTextScanner());
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getDefaultTextScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 	}
@@ -236,20 +245,20 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 		reconciler.setRepairer(presentation, id);
 	}
 
-	private AsciiDoctorDefaultTextScanner getGradleDefaultTextScanner() {
-		if (gradleScanner == null) {
-			gradleScanner = new AsciiDoctorDefaultTextScanner(colorManager);
+	private AsciiDoctorDefaultTextScanner getDefaultTextScanner() {
+		if (textScanner == null) {
+			textScanner = new AsciiDoctorDefaultTextScanner(colorManager);
 			updateTextScannerDefaultColorToken();
 		}
-		return gradleScanner;
+		return textScanner;
 	}
 
 	public void updateTextScannerDefaultColorToken() {
-		if (gradleScanner == null) {
+		if (textScanner == null) {
 			return;
 		}
 		RGB color = getPreferences().getColor(COLOR_NORMAL_TEXT);
-		gradleScanner.setDefaultReturnToken(createColorToken(color));
+		textScanner.setDefaultReturnToken(createColorToken(color));
 	}
 
 	

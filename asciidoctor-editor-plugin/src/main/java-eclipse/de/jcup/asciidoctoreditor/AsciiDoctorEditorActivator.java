@@ -25,13 +25,16 @@ import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import de.jcup.asciidoctoreditor.template.AsciidoctorEditorTemplateSupportConfig;
+import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 import de.jcup.eclipse.commons.resource.EclipseResourceInputStreamProvider;
+import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class AsciiDoctorEditorActivator extends AbstractUIPlugin {
+public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements PluginContextProvider{
 
 	// The plug-in COMMAND_ID
 	public static final String PLUGIN_ID = "de.jcup.asciidoctoreditor"; //$NON-NLS-1$
@@ -39,7 +42,8 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin {
 	// The shared instance
 	private static AsciiDoctorEditorActivator plugin;
 	private ColorManager colorManager;
-
+	private TemplateSupportProvider templateSupportProvider;
+	
 	private Map<StyledText, IConsolePageParticipant> viewers = new HashMap<StyledText, IConsolePageParticipant>();
 	
 	/**
@@ -47,6 +51,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin {
 	 */
 	public AsciiDoctorEditorActivator() {
 		colorManager = new ColorManager();
+		templateSupportProvider = new TemplateSupportProvider(new AsciidoctorEditorTemplateSupportConfig(),this);
 		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
 	}
 
@@ -92,5 +97,19 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin {
 		}
 		
 	}
+
+    public TemplateSupportProvider getTemplateSupportProvider() {
+        return templateSupportProvider;
+    }
+
+    @Override
+    public AbstractUIPlugin getActivator() {
+        return this;
+    }
+
+    @Override
+    public String getPluginID() {
+        return PLUGIN_ID;
+    }
 
 }

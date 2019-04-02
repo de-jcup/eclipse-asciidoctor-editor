@@ -25,6 +25,10 @@
    		id="asciidoctoreditor.preferences.keyword.validation"
    		label="validation">
      </keyword>
+      <keyword
+        id="asciidoctoreditor.preferences.keyword.template"
+        label="templates">
+     </keyword>
     
    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -441,6 +445,18 @@
                id="asciidoctoreditor.preferences.keyword.validation">
          </keywordReference>
       </page>
+      <page
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditortTemplatePreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorTemplatePreferencePage"
+         name="Templates"
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
+          <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.template">
+         </keywordReference>
+      </page>
       <!-- plantuml -->
       <page
          id="asciidoctoreditor.eclipse.preferences.AsciiDoctorPlantUMLEditorPreferencePage"
@@ -488,6 +504,192 @@
         <persistent value="true"/>
     </extension>
     
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          TEMPLATE                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            name="Asciidoctor Editor"
+            class="de.jcup.asciidoctoreditor.template.AsciidoctorEditorTemplateContextType"
+            id="de.jcup.asciidoctoreditor.template.contexttype">
+      </contextType>
+      <template
+            name="note (block)"
+            description="Admonition NOTE block snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.admonition.noteblock">
+         <pattern>[NOTE]
+====
+${cursor}An admonition block may contain complex content.
+====
+</pattern>
+      </template>
+        <template
+            name="tip (block)"
+            description="Admonition TIP block snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.admonition.tipblock">
+         <pattern>[TIP]
+====
+${cursor}An admonition block may contain complex content.
+====
+</pattern>
+        </template>
+        <template
+            name="important (block)"
+            description="Admonition IMPORTANT block snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.admonition.importantlock">
+         <pattern>[IMPORTANT]
+====
+${cursor}An admonition block may contain complex content.
+====
+</pattern>
+        </template>
+        <template
+            name="warning (block)"
+            description="Admonition WARNING block snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.admonition.warnblock">
+         <pattern>[WARNING]
+====
+${cursor}An admonition block may contain complex content.
+====
+</pattern>
+        </template>
+        <template
+            name="caution (block)"
+            description="Admonition CAUTION block snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.admonition.cautionblock">
+         <pattern>[CAUTION]
+====
+${cursor}An admonition block may contain complex content.
+====
+</pattern>
+        </template>
+      <template
+            name="source java"
+            description="Java code snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.java">
+         <pattern>[source, java]
+----
+${cursor}
+----
+</pattern>
+        </template>
+        <template
+            name="toc"
+            description="TOC snippet (table of content)"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.toc">
+         <pattern>:toc:
+:toc-title: Table of contents
+:toclevels: 5
+${cursor}
+</pattern>
+        </template>
+        <template
+            name="table"
+            description="Table snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.table">
+         <pattern>[options="header",cols="1,1,1"]
+|===
+|HeadA${cursor}   |HeadB   |HeadC   
+//----------------------
+|Row1A   |Row1B   |Row1C   
+|Row2A   |Row2B   |Row2C   
+|Row3A   |Row3B   |Row3C   
+|===
+</pattern>
+        </template>
+        <template
+            name="todo"
+            description="TODO snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.todo">
+         <pattern>// TODO ${d:date('yyyy-MM-dd')}, ${user}: ${cursor}</pattern>
+        </template>
+         <template
+            name="fixme"
+            description="FIXME snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.fixme">
+         <pattern>// FIXME ${d:date('yyyy-MM-dd')}, ${user}: ${cursor}</pattern>
+        </template>
+        <template
+            name="list unordered"
+            description="A unordered list snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.list.unordered">
+         <pattern>*${cursor}A unorderred list*
+
+* Edgar Allen Poe
+* Sheri S. Tepper
+* Bill Bryson
+</pattern>
+        </template>
+        <template
+            name="list ordered"
+            description="A ordered list snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.list.ordered">
+         <pattern>*${cursor}A orderred list*
+
+. Step 1
+. Step 2
+.. Step 2a
+.. Step 2b
+. Step 3
+</pattern>
+        </template>
+        <template
+            name="list checked"
+            description="A checked list snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.list.checked">
+         <pattern>*${cursor}A checked list*
+
+* [*] checked
+* [x] also checked
+* [ ] not checked
+* normal list item
+</pattern>
+        </template>
+        <template
+            name="include"
+            description="Include snippet"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.include">
+         <pattern>include::${cursor}.adoc[]
+</pattern>
+        </template>
+        <template
+            name="ifdef (general)"
+            description="Ifdef snippet (general)"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.ifdef_general">
+         <pattern>ifdef::${variable1}[]
+
+endif::${variable1}[]
+</pattern>
+        </template>
+        <template
+            name="ifdef (html)"
+            description="Ifdef snippet for html backend"
+            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
+            id="de.jcup.asciidoctoreditor.template.default.ifdef_html">
+         <pattern>ifdef::${basebackend-html}[]
+++++
+${cursor}
+++++
+endif::${basebackend-html}[]
+</pattern>
+        </template>
+    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          HELP                                         -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->

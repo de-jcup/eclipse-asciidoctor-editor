@@ -27,6 +27,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -58,6 +59,7 @@ import de.jcup.asciidoctoreditor.document.keywords.PlantUMLSkinparameterDocument
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLTypeDocumentKeywords;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
+import de.jcup.eclipse.commons.codeassist.MultipleContentAssistProcessor;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 /**
@@ -115,7 +117,7 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 		};
 		
 		contentAssistant.enableColoredLabels(true);
-
+			
 		contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
 		for (AsciiDoctorDocumentIdentifier identifier : AsciiDoctorPlantUMLDocumentIdentifiers.values()) {
 			contentAssistant.setContentAssistProcessor(contentAssistProcessor, identifier.getId());
@@ -202,7 +204,7 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 	}
 
 	private void addDefaultPresentation(PresentationReconciler reconciler) {
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getGradleDefaultTextScanner());
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getDefaultTextScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 	}
@@ -230,7 +232,7 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 		reconciler.setRepairer(presentation, id);
 	}
 
-	private AsciiDoctorDefaultTextScanner getGradleDefaultTextScanner() {
+	private AsciiDoctorDefaultTextScanner getDefaultTextScanner() {
 		if (scanner == null) {
 			scanner = new AsciiDoctorDefaultTextScanner(colorManager);
 			updateTextScannerDefaultColorToken();

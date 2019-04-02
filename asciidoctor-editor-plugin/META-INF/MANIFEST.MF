@@ -26,6 +26,7 @@ Import-Package: org.apache.commons.io,
  org.asciidoctor.converter,
  org.eclipse.ui,
  org.eclipse.ui.texteditor.spelling,
+ org.eclipse.ui.texteditor.templates,
  org.jruby,
  org.jruby.javasupport
 Bundle-ClassPath: .,

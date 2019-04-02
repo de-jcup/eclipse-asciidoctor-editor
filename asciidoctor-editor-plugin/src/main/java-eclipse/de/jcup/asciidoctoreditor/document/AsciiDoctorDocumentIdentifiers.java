@@ -48,18 +48,22 @@ public enum AsciiDoctorDocumentIdentifiers implements AsciiDoctorDocumentIdentif
 		return name();
 	}
 	public static String[] allIdsToStringArray(){
-		return allIdsToStringArray(null);
+		return internal_allIdsToStringArray();
 	}
-	public static String[] allIdsToStringArray(String additionalDefaultId){
+	public static String[] allIdsToStringArray(String ...additionalDefaultIds){
+	    return internal_allIdsToStringArray(additionalDefaultIds);
+	}
+	
+	private static String[] internal_allIdsToStringArray(String ...additionalDefaultIds){
 		AsciiDoctorDocumentIdentifiers[] values = values();
 		int size = values.length;
-		if (additionalDefaultId!=null){
-			size+=1;
-		}
+			size+=additionalDefaultIds.length;
 		String[] data = new String[size];
 		int pos=0;
-		if (additionalDefaultId!=null){
-			data[pos++]=additionalDefaultId;
+		for (String additionalDefaultId: additionalDefaultIds) {
+		    if (additionalDefaultId!=null){
+		        data[pos++]=additionalDefaultId;
+		    }
 		}
 		for (AsciiDoctorDocumentIdentifiers d: values){
 			data[pos++]=d.getId();
