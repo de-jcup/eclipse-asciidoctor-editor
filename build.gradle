@@ -9,6 +9,8 @@ allprojects{
 	repositories {
 		mavenLocal()
 		mavenCentral()
+		jcenter()
+
     }
 	
 	/* Custimization part - e.g. when you got special repositories

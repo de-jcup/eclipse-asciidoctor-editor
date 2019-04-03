@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--        POPUP                                                         -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   
+    <extension point="org.eclipse.ui.menus">
+        <!-- http://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2Fworkbench_cmd_menus.htm -->
+        <menuContribution locationURI="popup:org.eclipse.ui.popup.any?before=additions">
+                <!-- Detect new root project --> 
+                <command
+            	  commandId="asciidoctoreditor.command.openWithAsciiDoctorEditor"
+                  icon="icons/asciidoctor-editor.png"
+                  id="asciidoctoreditor.maintoolbar.openWithAsciiDoctorEditor"
+                  label="Open with AsciiDoctor Editor"
+                  tooltip="Opens asciidoctor file with AsciiDoctor Editor."
+                  style="push">
+                        <visibleWhen 
+                              checkEnabled="false">
+                              <with
+                                    variable="activeMenuSelection">
+                                    <and>
+				         				<count value="1"/>
+	                                    <iterate ifEmpty="false">
+	                                    	 <adapt type="org.eclipse.core.resources.IFile">
+			         							<test property="de.jcup.asciidoctoreditor.isAsciiDoctorFileWithoutExtension" value="true"/>
+				         					</adapt>
+				         				</iterate>
+                                    </and>
+                              </with>
+                        </visibleWhen>
+                </command>
+                
+        </menuContribution>
+   </extension>
+   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          COMMANDS                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->^
+   
+   <extension point="org.eclipse.ui.commands">
+       <category
+            description="Asciidoctor editor"
+            id="asciidoctor.converter.commands.category"
+            name="Asciidoctor converter">
+       </category>
+      
+       <command
+      		name="Convert markdown"
+      		description="Converts given markdown files to asciidoctor files"
+      		categoryId="asciidoctor.converter.commands.category"
+      		id="asciidoctor.converter.commands.convert.markdown">
+       </command>
+   	  
+	</extension>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          HANDLERS                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->^
+	
+	<extension point="org.eclipse.ui.handlers">
+	
+	 <handler
+            commandId="asciidoctor.converter.commands.convert.markdown"
+            class="de.jcup.asciidoctor.converter.ConvertMarkdownFilesHandler">
+      </handler>
+    </extension> 
+    
+
+</plugin>

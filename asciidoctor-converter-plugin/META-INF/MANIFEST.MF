@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Asciidoctor Converter
+Bundle-SymbolicName: de.jcup.asciidoctor.converter
+Bundle-Version: 0.1.0
+Bundle-Activator: de.jcup.asciidoctor.converter.Activator
+Bundle-Vendor: Albert Tregnaghi
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: de.jcup.asciidoctor.converter
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: lib/asm-5.0.3.jar,
+ lib/asm-analysis-5.0.3.jar,
+ lib/asm-tree-5.0.3.jar,
+ lib/asm-util-5.0.3.jar,
+ lib/jsoup-1.8.1.jar,
+ lib/markdown_to_asciidoc-1.1.jar,
+ lib/parboiled-core-1.1.7.jar,
+ lib/parboiled-java-1.1.7.jar,
+ lib/pegdown-1.6.0.jar,
+ .
