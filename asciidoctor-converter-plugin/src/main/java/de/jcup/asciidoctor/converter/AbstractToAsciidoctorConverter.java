@@ -20,7 +20,7 @@ public abstract class AbstractToAsciidoctorConverter implements ToAsciidocConver
         if (file==null) {
             return "";
         }
-        if (! file.isDirectory()) {
+        if (file.isDirectory()) {
             throw new IOException("This is a directory:"+file);
         }
         String origin= readLinesAsString(file);
