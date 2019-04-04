@@ -1,3 +1,4 @@
 
 include 'asciidoctor-editor-plugin',
-'asciidoctor-editor-other'		
+'asciidoctor-editor-other',
+'asciidoctor-converter-plugin'		

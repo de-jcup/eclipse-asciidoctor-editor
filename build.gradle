@@ -9,6 +9,8 @@ allprojects{
 	repositories {
 		mavenLocal()
 		mavenCentral()
+		jcenter()
+
     }
 	
 	/* Custimization part - e.g. when you got special repositories
@@ -97,7 +99,7 @@ task testReportAll(type: TestReport) {
     reportOn subprojects*.test
 }
 
-task wrapper(type: Wrapper) {
+wrapper{
     gradleVersion = '4.0'
 }
 
