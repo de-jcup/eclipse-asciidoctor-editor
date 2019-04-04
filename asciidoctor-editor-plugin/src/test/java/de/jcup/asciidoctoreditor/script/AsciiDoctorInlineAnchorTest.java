@@ -50,8 +50,8 @@ public class AsciiDoctorInlineAnchorTest {
 	}
 
 	@Test
-	public void label_null_has_null_id() {
-		assertNull(new AsciiDoctorInlineAnchor(null, -1, -1).getId());
+	public void label_null_has_illegal_id() {
+		assertTrue(new AsciiDoctorInlineAnchor(null, -1, -1).getId().startsWith("illegal"));
 	}
 
 }

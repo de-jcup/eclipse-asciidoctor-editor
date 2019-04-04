@@ -1,7 +1,5 @@
 dependencies {
     compile 'commons-io:commons-io:2.4'
-    // https://mvnrepository.com/artifact/nl.jworks.markdown_to_asciidoc/markdown_to_asciidoc
-    compile group: 'nl.jworks.markdown_to_asciidoc', name: 'markdown_to_asciidoc', version: '1.1'
    
     testCompile 'org.asciidoctor:asciidoctorj:1.5.6'
     testCompile project(':asciidoctor-editor-plugin')

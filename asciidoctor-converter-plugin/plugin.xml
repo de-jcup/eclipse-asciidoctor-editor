@@ -9,13 +9,12 @@
     <extension point="org.eclipse.ui.menus">
         <!-- http://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2Fworkbench_cmd_menus.htm -->
         <menuContribution locationURI="popup:org.eclipse.ui.popup.any?before=additions">
-                <!-- Detect new root project --> 
                 <command
-            	  commandId="asciidoctoreditor.command.openWithAsciiDoctorEditor"
-                  icon="icons/asciidoctor-editor.png"
-                  id="asciidoctoreditor.maintoolbar.openWithAsciiDoctorEditor"
-                  label="Open with AsciiDoctor Editor"
-                  tooltip="Opens asciidoctor file with AsciiDoctor Editor."
+            	  commandId="asciidoctor.converter.command.md2asciidoc"
+                  icon="icons/md2asciidoc.png"
+                  id="contextmenu.asciidoctor.converter.command.md2asciidoc.file"
+                  label="Convert to asciidoc"
+                  tooltip="Converts markdown file to asciidoc file"
                   style="push">
                         <visibleWhen 
                               checkEnabled="false">
@@ -25,14 +24,34 @@
 				         				<count value="1"/>
 	                                    <iterate ifEmpty="false">
 	                                    	 <adapt type="org.eclipse.core.resources.IFile">
-			         							<test property="de.jcup.asciidoctoreditor.isAsciiDoctorFileWithoutExtension" value="true"/>
+	                                    	 <test property="org.eclipse.core.resources.name" value="*.md"/>
 				         					</adapt>
 				         				</iterate>
                                     </and>
                               </with>
                         </visibleWhen>
                 </command>
-                
+                <command
+                  commandId="asciidoctor.converter.command.folder2asciidoc"
+                  icon="icons/md2asciidoc.png"
+                  id="contextmenu.asciidoctor.converter.command.md2asciidoc.folder"
+                  label="Convert to asciidoc files"
+                  tooltip="Converts files in this folder to asciidoc files (where possible - e.g. for *.md)"
+                  style="push">
+                        <visibleWhen 
+                              checkEnabled="false">
+                              <with
+                                    variable="activeMenuSelection">
+                                    <and>
+                                        <count value="1"/>
+                                        <iterate ifEmpty="false">
+                                             <adapt type="org.eclipse.core.resources.IFolder">
+                                            </adapt>
+                                        </iterate>
+                                    </and>
+                              </with>
+                        </visibleWhen>
+                </command>
         </menuContribution>
    </extension>
    
@@ -48,10 +67,16 @@
        </category>
       
        <command
-      		name="Convert markdown"
-      		description="Converts given markdown files to asciidoctor files"
+      		name="Convert markdown to asciidoc"
+      		description="Converts given markdown file to asciidoc file"
       		categoryId="asciidoctor.converter.commands.category"
-      		id="asciidoctor.converter.commands.convert.markdown">
+      		id="asciidoctor.converter.command.md2asciidoc">
+       </command>
+       <command
+      		name="Convert folder files to asciidoc"
+      		description="Converts given directory to asciidoc file where possible"
+      		categoryId="asciidoctor.converter.commands.category"
+      		id="asciidoctor.converter.command.folder2asciidoc">
        </command>
    	  
 	</extension>
@@ -62,8 +87,12 @@
 	<extension point="org.eclipse.ui.handlers">
 	
 	 <handler
-            commandId="asciidoctor.converter.commands.convert.markdown"
+            commandId="asciidoctor.converter.command.md2asciidoc"
             class="de.jcup.asciidoctor.converter.ConvertMarkdownFilesHandler">
+      </handler>
+	 <handler
+            commandId="asciidoctor.converter.command.folder2asciidoc"
+            class="de.jcup.asciidoctor.converter.ConvertFolderToAsciidocHandler">
       </handler>
     </extension> 
     
