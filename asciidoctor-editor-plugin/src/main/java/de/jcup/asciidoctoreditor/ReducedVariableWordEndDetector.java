@@ -15,6 +15,8 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import de.jcup.eclipse.commons.WordEndDetector;
+
 public class ReducedVariableWordEndDetector implements WordEndDetector{
 
 	@Override

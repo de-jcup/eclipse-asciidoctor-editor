@@ -274,3 +274,4 @@ Export-Package: com.beust.jcommander,
  org.yecht.debug,
  org.yecht.ruby
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: de.jcup.asciidoctoreditor.libs

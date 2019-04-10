@@ -549,6 +549,7 @@
 ====
 ${cursor}An admonition block may contain complex content.
 ====
+
 </pattern>
       </template>
         <template
@@ -560,6 +561,7 @@ ${cursor}An admonition block may contain complex content.
 ====
 ${cursor}An admonition block may contain complex content.
 ====
+
 </pattern>
         </template>
         <template
@@ -571,6 +573,7 @@ ${cursor}An admonition block may contain complex content.
 ====
 ${cursor}An admonition block may contain complex content.
 ====
+
 </pattern>
         </template>
         <template
@@ -582,6 +585,7 @@ ${cursor}An admonition block may contain complex content.
 ====
 ${cursor}An admonition block may contain complex content.
 ====
+
 </pattern>
         </template>
         <template
@@ -593,6 +597,7 @@ ${cursor}An admonition block may contain complex content.
 ====
 ${cursor}An admonition block may contain complex content.
 ====
+
 </pattern>
         </template>
       <template
@@ -604,6 +609,7 @@ ${cursor}An admonition block may contain complex content.
 ----
 ${cursor}
 ----
+
 </pattern>
         </template>
         <template
@@ -615,6 +621,7 @@ ${cursor}
 :toc-title: Table of contents
 :toclevels: 5
 ${cursor}
+
 </pattern>
         </template>
         <template
@@ -630,6 +637,7 @@ ${cursor}
 |Row2A   |Row2B   |Row2C   
 |Row3A   |Row3B   |Row3C   
 |===
+
 </pattern>
         </template>
         <template
@@ -656,6 +664,7 @@ ${cursor}
 * Edgar Allen Poe
 * Sheri S. Tepper
 * Bill Bryson
+
 </pattern>
         </template>
         <template
@@ -670,6 +679,7 @@ ${cursor}
 .. Step 2a
 .. Step 2b
 . Step 3
+
 </pattern>
         </template>
         <template
@@ -683,6 +693,7 @@ ${cursor}
 * [x] also checked
 * [ ] not checked
 * normal list item
+
 </pattern>
         </template>
         <template
@@ -691,6 +702,7 @@ ${cursor}
             contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
             id="de.jcup.asciidoctoreditor.template.default.include">
          <pattern>include::${cursor}.adoc[]
+         
 </pattern>
         </template>
         <template
@@ -701,18 +713,7 @@ ${cursor}
          <pattern>ifdef::${variable1}[]
 
 endif::${variable1}[]
-</pattern>
-        </template>
-        <template
-            name="ifdef (html)"
-            description="Ifdef snippet for html backend"
-            contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
-            id="de.jcup.asciidoctoreditor.template.default.ifdef_html">
-         <pattern>ifdef::${basebackend-html}[]
-++++
-${cursor}
-++++
-endif::${basebackend-html}[]
+
 </pattern>
         </template>
     </extension>

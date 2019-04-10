@@ -15,6 +15,8 @@
  */
  package de.jcup.asciidoctoreditor.outline;
 
+import static de.jcup.asciidoctoreditor.AsciidoctorIconConstants.*;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
@@ -30,12 +32,6 @@ import de.jcup.asciidoctoreditor.ColorManager;
 import de.jcup.asciidoctoreditor.EclipseUtil;
 
 public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider {
-
-	private static final String ICON_HEADLINE = "headline.gif";
-	private static final String ICON_INCLUDE=  "gotoobj_tsk.png";
-	private static final String ICON_ERROR ="error_tsk.png";
-	private static final String ICON_INFO ="info_tsk.png";
-	private static final String ICON_INLINE_ANCHOR = "inline_anchor.gif";
 
 	private Styler outlineItemTypeStyler = new Styler() {
 
@@ -72,15 +68,15 @@ public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider imp
 
 			switch (type) {
 			case HEADLINE:
-				return getOutlineImage(ICON_HEADLINE);
+				return getImage(PATH_OUTLINE_ICON_HEADLINE);
 			case INLINE_ANCHOR:
-				return getOutlineImage(ICON_INLINE_ANCHOR);
+				return getImage(PATH_OUTLINE_ICON_INLINE_ANCHOR);
 			case INCLUDE:
-				return getOutlineImage(ICON_INCLUDE);
+				return getImage(PATH_OUTLINE_ICON_INCLUDE);
 			case META_ERROR:
-				return getOutlineImage(ICON_ERROR);
+				return getImage(PATH_OUTLINE_ICON_ERROR);
 			case META_INFO:
-				return getOutlineImage(ICON_INFO);
+				return getImage(PATH_OUTLINE_ICON_INFO);
 			default:
 				return null;
 			}
@@ -128,9 +124,10 @@ public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider imp
 		}
 		return editorActivator.getColorManager();
 	}
+	
+	private Image getImage(String path) {
+        return EclipseUtil.getImage(path, AsciiDoctorEditorActivator.PLUGIN_ID);
+    }
 
-	private Image getOutlineImage(String name) {
-		return EclipseUtil.getImage("/icons/outline/" + name, AsciiDoctorEditorActivator.PLUGIN_ID);
-	}
 
 }

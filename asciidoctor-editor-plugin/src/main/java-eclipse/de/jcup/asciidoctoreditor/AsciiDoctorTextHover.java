@@ -32,6 +32,8 @@ import org.eclipse.swt.widgets.Shell;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWords;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferenceConstants;
+import de.jcup.eclipse.commons.SimpleStringUtils;
+import de.jcup.eclipse.commons.WordEndDetector;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 import de.jcup.eclipse.commons.ui.ColorUtil;
@@ -90,7 +92,7 @@ public class AsciiDoctorTextHover implements ITextHover, ITextHoverExtension {
 			return "";
 		}
 		int offset = hoverRegion.getOffset();
-		String word = SimpleStringUtils.nextReducedVariableWord(text, offset);
+		String word = SimpleStringUtils.nextReducedVariableWord(text, offset,WHITE_SPACE_END_DETECTOR);
 		if (word.isEmpty()){
 			/* special case for headlines - reduction detector does remove "=" always */
 			String section = SimpleStringUtils.nextWord(text, offset, WHITE_SPACE_END_DETECTOR);

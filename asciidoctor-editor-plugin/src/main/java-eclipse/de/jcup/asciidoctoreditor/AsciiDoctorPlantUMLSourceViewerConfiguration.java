@@ -27,7 +27,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
-import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -49,6 +48,7 @@ import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 
+import de.jcup.asciidoctoreditor.codeassist.PlantumlContentAssistProcessor;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLDocumentIdentifiers;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLColorDocumentKeywords;
@@ -59,7 +59,6 @@ import de.jcup.asciidoctoreditor.document.keywords.PlantUMLSkinparameterDocument
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLTypeDocumentKeywords;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
-import de.jcup.eclipse.commons.codeassist.MultipleContentAssistProcessor;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 /**
@@ -75,7 +74,7 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 	private TextAttribute defaultTextAttribute;
 	private AsciiDoctorPlantUMLEditorAnnotationHoover annotationHoover;
 	private ContentAssistant contentAssistant;
-	private AsciiDoctorEditorSimpleWordContentAssistProcessor contentAssistProcessor;
+	private PlantumlContentAssistProcessor contentAssistProcessor;
 
 	/**
 	 * Creates configuration by given adaptable
@@ -93,28 +92,7 @@ public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceView
 		this.annotationHoover = new AsciiDoctorPlantUMLEditorAnnotationHoover();
 
 		this.contentAssistant = new ContentAssistant();
-		contentAssistProcessor = new AsciiDoctorEditorSimpleWordContentAssistProcessor(){
-			protected void addAllAsciiDoctorKeyWords() {
-				for (DocumentKeyWord keyword : PlantUMLColorDocumentKeywords.values()) {
-					addKeyWord(keyword);
-				}
-				for (DocumentKeyWord keyword : PlantUMLKeywordDocumentKeywords.values()) {
-					addKeyWord(keyword);
-				}
-				for (DocumentKeyWord keyword : PlantUMLMissingKeywordDocumentKeywords.values()) {
-					addKeyWord(keyword);
-				}
-				for (DocumentKeyWord keyword : PlantUMLPreprocessorDocumentKeywords.values()) {
-					addKeyWord(keyword);
-				}
-				for (DocumentKeyWord keyword : PlantUMLSkinparameterDocumentKeywords.values()) {
-					addKeyWord(keyword);
-				}
-				for (DocumentKeyWord keyword : PlantUMLTypeDocumentKeywords.values()) {
-					addKeyWord(keyword);
-				}
-			}
-		};
+		contentAssistProcessor = new PlantumlContentAssistProcessor();
 		
 		contentAssistant.enableColoredLabels(true);
 			

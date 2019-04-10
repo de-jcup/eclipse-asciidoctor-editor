@@ -26,6 +26,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 
+import de.jcup.eclipse.commons.SimpleStringUtils;
+
 @AdaptedFromEGradle
 abstract class AbstractMarkerHelper {
 	protected String markerType;

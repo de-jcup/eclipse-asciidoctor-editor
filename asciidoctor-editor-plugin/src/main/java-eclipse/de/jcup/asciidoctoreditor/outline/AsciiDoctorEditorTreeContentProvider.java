@@ -22,12 +22,12 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
-import de.jcup.asciidoctoreditor.SimpleStringUtils;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInclude;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.parser.ParseToken;
+import de.jcup.eclipse.commons.SimpleStringUtils;
 
 public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvider {
 
