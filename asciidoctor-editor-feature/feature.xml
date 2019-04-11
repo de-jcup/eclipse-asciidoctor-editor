@@ -2,7 +2,7 @@
 <feature
       id="de.jcup.asciidoctoreditor"
       label="Asciidoctor Editor"
-      version="1.4.1"
+      version="1.4.2"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/asciidoctor-editor">
@@ -233,12 +233,6 @@ and limitations under the License.
       <update label="Asciidoctor Editor update site" url="https://dl.bintray.com/de-jcup/asciidoctoreditor"/>
    </url>
 
-   <includes
-         id="de.jcup.asciidoctor.converter"
-         version="0.0.0"
-         name="Asciidoc Converter"
-         optional="true"/>
-
    <plugin
          id="de.jcup.asciidoctoreditor"
          download-size="0"
@@ -254,6 +248,13 @@ and limitations under the License.
 
    <plugin
          id="de.jcup.asciidoctoreditor.css"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.jcup.asciidoctor.converter"
          download-size="0"
          install-size="0"
          version="0.0.0"
