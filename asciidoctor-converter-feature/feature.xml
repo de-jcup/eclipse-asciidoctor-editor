@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="de.jcup.asciidoctoreditor"
-      label="Asciidoctor Editor"
-      version="1.4.0"
+      id="de.jcup.asciidoctor.converter"
+      label="Asciidoctor converter"
+      version="1.0.0"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/asciidoctor-editor">
-      AsciiDoctor Editor is a eclipse plugin to edit asciidoc files
+      AsciiDoctor Converter is a eclipse plugin to convert other formatdit asciidoc files
 For details about the plugin please refer to
-https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki
+https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki/Converter
    </description>
 
-   <copyright>
-      Copyright 2018 Albert Tregnaghi
+   <copyright url="http://www.example.com/copyright">
+      Copyright 2019 Albert Tregnaghi
 Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -234,20 +234,7 @@ and limitations under the License.
    </url>
 
    <plugin
-         id="de.jcup.asciidoctoreditor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="de.jcup.asciidoctoreditor.libs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="de.jcup.asciidoctoreditor.css"
+         id="de.jcup.asciidoctor.converter"
          download-size="0"
          install-size="0"
          version="0.0.0"
