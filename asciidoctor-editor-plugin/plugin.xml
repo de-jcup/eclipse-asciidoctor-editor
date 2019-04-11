@@ -395,7 +395,7 @@
             	commandId="asciidoctoreditor.editor.commands.source.validate" 
             	icon="icons/asciidoctor-editor.png">
             </command>
-            <command commandId="asciidoctoreditorasciidoctoreditor.preferences.keyword.asciidoctor.editor.commands.openlink"
+            <command commandId="asciidoctoreditor.editor.commands.openlink"
             		 icon="icons/toolbar/link.png"
              />
             <command commandId="asciidoctoreditor.editor.commands.rebuild"
