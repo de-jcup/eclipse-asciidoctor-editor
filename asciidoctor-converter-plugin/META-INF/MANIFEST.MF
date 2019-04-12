@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Asciidoctor Converter
 Bundle-SymbolicName: de.jcup.asciidoctor.converter;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: de.jcup.asciidoctor.converter.Activator
 Bundle-Vendor: Albert Tregnaghi
 Require-Bundle: org.eclipse.ui,

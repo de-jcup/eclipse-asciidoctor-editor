@@ -28,55 +28,58 @@ public abstract class AbstractToAsciidoctorConverter implements ToAsciidocConver
     }
     
     public void convertToFiles(File fileOrFolderToConvert) throws IOException {
-        convertToFiles(fileOrFolderToConvert,null);
-    }
-    
-    void convertToFiles(File fileOrFolderToConvert, File targetFolder) throws IOException {
         if (fileOrFolderToConvert==null) {
             return;
         }
         if (!fileOrFolderToConvert.exists()) {
             return;
         }
-        if (targetFolder==null) {
-            if (fileOrFolderToConvert.isDirectory()) {
-                targetFolder=new File(fileOrFolderToConvert,CONVERT_DIRECTORY_NAME);
-            }else {
-                targetFolder=new File(fileOrFolderToConvert.getParentFile(),CONVERT_DIRECTORY_NAME);
-            }
-        }
-        if (!targetFolder.exists()) {
-            if (!targetFolder.mkdirs()) {
-                throw new IOException("Was not able to create target folder:"+targetFolder.getAbsolutePath());
-            }
-        }
-        if (fileOrFolderToConvert.isDirectory()) {
-            File folder = fileOrFolderToConvert;
-            if (folder.getName().contentEquals(CONVERT_DIRECTORY_NAME)) {
-                /* ignore this*/
-                return;
-            }
-            for (File child: folder.listFiles()) {
-                convertToFiles(child, targetFolder);
-            }
+        if (fileOrFolderToConvert.isFile()) {
+            File targetFolder = new File(fileOrFolderToConvert.getParentFile(),CONVERT_DIRECTORY_NAME);
+            convertSingleFile(targetFolder, fileOrFolderToConvert);
         }else {
-            File file = fileOrFolderToConvert;
-            String name =  file.getName();
-            String acceptedFileEnding = getAcceptedFileEnding();
-            if (!name.endsWith(acceptedFileEnding)){
-                /* ignore this file */
-                return;
+            File targetRootFolder=new File(fileOrFolderToConvert,CONVERT_DIRECTORY_NAME);
+            File sourceRootFolder= fileOrFolderToConvert;
+            convertMultipleFiles(sourceRootFolder, targetRootFolder, sourceRootFolder.list());
+        }
+    }
+    
+    void convertMultipleFiles(File sourceFolder, File targetFolder, String[] names) throws IOException {
+        for (String name: names) {
+            File file = new File(sourceFolder,name);
+            if (!file.exists()) {
+                continue;
             }
-            String targetname = name.substring(0,name.length()-acceptedFileEnding.length())+".adoc";
-            File targetFile = new File(targetFolder,targetname);
+            if (file.isDirectory()) {
+                File target = new File(targetFolder,name);
+                convertMultipleFiles(file,target, file.list());
+            }else {
+                convertSingleFile(targetFolder, file);
+            }
+        }
+            
+    }
 
-            String markdown = readLinesAsString(file);
-            String asciidoc = internalConvert(markdown);
-            
-            try(FileWriter fw = new FileWriter(targetFile)){
-                fw.write(asciidoc);
+    private void convertSingleFile(File targetFolder, File file) throws IOException {
+        String name =  file.getName();
+        String acceptedFileEnding = getAcceptedFileEnding();
+        if (!name.endsWith(acceptedFileEnding)){
+            /* ignore this file */
+            return;
+        }
+        String targetname = name.substring(0,name.length()-acceptedFileEnding.length())+".adoc";
+        if (!targetFolder.exists()) {
+            if (!targetFolder.mkdirs()){
+                throw new IOException("Cannot create target folder:"+targetFolder.getAbsolutePath());
             }
-            
+        }
+        File targetFile = new File(targetFolder,targetname);
+
+        String markdown = readLinesAsString(file);
+        String asciidoc = internalConvert(markdown);
+        
+        try(FileWriter fw = new FileWriter(targetFile)){
+            fw.write(asciidoc);
         }
     }
 

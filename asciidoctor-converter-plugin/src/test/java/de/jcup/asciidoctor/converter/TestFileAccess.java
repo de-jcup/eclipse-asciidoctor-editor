@@ -3,6 +3,7 @@ package de.jcup.asciidoctor.converter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,6 +22,22 @@ public class TestFileAccess {
 			throw new IllegalStateException();
 		}
 		projectRootFolder=testResources.getParentFile().getParentFile();
+	}
+	
+	public static Path createTempFolder() throws IOException {
+	    return Files.createTempDirectory("asciidoceditor");
+	}
+
+	public static Path write(Path tempFolder, String relativePathToFile, String code) throws IOException{
+	    if (tempFolder==null) {
+	        throw new IllegalArgumentException("path may not be null");
+	    }
+	    Path path = tempFolder.resolve(relativePathToFile);
+	    Files.createDirectories(path.getParent());
+	    
+	    Files.newBufferedWriter(path).write(code);
+	    return path;
+	    
 	}
 	
 	public static File getTestResource(String path) {
@@ -48,6 +65,7 @@ public class TestFileAccess {
             throw new IllegalStateException("Should not happen", e);
         }
 	}
+
 	
 
 }
