@@ -7,4 +7,6 @@
    <feature url="features/de.jcup.asciidoctoreditor_1.4.2.jar" id="de.jcup.asciidoctoreditor" version="1.4.2"/>
    <feature url="features/de.jcup.asciidoctor.converter_1.0.1.jar" id="de.jcup.asciidoctor.converter" version="1.0.1"/>
    <feature url="features/de.jcup.asciidoctoreditor_1.4.3.jar" id="de.jcup.asciidoctoreditor" version="1.4.3"/>
+   <feature url="features/de.jcup.asciidoctor.converter_1.0.2.jar" id="de.jcup.asciidoctor.converter" version="1.0.2"/>
+   <feature url="features/de.jcup.asciidoctoreditor_1.4.4.jar" id="de.jcup.asciidoctoreditor" version="1.4.4"/>
 </site>
