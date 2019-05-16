@@ -17,6 +17,7 @@ package de.jcup.asciidoctoreditor;
 
 import static de.jcup.asciidoctoreditor.EclipseUtil.*;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -34,8 +35,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
@@ -75,6 +78,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
+import de.jcup.asciidoctoreditor.AsciiDoctorWrapper.WrapperConvertData;
 import de.jcup.asciidoctoreditor.BrowserAccess.BrowserContentInitializer;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
@@ -90,6 +94,7 @@ import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.AddLineBreakAction;
 import de.jcup.asciidoctoreditor.toolbar.BoldFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
+import de.jcup.asciidoctoreditor.toolbar.CreatePDFAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertAdmonitionAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertSectionTitleAction;
 import de.jcup.asciidoctoreditor.toolbar.ItalicFormatAction;
@@ -102,6 +107,7 @@ import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
 import de.jcup.eclipse.commons.ui.ColorUtil;
+import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 @AdaptedFromEGradle
 public class AsciiDoctorEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
@@ -149,9 +155,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public long getEditorId() {
         return editorId;
     }
-    
+
     public EditorType getType() {
-    	return EditorType.ASCIIDOC;
+        return EditorType.ASCIIDOC;
     }
 
     public AsciiDoctorEditor() {
@@ -161,8 +167,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         commentSupport = new AsciiDoctorEditorCommentSupport(this);
 
         fallBackEditorId = System.nanoTime(); // nano time just as fallback - we use hashcode of path normally
-        editorId=fallBackEditorId;
-        
+        editorId = fallBackEditorId;
+
         setSourceViewerConfiguration(createSourceViewerConfig());
 
         contentTransformer = createCustomContentTransformer();
@@ -209,8 +215,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         activateAsciiDoctorEditorContext();
 
         /*
-         * register as resource change listener to provide marker change
-         * listening
+         * register as resource change listener to provide marker change listening
          */
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 
@@ -240,7 +245,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
         return null;
     }
-    
+
     public AsciidoctorTextSelectable findAsciiDoctorPositionByElementId(String elementId) {
         if (elementId == null) {
             return null;
@@ -412,7 +417,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public void addLineBreak() {
         addLineBreakAction.run();
     }
-    
+
     public void makeSelectedTextItalic() {
         italicFormatAction.run();
     }
@@ -453,8 +458,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         File editorFileOrNull = getEditorFileOrNull();
         if (editorFileOrNull == null) {
-            MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to resolve editor file",
-                    "Not able to resolve editor file, so Cannot open " + fileName);
+            MessageDialog.openWarning(getActiveWorkbenchShell(), "Not able to resolve editor file", "Not able to resolve editor file, so Cannot open " + fileName);
             return;
         }
         File file = new File(editorFileOrNull.getParentFile(), fileName);
@@ -464,8 +468,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     public void openInExternalBrowser() {
         /*
-         * remove old existing file to show browser only when ready... otherwise
-         * old files are shown while not rendered complete!
+         * remove old existing file to show browser only when ready... otherwise old
+         * files are shown while not rendered complete!
          */
         if (temporaryExternalPreviewFile != null && temporaryExternalPreviewFile.exists()) {
             temporaryExternalPreviewFile.delete();
@@ -474,6 +478,41 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             refreshAsciiDocView();
         }
         startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
+    }
+
+    public void createAndShowPDF() {
+
+        WrapperConvertData data = new WrapperConvertData();
+        data.targetType = getType();
+        data.asciiDocFile = getEditorFileOrNull();
+        data.editorId = editorId;
+        data.useHiddenFile = true;
+        data.editorFileOrNull = getEditorFileOrNull();
+
+        Job job = new Job("create and show pdf") {
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+
+                try {
+                    getWrapper().convert(data, AsciiDoctorBackendType.PDF);
+                    File origin = getWrapper().getContext().getFileToRender();
+                    String originName = origin.getName(); /* xyz.adoc */
+                    String fileName = originName.substring(0, originName.length() - 4) + "pdf";
+                    File file = new File(origin.getParentFile(), fileName);
+                    
+                    Desktop.getDesktop().open(file);
+                
+                } catch (Exception e) {
+                    return new Status(Status.ERROR,AsciiDoctorEditorActivator.PLUGIN_ID,"Was not able to create/show PDF",e);
+                }
+                return Status.OK_STATUS;
+            }
+            
+        };
+        job.schedule();
+       
+
     }
 
     public void rebuild() {
@@ -519,16 +558,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
         getWrapper().setTocVisible(shown);
         /*
-         * TOC building does always lead to a long time running task, at least
-         * inside preview - so we show the initializing info with progressbar
+         * TOC building does always lead to a long time running task, at least inside
+         * preview - so we show the initializing info with progressbar
          */
         buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
     }
 
     public void setVerticalSplit(boolean verticalSplit) {
         /*
-         * don't be confused: SWT.HOROIZONTAL will setup editor on top and view
-         * on bottom - so its vertical...
+         * don't be confused: SWT.HOROIZONTAL will setup editor on top and view on
+         * bottom - so its vertical...
          */
         int wanted;
         if (verticalSplit) {
@@ -581,16 +620,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         setDocumentProvider(createDocumentProvider(input));
         super.doSetInput(input);
         IFile file = resolveFileOrNull();
-        if (file==null){
-            editorId=fallBackEditorId;
-        }else{
-            editorId=file.getFullPath().toFile().hashCode();
+        if (file == null) {
+            editorId = fallBackEditorId;
+        } else {
+            editorId = file.getFullPath().toFile().hashCode();
         }
         outlineSupport.rebuildOutline();
         if (browserAccess == null) {
             /*
-             * happens when eclipse is starting editors opened before are
-             * initialized. The createPartControl is not already called
+             * happens when eclipse is starting editors opened before are initialized. The
+             * createPartControl is not already called
              */
             return;
         }
@@ -628,7 +667,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     protected File getEditorFileOrNull() {
         /* !editorFileExists == true can happen when we got a rename of the file */
-        if (editorFile == null || ! editorFile.exists()) {
+        if (editorFile == null || !editorFile.exists()) {
             editorFile = resolveEditorFileOrNull();
         }
         return editorFile;
@@ -661,8 +700,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             iFile = finput.getFile();
         } else if (input instanceof FileStoreEditorInput) {
             /*
-             * command line : eclipse xyz.adoc does use file store editor input
-             * ....
+             * command line : eclipse xyz.adoc does use file store editor input ....
              */
             FileStoreEditorInput fsInput = (FileStoreEditorInput) input;
             iFile = fsInput.getAdapter(IFile.class);
@@ -722,9 +760,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         });
 
         buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
-        
+
         synchronizer.installInBrowser();
-        
+
         PreviewLayout initialLayout = getInitialLayoutMode();
         if (initialLayout.isExternal()) {
             setInternalPreview(false);
@@ -741,7 +779,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         rebuildAction = new RebuildAsciiDocViewAction(this);
 
         addLineBreakAction = new AddLineBreakAction(this);
-        
+
         IToolBarManager asciiDocToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         asciiDocToolBarManager.add(new InsertSectionTitleAction(this));
 
@@ -764,6 +802,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         otherToolBarManager.add(new OpenInExternalBrowserAction(this));
+        otherToolBarManager.add(new CreatePDFAction(this));
 
         // Add to the cool bar manager
         coolBarManager.add(new ToolBarContributionItem(asciiDocToolBarManager, "asciiDocEditor.toolbar.asciiDoc"));
@@ -805,8 +844,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         try {
             IFile iFile = EclipseResourceHelper.DEFAULT.toIFile(file);
             /*
-             * after creating the file, refresh project to show the newly
-             * created file in the current workspace
+             * after creating the file, refresh project to show the newly created file in
+             * the current workspace
              */
             iFile.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
             IDE.openEditor(activePage, iFile, true);
@@ -833,8 +872,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             }
         } else if (input instanceof FileStoreEditorInput) {
             /*
-             * command line : eclipse xyz.adoc does use file store editor input
-             * ....
+             * command line : eclipse xyz.adoc does use file store editor input ....
              */
             FileStoreEditorInput fsInput = (FileStoreEditorInput) input;
             editorFile = fsInput.getAdapter(File.class);
@@ -947,10 +985,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
      * Create a missing file
      * 
      * @param file
-     * @return <code>false</code> when file not accessible after this method
-     *         call. <code>true</code> when file is no longer missing after
-     *         calling this method. If the file is created meanwhile the method
-     *         will return <code>true</code> also...
+     * @return <code>false</code> when file not accessible after this method call.
+     *         <code>true</code> when file is no longer missing after calling this
+     *         method. If the file is created meanwhile the method will return
+     *         <code>true</code> also...
      */
     private boolean createMissingFile(File file) {
         try {
@@ -972,8 +1010,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             AsciiDoctorEditorUtil.logError("There was an Error while creating the file", e);
 
             String message = String.format("An Error occured while creating the file %s", file.getAbsolutePath());
-            ErrorDialog.openError(getActiveWorkbenchShell(), "Unable to create file", null,
-                    new Status(Status.ERROR, AsciiDoctorEditorActivator.PLUGIN_ID, message, e));
+            ErrorDialog.openError(getActiveWorkbenchShell(), "Unable to create file", null, new Status(Status.ERROR, AsciiDoctorEditorActivator.PLUGIN_ID, message, e));
         }
         return false;
     }
@@ -1065,9 +1102,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     /**
-     * Set initial title image dependent on current marker severity. This will
-     * mark error icon on startup time which is not handled by resource change
-     * handling, because having no change...
+     * Set initial title image dependent on current marker severity. This will mark
+     * error icon on startup time which is not handled by resource change handling,
+     * because having no change...
      */
     private void setTitleImageInitial() {
         IResource resource = resolveResource();
@@ -1103,7 +1140,5 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
 
     }
-
-   
 
 }

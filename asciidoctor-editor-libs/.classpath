@@ -12,5 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="commons-io-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="jcommander-1.35.jar"/>
 	<classpathentry exported="true" kind="lib" path="jruby-complete-1.7.26.jar" sourcepath="C:/Users/ATRIGNA/AppData/Local/Temp/.org.sf.feeling.decompiler1539089748141/source/jruby-complete-1.7.26-sources.jar"/>
+	<classpathentry kind="lib" path="asciidoctorj-pdf-1.5.0-alpha.16.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

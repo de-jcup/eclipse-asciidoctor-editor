@@ -15,10 +15,10 @@
  */
 package de.jcup.asciidoctoreditor.provider;
 
-import org.asciidoctor.Asciidoctor;
+import de.jcup.asciidoctoreditor.AsciidoctorAdapter;
 
 public interface AsciiDoctorInstanceProvider {
 
-    Asciidoctor getAsciiDoctor(boolean installed);
+    AsciidoctorAdapter getAsciiDoctor(boolean installed);
 
 }

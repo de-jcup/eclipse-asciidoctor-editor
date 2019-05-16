@@ -20,8 +20,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.asciidoctor.Asciidoctor;
-
+import de.jcup.asciidoctoreditor.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.LogAdapter;
 
 public class AsciiDoctorProviderContext {
@@ -129,7 +128,7 @@ public class AsciiDoctorProviderContext {
         }
     }
 
-    public Asciidoctor getAsciiDoctor() {
+    public AsciidoctorAdapter getAsciiDoctor() {
         return getProvider().getAsciiDoctor(useInstalled);
     }
 

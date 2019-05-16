@@ -30,5 +30,6 @@ Import-Package: org.apache.commons.io,
  org.jruby,
  org.jruby.javasupport
 Bundle-ClassPath: .,
- lib/de-jcup-eclipse-commons.jar
+ lib/de-jcup-eclipse-commons.jar,
+ lib/asp-client.jar
 Automatic-Module-Name: de.jcup.asciidoctoreditor

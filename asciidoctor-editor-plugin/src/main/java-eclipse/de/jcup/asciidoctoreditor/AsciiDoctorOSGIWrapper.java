@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
+import org.jruby.CompatVersion;
 import org.jruby.RubyInstanceConfig;
 import org.jruby.javasupport.JavaEmbedUtils;
 import org.osgi.framework.Bundle;
@@ -93,6 +94,7 @@ public class AsciiDoctorOSGIWrapper {
 		asciidoctor = create(libsClassLoader);
 
 		asciidoctor.requireLibrary("asciidoctor-diagram");
+//		asciidoctor.requireLibrary("asciidoctor-pdf");
 //		asciidoctor.javaExtensionRegistry().includeProcessor(FileIncludeIncludeProcessor.class);
 		
 		/* initialize...*/
@@ -163,9 +165,15 @@ public class AsciiDoctorOSGIWrapper {
 		 *   are extract there the loader does find them !!
 		 * 
 		 */
+		// PDF parts using pawn which uses double splat, which was introduced with Ruby2.0
+		// https://medium.freecodecamp.org/rubys-splat-and-double-splat-operators-ceb753329a78
+		// https://stackoverflow.com/questions/15281036/how-to-run-ruby-2-0-with-jruby-1-7
+		config.setCompatVersion(CompatVersion.RUBY2_0);
+		
 		config.setCurrentDirectory(unzippedGEMSfolder.getAbsolutePath());
 		JavaEmbedUtils.initialize(Arrays.asList(
 				"META-INF/jruby.home/lib/ruby/2.0", 
+				/* asciidoctor + asciidoctor-diagram dependencies:*/
 				"gems/asciidoctor-1.5.6.1/lib",
 				"gems/asciidoctor-diagram-1.5.4.1/lib",
 				"gems/coderay-1.1.0/lib",
@@ -175,7 +183,30 @@ public class AsciiDoctorOSGIWrapper {
 				"gems/slim-3.0.6/lib",
 				"gems/temple-0.7.7/lib",
 				"gems/thread_safe-0.3.6/lib",
-				"gems/tilt-2.0.1/lib"
+				"gems/tilt-2.0.1/lib",
+				/* asciidoctor-pdf dependencies:*/
+				"gems/ttfunk-1.5.1/lib",
+				"gems/treetop-1.5.3/lib",
+				//threadsafe 0.3.6 - already before
+				"gems/safe_yaml-1.0.4/lib",
+				"gems/ruby_rc4-0.1.5/lib",
+				"gems/rouge-2.0.7/lib",
+				"gems/public_suffix-1.4.6/lib",
+				"gems/prawn-templates-0.1.1/lib",
+				"gems/prawn-table-0.2.2/lib",
+				"gems/prawn-svg-0.27.1/lib",
+				"gems/prawn-icon-1.3.0/lib",
+				"gems/prawn-2.2.2/lib",
+				"gems/polyglot-0.3.5/lib",
+				"gems/pdf-reader-2.0.0/lib",
+				"gems/pdf-core-0.7.0/lib",
+				"gems/hashery-2.1.2/lib",
+				"gems/css_parser-1.5.0/lib",
+				"gems/asciidoctor-pdf-1.5.0.alpha.16/lib",
+				"gems/Ascii85-1.0.2/lib",
+				"gems/afm-0.2.2/lib",
+				"gems/addressable-2.4.0/lib"
+				
 		), config);
 		/* @formatter:on*/
 	}
@@ -204,6 +235,7 @@ public class AsciiDoctorOSGIWrapper {
 			try {
 				unzipOrFail(unzippedGEMSfolder, "asciidoctorj-1.5.6.jar");
 				unzipOrFail(unzippedGEMSfolder, "asciidoctorj-diagram-1.5.4.1.jar");
+				unzipOrFail(unzippedGEMSfolder, "asciidoctorj-pdf-1.5.0-alpha.16.jar");
 			} catch (IOException e) {
 				throw new IllegalStateException("Unzip problem with asciidcotor", e);
 			}
@@ -249,6 +281,9 @@ public class AsciiDoctorOSGIWrapper {
 
 	private void unzipOrFail(File unzippedGEMSfolder, String zipFileName) throws IOException {
 		File zipFile = EclipseResourceHelper.DEFAULT.getFileInPlugin(zipFileName, LIBS_PLUGIN_ID);
+		if (zipFile==null) {
+            throw new IllegalStateException("file:" + zipFileName + " not found!");
+        }
 		if (!zipFile.exists()) {
 			throw new IllegalStateException("file:" + zipFile.getAbsolutePath() + " does not exist!");
 		}

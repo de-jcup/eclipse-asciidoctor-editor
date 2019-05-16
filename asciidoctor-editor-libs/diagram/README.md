@@ -22,3 +22,8 @@ from asciidoctor-diagram-1.5.4.1.jar
 from JRUBY ... ruby.home...shared/json/ext
 - generator.jar
 - parser.jar
+
+
+# How to add libraries
+## OSGI-Wrapper
+Add the parts of gems/xyz/lib - otherwise not found...

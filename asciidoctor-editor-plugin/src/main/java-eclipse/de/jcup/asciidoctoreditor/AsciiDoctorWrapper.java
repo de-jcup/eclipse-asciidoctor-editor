@@ -64,8 +64,8 @@ public class AsciiDoctorWrapper {
 		boolean useHiddenFile;
 		File editorFileOrNull;
 	}
-
-	public void convertToHTML(WrapperConvertData data) throws Exception {
+	
+	public void convert(WrapperConvertData data, AsciiDoctorBackendType asciiDoctorBackendType) throws Exception {
 
 		init(context, data);
 
@@ -81,9 +81,9 @@ public class AsciiDoctorWrapper {
 		context.setTocLevels(tocLevels);
 		try {
 			AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
-			Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions();
+			Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions(asciiDoctorBackendType);
 
-			Asciidoctor asciiDoctor = context.getAsciiDoctor();
+			AsciidoctorAdapter asciiDoctor = context.getAsciiDoctor();
 			asciiDoctor.convertFile(context.getFileToRender(), defaultOptions);
 
 			refreshParentFolderIfNecessary();

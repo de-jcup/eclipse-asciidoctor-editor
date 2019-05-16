@@ -57,14 +57,20 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
     }
 
     protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode) {
-        showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(mode, false);
+        showRebuildingInPreviewAndTriggerFullRebuildAsJob(mode, AsciiDoctorBackendType.HTML5, false,null);
     }
 
     protected boolean isAutoBuildEnabledForExternalPreview() {
         return getEditor().getPreferences().isAutoBuildEnabledForExternalPreview();
     }
 
-    protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode, boolean forceInitialize) {
+    /**
+     * Shows rebuilding info in preview and triggers a full rebuild as a job in eclipse
+     * @param mode builder mode
+     * @param backend backend type provider
+     * @param forceInitialize when <code>false</code> build is only done when not already building
+     */
+    protected void showRebuildingInPreviewAndTriggerFullRebuildAsJob(BuildAsciiDocMode mode, AsciiDoctorBackendType backend, boolean forceInitialize, BuildDoneListener buildListener) {
 
         boolean rebuildEnabled = true;
         if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !getEditor().isInternalPreview()) {
@@ -115,7 +121,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                 try {
                     monitor.beginTask("Building document " + getSafeFileName(), 7);
 
-                    fullBuildTemporaryHTMLFilesAndShowAfter(monitor);
+                    fullBuildTemporaryHTMLFilesAndShowAfter(monitor,backend);
 
                     if (getEditor().isInternalPreview()) {
                         monitor.subTask("show internal");
@@ -129,6 +135,9 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                     	 * Seems browser grabs sometimes focus...
                     	 */
                     	EclipseUtil.safeAsyncExec(() -> getEditor().refocus());
+                    }
+                    if (buildListener!=null) {
+                        buildListener.buildDone();
                     }
 
                     monitor.done();
@@ -148,7 +157,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         job.schedule();
     }
 
-    private void fullBuildTemporaryHTMLFilesAndShowAfter(IProgressMonitor monitor) {
+    private void fullBuildTemporaryHTMLFilesAndShowAfter(IProgressMonitor monitor, AsciiDoctorBackendType backend) {
         String htmlInternalPreview = null;
         String htmlExternalBrowser = null;
         if (getEditor().isCanceled(monitor)) {
@@ -190,7 +199,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             data.editorId=editorId;
             data.useHiddenFile=isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML);
             data.editorFileOrNull=editorFileOrNull;
-			wrapper.convertToHTML(data);
+			wrapper.convert(data, backend);
 
             monitor.worked(++worked);
 

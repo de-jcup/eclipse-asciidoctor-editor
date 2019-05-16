@@ -47,16 +47,11 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
  * @author Albert Tregnaghi
  *
  */
-public class InstalledAsciidoctor implements Asciidoctor {
-
-    /*
-     * -------------------------------------------------------------------------
-     * +++++++++++++++++++++++++++++++ used++ ++++++++++++++++++++++++++++++++++
-     * -------------------------------------------------------------------------
-     */
+public class InstalledAsciidoctor implements AsciidoctorAdapter {
 
     @Override
     public DocumentHeader readDocumentHeader(File filename) {
+        /* FIXME Albert Tregnaghi: remove this and use ASP or installed variant!*/
         return AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().readDocumentHeader(filename);
     }
 
@@ -125,6 +120,7 @@ public class InstalledAsciidoctor implements Asciidoctor {
     }
 
     protected List<String> buildCommands(File filename, Map<String, Object> options) {
+
         List<String> commands = new ArrayList<String>();
         if (OSUtil.isWindows()) {
             commands.add("cmd.exe");
@@ -161,6 +157,12 @@ public class InstalledAsciidoctor implements Asciidoctor {
             commands.add(attrib);
         }
 
+        Object obj_backend = options.get("backend");
+        if (obj_backend!=null) {
+            commands.add("-b");
+            commands.add(obj_backend.toString());
+        }
+        
         String argumentsForInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance().getArgumentsForInstalledAsciidoctor();
         List<String> preferenceCLICommands = CLITextUtil.convertToList(argumentsForInstalledAsciidoctor);
         commands.addAll(preferenceCLICommands);
@@ -200,288 +202,5 @@ public class InstalledAsciidoctor implements Asciidoctor {
         return "\"" + command + "\"";
     }
 
-    /*
-     * -------------------------------------------------------------------------
-     * +++++++++++++++++++++++++++++++ unused ++++++++++++++++++++++++++++++++++
-     * -------------------------------------------------------------------------
-     */
 
-    @Override
-    public String render(String content, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String render(String content, Options options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String render(String content, OptionsBuilder options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void render(Reader contentReader, Writer rendererWriter, Map<String, Object> options) throws IOException {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void render(Reader contentReader, Writer rendererWriter, Options options) throws IOException {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void render(Reader contentReader, Writer rendererWriter, OptionsBuilder options) throws IOException {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String renderFile(File filename, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String renderFile(File filename, Options options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String renderFile(File filename, OptionsBuilder options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] renderDirectory(DirectoryWalker directoryWalker, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] renderDirectory(DirectoryWalker directoryWalker, Options options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] renderDirectory(DirectoryWalker directoryWalker, OptionsBuilder options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] renderFiles(Collection<File> asciidoctorFiles, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] renderFiles(Collection<File> asciidoctorFiles, Options options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] renderFiles(Collection<File> asciidoctorFiles, OptionsBuilder options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String convert(String content, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String convert(String content, Options options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String convert(String content, OptionsBuilder options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void convert(Reader contentReader, Writer rendererWriter, Map<String, Object> options) throws IOException {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void convert(Reader contentReader, Writer rendererWriter, Options options) throws IOException {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void convert(Reader contentReader, Writer rendererWriter, OptionsBuilder options) throws IOException {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String convertFile(File filename, Options options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String convertFile(File filename, OptionsBuilder options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] convertDirectory(DirectoryWalker directoryWalker, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] convertDirectory(DirectoryWalker directoryWalker, Options options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] convertDirectory(DirectoryWalker directoryWalker, OptionsBuilder options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] convertFiles(Collection<File> asciidoctorFiles, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] convertFiles(Collection<File> asciidoctorFiles, Options options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String[] convertFiles(Collection<File> asciidoctorFiles, OptionsBuilder options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public StructuredDocument readDocumentStructure(File filename, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public StructuredDocument readDocumentStructure(String content, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public StructuredDocument readDocumentStructure(Reader contentReader, Map<String, Object> options) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public DocumentHeader readDocumentHeader(String content) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public DocumentHeader readDocumentHeader(Reader contentReader) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void requireLibrary(String... requiredLibraries) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void requireLibraries(Collection<String> requiredLibraries) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public JavaExtensionRegistry javaExtensionRegistry() {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public RubyExtensionRegistry rubyExtensionRegistry() {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public JavaConverterRegistry javaConverterRegistry() {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public ExtensionGroup createGroup() {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public ExtensionGroup createGroup(String groupName) {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void unregisterAllExtensions() {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public void shutdown() {
-        throw new NotImplementedException();
-
-    }
-
-    @Override
-    public String asciidoctorVersion() {
-        return "installed version";
-    }
-
-    @Override
-    public Document load(String content, Map<String, Object> options) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public Document loadFile(File file, Map<String, Object> options) {
-        throw new NotImplementedException();
-    }
-
-    public static class NotImplementedException extends RuntimeException {
-
-        private static final long serialVersionUID = 1L;
-
-    }
 }

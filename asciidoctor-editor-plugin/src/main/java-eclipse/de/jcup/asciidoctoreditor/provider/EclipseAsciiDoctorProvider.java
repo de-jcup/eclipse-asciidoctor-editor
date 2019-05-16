@@ -15,9 +15,13 @@
  */
 package de.jcup.asciidoctoreditor.provider;
 
-import org.asciidoctor.Asciidoctor;
+import java.io.File;
+import java.util.Map;
+
+import org.asciidoctor.ast.DocumentHeader;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorOSGIWrapper;
+import de.jcup.asciidoctoreditor.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.InstalledAsciidoctor;
 
 /**
@@ -29,16 +33,27 @@ public class EclipseAsciiDoctorProvider implements AsciiDoctorInstanceProvider{
     
     public static final EclipseAsciiDoctorProvider INSTANCE = new EclipseAsciiDoctorProvider();
     
-    private static Asciidoctor asciidoctorInstalled;
-    private static Asciidoctor asciidoctorEmbedded;
+    private static AsciidoctorAdapter asciidoctorInstalled;
+    private static AsciidoctorAdapter asciidoctorEmbedded;
     
     EclipseAsciiDoctorProvider(){
         asciidoctorInstalled = new InstalledAsciidoctor();
-        asciidoctorEmbedded = AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor();
+        asciidoctorEmbedded = new AsciidoctorAdapter() {
+            
+            @Override
+            public DocumentHeader readDocumentHeader(File file) {
+                return AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().readDocumentHeader(file);
+            }
+            
+            @Override
+            public String convertFile(File filename, Map<String, Object> options) {
+                return AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().convertFile(filename, options);
+            }
+        };
     }
     
     @Override
-    public Asciidoctor getAsciiDoctor(boolean installed){
+    public AsciidoctorAdapter getAsciiDoctor(boolean installed){
         if (installed){
             return asciidoctorInstalled;
         }else{

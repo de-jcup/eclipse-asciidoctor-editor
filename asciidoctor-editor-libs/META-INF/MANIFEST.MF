@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Asciidoctor editor libs
 Bundle-SymbolicName: de.jcup.asciidoctoreditor.libs
-Bundle-Version: 1.4.0
+Bundle-Version: 1.5.0
 Bundle-ClassPath: asciidoctorj-1.5.6.jar,
  asciidoctorj-diagram-1.5.4.1.jar,
  commons-io-2.4.jar,
