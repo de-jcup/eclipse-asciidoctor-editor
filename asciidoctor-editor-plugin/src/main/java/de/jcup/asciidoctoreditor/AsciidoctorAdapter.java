@@ -7,7 +7,7 @@ import org.asciidoctor.ast.DocumentHeader;
 
 public interface AsciidoctorAdapter {
 
-    String convertFile(File filename, Map<String, Object> options);
+    void convertFile(File filename, Map<String, Object> options);
 
     DocumentHeader readDocumentHeader(File file);
 

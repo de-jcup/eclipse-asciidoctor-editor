@@ -46,8 +46,8 @@ public class EclipseAsciiDoctorProvider implements AsciiDoctorInstanceProvider{
             }
             
             @Override
-            public String convertFile(File filename, Map<String, Object> options) {
-                return AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().convertFile(filename, options);
+            public void convertFile(File filename, Map<String, Object> options) {
+                AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().convertFile(filename, options);
             }
         };
     }

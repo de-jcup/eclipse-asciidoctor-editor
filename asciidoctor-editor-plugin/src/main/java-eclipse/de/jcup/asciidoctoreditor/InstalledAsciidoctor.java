@@ -56,7 +56,7 @@ public class InstalledAsciidoctor implements AsciidoctorAdapter {
     }
 
     @Override
-    public String convertFile(File filename, Map<String, Object> options) {
+    public void convertFile(File filename, Map<String, Object> options) {
 
         List<String> commands = buildCommands(filename, options);
         String commandLineString = createCommandLineString(commands);
@@ -106,7 +106,6 @@ public class InstalledAsciidoctor implements AsciidoctorAdapter {
             }
         }
 
-        return null;
     }
 
     protected String createCommandLineString(List<String> commands) {
