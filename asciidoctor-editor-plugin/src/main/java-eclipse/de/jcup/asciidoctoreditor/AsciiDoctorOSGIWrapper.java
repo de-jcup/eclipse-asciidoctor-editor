@@ -86,30 +86,30 @@ public class AsciiDoctorOSGIWrapper {
 	}
 
 	private void loadAsciidoctor() {
-		/* load asciidoctor OSGI conform */
-		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
-		ClassLoader libsClassLoader = fetchClassLoader(bundle);
-		
-		initAsciidoctor(libsClassLoader);
-		asciidoctor = create(libsClassLoader);
-
-		asciidoctor.requireLibrary("asciidoctor-diagram");
-//		asciidoctor.requireLibrary("asciidoctor-pdf");
-//		asciidoctor.javaExtensionRegistry().includeProcessor(FileIncludeIncludeProcessor.class);
-		
-		/* initialize...*/
-		Job job = Job.create("Initialize ascii doctor access", (ICoreRunnable) monitor -> {
-			monitor.beginTask("Initializing...", IProgressMonitor.UNKNOWN);
-			/* start a simple convert to ensure asciidoctor has been started*/
-			asciidoctor.convert("== headline2", OptionsBuilder.options().toFile(false).asMap());
-			monitor.done();
-		});
-		try {
-			job.join();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		
+//		/* load asciidoctor OSGI conform */
+//		Bundle bundle = Platform.getBundle(LIBS_PLUGIN_ID);
+//		ClassLoader libsClassLoader = fetchClassLoader(bundle);
+//		
+//		initAsciidoctor(libsClassLoader);
+//		asciidoctor = create(libsClassLoader);
+//
+//		asciidoctor.requireLibrary("asciidoctor-diagram");
+////		asciidoctor.requireLibrary("asciidoctor-pdf");
+////		asciidoctor.javaExtensionRegistry().includeProcessor(FileIncludeIncludeProcessor.class);
+//		
+//		/* initialize...*/
+//		Job job = Job.create("Initialize ascii doctor access", (ICoreRunnable) monitor -> {
+//			monitor.beginTask("Initializing...", IProgressMonitor.UNKNOWN);
+//			/* start a simple convert to ensure asciidoctor has been started*/
+//			asciidoctor.convert("== headline2", OptionsBuilder.options().toFile(false).asMap());
+//			monitor.done();
+//		});
+//		try {
+//			job.join();
+//		} catch (InterruptedException e) {
+//			Thread.currentThread().interrupt();
+//		}
+//		
 	}
 
 	public File getLibsUnzipFolder(){

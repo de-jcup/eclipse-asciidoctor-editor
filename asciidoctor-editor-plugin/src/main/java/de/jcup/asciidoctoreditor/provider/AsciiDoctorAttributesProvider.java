@@ -42,16 +42,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider{
 
 	protected Map<String, Object> resolveAttributes(File baseDir) {
 	    getContext().getLogAdapter().resetTimeDiff();
-		Map<String, Object> map = new HashMap<>();
-		Set<DocumentHeader> documentIndex = new HashSet<DocumentHeader>();
-		DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
-
-		for (File file : directoryWalker.scan()) {
-			documentIndex.add(getContext().getAsciiDoctor().readDocumentHeader(file));
-		}
-		for (DocumentHeader header : documentIndex) {
-			map.putAll(header.getAttributes());
-		}
+		Map<String,Object> map = getContext().getAsciiDoctor().resolveAttributes(baseDir);
 		getContext().getLogAdapter().logTimeDiff("resolved attributes from base dir:"+baseDir);
 		return map;
 	}

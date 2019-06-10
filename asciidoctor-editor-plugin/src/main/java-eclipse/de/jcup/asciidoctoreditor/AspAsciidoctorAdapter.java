@@ -16,20 +16,14 @@
 package de.jcup.asciidoctoreditor;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import org.asciidoctor.AsciiDocDirectoryWalker;
-import org.asciidoctor.DirectoryWalker;
-import org.asciidoctor.ast.DocumentHeader;
 
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asp.client.AspClient;
+import de.jcup.asp.client.AspClientException;
 
 /**
  * Special variant of an Asciidoctor instance - uses native installation. But it
@@ -38,75 +32,27 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
  * @author Albert Tregnaghi
  *
  */
-public class InstalledAsciidoctor implements AsciidoctorAdapter {
+public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
+    
+    private AspClient client = new  AspClient();
+    
     @Override
     public Map<String, Object> resolveAttributes(File baseDir) {
-        
-        /* FIXME Albert: use ASP serve or installed variant cli here, to get rid of embeed asciidoctorj variants*/
-        Map<String, Object> map = new HashMap<>();
-        Set<DocumentHeader> documentIndex = new HashSet<DocumentHeader>();
-        DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
-
-        for (File file : directoryWalker.scan()) {
-            documentIndex.add(AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().readDocumentHeader(file));
+        try {
+            return client.resolveAttributes(baseDir);
+        } catch (AspClientException e) {
+           AsciiDoctorConsoleUtil.error(e.getMessage());
         }
-        for (DocumentHeader header : documentIndex) {
-            map.putAll(header.getAttributes());
-        }
-        return map;
+        return new HashMap<String, Object>();
     }
 
     @Override
     public void convertFile(File filename, Map<String, Object> options) {
-
-        List<String> commands = buildCommands(filename, options);
-        String commandLineString = createCommandLineString(commands);
-
-        ProcessBuilder pb = new ProcessBuilder(commands);
-        AsciiDoctorConsoleUtil.output(">> rendering:" + filename.getName());
         try {
-            StringBuffer lineStringBuffer = null;
-            Process process = pb.start();
-            try (InputStream is = process.getErrorStream();) {
-                int c;
-                lineStringBuffer = new StringBuffer();
-                while ((c = is.read()) != -1) {
-                    lineStringBuffer.append((char) c);
-                }
-                String line = lineStringBuffer.toString();
-                if (line.isEmpty()) {
-                    AsciiDoctorConsoleUtil.output(line);
-                } else {
-                    AsciiDoctorConsoleUtil.error(line);
-                }
-            }
-            boolean exitdone = process.waitFor(2, TimeUnit.MINUTES);
-            int exitCode = -1;
-            if (exitdone) {
-                exitCode = process.exitValue();
-            }
-            if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
-                AsciiDoctorConsoleUtil.output("Called:" + commandLineString);
-                AsciiDoctorConsoleUtil.output("Exitcode:" + exitCode);
-            }
-            if (exitCode > 0) {
-                AsciiDoctorEclipseLogAdapter.INSTANCE
-                        .logWarn("Installed Asciidoctor rendering failed for '" + filename.getName() + "'\n\nCommandLine was:\n" + commandLineString
-                                + "\n\nResulted in exitcode:" + exitCode + ", \nLast output:" + lineStringBuffer);
-                throw new InstalledAsciidoctorException("FAILED - Asciidoctor exitcode:" + exitCode + " - last output:" + lineStringBuffer);
-
-            }
-        } catch (Exception e) {
-            if (e instanceof InstalledAsciidoctorException) {
-                InstalledAsciidoctorException iae = (InstalledAsciidoctorException) e;
-                throw iae; // already an exception from installed asciidoctor so
-                           // just re-throw
-            } else {
-                AsciiDoctorEditorUtil.logError("Cannot execute installed asciidoctor\n\nCommandline was:\n" + commandLineString, e);
-                throw new InstalledAsciidoctorException("FAILED - Installed Asciidoctor instance was not executable, reason:" + e.getMessage());
-            }
+            client.convertFile(filename.toPath(), options);
+        } catch (AspClientException e) {
+           AsciiDoctorConsoleUtil.error(e.getMessage());
         }
-
     }
 
     protected String createCommandLineString(List<String> commands) {
