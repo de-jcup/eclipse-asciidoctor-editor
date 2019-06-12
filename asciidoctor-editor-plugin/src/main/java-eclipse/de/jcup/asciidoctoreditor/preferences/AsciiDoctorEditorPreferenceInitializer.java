@@ -104,8 +104,6 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* ++++++++++++++ */
 		/* + Validation + */
 		/* ++++++++++++++ */
-		store.setDefault(VALIDATE_GRAPHVIZ.getId(), true);
-
 		store.setDefault(VALIDATE_ERROR_LEVEL.getId(), AsciiDoctorEditorValidationErrorLevel.WARNING.getId());
 		
 		/* ++++++++++++++ */

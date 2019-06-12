@@ -54,19 +54,6 @@ public class AsciiDoctorWrapperHTMLBuilder {
     private String buildPrefixHTML(int refreshAutomaticallyInSeconds) {
         
         List<File> list = new ArrayList<>();
-        /* FIXME ATR, 14.12.2018: this is not correct, when using installed asciidoctor css information should not comes comes from OSGI embedded */
-//        if (! context.isUsingInstalledAsciiDoctor()){
-            File unzipFolder = AsciiDoctorOSGIWrapper.INSTANCE.getLibsUnzipFolder();
-            File cssFolder = AsciiDoctorOSGIWrapper.INSTANCE.getCSSFolder();
-            File addonsFolder = AsciiDoctorOSGIWrapper.INSTANCE.getAddonsFolder();
-            
-            list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/asciidoctor-default.css"));
-            list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/coderay-asciidoctor.css"));
-            list.add(new File(cssFolder, "/font-awesome/css/font-awesome.min.css"));
-            list.add(new File(cssFolder, "/dejavu/dejavu.css"));
-            list.add(new File(cssFolder, "/MathJax/MathJax.js"));
-            list.add(new File(addonsFolder, "/javascript/document-autorefresh.js"));
-//        }
 
         StringBuilder prefixSb = new StringBuilder();
         prefixSb.append("<html>\n");

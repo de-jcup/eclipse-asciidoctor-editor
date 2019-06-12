@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Asciidoctor Editor
 Bundle-SymbolicName: de.jcup.asciidoctoreditor;singleton:=true
-Bundle-Version: 1.4.2
+Bundle-Version: 2.0.0
 Bundle-Activator: de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator
 Bundle-Vendor: Albert Tregnaghi
 Require-Bundle: org.eclipse.ui,
@@ -21,15 +21,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.console
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Import-Package: org.apache.commons.io,
- org.asciidoctor,
- org.asciidoctor.converter,
- org.eclipse.ui,
+Import-Package: org.eclipse.ui,
  org.eclipse.ui.texteditor.spelling,
- org.eclipse.ui.texteditor.templates,
- org.jruby,
- org.jruby.javasupport
+ org.eclipse.ui.texteditor.templates
 Bundle-ClassPath: .,
  lib/de-jcup-eclipse-commons.jar,
- lib/asp-client.jar
+ lib/asp-client.jar,
+ lib/commons-io-2.6.jar
 Automatic-Module-Name: de.jcup.asciidoctoreditor

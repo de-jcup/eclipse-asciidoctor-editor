@@ -19,7 +19,6 @@ package de.jcup.asciidoctoreditor.preferences;
  * Constant definitions for plug-in preferences
  */
 public enum AsciiDoctorEditorValidationPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled{
-	VALIDATE_GRAPHVIZ("validateGraphviz","Check GraphViz is installed"), 
 	VALIDATE_ERROR_LEVEL("validationErrorLevel","Validation error level"),
 	
 	;

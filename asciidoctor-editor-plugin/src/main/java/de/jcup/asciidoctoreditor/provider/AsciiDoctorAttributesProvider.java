@@ -16,14 +16,7 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
-import org.asciidoctor.AsciiDocDirectoryWalker;
-import org.asciidoctor.DirectoryWalker;
-import org.asciidoctor.ast.DocumentHeader;
 
 public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider{
 	

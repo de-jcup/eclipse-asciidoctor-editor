@@ -33,7 +33,6 @@ import de.jcup.asciidoctoreditor.script.parser.SimpleInlineAnchorParser;
  */
 public class AsciiDoctorScriptModelBuilder {
 
-	private GraphvizCheckSupport graphVizCheckSupport;
 
 	private SimpleHeadlineParser headlineParser = new SimpleHeadlineParser();
 	private SimpleIncludeParser includeParser = new SimpleIncludeParser();
@@ -61,17 +60,6 @@ public class AsciiDoctorScriptModelBuilder {
 		handleHeadlinesWithAnchorsBefore(model);
 		handleHeadlinesWithSameCalculatedIdsWhereNoIdSet(model);
 
-		if (isGaphvizCheckNecessary(asciidoctorScript)) {
-			boolean graphvizAvailable = graphVizCheckSupport.checkInstalled();
-			if (!graphvizAvailable) {
-				int index = getIndexWhereGraphvizBecomesNecessary(asciidoctorScript);
-
-				AsciiDoctorError error = new AsciiDoctorError(index, index + 9,
-						"No GraphViz installation found but necessary.\n"
-								+ "Please install GraphViz on your machine if\nyou want the diagramm correct generated!");
-				model.getErrors().add(error);
-			}
-		}
 		return model;
 	}
 
@@ -118,13 +106,6 @@ public class AsciiDoctorScriptModelBuilder {
 		
 	}
 
-	protected boolean isGaphvizCheckNecessary(String asciidoctorScript) {
-		if (graphVizCheckSupport == null) {
-			return false;
-		}
-		return getIndexWhereGraphvizBecomesNecessary(asciidoctorScript) != -1;
-	}
-
 	protected int getIndexWhereGraphvizBecomesNecessary(String asciidoctorScript) {
 		int index = asciidoctorScript.indexOf("[plantuml");
 		if (index == -1) {
@@ -133,8 +114,5 @@ public class AsciiDoctorScriptModelBuilder {
 		return index;
 	}
 
-	public void setGraphVizCheckSupport(GraphvizCheckSupport validateGraphviz) {
-		this.graphVizCheckSupport = validateGraphviz;
-	}
 
 }

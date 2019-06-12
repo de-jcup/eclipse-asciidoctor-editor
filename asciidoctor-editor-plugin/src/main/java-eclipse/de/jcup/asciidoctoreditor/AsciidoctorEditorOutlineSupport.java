@@ -115,15 +115,9 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
 
         IPreferenceStore store = getEditor().getPreferences().getPreferenceStore();
 
-        boolean validateGraphviz = store.getBoolean(VALIDATE_GRAPHVIZ.getId());
         String errorLevelId = store.getString(VALIDATE_ERROR_LEVEL.getId());
         AsciiDoctorEditorValidationErrorLevel errorLevel = AsciiDoctorEditorValidationErrorLevel.fromId(errorLevelId);
 
-        if (validateGraphviz) {
-            modelBuilder.setGraphVizCheckSupport(CheckGraphviz.INSTANCE);
-        } else {
-            modelBuilder.setGraphVizCheckSupport(null);
-        }
         safeAsyncExec(() -> {
             AsciiDoctorScriptModel model;
             try {

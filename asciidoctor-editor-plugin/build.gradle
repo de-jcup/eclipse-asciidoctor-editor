@@ -1,9 +1,8 @@
 dependencies {
-    compile 'org.asciidoctor:asciidoctorj:1.5.6'
-    compile 'org.asciidoctor:asciidoctorj-diagram:1.5.4.1'
-    compile 'commons-io:commons-io:2.4'
-	compile 'org.jruby:jruby-complete:1.7.13'
     compile fileTree(dir: 'lib', include: '*.jar')
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    
 }
 
 
@@ -17,7 +16,8 @@ dependencies {
  * After this is done remove the old jars... and upgrade version of "asciidoctor-editor-libs" to new version.
  */
 task copyRuntimeLibs(type: Copy) {
-	
-    into "${rootProject.projectDir}/asciidoctor-editor-other/temp"
+    group "Asciidoctor editor"
+    description "copies dependencies to a temporary library directory"
+    into "${rootProject.projectDir}/asciidoctor-editor-other/build/temp"
     from configurations.compile /*configurations.testRuntime - configurations.runtime*/
 }

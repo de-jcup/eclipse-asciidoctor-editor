@@ -15,17 +15,6 @@
  */
 package de.jcup.asciidoctoreditor.provider;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.asciidoctor.AsciiDocDirectoryWalker;
-import org.asciidoctor.DirectoryWalker;
-import org.asciidoctor.ast.DocumentHeader;
-
-import de.jcup.asciidoctoreditor.AsciiDoctorOSGIWrapper;
 import de.jcup.asciidoctoreditor.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.AspAsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.InstalledAsciidoctor;
@@ -40,34 +29,10 @@ public class EclipseAsciiDoctorProvider implements AsciiDoctorInstanceProvider{
     public static final EclipseAsciiDoctorProvider INSTANCE = new EclipseAsciiDoctorProvider();
     
     private static AsciidoctorAdapter asciidoctorInstalled;
-    private static AsciidoctorAdapter asciidoctorEmbedded;
     private static AsciidoctorAdapter asciidoctorServerProtocollClient;
     
     EclipseAsciiDoctorProvider(){
         asciidoctorInstalled = new InstalledAsciidoctor();
-//        asciidoctorEmbedded = new AsciidoctorAdapter() {
-//            
-//            @Override
-//            public void convertFile(File filename, Map<String, Object> options) {
-//                AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().convertFile(filename, options);
-//            }
-//
-//            @Override
-//            public Map<String, Object> resolveAttributes(File baseDir) {
-//                
-//                Map<String, Object> map = new HashMap<>();
-//                Set<DocumentHeader> documentIndex = new HashSet<DocumentHeader>();
-//                DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
-//
-//                for (File file : directoryWalker.scan()) {
-//                    documentIndex.add(AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().readDocumentHeader(file));
-//                }
-//                for (DocumentHeader header : documentIndex) {
-//                    map.putAll(header.getAttributes());
-//                }
-//                return map;
-//            }
-//        };
         asciidoctorServerProtocollClient= new AspAsciidoctorAdapter();
     }
     

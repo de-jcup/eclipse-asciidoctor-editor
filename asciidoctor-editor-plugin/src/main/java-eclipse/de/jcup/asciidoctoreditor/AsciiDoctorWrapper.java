@@ -197,7 +197,7 @@ public class AsciiDoctorWrapper {
 	}
 
 	public File getAddonsFolder() {
-		return AsciiDoctorOSGIWrapper.INSTANCE.getAddonsFolder();
+		return new File("./");
 	}
 
 	public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {

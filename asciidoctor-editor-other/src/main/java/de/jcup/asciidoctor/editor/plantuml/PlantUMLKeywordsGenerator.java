@@ -15,16 +15,17 @@
  */
 package de.jcup.asciidoctor.editor.plantuml;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  * Just a simple java code generator for plantuml keywords.<br>
@@ -42,14 +43,28 @@ public class PlantUMLKeywordsGenerator {
 	}
 
 	private void generate() throws IOException {
-		String template = FileUtils.readFileToString(new File("./src/main/resources/PlantUML__ID__DocumentKeywords.template"));
+	    File file = new File("./src/main/resources/PlantUML__ID__DocumentKeywords.template");
+        String template = readAsText(file);
 		Map<String, Set<String>> map = readPlantumlLanguageToMap();
 		
 		for(String key: map.keySet()){
-			generateFile(template, key,map.get(key));
+            generateFile(template, key,map.get(key));
 		}
 		
 	}
+
+    private String readAsText(File file) throws IOException {
+        List<String> lines = Files.readAllLines(file.toPath());
+	    StringBuilder templateSB = new StringBuilder();
+	    for (Iterator<String> it = lines.iterator();it.hasNext();) {
+	        templateSB.append(it.next());
+	        if (it.hasNext()) {
+	            templateSB.append("\n");
+	        }
+	    }
+	    String template = templateSB.toString();
+        return template;
+    }
 
 	private void generateFile(String template, String key, Set<String> list) throws IOException {
 		String content = new StringBuilder().append(template).toString();
@@ -74,8 +89,9 @@ public class PlantUMLKeywordsGenerator {
 		String path = parentFolder+thePackage;
 		
 		File file = new File(path,filename);
-		FileUtils.writeStringToFile(file,content);
-//		System.out.println(content);
+		try(BufferedWriter bw = Files.newBufferedWriter(file.toPath())){
+		    bw.write(content);
+		}
 		System.out.println("generated:"+file);
 	}
 
@@ -88,7 +104,7 @@ public class PlantUMLKeywordsGenerator {
 	}
 
 	private Map<String,Set<String>> readPlantumlLanguageToMap() throws IOException {
-		String text = FileUtils.readFileToString(new File("./src/main/resources/plantuml.language.txt"));
+		String text = readAsText(new File("./src/main/resources/plantuml.language.txt"));
 		String[] parts = text.split("\n");
 		
 		Map<String,Set<String>> map= new TreeMap<>(); 
