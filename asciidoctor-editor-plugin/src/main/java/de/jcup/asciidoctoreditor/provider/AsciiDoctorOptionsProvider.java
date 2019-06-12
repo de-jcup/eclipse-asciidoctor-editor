@@ -43,6 +43,7 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 		AttributesBuilder attrBuilder = AttributesBuilder.
 				attributes().
 					showTitle(true).
+					noFooter(getContext().isNoFooter()).
 					sourceHighlighter("coderay").
 					attribute("eclipse-editor-basedir",getContext().getBaseDir().getAbsolutePath()).
 				    attribute("icons", "font").

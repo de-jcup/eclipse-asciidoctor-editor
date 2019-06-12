@@ -18,16 +18,9 @@ package de.jcup.asciidoctoreditor;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import org.asciidoctor.AsciiDocDirectoryWalker;
-import org.asciidoctor.DirectoryWalker;
-import org.asciidoctor.ast.DocumentHeader;
 
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 
@@ -41,19 +34,8 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 public class InstalledAsciidoctor implements AsciidoctorAdapter {
     @Override
     public Map<String, Object> resolveAttributes(File baseDir) {
+        return new AspAsciidoctorAdapter().resolveAttributes(baseDir);
         
-        /* FIXME Albert: use ASP serve or installed variant cli here, to get rid of embeed asciidoctorj variants*/
-        Map<String, Object> map = new HashMap<>();
-        Set<DocumentHeader> documentIndex = new HashSet<DocumentHeader>();
-        DirectoryWalker directoryWalker = new AsciiDocDirectoryWalker(baseDir.getAbsolutePath());
-
-        for (File file : directoryWalker.scan()) {
-            documentIndex.add(AsciiDoctorOSGIWrapper.INSTANCE.getAsciidoctor().readDocumentHeader(file));
-        }
-        for (DocumentHeader header : documentIndex) {
-            map.putAll(header.getAttributes());
-        }
-        return map;
     }
 
     @Override

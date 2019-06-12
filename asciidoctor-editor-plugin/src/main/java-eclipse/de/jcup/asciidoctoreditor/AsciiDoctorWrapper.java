@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.asciidoctor.Asciidoctor;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -139,6 +138,7 @@ public class AsciiDoctorWrapper {
 				/* currently all other editor types ( ditaa) will use images dir approach */
 				context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
 			}
+			context.setNoFooter(true);
 		}
 		context.setOutputFolder(getTempFolder());
 	}
@@ -185,7 +185,7 @@ public class AsciiDoctorWrapper {
 
 	public void dispose() {
 		// no longer special handling -e.g. delete temp folder, because
-		// tempfolder for projects and not longer for only one single editor!
+		// temp folder for projects and not longer for only one single editor!
 	}
 
 	public void setTocVisible(boolean tocVisible) {

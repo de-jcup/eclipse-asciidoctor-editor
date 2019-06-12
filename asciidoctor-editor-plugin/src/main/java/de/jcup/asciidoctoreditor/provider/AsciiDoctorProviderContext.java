@@ -88,15 +88,15 @@ public class AsciiDoctorProviderContext {
         this.asciidocFile = asciidocFile;
         this.baseDir = baseDirProvider.findBaseDir();
     }
-    
+
     public void setImageHandlingMode(ImageHandlingMode imageHandlingMode) {
-		this.imageHandlingMode = imageHandlingMode;
-	}
-    
+        this.imageHandlingMode = imageHandlingMode;
+    }
+
     public ImageHandlingMode getImageHandlingMode() {
-		return imageHandlingMode;
-	}
-    
+        return imageHandlingMode;
+    }
+
     protected void init() {
         logAdapter.resetTimeDiff();
         attributesProvider = register(new AsciiDoctorAttributesProvider(this));
@@ -116,14 +116,15 @@ public class AsciiDoctorProviderContext {
     }
 
     /**
-     * Reset context. After this method is called all cached operations will be recalculated on next rendering time fo editor content
+     * Reset context. After this method is called all cached operations will be
+     * recalculated on next rendering time fo editor content
      */
     public void reset() {
         this.baseDir = null;
         this.outputFolder = null;
         this.asciidocFile = null;
 
-        for (AbstractAsciiDoctorProvider provider: providers){
+        for (AbstractAsciiDoctorProvider provider : providers) {
             provider.reset();
         }
     }
@@ -174,22 +175,30 @@ public class AsciiDoctorProviderContext {
     public File getFileToRender() {
         return fileToRender;
     }
-   
 
     private Set<AbstractAsciiDoctorProvider> providers = new LinkedHashSet<>();
-	private File editorFileOrNull;
-    
-    public <T extends AbstractAsciiDoctorProvider> T register(T  provider) {
+    private File editorFileOrNull;
+    private boolean noFooter;
+
+    public <T extends AbstractAsciiDoctorProvider> T register(T provider) {
         providers.add(provider);
         return provider;
     }
 
-	public void setEditorFileOrNull(File editorFileOrNull) {
-		this.editorFileOrNull=editorFileOrNull;
-	}
-	
-	public File getEditorFileOrNull() {
-		return editorFileOrNull;
-	}
+    public void setEditorFileOrNull(File editorFileOrNull) {
+        this.editorFileOrNull = editorFileOrNull;
+    }
+
+    public File getEditorFileOrNull() {
+        return editorFileOrNull;
+    }
+
+    public void setNoFooter(boolean noFooter) {
+        this.noFooter = noFooter;
+    }
+
+    public boolean isNoFooter() {
+        return noFooter;
+    }
 
 }

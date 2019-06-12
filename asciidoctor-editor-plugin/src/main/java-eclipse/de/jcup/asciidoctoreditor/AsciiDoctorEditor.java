@@ -17,7 +17,6 @@ package de.jcup.asciidoctoreditor;
 
 import static de.jcup.asciidoctoreditor.EclipseUtil.*;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -107,7 +106,6 @@ import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
 import de.jcup.eclipse.commons.ui.ColorUtil;
-import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 @AdaptedFromEGradle
 public class AsciiDoctorEditor extends TextEditor implements StatusMessageSupport, IResourceChangeListener {
@@ -500,8 +498,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
                     String originName = origin.getName(); /* xyz.adoc */
                     String fileName = originName.substring(0, originName.length() - 4) + "pdf";
                     File file = new File(origin.getParentFile(), fileName);
-                    
-                    Desktop.getDesktop().open(file);
+                   
+                    AsciiDoctorEditorUtil.openFileInExternalBrowser(file);
                 
                 } catch (Exception e) {
                     return new Status(Status.ERROR,AsciiDoctorEditorActivator.PLUGIN_ID,"Was not able to create/show PDF",e);
