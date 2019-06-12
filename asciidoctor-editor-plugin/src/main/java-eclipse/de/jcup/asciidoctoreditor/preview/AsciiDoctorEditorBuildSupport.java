@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.preview;
 
 import static de.jcup.asciidoctoreditor.EclipseUtil.*;
 
@@ -29,7 +29,20 @@ import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 
-import de.jcup.asciidoctoreditor.AsciiDoctorWrapper.WrapperConvertData;
+import de.jcup.asciidoctoreditor.AbstractAsciiDoctorEditorSupport;
+import de.jcup.asciidoctoreditor.AsciiDocFileUtils;
+import de.jcup.asciidoctoreditor.AsciiDocStringUtils;
+import de.jcup.asciidoctoreditor.AsciiDoctorBackendType;
+import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
+import de.jcup.asciidoctoreditor.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.BuildAsciiDocMode;
+import de.jcup.asciidoctoreditor.ContentTransformerData;
+import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
+import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.InstalledAsciidoctorException;
+import de.jcup.asciidoctoreditor.TemporaryFileType;
+import de.jcup.asciidoctoreditor.WrapperConvertData;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
@@ -56,11 +69,11 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         return true;
     }
 
-    protected void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode) {
+    public void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode) {
         showRebuildingInPreviewAndTriggerFullRebuildAsJob(mode, AsciiDoctorBackendType.HTML5, false,null);
     }
 
-    protected boolean isAutoBuildEnabledForExternalPreview() {
+    public boolean isAutoBuildEnabledForExternalPreview() {
         return getEditor().getPreferences().isAutoBuildEnabledForExternalPreview();
     }
 
@@ -80,14 +93,14 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             return;
         }
 
-        if (!forceInitialize && getEditor().outputBuildSemaphore.availablePermits() == 0) {
+        if (!forceInitialize && getEditor().getOutputBuildSemaphore().availablePermits() == 0) {
             /* already rebuilding -so ignore */
             return;
         }
-        boolean initializing = forceInitialize || isFileNotAvailable(getEditor().temporaryInternalPreviewFile);
+        boolean initializing = forceInitialize || isFileNotAvailable(getEditor().getTemporaryInternalPreviewFile());
 
         try {
-            getEditor().outputBuildSemaphore.acquire();
+            getEditor().getOutputBuildSemaphore().acquire();
             if (initializing) {
                 File previewInitializingFile = new File(getEditor().getWrapper().getAddonsFolder(), "html/initialize/preview_initializing.html");
                 boolean previewInitializingFileFound = false;
@@ -96,12 +109,12 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                         previewInitializingFileFound = true;
                     }
                     String previewFileURL = previewInitializingFile.toURI().toURL().toExternalForm();
-                    getEditor().browserAccess.setUrl(previewFileURL);
+                    getEditor().getBrowserAccess().setUrl(previewFileURL);
                 } catch (MalformedURLException e) {
                     logError("Preview initializer html file not valid url", e);
                 }
                 if (!previewInitializingFileFound) {
-                    getEditor().browserAccess.safeBrowserSetText("<html><body><h3>Initializing document</h3></body></html>");
+                    getEditor().getBrowserAccess().safeBrowserSetText("<html><body><h3>Initializing document</h3></body></html>");
                 }
             }
         } catch (InterruptedException e) {
@@ -143,15 +156,15 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                     monitor.done();
 
                 } finally {
-                    getEditor().outputBuildSemaphore.release();
+                    getEditor().getOutputBuildSemaphore().release();
                 }
             }
 
             protected String getSafeFileName() {
-                if (getEditor().temporaryInternalPreviewFile == null) {
+                if (getEditor().getTemporaryInternalPreviewFile() == null) {
                     return "<unknown>";
                 }
-                return getEditor().temporaryInternalPreviewFile.getName();
+                return getEditor().getTemporaryInternalPreviewFile().getName();
             }
         });
         job.schedule();
@@ -225,11 +238,11 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             }
             try {
                 monitor.subTask("WRITE INTERNAL PREVIEW");
-                AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, getEditor().temporaryInternalPreviewFile);
+                AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, getEditor().getTemporaryInternalPreviewFile());
                 monitor.worked(++worked);
 
                 monitor.subTask("WRITE EXTERNAL PREVIEW");
-                AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, getEditor().temporaryExternalPreviewFile);
+                AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, getEditor().getTemporaryExternalPreviewFile());
                 monitor.worked(++worked);
 
             } catch (IOException e1) {
@@ -263,7 +276,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
 
                 AsciiDoctorErrorBuilder builder = new AsciiDoctorErrorBuilder();
                 AsciiDoctorError error = builder.build(errorMessage);
-                getEditor().browserAccess.safeBrowserSetText(htmlSb.toString());
+                getEditor().getBrowserAccess().safeBrowserSetText(htmlSb.toString());
                 AsciiDoctorEditorUtil.addScriptError(getEditor(), -1, error, IMarker.SEVERITY_ERROR);
 
                 if (isLoggingNecessary(e)) {
@@ -320,11 +333,11 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
     protected File resolveFileToConvertToHTMLAndConvertBeforeWhenNecessary(String asciiDoc) throws IOException {
         File fileToConvertIntoHTML;
         String text;
-        if (getEditor().contentTransformer.isTransforming(asciiDoc)) {
+        if (getEditor().getContentTransformer().isTransforming(asciiDoc)) {
         	
             ContentTransformerData  data = new ContentTransformerData();
             data.origin=asciiDoc;
-			text = getEditor().contentTransformer.transform(data);
+			text = getEditor().getContentTransformer().transform(data);
         } else {
             text = asciiDoc;
         }
@@ -360,7 +373,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         if (originText == null) {
             return null;
         }
-        if (!getEditor().contentTransformer.isTransforming(originText)) {
+        if (!getEditor().getContentTransformer().isTransforming(originText)) {
             return editorFile;
         }
         return resolveFileToConvertToHTML(editorFile.getName(), originText);
@@ -374,7 +387,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         data.origin=text;
         data.filename=filename;
         
-		String transformed = getEditor().contentTransformer.transform(data);
+		String transformed = getEditor().getContentTransformer().transform(data);
         try {
             return AsciiDocStringUtils.writeTextToUTF8File(transformed, newTempFile);
         } catch (IOException e) {

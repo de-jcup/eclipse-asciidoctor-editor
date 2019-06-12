@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.preview;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ICoreRunnable;
@@ -23,6 +23,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
+
+import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
+import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
+import de.jcup.asciidoctoreditor.EclipseUtil;
 
 /**
  * All browser access must be done over this class. So its easier to handle

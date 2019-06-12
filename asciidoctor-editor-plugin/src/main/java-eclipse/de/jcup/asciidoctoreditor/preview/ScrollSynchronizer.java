@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.preview;
 
 import static de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter.*;
 import static de.jcup.asciidoctoreditor.EclipseDevelopmentSettings.*;
@@ -21,6 +21,7 @@ import static de.jcup.asciidoctoreditor.EclipseDevelopmentSettings.*;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 
+import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.outline.ItemType;
 import de.jcup.asciidoctoreditor.script.AsciidoctorTextSelectable;
@@ -42,7 +43,7 @@ public class ScrollSynchronizer {
 	}
 	
 	public void installInBrowser() {
-	    editor.browserAccess.install(scrollSyncListener);
+	    editor.getBrowserAccess().install(scrollSyncListener);
     }
 	
 	class ScrollSyncMouseListener extends MouseAdapter{
@@ -50,7 +51,7 @@ public class ScrollSynchronizer {
         public void mouseUp(MouseEvent e) {
             String javascript = "var element=document.elementFromPoint(" + e.x + "," + e.y + ");" +
                     "if (element!=null){ return element.getAttribute('id')} else {return null};";
-            String elementId = editor.browserAccess.safeBrowserEvaluateJavascript(javascript);
+            String elementId = editor.getBrowserAccess().safeBrowserEvaluateJavascript(javascript);
             
             onMouseClickInBrowser(elementId);
         }
@@ -123,7 +124,7 @@ public class ScrollSynchronizer {
 		}
 		if (anchorId == null) {
 			/* means first title */
-			editor.browserAccess.navgigateToTopOfView();
+			editor.getBrowserAccess().navgigateToTopOfView();
 			return;
 		}
 		
@@ -131,7 +132,7 @@ public class ScrollSynchronizer {
 		if (DEBUG_LOGGING_ENABLED) {
 			INSTANCE.logInfo("Call browser access with javascript:"+javascript);
 		}
-		editor.browserAccess.safeBrowserExecuteJavascript(javascript);
+		editor.getBrowserAccess().safeBrowserExecuteJavascript(javascript);
 	}
 
 }

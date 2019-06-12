@@ -77,13 +77,17 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import de.jcup.asciidoctoreditor.AsciiDoctorWrapper.WrapperConvertData;
-import de.jcup.asciidoctoreditor.BrowserAccess.BrowserContentInitializer;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.preview.AsciiDoctorEditorBuildSupport;
+import de.jcup.asciidoctoreditor.preview.BrowserAccess;
+import de.jcup.asciidoctoreditor.preview.ScrollSynchronizer;
+import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner;
+import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideIternalPreviewRunner;
+import de.jcup.asciidoctoreditor.preview.BrowserAccess.BrowserContentInitializer;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
@@ -123,12 +127,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     protected CoolBarManager coolBarManager;
 
-    BrowserAccess browserAccess;
-    ContentTransformer contentTransformer;
-    Semaphore outputBuildSemaphore = new Semaphore(1);
+    private BrowserAccess browserAccess;
+    private ContentTransformer contentTransformer;
+    private Semaphore outputBuildSemaphore = new Semaphore(1);
     ScrollSynchronizer synchronizer;
     File temporaryExternalPreviewFile;
-    File temporaryInternalPreviewFile;
+    private File temporaryInternalPreviewFile;
 
     private long editorId;
     private long fallBackEditorId;
@@ -153,7 +157,19 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public long getEditorId() {
         return editorId;
     }
+    
+    public ContentTransformer getContentTransformer() {
+        return contentTransformer;
+    }
+    
+    public Semaphore getOutputBuildSemaphore() {
+        return outputBuildSemaphore;
+    }
 
+    public File getTemporaryInternalPreviewFile() {
+        return temporaryInternalPreviewFile;
+    }
+    
     public EditorType getType() {
         return EditorType.ASCIIDOC;
     }
@@ -176,6 +192,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         this.synchronizer = new ScrollSynchronizer(this);
     }
 
+    public BrowserAccess getBrowserAccess() {
+        return browserAccess;
+    }
+    
     @Override
     public void createPartControl(Composite parent) {
 
@@ -643,7 +663,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
     }
 
-    protected void ensureInternalBrowserShowsURL(IProgressMonitor monitor) {
+    public void ensureInternalBrowserShowsURL(IProgressMonitor monitor) {
         if (!isInternalPreview()) {
             return;
         }
@@ -653,7 +673,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         startEnsureFileThread(temporaryInternalPreviewFile, new WaitForGeneratedFileAndShowInsideIternalPreviewRunner(this, monitor));
     }
 
-    protected String fetchAsciidoctorErrorMessage(Throwable e) {
+    public String fetchAsciidoctorErrorMessage(Throwable e) {
         if (e == null) {
             return null;
         }
@@ -663,7 +683,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         return e.getClass().getSimpleName() + ": " + SimpleExceptionUtils.getRootMessage(e);
     }
 
-    protected File getEditorFileOrNull() {
+    public File getEditorFileOrNull() {
         /* !editorFileExists == true can happen when we got a rename of the file */
         if (editorFile == null || !editorFile.exists()) {
             editorFile = resolveEditorFileOrNull();
@@ -817,7 +837,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     }
 
-    protected boolean isAsciiDoctorError(Throwable e) {
+    public boolean isAsciiDoctorError(Throwable e) {
         if (e == null) {
             return false;
         }
@@ -926,7 +946,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
      * 
      * @return string, never <code>null</code>
      */
-    String getDocumentText() {
+    public String getDocumentText() {
         IDocument doc = getDocument();
         if (doc == null) {
             return "";
@@ -934,18 +954,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         return doc.get();
     }
 
-    boolean isCanceled(IProgressMonitor monitor) {
+    public boolean isCanceled(IProgressMonitor monitor) {
         if (monitor == null) {
             return false; // no chance to cancel...
         }
         return monitor.isCanceled();
     }
 
-    boolean isNotCanceled(IProgressMonitor monitor) {
+    public boolean isNotCanceled(IProgressMonitor monitor) {
         return !isCanceled(monitor);
     }
 
-    void refocus() {
+    public void refocus() {
         if (!isInternalPreview()) {
             /* problem exists only at internal preview */
             return;

@@ -24,13 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 
-/**
- * Special variant of an Asciidoctor instance - uses native installation. But it
- * works ony with the editor, because not all parts are implemented...
- * 
- * @author Albert Tregnaghi
- *
- */
 public class InstalledAsciidoctor implements AsciidoctorAdapter {
     @Override
     public Map<String, Object> resolveAttributes(File baseDir) {

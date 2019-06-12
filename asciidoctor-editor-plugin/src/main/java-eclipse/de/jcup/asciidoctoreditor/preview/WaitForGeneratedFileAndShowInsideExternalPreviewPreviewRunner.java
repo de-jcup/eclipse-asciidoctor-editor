@@ -13,19 +13,24 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.preview;
 
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 
-class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner implements EnsureFileRunnable {
+import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
+import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.EnsureFileRunnable;
+
+public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner implements EnsureFileRunnable {
 
 	private final AsciiDoctorEditor asciiDoctorEditor;
 	private IProgressMonitor monitor;
 
-	WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(AsciiDoctorEditor asciiDoctorEditor, IProgressMonitor monitor) {
+	public WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(AsciiDoctorEditor asciiDoctorEditor, IProgressMonitor monitor) {
 		this.asciiDoctorEditor = asciiDoctorEditor;
 		this.monitor = monitor;
 	}

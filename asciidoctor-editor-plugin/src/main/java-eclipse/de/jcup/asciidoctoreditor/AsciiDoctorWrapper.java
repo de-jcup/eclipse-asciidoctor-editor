@@ -56,14 +56,6 @@ public class AsciiDoctorWrapper {
 		return context;
 	}
 
-	public static class WrapperConvertData {
-		EditorType targetType = EditorType.ASCIIDOC;
-		File asciiDocFile;
-		long editorId;
-		boolean useHiddenFile;
-		File editorFileOrNull;
-	}
-	
 	public void convert(WrapperConvertData data, AsciiDoctorBackendType asciiDoctorBackendType) throws Exception {
 
 		init(context, data);

@@ -1,4 +1,4 @@
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.preview;
 
 public interface BuildDoneListener {
 

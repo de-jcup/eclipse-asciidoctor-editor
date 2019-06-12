@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.preview;
 
 import static de.jcup.asciidoctoreditor.EclipseUtil.*;
 
@@ -23,12 +23,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements EnsureFileRunnable {
+import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
+import de.jcup.asciidoctoreditor.EnsureFileRunnable;
+
+public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements EnsureFileRunnable {
 
 	private final AsciiDoctorEditor asciiDoctorEditor;
 	private IProgressMonitor monitor;
 
-	WaitForGeneratedFileAndShowInsideIternalPreviewRunner(AsciiDoctorEditor asciiDoctorEditor, IProgressMonitor monitor) {
+	public WaitForGeneratedFileAndShowInsideIternalPreviewRunner(AsciiDoctorEditor asciiDoctorEditor, IProgressMonitor monitor) {
 		this.asciiDoctorEditor = asciiDoctorEditor;
 		this.monitor = monitor;
 	}
@@ -38,40 +42,40 @@ class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements EnsureFil
 		long start = System.currentTimeMillis();
 		boolean aquired = false;
 		try {
-			while (this.asciiDoctorEditor.isNotCanceled(monitor)
-					&& (this.asciiDoctorEditor.temporaryInternalPreviewFile == null || !this.asciiDoctorEditor.temporaryInternalPreviewFile.exists())) {
+			while (asciiDoctorEditor.isNotCanceled(monitor)
+					&& (asciiDoctorEditor.getTemporaryExternalPreviewFile() == null || !asciiDoctorEditor.getTemporaryExternalPreviewFile().exists())) {
 				if (System.currentTimeMillis() - start > 20000) {
 					// after 20 seconds there seems to be no chance to get
 					// the generated preview file back
-					this.asciiDoctorEditor.browserAccess.safeBrowserSetText(
+					asciiDoctorEditor.getBrowserAccess().safeBrowserSetText(
 							"<html><body><h3>Preview file generation timed out, so preview not available.</h3></body></html>");
 					return;
 				}
 				Thread.sleep(300);
 			}
-			aquired = this.asciiDoctorEditor.outputBuildSemaphore.tryAcquire(5, TimeUnit.SECONDS);
+			aquired = asciiDoctorEditor.getOutputBuildSemaphore().tryAcquire(5, TimeUnit.SECONDS);
 
 			safeAsyncExec(() -> {
 
 				try {
-					URL url = this.asciiDoctorEditor.temporaryInternalPreviewFile.toURI().toURL();
-					String foundURL = this.asciiDoctorEditor.browserAccess.getUrl();
+					URL url = asciiDoctorEditor.getTemporaryExternalPreviewFile().toURI().toURL();
+					String foundURL = asciiDoctorEditor.getBrowserAccess().getUrl();
 					try {
-						URL formerURL = new URL(this.asciiDoctorEditor.browserAccess.getUrl());
+						URL formerURL = new URL(asciiDoctorEditor.getBrowserAccess().getUrl());
 						foundURL = formerURL.toExternalForm();
 					} catch (MalformedURLException e) {
 						/* ignore - about pages etc. */
 					}
 					String externalForm = url.toExternalForm();
 					if (!externalForm.equals(foundURL)) {
-						this.asciiDoctorEditor.browserAccess.setUrl(externalForm);
+						asciiDoctorEditor.getBrowserAccess().setUrl(externalForm);
 					} else {
-						this.asciiDoctorEditor.browserAccess.refresh();
+						asciiDoctorEditor.getBrowserAccess().refresh();
 					}
 
 				} catch (MalformedURLException e) {
 					AsciiDoctorEditorUtil.logError("Was not able to use malformed URL", e);
-					this.asciiDoctorEditor.browserAccess.safeBrowserSetText("<html><body><h3>URL malformed</h3></body></html>");
+					asciiDoctorEditor.getBrowserAccess().safeBrowserSetText("<html><body><h3>URL malformed</h3></body></html>");
 				}
 			});
 
@@ -79,7 +83,7 @@ class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements EnsureFil
 			Thread.currentThread().interrupt();
 		} finally {
 			if (aquired == true) {
-				this.asciiDoctorEditor.outputBuildSemaphore.release();
+				asciiDoctorEditor.getOutputBuildSemaphore().release();
 			}
 		}
 
