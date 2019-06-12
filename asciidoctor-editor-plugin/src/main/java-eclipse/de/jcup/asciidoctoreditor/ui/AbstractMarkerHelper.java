@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.ui;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +26,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 
+import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
+import de.jcup.asciidoctoreditor.EclipseUtil;
 import de.jcup.eclipse.commons.SimpleStringUtils;
 
 @AdaptedFromEGradle

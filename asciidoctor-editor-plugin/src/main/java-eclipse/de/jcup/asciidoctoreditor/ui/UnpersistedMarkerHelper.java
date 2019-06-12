@@ -13,13 +13,15 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.ui;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
+
+import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
 
 /**
  * Unpersisted marker helper is a helper object for markers. "Unpersisted",

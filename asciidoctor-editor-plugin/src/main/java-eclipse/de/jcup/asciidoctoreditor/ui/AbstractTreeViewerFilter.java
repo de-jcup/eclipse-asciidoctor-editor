@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.ui;
 
 import java.util.ArrayList;
 
@@ -24,6 +24,9 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+
+import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
+import de.jcup.asciidoctoreditor.Matcher;
 
 @AdaptedFromEGradle
 public abstract class AbstractTreeViewerFilter<T> extends ViewerFilter {

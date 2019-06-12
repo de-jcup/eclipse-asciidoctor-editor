@@ -27,9 +27,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorColorConstants;
-import de.jcup.asciidoctoreditor.ColorManager;
 import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.ui.AsciiDoctorEditorColorConstants;
+import de.jcup.asciidoctoreditor.ui.ColorManager;
 
 public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider {
 

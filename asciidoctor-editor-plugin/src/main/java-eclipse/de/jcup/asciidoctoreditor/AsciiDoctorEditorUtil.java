@@ -39,6 +39,7 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
+import de.jcup.asciidoctoreditor.ui.UnpersistedMarkerHelper;
 
 public class AsciiDoctorEditorUtil {
 	private static final IProgressMonitor NULL_MONITOR = new NullProgressMonitor();

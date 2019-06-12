@@ -26,6 +26,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import de.jcup.asciidoctoreditor.template.AsciidoctorEditorTemplateSupportConfig;
+import de.jcup.asciidoctoreditor.ui.ColorManager;
 import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 import de.jcup.eclipse.commons.resource.EclipseResourceInputStreamProvider;

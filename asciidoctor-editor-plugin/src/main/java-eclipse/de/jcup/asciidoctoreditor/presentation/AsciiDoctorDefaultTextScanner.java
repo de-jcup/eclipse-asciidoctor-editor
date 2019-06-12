@@ -19,7 +19,7 @@ import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.WhitespaceRule;
 
-import de.jcup.asciidoctoreditor.ColorManager;
+import de.jcup.asciidoctoreditor.ui.ColorManager;
 
 
 public class AsciiDoctorDefaultTextScanner extends RuleBasedScanner {

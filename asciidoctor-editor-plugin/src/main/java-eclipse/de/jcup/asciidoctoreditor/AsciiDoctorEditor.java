@@ -109,6 +109,8 @@ import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
+import de.jcup.asciidoctoreditor.ui.ColorManager;
+import de.jcup.asciidoctoreditor.ui.StatusMessageSupport;
 import de.jcup.eclipse.commons.ui.ColorUtil;
 
 @AdaptedFromEGradle

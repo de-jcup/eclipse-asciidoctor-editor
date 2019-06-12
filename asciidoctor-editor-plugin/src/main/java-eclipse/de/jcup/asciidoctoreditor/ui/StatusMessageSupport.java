@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor;
+ package de.jcup.asciidoctoreditor.ui;
 
 /**
  * Adapter interface to provide status messaging

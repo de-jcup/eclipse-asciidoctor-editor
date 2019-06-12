@@ -59,6 +59,7 @@ import de.jcup.asciidoctoreditor.document.keywords.PlantUMLSkinparameterDocument
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLTypeDocumentKeywords;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
+import de.jcup.asciidoctoreditor.ui.ColorManager;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 /**

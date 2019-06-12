@@ -61,6 +61,7 @@ import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
+import de.jcup.asciidoctoreditor.ui.ColorManager;
 import de.jcup.eclipse.commons.codeassist.MultipleContentAssistProcessor;
 import de.jcup.eclipse.commons.templates.TemplateSupport;
 import de.jcup.eclipse.commons.ui.CSSProvider;

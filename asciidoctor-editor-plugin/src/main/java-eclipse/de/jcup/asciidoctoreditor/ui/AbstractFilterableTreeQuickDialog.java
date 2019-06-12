@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor.ui;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,6 +45,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.UIJob;
 
+import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
+import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.FilterPatternMatcher;
 import de.jcup.asciidoctoreditor.outline.FallbackOutlineContentProvider;
 
 @AdaptedFromEGradle

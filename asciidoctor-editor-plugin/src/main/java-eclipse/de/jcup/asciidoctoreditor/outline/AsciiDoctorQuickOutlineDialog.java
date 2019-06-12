@@ -24,11 +24,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-import de.jcup.asciidoctoreditor.AbstractFilterableTreeQuickDialog;
-import de.jcup.asciidoctoreditor.AbstractTreeViewerFilter;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.FilterPatternMatcher;
+import de.jcup.asciidoctoreditor.ui.AbstractFilterableTreeQuickDialog;
+import de.jcup.asciidoctoreditor.ui.AbstractTreeViewerFilter;
 
 /**
  * This dialog is inspired by: <a href=

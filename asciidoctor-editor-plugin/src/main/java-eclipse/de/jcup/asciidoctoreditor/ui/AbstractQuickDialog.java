@@ -13,11 +13,14 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor;
+ package de.jcup.asciidoctoreditor.ui;
 
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+
+import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
+import de.jcup.asciidoctoreditor.EclipseUtil;
 
 @AdaptedFromEGradle
 abstract class AbstractQuickDialog extends PopupDialog {
