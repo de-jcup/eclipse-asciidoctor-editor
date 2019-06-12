@@ -19,7 +19,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 import de.jcup.eclipse.commons.SimpleStringUtils;
 
 public class NewLinkInsertAction extends InsertTextAction {

@@ -30,8 +30,8 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
-import de.jcup.asciidoctoreditor.EclipseUtil;
 import de.jcup.asciidoctoreditor.PreviewLayout;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 import de.jcup.eclipse.commons.ui.ColorUtil;
 
 public class AsciiDoctorEditorPreferences {

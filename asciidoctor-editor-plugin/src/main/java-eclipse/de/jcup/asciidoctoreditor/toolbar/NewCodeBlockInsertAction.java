@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ListDialog;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class NewCodeBlockInsertAction extends InsertTextAction {
 

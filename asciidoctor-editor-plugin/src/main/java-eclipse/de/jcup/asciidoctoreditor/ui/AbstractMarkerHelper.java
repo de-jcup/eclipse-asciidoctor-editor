@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 
 import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
-import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 import de.jcup.eclipse.commons.SimpleStringUtils;
 
 @AdaptedFromEGradle

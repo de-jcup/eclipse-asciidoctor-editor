@@ -31,8 +31,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
 import de.jcup.asciidoctoreditor.ui.AsciiDoctorEditorColorConstants;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class AsciiDoctorPlantUMLEditorSyntaxColorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 

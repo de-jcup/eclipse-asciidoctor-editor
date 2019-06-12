@@ -26,7 +26,7 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public abstract class InsertTextAction extends ToolbarAction {
 	// see

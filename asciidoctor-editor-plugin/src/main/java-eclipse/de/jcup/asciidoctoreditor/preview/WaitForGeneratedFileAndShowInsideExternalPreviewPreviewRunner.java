@@ -21,9 +21,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
-import de.jcup.asciidoctoreditor.EclipseUtil;
-import de.jcup.asciidoctoreditor.EnsureFileRunnable;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner implements EnsureFileRunnable {
 
@@ -39,8 +38,8 @@ public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner imple
 	public void run() {
 		long start = System.currentTimeMillis();
 		try {
-			File temporaryExternalPreviewFile = this.asciiDoctorEditor.getTemporaryExternalPreviewFile();
-			while (this.asciiDoctorEditor.isNotCanceled(monitor)
+			File temporaryExternalPreviewFile = asciiDoctorEditor.getTemporaryExternalPreviewFile();
+			while (asciiDoctorEditor.isNotCanceled(monitor)
 					&& (temporaryExternalPreviewFile == null || !temporaryExternalPreviewFile.exists())) {
 				if (System.currentTimeMillis() - start > 20000) {
 					// after 20 seconds there seems to be no chance to get

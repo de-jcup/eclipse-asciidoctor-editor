@@ -54,7 +54,7 @@
             extensions="ditaa"
             icon="icons/ditaa-asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="de.jcup.asciidoctoreditor.AsciiDoctorDitaaEditor"
+            class="de.jcup.asciidoctoreditor.diagram.ditaa.AsciiDoctorDitaaEditor"
             id="asciidoctoreditor.editors.AsciiDoctorDitaaEditor">
       </editor>
       <editor
@@ -62,7 +62,7 @@
             extensions="plantuml,pu,puml,iuml"
             icon="icons/plantuml-asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="de.jcup.asciidoctoreditor.AsciiDoctorPlantUMLEditor"
+            class="de.jcup.asciidoctoreditor.diagram.plantuml.AsciiDoctorPlantUMLEditor"
             id="asciidoctoreditor.editors.AsciiDoctorPlantUMLEditor">
       </editor>
    </extension>

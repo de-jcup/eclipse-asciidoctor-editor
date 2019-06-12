@@ -30,22 +30,22 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.jcup.asciidoctoreditor.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.TestscriptsUtil;
+import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 
 public class AsciiDoctorProviderContextTest {
 
 	private AsciidoctorAdapter asciidoctor;
 	private LogAdapter logAdapter;
-    private AsciiDoctorInstanceProvider provider;
+    private AsciiDoctorAdapterProvider provider;
 
 	
 	@Before
 	public void before(){
 		asciidoctor=mock(AsciidoctorAdapter.class);
 		logAdapter = mock(LogAdapter.class);
-		provider = mock(AsciiDoctorInstanceProvider.class);
+		provider = mock(AsciiDoctorAdapterProvider.class);
 		
 		when(provider.getAsciiDoctor(true)).thenReturn(asciidoctor);
 		when(provider.getAsciiDoctor(false)).thenReturn(asciidoctor);

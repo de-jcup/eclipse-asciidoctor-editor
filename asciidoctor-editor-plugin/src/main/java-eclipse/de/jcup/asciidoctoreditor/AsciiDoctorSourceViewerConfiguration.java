@@ -15,9 +15,9 @@
  */
 package de.jcup.asciidoctoreditor;
 
-import static de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil.*;
 import static de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferenceConstants.*;
+import static de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil.*;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
@@ -59,6 +59,8 @@ import org.eclipse.ui.texteditor.spelling.SpellingAnnotation;
 import de.jcup.asciidoctoreditor.codeassist.AsciidocContentAssistProcessor;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers;
+import de.jcup.asciidoctoreditor.hyperlink.AsciiDoctorEditorLinkTextHyperlinkDetector;
+import de.jcup.asciidoctoreditor.hyperlink.AsciiDoctorURLHyperlinkDetector;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
 import de.jcup.asciidoctoreditor.ui.ColorManager;

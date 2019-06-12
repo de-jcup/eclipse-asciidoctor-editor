@@ -21,8 +21,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class AddErrorDebugAction extends ToolbarAction implements DebugAction {
 

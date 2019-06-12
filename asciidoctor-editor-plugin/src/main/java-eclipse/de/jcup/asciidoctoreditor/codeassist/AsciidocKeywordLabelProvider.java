@@ -1,6 +1,6 @@
 package de.jcup.asciidoctoreditor.codeassist;
 
-import static de.jcup.asciidoctoreditor.AsciidoctorIconConstants.*;
+import static de.jcup.asciidoctoreditor.ui.AsciidoctorIconConstants.*;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;

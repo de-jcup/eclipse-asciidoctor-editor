@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
-import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 /**
  * All browser access must be done over this class. So its easier to handle

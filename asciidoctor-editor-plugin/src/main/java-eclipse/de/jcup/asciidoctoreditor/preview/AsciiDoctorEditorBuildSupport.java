@@ -15,7 +15,7 @@
  */
 package de.jcup.asciidoctoreditor.preview;
 
-import static de.jcup.asciidoctoreditor.EclipseUtil.*;
+import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,22 +30,21 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 
 import de.jcup.asciidoctoreditor.AbstractAsciiDoctorEditorSupport;
-import de.jcup.asciidoctoreditor.AsciiDocFileUtils;
-import de.jcup.asciidoctoreditor.AsciiDocStringUtils;
-import de.jcup.asciidoctoreditor.AsciiDoctorBackendType;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
-import de.jcup.asciidoctoreditor.AsciiDoctorWrapper;
-import de.jcup.asciidoctoreditor.BuildAsciiDocMode;
 import de.jcup.asciidoctoreditor.ContentTransformerData;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
-import de.jcup.asciidoctoreditor.EclipseUtil;
-import de.jcup.asciidoctoreditor.InstalledAsciidoctorException;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
-import de.jcup.asciidoctoreditor.WrapperConvertData;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocStringUtils;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
+import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupport {
     private Pattern tempFolderPattern;

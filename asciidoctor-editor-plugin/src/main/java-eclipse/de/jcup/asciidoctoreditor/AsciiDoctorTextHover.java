@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Shell;
 import de.jcup.asciidoctoreditor.document.keywords.DocumentKeyWords;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferenceConstants;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 import de.jcup.eclipse.commons.SimpleStringUtils;
 import de.jcup.eclipse.commons.WordEndDetector;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;

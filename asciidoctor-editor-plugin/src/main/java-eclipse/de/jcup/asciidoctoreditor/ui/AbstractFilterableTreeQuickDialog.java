@@ -46,9 +46,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.UIJob;
 
 import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
-import de.jcup.asciidoctoreditor.EclipseUtil;
 import de.jcup.asciidoctoreditor.FilterPatternMatcher;
 import de.jcup.asciidoctoreditor.outline.FallbackOutlineContentProvider;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 @AdaptedFromEGradle
 public abstract class AbstractFilterableTreeQuickDialog<T> extends AbstractQuickDialog implements IDoubleClickListener {

@@ -20,8 +20,8 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import de.jcup.asciidoctoreditor.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.LogAdapter;
+import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 
 public class AsciiDoctorProviderContext {
 
@@ -30,7 +30,7 @@ public class AsciiDoctorProviderContext {
     private File baseDir;
     private Path outputFolder;
     private boolean tocVisible;
-    private AsciiDoctorInstanceProvider provider;
+    private AsciiDoctorAdapterProvider provider;
 
     private AsciiDoctorBaseDirectoryProvider baseDirProvider;
     private AsciiDoctorImageProvider imageProvider;
@@ -43,7 +43,7 @@ public class AsciiDoctorProviderContext {
     private File fileToRender;
     private ImageHandlingMode imageHandlingMode;
 
-    public AsciiDoctorProviderContext(AsciiDoctorInstanceProvider provider, LogAdapter logAdapter) {
+    public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
             throw new IllegalArgumentException("logAdapter may never be null!");
         }
@@ -133,7 +133,7 @@ public class AsciiDoctorProviderContext {
         return getProvider().getAsciiDoctor(useInstalled);
     }
 
-    protected AsciiDoctorInstanceProvider getProvider() {
+    protected AsciiDoctorAdapterProvider getProvider() {
         return provider;
     }
 

@@ -15,8 +15,8 @@
  */
 package de.jcup.asciidoctoreditor;
 
-import static de.jcup.asciidoctoreditor.EclipseUtil.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferenceConstants.*;
+import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -33,6 +33,7 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSupport {
     private static final AsciiDoctorScriptModel FALLBACK_MODEL = new AsciiDoctorScriptModel();

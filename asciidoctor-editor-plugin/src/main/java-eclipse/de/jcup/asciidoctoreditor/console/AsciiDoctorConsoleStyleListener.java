@@ -85,7 +85,6 @@ public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
 
 		List<StyleRange> ranges = new ArrayList<StyleRange>();
 		boolean handled = false;
-//		handled = handled || markLine(event, lineText, ranges, handled, ">> rendering:", GREEN, false, GRAY, false);
 		/* index parts and other */
 		if (!handled) {
 			for (ParseData data : SHARED_PARSE_DATA) {
@@ -96,24 +95,6 @@ public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
 		if (!ranges.isEmpty()) {
 			event.styles = ranges.toArray(new StyleRange[ranges.size()]);
 		}
-	}
-
-	private boolean markLine(LineStyleEvent event, String lineText, List<StyleRange> ranges, boolean handled,
-			String searchText, RGB color1, boolean bold1, RGB color2, boolean bold2) {
-		if (handled){
-			return true;
-		}
-
-		if (lineText.startsWith(searchText)) {
-			/*
-			 * download itself is rendered by parsedata, here we only markup
-			 * the remianing links
-			 */
-			addRange(ranges, event.lineOffset, searchText.length(), getColor(color1), bold1);
-			addRange(ranges, event.lineOffset + searchText.length(), lineText.length(), getColor(color2), bold2);
-			return true;
-		}
-		return false;
 	}
 
 	private void parse(LineStyleEvent event, StyleRange defStyle, String currentText, List<StyleRange> ranges,

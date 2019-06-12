@@ -15,7 +15,7 @@
  */
 package de.jcup.asciidoctoreditor.preview;
 
-import static de.jcup.asciidoctoreditor.EclipseUtil.*;
+import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
-import de.jcup.asciidoctoreditor.EnsureFileRunnable;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements EnsureFileRunnable {
 
@@ -42,12 +41,13 @@ public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements En
 		long start = System.currentTimeMillis();
 		boolean aquired = false;
 		try {
-			while (asciiDoctorEditor.isNotCanceled(monitor)
+			BrowserAccess browserAccess = asciiDoctorEditor.getBrowserAccess();
+            while (asciiDoctorEditor.isNotCanceled(monitor)
 					&& (asciiDoctorEditor.getTemporaryExternalPreviewFile() == null || !asciiDoctorEditor.getTemporaryExternalPreviewFile().exists())) {
 				if (System.currentTimeMillis() - start > 20000) {
 					// after 20 seconds there seems to be no chance to get
 					// the generated preview file back
-					asciiDoctorEditor.getBrowserAccess().safeBrowserSetText(
+					browserAccess.safeBrowserSetText(
 							"<html><body><h3>Preview file generation timed out, so preview not available.</h3></body></html>");
 					return;
 				}
@@ -59,23 +59,23 @@ public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements En
 
 				try {
 					URL url = asciiDoctorEditor.getTemporaryExternalPreviewFile().toURI().toURL();
-					String foundURL = asciiDoctorEditor.getBrowserAccess().getUrl();
+					String foundURL = browserAccess.getUrl();
 					try {
-						URL formerURL = new URL(asciiDoctorEditor.getBrowserAccess().getUrl());
+						URL formerURL = new URL(browserAccess.getUrl());
 						foundURL = formerURL.toExternalForm();
 					} catch (MalformedURLException e) {
 						/* ignore - about pages etc. */
 					}
 					String externalForm = url.toExternalForm();
 					if (!externalForm.equals(foundURL)) {
-						asciiDoctorEditor.getBrowserAccess().setUrl(externalForm);
+						browserAccess.setUrl(externalForm);
 					} else {
-						asciiDoctorEditor.getBrowserAccess().refresh();
+						browserAccess.refresh();
 					}
 
 				} catch (MalformedURLException e) {
 					AsciiDoctorEditorUtil.logError("Was not able to use malformed URL", e);
-					asciiDoctorEditor.getBrowserAccess().safeBrowserSetText("<html><body><h3>URL malformed</h3></body></html>");
+					browserAccess.safeBrowserSetText("<html><body><h3>URL malformed</h3></body></html>");
 				}
 			});
 

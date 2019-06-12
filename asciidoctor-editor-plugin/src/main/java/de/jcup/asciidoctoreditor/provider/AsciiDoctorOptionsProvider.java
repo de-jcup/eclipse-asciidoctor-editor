@@ -24,7 +24,7 @@ import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.SafeMode;
 
-import de.jcup.asciidoctoreditor.AsciiDoctorBackendType;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
 
 public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 

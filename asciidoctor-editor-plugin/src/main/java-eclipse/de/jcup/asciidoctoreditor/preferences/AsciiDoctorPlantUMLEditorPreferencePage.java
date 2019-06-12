@@ -15,8 +15,8 @@ package de.jcup.asciidoctoreditor.preferences;
  *
  */
 
-import static de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorPlantUMLEditorPreferenceConstants.*;
+import static de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil.*;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;

@@ -15,8 +15,8 @@ package de.jcup.asciidoctoreditor.preferences;
  *
  */
 
-import static de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants.*;
+import static de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil.*;
 
 import java.util.ArrayList;
 

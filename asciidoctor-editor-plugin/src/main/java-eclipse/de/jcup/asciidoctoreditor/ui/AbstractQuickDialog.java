@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
-import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 @AdaptedFromEGradle
 abstract class AbstractQuickDialog extends PopupDialog {

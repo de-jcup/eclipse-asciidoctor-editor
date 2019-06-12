@@ -15,7 +15,7 @@
  */
 package de.jcup.asciidoctoreditor;
 
-import static de.jcup.asciidoctoreditor.EclipseUtil.*;
+import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,13 +77,22 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapperRegistry;
+import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
+import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
+import de.jcup.asciidoctoreditor.diagram.plantuml.AsciiDoctorPlantUMLSourceViewerConfiguration;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
+import de.jcup.asciidoctoreditor.hyperlink.AsciiDoctorEditorLinkSupport;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preview.AsciiDoctorEditorBuildSupport;
 import de.jcup.asciidoctoreditor.preview.BrowserAccess;
+import de.jcup.asciidoctoreditor.preview.BuildAsciiDocMode;
+import de.jcup.asciidoctoreditor.preview.EnsureFileRunnable;
 import de.jcup.asciidoctoreditor.preview.ScrollSynchronizer;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideIternalPreviewRunner;
@@ -111,6 +120,7 @@ import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
 import de.jcup.asciidoctoreditor.ui.ColorManager;
 import de.jcup.asciidoctoreditor.ui.StatusMessageSupport;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.eclipse.commons.ui.ColorUtil;
 
 @AdaptedFromEGradle
@@ -935,11 +945,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     }
 
-    ISourceViewer getAsciiDoctorSourceViewer() {
+    public ISourceViewer getAsciiDoctorSourceViewer() {
         return super.getSourceViewer();
     }
 
-    SourceViewerConfiguration getAsciiDoctorSourceViewerConfiguration() {
+    public SourceViewerConfiguration getAsciiDoctorSourceViewerConfiguration() {
         return getSourceViewerConfiguration();
     }
 
