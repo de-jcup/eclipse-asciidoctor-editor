@@ -97,7 +97,7 @@ import de.jcup.asciidoctoreditor.preview.ScrollSynchronizer;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideIternalPreviewRunner;
 import de.jcup.asciidoctoreditor.preview.BrowserAccess.BrowserContentInitializer;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
@@ -930,8 +930,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         if (document == null) {
             return;
         }
-        Collection<AsciiDoctorError> errors = model.getErrors();
-        for (AsciiDoctorError error : errors) {
+        Collection<AsciiDoctorMarker> errors = model.getErrors();
+        for (AsciiDoctorMarker error : errors) {
             int startPos = error.getStart();
             int line;
             try {
@@ -940,7 +940,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
                 logError("Cannot get line offset for " + startPos, e);
                 line = 0;
             }
-            AsciiDoctorEditorUtil.addScriptError(this, line, error, severity);
+            AsciiDoctorEditorUtil.addAsciiDoctorMarker(this, line, error, severity);
         }
 
     }

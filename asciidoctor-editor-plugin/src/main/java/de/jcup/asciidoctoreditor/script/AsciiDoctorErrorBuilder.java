@@ -19,7 +19,7 @@ public class AsciiDoctorErrorBuilder {
 
 	private static final String ADOC_MARKER = ".adoc:";
 
-	public AsciiDoctorError build(String originMessage){
+	public AsciiDoctorMarker build(String originMessage){
 		int start=-1;
 		int end=-1;
 		String message = null;
@@ -32,7 +32,7 @@ public class AsciiDoctorErrorBuilder {
 		if (message==null){
 			message = originMessage;
 		}
-		AsciiDoctorError error = new AsciiDoctorError(start, end, message.trim());
+		AsciiDoctorMarker error = new AsciiDoctorMarker(start, end, message.trim());
 		return error;
 	}
 

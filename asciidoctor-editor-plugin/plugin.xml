@@ -107,7 +107,7 @@
    <extension 
    		id="de.jcup.asciidoctoreditor.script.problem"
     	point="org.eclipse.core.resources.markers"
-    	name="AsciiDoctoreditor script problem">
+    	name="AsciiDoctor editor marker">
         <super type="org.eclipse.core.resources.problemmarker"/>
         <super type="org.eclipse.core.resources.textmarker"/>
         <persistent value="false"/>

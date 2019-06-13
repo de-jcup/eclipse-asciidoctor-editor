@@ -15,13 +15,13 @@
  */
  package de.jcup.asciidoctoreditor.script;
 
-public class AsciiDoctorError implements ValidationResult {
+public class AsciiDoctorMarker implements ValidationResult {
 	
 	private int end;
 	private int start;
 	private String message;
 
-	public AsciiDoctorError(int start, int end, String message){
+	public AsciiDoctorMarker(int start, int end, String message){
 		this.start=start;
 		this.end=end;
 		this.message=message;
@@ -44,7 +44,7 @@ public class AsciiDoctorError implements ValidationResult {
 	
 	@Override
 	public String toString() {
-		return "AsciiDoctorError [message=" + message + ", end=" + end + ", start=" + start + "]";
+		return "AsciiDoctorMarker [message=" + message + ", end=" + end + ", start=" + start + "]";
 	}
 
 	@Override

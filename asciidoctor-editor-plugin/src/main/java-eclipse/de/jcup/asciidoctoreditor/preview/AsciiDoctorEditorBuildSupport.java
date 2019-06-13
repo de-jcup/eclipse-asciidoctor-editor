@@ -41,7 +41,7 @@ import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
 import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
 import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
@@ -274,9 +274,9 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                 String errorMessage = getEditor().fetchAsciidoctorErrorMessage(e);
 
                 AsciiDoctorErrorBuilder builder = new AsciiDoctorErrorBuilder();
-                AsciiDoctorError error = builder.build(errorMessage);
+                AsciiDoctorMarker error = builder.build(errorMessage);
                 getEditor().getBrowserAccess().safeBrowserSetText(htmlSb.toString());
-                AsciiDoctorEditorUtil.addScriptError(getEditor(), -1, error, IMarker.SEVERITY_ERROR);
+                AsciiDoctorEditorUtil.addAsciiDoctorMarker(getEditor(), -1, error, IMarker.SEVERITY_ERROR);
 
                 if (isLoggingNecessary(e)) {
                     AsciiDoctorEditorUtil.logError("AsciiDoctor error occured:" + e.getMessage(), e);

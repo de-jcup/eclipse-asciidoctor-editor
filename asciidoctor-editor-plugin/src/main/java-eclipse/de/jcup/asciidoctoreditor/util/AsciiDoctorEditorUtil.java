@@ -39,7 +39,7 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.ui.UnpersistedMarkerHelper;
 
 public class AsciiDoctorEditorUtil {
@@ -122,11 +122,11 @@ public class AsciiDoctorEditorUtil {
 		scriptProblemMarkerHelper.removeMarkers(editorResource);
 	}
 
-	public static void addScriptError(IEditorPart editor, int line, AsciiDoctorError error, int severity) {
+	public static void addAsciiDoctorMarker(IEditorPart editor, int line, AsciiDoctorMarker marker, int severity) {
 		if (editor == null) {
 			return;
 		}
-		if (error == null) {
+		if (marker == null) {
 			return;
 		}
 
@@ -135,17 +135,24 @@ public class AsciiDoctorEditorUtil {
 			return;
 		}
 		IResource editorResource = input.getAdapter(IResource.class);
-		if (editorResource == null) {
+		addAsciiDoctorMarker(line, marker, severity, editorResource);
+
+	}
+
+    public static void addAsciiDoctorMarker(int line, AsciiDoctorMarker marker, int severity, IResource editorResource) {
+        if (editorResource == null) {
 			return;
 		}
+        if (marker == null) {
+            return;
+        }
 		try {
-			scriptProblemMarkerHelper.createScriptMarker(severity, editorResource, error.getMessage(), line,
-					error.getStart(), +error.getEnd());
+			scriptProblemMarkerHelper.createScriptMarker(severity, editorResource, marker.getMessage(), line,
+					marker.getStart(), +marker.getEnd());
 		} catch (CoreException e) {
 			logError("Was not able to add error markers", e);
 		}
-
-	}
+    }
 
 	private static ILog getLog() {
 		ILog log = AsciiDoctorEditorActivator.getDefault().getLog();

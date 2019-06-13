@@ -37,7 +37,7 @@ public class AsciiDoctorErrorBuilderTest {
 		String message = null;
 
 		/* execute */
-		AsciiDoctorError error = builderToTest.build(message);
+		AsciiDoctorMarker error = builderToTest.build(message);
 
 		/* test */
 		assertNotNull(error);
@@ -53,7 +53,7 @@ public class AsciiDoctorErrorBuilderTest {
 		String message = "(ArgumentError) asciidoctor: FAILED: C:/develop/projects/JCUP/eclipse-asciidoctor-editor/asciidoctor-editor-other/testscripts/17.failure_asciidocfile_not_utf_8_but_umlauts.adoc: Failed to load AsciiDoc document - invalid byte sequence in UTF-8";
 
 		/* execute */
-		AsciiDoctorError error = builderToTest.build(message);
+		AsciiDoctorMarker error = builderToTest.build(message);
 
 		/* test */
 		assertNotNull(error);
@@ -68,7 +68,7 @@ public class AsciiDoctorErrorBuilderTest {
 		String message = "(ArgumentError) asciidoctor: FAILED: C:/develop/projects/JCUP/eclipse-asciidoctor-editor/asciidoctor-editor-other/testscripts/17.failure_asciidocfile_not_utf_8_but_umlauts.adoc Failed to load AsciiDoc document - invalid byte sequence in UTF-8";
 
 		/* execute */
-		AsciiDoctorError error = builderToTest.build(message);
+		AsciiDoctorMarker error = builderToTest.build(message);
 
 		/* test */
 		assertNotNull(error);
