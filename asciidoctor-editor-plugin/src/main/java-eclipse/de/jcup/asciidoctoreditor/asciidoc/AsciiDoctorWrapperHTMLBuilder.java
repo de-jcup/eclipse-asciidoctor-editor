@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.jcup.asciidoctoreditor.PluginContentInstaller;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 
 public class AsciiDoctorWrapperHTMLBuilder {
@@ -55,6 +56,17 @@ public class AsciiDoctorWrapperHTMLBuilder {
         
         List<File> list = new ArrayList<>();
 
+//        File unzipFolder = PluginContentInstaller.INSTANCE.getLibsUnzipFolder();
+        File cssFolder = PluginContentInstaller.INSTANCE.getCSSFolder();
+        File addonsFolder = PluginContentInstaller.INSTANCE.getAddonsFolder();
+        
+//        list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/asciidoctor-default.css"));
+//        list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/coderay-asciidoctor.css"));
+        list.add(new File(cssFolder, "/font-awesome/css/font-awesome.min.css"));
+        list.add(new File(cssFolder, "/dejavu/dejavu.css"));
+        list.add(new File(cssFolder, "/MathJax/MathJax.js"));
+        list.add(new File(addonsFolder, "/javascript/document-autorefresh.js"));
+        
         StringBuilder prefixSb = new StringBuilder();
         prefixSb.append("<html>\n");
         prefixSb.append("<head>\n");

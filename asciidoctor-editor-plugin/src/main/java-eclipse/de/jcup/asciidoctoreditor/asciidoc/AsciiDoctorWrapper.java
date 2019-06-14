@@ -30,6 +30,7 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
 import de.jcup.asciidoctoreditor.EclipseResourceHelper;
 import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.LogAdapter;
+import de.jcup.asciidoctoreditor.PluginContentInstaller;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -194,7 +195,7 @@ public class AsciiDoctorWrapper {
 	}
 
 	public File getAddonsFolder() {
-		return new File("./");
+		return  PluginContentInstaller.INSTANCE.getAddonsFolder();
 	}
 
 	public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {

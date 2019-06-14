@@ -15,6 +15,7 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,6 +26,9 @@ import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import de.jcup.asciidoctoreditor.asciidoc.ASPServerAdapter;
+import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.template.AsciidoctorEditorTemplateSupportConfig;
 import de.jcup.asciidoctoreditor.ui.ColorManager;
 import de.jcup.eclipse.commons.PluginContextProvider;
@@ -36,74 +40,102 @@ import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements PluginContextProvider{
+public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements PluginContextProvider {
 
-	// The plug-in COMMAND_ID
-	public static final String PLUGIN_ID = "de.jcup.asciidoctoreditor"; //$NON-NLS-1$
+    // The plug-in COMMAND_ID
+    public static final String PLUGIN_ID = "de.jcup.asciidoctoreditor"; //$NON-NLS-1$
 
-	// The shared instance
-	private static AsciiDoctorEditorActivator plugin;
-	private ColorManager colorManager;
-	private TemplateSupportProvider templateSupportProvider;
-	
-	private Map<StyledText, IConsolePageParticipant> viewers = new HashMap<StyledText, IConsolePageParticipant>();
+    // The shared instance
+    private static AsciiDoctorEditorActivator plugin;
+    private ColorManager colorManager;
+    private TemplateSupportProvider templateSupportProvider;
+
+    private Map<StyledText, IConsolePageParticipant> viewers = new HashMap<StyledText, IConsolePageParticipant>();
 
     private AsciiDoctorEditorTaskTagsSupportProvider taskSupportProvider;
-	
-	/**
-	 * The constructor
-	 */
-	public AsciiDoctorEditorActivator() {
-		colorManager = new ColorManager();
-		templateSupportProvider = new TemplateSupportProvider(new AsciidoctorEditorTemplateSupportConfig(),this);
-		taskSupportProvider = new AsciiDoctorEditorTaskTagsSupportProvider(this) ;
-		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
-	}
+    private ASPServerAdapter aspServerAdapter = new ASPServerAdapter();
 
-	public ColorManager getColorManager() {
-		return colorManager;
-	}
+    /**
+     * The constructor
+     */
+    public AsciiDoctorEditorActivator() {
+        colorManager = new ColorManager();
+        templateSupportProvider = new TemplateSupportProvider(new AsciidoctorEditorTemplateSupportConfig(), this);
+        taskSupportProvider = new AsciiDoctorEditorTaskTagsSupportProvider(this);
+        TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
+    }
 
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
-		taskSupportProvider.getTodoTaskSupport().install();
-	}
+    public ColorManager getColorManager() {
+        return colorManager;
+    }
 
-	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		taskSupportProvider.getTodoTaskSupport().uninstall();
-		colorManager.dispose();
-		super.stop(context);
-	}
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        updateASPServerStart();
+        plugin = this;
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
-	public static AsciiDoctorEditorActivator getDefault() {
-		return plugin;
-	}
+        taskSupportProvider.getTodoTaskSupport().install();
+    }
 
-	public void addViewer(StyledText viewer,IConsolePageParticipant participant) {
-		viewers.put(viewer, participant);
-	}
+    public void updateASPServerStart() {
+        boolean usesInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor();
+        if (usesInstalledAsciidoctor) {
+            if (aspServerAdapter.isServerStarted()) {
+                AsciiDoctorConsoleUtil.output(">> Stopping ASP server because using now installed asciidoctor");
+                aspServerAdapter.stopServer();
+                return;
+            }
+        }else {
+            File aspFolder = PluginContentInstaller.INSTANCE.getASPFolder();
+            File aspServer = new File(aspFolder,"asp-server-asciidoctorj.jar");
+            aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
+            aspServerAdapter.setPort(AsciiDoctorEditorPreferences.getInstance().getAspServerPort());
+            aspServerAdapter.setLogAdapter(AsciiDoctorEclipseLogAdapter.INSTANCE);
+            if (! aspServerAdapter.isAlive()) { // check if new setup is alive
+                AsciiDoctorConsoleUtil.output(">> ASP server not alive at port "+aspServerAdapter.getPort()+", so starting new instance");
+                aspServerAdapter.stopServer(); // stop old processes
+                aspServerAdapter.startServer();
+                return;
+            }
+        }
 
-	public void removeViewerWithPageParticipant(IConsolePageParticipant participant) {
-		Set<StyledText> toRemove = new HashSet<StyledText>();
+    }
 
-		for (StyledText viewer : viewers.keySet()) {
-			if (viewers.get(viewer) == participant){
-				toRemove.add(viewer);
-			}
-		}
+    public void stop(BundleContext context) throws Exception {
+        plugin = null;
+        aspServerAdapter.stopServer();
+        taskSupportProvider.getTodoTaskSupport().uninstall();
+        colorManager.dispose();
+        super.stop(context);
+    }
 
-		for (StyledText viewer : toRemove){
-			viewers.remove(viewer);
-		}
-		
-	}
+    /**
+     * Returns the shared instance
+     *
+     * @return the shared instance
+     */
+    public static AsciiDoctorEditorActivator getDefault() {
+        return plugin;
+    }
+
+    public void addViewer(StyledText viewer, IConsolePageParticipant participant) {
+        viewers.put(viewer, participant);
+    }
+
+    public void removeViewerWithPageParticipant(IConsolePageParticipant participant) {
+        Set<StyledText> toRemove = new HashSet<StyledText>();
+
+        for (StyledText viewer : viewers.keySet()) {
+            if (viewers.get(viewer) == participant) {
+                toRemove.add(viewer);
+            }
+        }
+
+        for (StyledText viewer : toRemove) {
+            viewers.remove(viewer);
+        }
+
+    }
 
     public TemplateSupportProvider getTemplateSupportProvider() {
         return templateSupportProvider;

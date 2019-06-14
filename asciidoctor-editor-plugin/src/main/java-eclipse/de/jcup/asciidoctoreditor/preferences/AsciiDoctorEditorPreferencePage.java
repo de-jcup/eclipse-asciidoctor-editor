@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.PreviewLayout;
 import de.jcup.asciidoctoreditor.presentation.AccessibleBooleanFieldEditor;
 import de.jcup.asciidoctoreditor.presentation.AccessibleDirectoryFieldEditor;
@@ -95,6 +96,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		boolean ok = super.performOk();
 		// we handle the directory field special, not added as field, so setting default in this way
 		AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR,pathToAsciidocFieldEditor.getStringValue());
+		AsciiDoctorEditorActivator.getDefault().updateASPServerStart();
 		return ok;
 	}
 	protected void createDependency(Button master, Control slave) {
@@ -262,6 +264,9 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 		group.setLayoutData(new GridData(SWT.FILL,SWT.TOP, true,false));
 
 		Composite devNull1 = new Composite(group,SWT.NONE);
+		IntegerFieldEditor aspServerPort = new IntegerFieldEditor(P_ASP_SERVER_PORT.getId(), "ASP server port", devNull1);
+		addField(aspServerPort);
+		
 		AccessibleBooleanFieldEditor useInstalledAsciidoctor = new AccessibleBooleanFieldEditor(
 				P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), "Use installed asciidoctor",
 				devNull1);

@@ -89,6 +89,7 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             default:
                 break;
             }
+            AsciiDoctorConsoleUtil.output(entry.getSeverity()+":"+entry.getMessage());
             if (eclipseSeverity==-1) {
                 continue;
             }

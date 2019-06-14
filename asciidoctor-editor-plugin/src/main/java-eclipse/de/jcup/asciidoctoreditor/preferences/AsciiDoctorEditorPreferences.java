@@ -233,4 +233,9 @@ public class AsciiDoctorEditorPreferences {
 	public boolean isStoringPlantUmlFiles() {
 		return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
 	}
+
+    public int getAspServerPort() {
+        return getPreferenceStore().getInt(P_ASP_SERVER_PORT.getId());
+
+    }
 }
