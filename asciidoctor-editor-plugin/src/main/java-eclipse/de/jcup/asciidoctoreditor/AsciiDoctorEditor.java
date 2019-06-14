@@ -34,10 +34,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
@@ -63,7 +61,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -78,11 +75,9 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapperRegistry;
 import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
-import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
 import de.jcup.asciidoctoreditor.diagram.plantuml.AsciiDoctorPlantUMLSourceViewerConfiguration;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
@@ -92,15 +87,15 @@ import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preview.AsciiDoctorEditorBuildSupport;
 import de.jcup.asciidoctoreditor.preview.BrowserAccess;
+import de.jcup.asciidoctoreditor.preview.BrowserAccess.BrowserContentInitializer;
 import de.jcup.asciidoctoreditor.preview.BuildAsciiDocMode;
 import de.jcup.asciidoctoreditor.preview.EnsureFileRunnable;
 import de.jcup.asciidoctoreditor.preview.ScrollSynchronizer;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideIternalPreviewRunner;
-import de.jcup.asciidoctoreditor.preview.BrowserAccess.BrowserContentInitializer;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciidoctorTextSelectable;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
@@ -513,38 +508,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void createAndShowPDF() {
-
-        WrapperConvertData data = new WrapperConvertData();
-        data.targetType = getType();
-        data.asciiDocFile = getEditorFileOrNull();
-        data.editorId = editorId;
-        data.useHiddenFile = true;
-        data.editorFileOrNull = getEditorFileOrNull();
-
-        Job job = new Job("create and show pdf") {
-
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-
-                try {
-                    getWrapper().convert(data, AsciiDoctorBackendType.PDF);
-                    File origin = getWrapper().getContext().getFileToRender();
-                    String originName = origin.getName(); /* xyz.adoc */
-                    String fileName = originName.substring(0, originName.length() - 4) + "pdf";
-                    File file = new File(origin.getParentFile(), fileName);
-                   
-                    AsciiDoctorEditorUtil.openFileInExternalBrowser(file);
-                
-                } catch (Exception e) {
-                    return new Status(Status.ERROR,AsciiDoctorEditorActivator.PLUGIN_ID,"Was not able to create/show PDF",e);
-                }
-                return Status.OK_STATUS;
-            }
-            
-        };
-        job.schedule();
-       
-
+        AsciiDoctorEditorPDFLauncher.INSTANCE.createAndShowPDF(this);
     }
 
     public void rebuild() {
