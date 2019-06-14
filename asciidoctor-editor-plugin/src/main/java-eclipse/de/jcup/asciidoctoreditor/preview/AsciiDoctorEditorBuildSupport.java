@@ -68,8 +68,8 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         return true;
     }
 
-    public void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode) {
-        showRebuildingInPreviewAndTriggerFullRebuildAsJob(mode, AsciiDoctorBackendType.HTML5, false,null);
+    public void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode, boolean internalPreview) {
+        showRebuildingInPreviewAndTriggerFullRebuildAsJob(mode, AsciiDoctorBackendType.HTML5, false,internalPreview, null);
     }
 
     public boolean isAutoBuildEnabledForExternalPreview() {
@@ -82,7 +82,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
      * @param backend backend type provider
      * @param forceInitialize when <code>false</code> build is only done when not already building
      */
-    protected void showRebuildingInPreviewAndTriggerFullRebuildAsJob(BuildAsciiDocMode mode, AsciiDoctorBackendType backend, boolean forceInitialize, BuildDoneListener buildListener) {
+    protected void showRebuildingInPreviewAndTriggerFullRebuildAsJob(BuildAsciiDocMode mode, AsciiDoctorBackendType backend, boolean forceInitialize, boolean internalPreview, BuildDoneListener buildListener) {
 
         boolean rebuildEnabled = true;
         if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !getEditor().isInternalPreview()) {
@@ -133,7 +133,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                 try {
                     monitor.beginTask("Building document " + getSafeFileName(), 7);
 
-                    fullBuildTemporaryHTMLFilesAndShowAfter(monitor,backend);
+                    fullBuildTemporaryHTMLFilesAndShowAfter(monitor,backend,internalPreview);
 
                     if (getEditor().isInternalPreview()) {
                         monitor.subTask("show internal");
@@ -169,9 +169,9 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         job.schedule();
     }
 
-    private void fullBuildTemporaryHTMLFilesAndShowAfter(IProgressMonitor monitor, AsciiDoctorBackendType backend) {
-        String htmlInternalPreview = null;
-        String htmlExternalBrowser = null;
+    private void fullBuildTemporaryHTMLFilesAndShowAfter(IProgressMonitor monitor, AsciiDoctorBackendType backend, boolean internalPreview) {
+        String htmlInternalPreview = "";
+        String htmlExternalBrowser = "";
         if (getEditor().isCanceled(monitor)) {
             return;
         }
@@ -205,12 +205,15 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             monitor.subTask("GENERATE");
 
             long editorId = getEditorId();
+            
             WrapperConvertData data = new WrapperConvertData();
             data.targetType=getEditor().getType();
             data.asciiDocFile=fileToConvertIntoHTML;
             data.editorId=editorId;
             data.useHiddenFile=isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML);
             data.editorFileOrNull=editorFileOrNull;
+            data.internalPreview = internalPreview;
+            
 			wrapper.convert(data, backend);
 
             monitor.worked(++worked);
@@ -230,19 +233,25 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             monitor.worked(++worked);
 
             int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
-            htmlInternalPreview = wrapper.buildHTMLWithCSS(asciiDocHtml, 0);
-            htmlExternalBrowser = wrapper.buildHTMLWithCSS(asciiDocHtml, refreshAutomaticallyInSeconds);
+            if (internalPreview) {
+                htmlInternalPreview = wrapper.buildHTMLWithCSS(asciiDocHtml, 0);
+            }else {
+                htmlExternalBrowser = wrapper.buildHTMLWithCSS(asciiDocHtml, refreshAutomaticallyInSeconds);
+            }
             if (getEditor().isCanceled(monitor)) {
                 return;
             }
             try {
-                monitor.subTask("WRITE INTERNAL PREVIEW");
-                AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, getEditor().getTemporaryInternalPreviewFile());
-                monitor.worked(++worked);
+                if (internalPreview) {
+                    monitor.subTask("WRITE INTERNAL PREVIEW");
+                    AsciiDocStringUtils.writeTextToUTF8File(htmlInternalPreview, getEditor().getTemporaryInternalPreviewFile());
+                    monitor.worked(++worked);
+                }else {
+                    monitor.subTask("WRITE EXTERNAL PREVIEW");
+                    AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, getEditor().getTemporaryExternalPreviewFile());
+                    monitor.worked(++worked);
+                }
 
-                monitor.subTask("WRITE EXTERNAL PREVIEW");
-                AsciiDocStringUtils.writeTextToUTF8File(htmlExternalBrowser, getEditor().getTemporaryExternalPreviewFile());
-                monitor.worked(++worked);
 
             } catch (IOException e1) {
                 AsciiDoctorEditorUtil.logError("Was not able to save temporary files for preview!", e1);

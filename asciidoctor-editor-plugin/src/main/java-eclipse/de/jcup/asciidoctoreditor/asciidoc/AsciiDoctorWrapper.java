@@ -16,6 +16,7 @@
 package de.jcup.asciidoctoreditor.asciidoc;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -63,21 +64,10 @@ public class AsciiDoctorWrapper {
 	}
 
 	public void convert(WrapperConvertData data, AsciiDoctorBackendType asciiDoctorBackendType) throws Exception {
-
-		init(context, data);
-
-		context.setAsciidocFile(data.asciiDocFile);
-		if (data.useHiddenFile) {
-			context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder()));
-		} else {
-			context.setFileToRender(data.asciiDocFile);
-		}
-
-		AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
-		int tocLevels = preferences.getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
-		context.setTocLevels(tocLevels);
 		try {
-			AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
+		    initContext(context, data);
+
+		    AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
 			Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions(asciiDoctorBackendType);
 
 			AsciidoctorAdapter asciiDoctor = context.getAsciiDoctor();
@@ -114,9 +104,14 @@ public class AsciiDoctorWrapper {
 		}
 	}
 
-	private void init(AsciiDoctorProviderContext context, WrapperConvertData data) {
-		context.setUseInstalled(AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor());
+	private void initContext(AsciiDoctorProviderContext context, WrapperConvertData data) throws IOException{
+	    AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+
+	    context.setInternalPreview(data.internalPreview);
+		context.setUseInstalled(preferences.isUsingInstalledAsciidoctor());
 		context.setEditorFileOrNull(data.editorFileOrNull);
+        int tocLevels = preferences.getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
+        context.setTocLevels(tocLevels);
 
 		EditorType type = data.targetType;
 		if (type == EditorType.ASCIIDOC) {
@@ -139,6 +134,14 @@ public class AsciiDoctorWrapper {
 			context.setNoFooter(true);
 		}
 		context.setOutputFolder(getTempFolder());
+		
+		context.setAsciidocFile(data.asciiDocFile);
+        if (data.useHiddenFile) {
+            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder()));
+        } else {
+            context.setFileToRender(data.asciiDocFile);
+        }
+
 	}
 
 	/**

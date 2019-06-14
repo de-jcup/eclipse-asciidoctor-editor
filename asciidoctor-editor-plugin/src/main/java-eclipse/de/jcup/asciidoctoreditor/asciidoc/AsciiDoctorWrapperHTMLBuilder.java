@@ -24,49 +24,76 @@ import de.jcup.asciidoctoreditor.PluginContentInstaller;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 
 public class AsciiDoctorWrapperHTMLBuilder {
+private static final String BODY = "<body";
 
     private AsciiDoctorProviderContext context;
 
-    public AsciiDoctorWrapperHTMLBuilder(AsciiDoctorProviderContext context){
-        this.context=context;
+    public AsciiDoctorWrapperHTMLBuilder(AsciiDoctorProviderContext context) {
+        this.context = context;
     }
-    
-    public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
+
+    public String buildHTMLWithCSS(String origin, int refreshAutomaticallyInSeconds) {
         StringBuilder sb = new StringBuilder();
-        sb.append(buildPrefixHTML(refreshAutomaticallyInSeconds));
-        sb.append(html);
-        if (refreshAutomaticallyInSeconds > 0) {
+        int bodyIndex = origin.indexOf(BODY);
+
+        /* isAlreadyCompleteHTML... Asciidoctor 2.x does provide correct html. 1.5.4 did not ... */
+        boolean isAlreadyCompleteHTML = bodyIndex!=-1;
+        
+        String content = origin;
+        if (isAlreadyCompleteHTML) {
+            if (context.isUsingOnlyLocalResources()) {
+                int bodyEnd = origin.indexOf('>', bodyIndex+BODY.length());
+                content = content.substring(bodyEnd+1);
+                
+            }
+            if (context.isInternalPreview()) {
+                /* we add later the doScrollTo script - so we must remove the existing body */
+                int endBody= content.indexOf("</body>");
+                content = content.substring(0,endBody);
+                
+                String prefixHTML = buildLocalPrefixHTML();
+                sb.append(prefixHTML);
+            }
+        }else {
+            /* no body found - fallback to local resources (like earlier )*/
+            String prefixHTML = buildLocalPrefixHTML();
+            sb.append(prefixHTML);
+        }
+
+        sb.append(content);
+        if (!context.isInternalPreview() && refreshAutomaticallyInSeconds > 0) {
             sb.append("<script type=\"text/javascript\">pageloadEvery(" + refreshAutomaticallyInSeconds * 1000 + ");</script>");
         }
-        sb.append("<script type=\"text/javascript\">\n");
-        sb.append("function doScrollTo(anchorId){\n");
-        sb.append("   element = document.getElementById(anchorId);\n");
-        sb.append("   if (element !=null) {\n");
-        sb.append("        element.scrollIntoView();\n");
-        sb.append("   }\n");
-        sb.append("}\n");
-        sb.append("</script>");
+        if (context.isInternalPreview()) {
+            sb.append("<script type=\"text/javascript\">\n");
+            sb.append("function doScrollTo(anchorId){\n");
+            sb.append("   element = document.getElementById(anchorId);\n");
+            sb.append("   if (element !=null) {\n");
+            sb.append("        element.scrollIntoView();\n");
+            sb.append("   }\n");
+            sb.append("}\n");
+            sb.append("</script>");
+        }
         sb.append("</body>");
         sb.append("</html>");
 
         return sb.toString();
     }
-    
-    private String buildPrefixHTML(int refreshAutomaticallyInSeconds) {
-        
-        List<File> list = new ArrayList<>();
 
-//        File unzipFolder = PluginContentInstaller.INSTANCE.getLibsUnzipFolder();
+
+    private String buildLocalPrefixHTML(){
+
+        List<File> list = new ArrayList<>();
         File cssFolder = PluginContentInstaller.INSTANCE.getCSSFolder();
         File addonsFolder = PluginContentInstaller.INSTANCE.getAddonsFolder();
-        
-//        list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/asciidoctor-default.css"));
-//        list.add(new File(unzipFolder, "/gems/asciidoctor-1.5.6.1/data/stylesheets/coderay-asciidoctor.css"));
+
         list.add(new File(cssFolder, "/font-awesome/css/font-awesome.min.css"));
         list.add(new File(cssFolder, "/dejavu/dejavu.css"));
         list.add(new File(cssFolder, "/MathJax/MathJax.js"));
+        list.add(new File(cssFolder, "/default.css"));
+        list.add(new File(cssFolder, "/coderay.css"));
         list.add(new File(addonsFolder, "/javascript/document-autorefresh.js"));
-        
+
         StringBuilder prefixSb = new StringBuilder();
         prefixSb.append("<html>\n");
         prefixSb.append("<head>\n");
@@ -88,7 +115,7 @@ public class AsciiDoctorWrapperHTMLBuilder {
         }
         return prefixSb.toString();
     }
-    
+
     protected String createLinkToFile(File file) {
         String pathToFile;
         try {

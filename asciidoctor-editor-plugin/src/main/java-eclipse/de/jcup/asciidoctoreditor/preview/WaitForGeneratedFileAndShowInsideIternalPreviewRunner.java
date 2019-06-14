@@ -17,6 +17,7 @@ package de.jcup.asciidoctoreditor.preview;
 
 import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +44,7 @@ public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements En
 		try {
 			BrowserAccess browserAccess = asciiDoctorEditor.getBrowserAccess();
             while (asciiDoctorEditor.isNotCanceled(monitor)
-					&& (asciiDoctorEditor.getTemporaryExternalPreviewFile() == null || !asciiDoctorEditor.getTemporaryExternalPreviewFile().exists())) {
+					&& (getPreviewFile() == null || !getPreviewFile().exists())) {
 				if (System.currentTimeMillis() - start > 20000) {
 					// after 20 seconds there seems to be no chance to get
 					// the generated preview file back
@@ -58,7 +59,7 @@ public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements En
 			safeAsyncExec(() -> {
 
 				try {
-					URL url = asciiDoctorEditor.getTemporaryExternalPreviewFile().toURI().toURL();
+					URL url = getPreviewFile().toURI().toURL();
 					String foundURL = browserAccess.getUrl();
 					try {
 						URL formerURL = new URL(browserAccess.getUrl());
@@ -88,4 +89,8 @@ public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements En
 		}
 
 	}
+
+    private File getPreviewFile() {
+        return asciiDoctorEditor.getTemporaryInternalPreviewFile();
+    }
 }

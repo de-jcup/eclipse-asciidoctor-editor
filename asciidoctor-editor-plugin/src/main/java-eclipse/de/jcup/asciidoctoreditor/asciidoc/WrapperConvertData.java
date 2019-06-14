@@ -10,4 +10,5 @@ public class WrapperConvertData {
 	public long editorId;
 	public boolean useHiddenFile;
 	public File editorFileOrNull;
+    public boolean internalPreview;
 }

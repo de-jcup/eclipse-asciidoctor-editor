@@ -43,6 +43,12 @@ public class AsciiDoctorProviderContext {
     private File fileToRender;
     private ImageHandlingMode imageHandlingMode;
 
+    private Set<AbstractAsciiDoctorProvider> providers = new LinkedHashSet<>();
+    private File editorFileOrNull;
+    private boolean noFooter;
+    private boolean internalPreview;
+    private boolean localResourcesEnabled=true;
+
     public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
             throw new IllegalArgumentException("logAdapter may never be null!");
@@ -176,10 +182,6 @@ public class AsciiDoctorProviderContext {
         return fileToRender;
     }
 
-    private Set<AbstractAsciiDoctorProvider> providers = new LinkedHashSet<>();
-    private File editorFileOrNull;
-    private boolean noFooter;
-
     public <T extends AbstractAsciiDoctorProvider> T register(T provider) {
         providers.add(provider);
         return provider;
@@ -199,6 +201,19 @@ public class AsciiDoctorProviderContext {
 
     public boolean isNoFooter() {
         return noFooter;
+    }
+
+    public void setInternalPreview(boolean internalPreview) {
+        this.internalPreview = internalPreview;
+    }
+
+    public boolean isInternalPreview() {
+        return internalPreview;
+    }
+    
+    public boolean isUsingOnlyLocalResources() {
+        /* internal preview has problems on enterprise proxies and slows down rendering of preview */
+        return internalPreview && localResourcesEnabled;
     }
 
 }

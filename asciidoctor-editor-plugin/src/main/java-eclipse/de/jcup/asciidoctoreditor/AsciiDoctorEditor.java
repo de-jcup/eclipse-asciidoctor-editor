@@ -63,6 +63,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -505,7 +506,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             temporaryExternalPreviewFile.delete();
         }
         if (!buildSupport.isAutoBuildEnabledForExternalPreview()) {
-            refreshAsciiDocView();
+            /* when not enabled, we must force to render the document (not internal preview)*/
+            buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS,false);
         }
         startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
     }
@@ -550,7 +552,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void refreshAsciiDocView() {
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS,internalPreview);
     }
 
     public void resetCache() {
@@ -576,7 +578,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         sashForm.layout(); // after this the browser will be hidden/shown ...
                            // otherwise we got an empty space appearing
         if (wasExternalBefore && !buildSupport.isAutoBuildEnabledForExternalPreview()) {
-            buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS);
+            refreshAsciiDocView();
         } else {
             ensureInternalBrowserShowsURL(null);
         }
@@ -591,7 +593,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
          * TOC building does always lead to a long time running task, at least inside
          * preview - so we show the initializing info with progressbar
          */
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
     }
 
     public void setVerticalSplit(boolean verticalSplit) {
@@ -663,7 +665,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
              */
             return;
         }
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
     }
 
     @Override
@@ -672,7 +674,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         outlineSupport.rebuildOutline();
 
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
     }
 
     public void ensureInternalBrowserShowsURL(IProgressMonitor monitor) {
@@ -785,11 +787,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
             @Override
             public void initialize(Browser browser) {
-
             }
         });
 
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
 
         synchronizer.installInBrowser();
 
