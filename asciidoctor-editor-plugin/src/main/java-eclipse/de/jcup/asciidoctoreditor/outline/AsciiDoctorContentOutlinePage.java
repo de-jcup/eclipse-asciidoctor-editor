@@ -34,11 +34,11 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
-import de.jcup.asciidoctoreditor.AsciiDocStringUtils;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
-import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocStringUtils;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements IDoubleClickListener {
 	private static ImageDescriptor IMG_DESC_LINKED = createOutlineImageDescriptor("synced.png");

@@ -15,7 +15,7 @@
  */
  package de.jcup.asciidoctoreditor.outline;
 
-import static de.jcup.asciidoctoreditor.AsciidoctorIconConstants.*;
+import static de.jcup.asciidoctoreditor.ui.AsciidoctorIconConstants.*;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
@@ -27,9 +27,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorColorConstants;
-import de.jcup.asciidoctoreditor.ColorManager;
-import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.ui.AsciiDoctorEditorColorConstants;
+import de.jcup.asciidoctoreditor.ui.ColorManager;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider {
 

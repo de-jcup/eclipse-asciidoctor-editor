@@ -24,13 +24,15 @@ import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.SafeMode;
 
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
+
 public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 
     AsciiDoctorOptionsProvider(AsciiDoctorProviderContext context) {
         super(context);
     }
 
-    public Map<String, Object> createDefaultOptions() {
+    public Map<String, Object> createDefaultOptions(AsciiDoctorBackendType backend) {
         /* @formatter:off*/
 		Attributes attrs;
 		Path outputFolder = getContext().getOutputFolder();
@@ -41,6 +43,7 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 		AttributesBuilder attrBuilder = AttributesBuilder.
 				attributes().
 					showTitle(true).
+					noFooter(getContext().isNoFooter()).
 					sourceHighlighter("coderay").
 					attribute("eclipse-editor-basedir",getContext().getBaseDir().getAbsolutePath()).
 				    attribute("icons", "font").
@@ -99,7 +102,7 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 
         File destionationFolder = outputFolder.toFile();
 
-        OptionsBuilder opts = OptionsBuilder.options().toDir(destionationFolder).safe(SafeMode.UNSAFE).backend("html5")
+        OptionsBuilder opts = OptionsBuilder.options().toDir(destionationFolder).safe(SafeMode.UNSAFE).backend(backend.getBackendString())
                 .headerFooter(getContext().isTOCVisible()).
 
                 attributes(attrs).option("sourcemap", "true").baseDir(getContext().getBaseDir());

@@ -21,8 +21,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorError;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class AddErrorDebugAction extends ToolbarAction implements DebugAction {
 
@@ -33,8 +33,8 @@ public class AddErrorDebugAction extends ToolbarAction implements DebugAction {
 
 	@Override
 	public void run() {
-		AsciiDoctorError error = new AsciiDoctorError(-1, -1, "the message at "+System.currentTimeMillis()+" millis");
-		AsciiDoctorEditorUtil.addScriptError(asciiDoctorEditor, -1, error, IMarker.SEVERITY_ERROR);
+		AsciiDoctorMarker error = new AsciiDoctorMarker(-1, -1, "the message at "+System.currentTimeMillis()+" millis");
+		AsciiDoctorEditorUtil.addAsciiDoctorMarker(asciiDoctorEditor, -1, error, IMarker.SEVERITY_ERROR);
 	}
 
 	private void initUI() {

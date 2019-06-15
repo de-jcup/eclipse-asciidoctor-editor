@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class AsciiDoctorEditorValidationPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -43,9 +43,8 @@ public class AsciiDoctorEditorValidationPreferencePage extends FieldEditorPrefer
 	protected void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
 
-		createEditor(VALIDATE_GRAPHVIZ, parent);
 
-//		createComboBox(VALIDATE_ERROR_LEVEL, parent);
+		createComboBox(VALIDATE_ERROR_LEVEL, parent);
 	}
 
 	private void createComboBox(AsciiDoctorEditorValidationPreferenceConstants constant, Composite parent) {

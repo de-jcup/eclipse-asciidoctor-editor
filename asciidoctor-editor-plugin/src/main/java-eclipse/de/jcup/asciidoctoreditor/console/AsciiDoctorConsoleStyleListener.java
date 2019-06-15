@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.jface.preference.JFacePreferences;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineStyleEvent;
 import org.eclipse.swt.custom.LineStyleListener;
@@ -29,146 +31,199 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
+import de.jcup.asp.api.ServerLogSeverity;
 
 /**
  * Inspired from EGradleConsoleStyleListener
+ * 
  * @author Albert Tregnaghi
  *
  */
 public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
-	private final static Collection<ParseData> SHARED_PARSE_DATA = new ArrayList<>();
-	static {
+    private final static Collection<ParseData> SHARED_PARSE_DATA = new ArrayList<>();
+    static {
 		addParseDataByIndex("asciidoctor:", GRAY);
+		addParseDataByIndex("ASP:", GRAY);
+
+		addParseDataByIndex(ServerLogSeverity.INFO, GREEN);
+		addParseDataByIndex(ServerLogSeverity.DEBUG, GREEN);
+		
 		addParseDataByIndex("WARNING:", ORANGE);
+		addParseDataByIndex(ServerLogSeverity.WARN, ORANGE);
+		
+		addParseDataByIndex(ServerLogSeverity.UNKNOWN, MAGENTA);
+		
 		addParseDataByIndex("FAILED:", BRIGHT_RED);
+		addParseDataByIndex(ServerLogSeverity.FATAL, BRIGHT_RED);
+		addParseDataByIndex(ServerLogSeverity.ERROR, BRIGHT_RED);
+		
 		addParseDataByIndex("invalid option:", BRIGHT_RED);
+		
+		addParseDataStartEndPattern("file:",".adoc",null,false,true);
 
 	}
 
-	static final void addParseDataByIndex(String substring, RGB color) {
-		addParseDataByIndex(substring, color, false);
-	}
+    static final void addParseDataByIndex(ServerLogSeverity severity, RGB color) {
+        addParseDataByIndex(severity.name() + ":", color);
+    }
 
-	static final void addParseDataByIndex(String substring, RGB color, boolean bold) {
-		ParseData data = new ParseData();
-		data.subString = substring;
-		data.color = color;
-		data.bold = bold;
-		SHARED_PARSE_DATA.add(data);
-	}
+    static final void addParseDataByIndex(String substring, RGB color) {
+        addParseDataByIndex(substring, color, false);
+    }
 
-	int lastRangeEnd = 0;
+    static final void addParseDataByIndex(String substring, RGB color, boolean bold) {
+        ParseData data = new ParseData();
+        data.subString = substring;
+        data.color = color;
+        data.bold = bold;
+        SHARED_PARSE_DATA.add(data);
+    }
 
-	@Override
-	public void lineGetStyle(LineStyleEvent event) {
-		if (event == null) {
-			return;
-		}
-		String lineText = event.lineText;
-		if (lineText==null || lineText.isEmpty()) {
-			return;
-		}
-		/* styling */
-		StyleRange defStyle;
+    static final void addParseDataStartEndPattern(String startString, String endString, RGB color, boolean bold, boolean useHyperlinkColor) {
+        ParseData data = new ParseData();
+        data.startString = startString;
+        data.endString = endString;
+        data.color = color;
+        data.bold = bold;
+        data.useHyperLinkColor = useHyperlinkColor;
+        if (data.useHyperLinkColor) {
+            data.underline=true;
+        }
+        SHARED_PARSE_DATA.add(data);
+    }
 
-		boolean atLeastOneStyle = event.styles != null && event.styles.length > 0;
-		if (atLeastOneStyle) {
-			defStyle = (StyleRange) event.styles[0].clone();
-			if (defStyle.background == null) {
-				defStyle.background = getColor(BLACK);
-			}
-		} else {
-			defStyle = new StyleRange(1, lastRangeEnd, getColor(BLACK), getColor(WHITE), SWT.NORMAL);
-		}
+    int lastRangeEnd = 0;
 
-		lastRangeEnd = 0;
+    @Override
+    public void lineGetStyle(LineStyleEvent event) {
+        if (event == null) {
+            return;
+        }
+        String lineText = event.lineText;
+        if (lineText == null || lineText.isEmpty()) {
+            return;
+        }
+        /* styling */
+        StyleRange defStyle;
 
-		List<StyleRange> ranges = new ArrayList<StyleRange>();
-		boolean handled = false;
-//		handled = handled || markLine(event, lineText, ranges, handled, ">> rendering:", GREEN, false, GRAY, false);
-		/* index parts and other */
-		if (!handled) {
-			for (ParseData data : SHARED_PARSE_DATA) {
-				parse(event, defStyle, lineText, ranges, data);
-			}
-		}
+        boolean atLeastOneStyle = event.styles != null && event.styles.length > 0;
+        if (atLeastOneStyle) {
+            defStyle = (StyleRange) event.styles[0].clone();
+            if (defStyle.background == null) {
+                defStyle.background = getColor(BLACK);
+            }
+        } else {
+            defStyle = new StyleRange(1, lastRangeEnd, getColor(BLACK), getColor(WHITE), SWT.NORMAL);
+        }
 
-		if (!ranges.isEmpty()) {
-			event.styles = ranges.toArray(new StyleRange[ranges.size()]);
-		}
-	}
+        lastRangeEnd = 0;
 
-	private boolean markLine(LineStyleEvent event, String lineText, List<StyleRange> ranges, boolean handled,
-			String searchText, RGB color1, boolean bold1, RGB color2, boolean bold2) {
-		if (handled){
-			return true;
-		}
+        List<StyleRange> ranges = new ArrayList<StyleRange>();
+        boolean handled = false;
+        /* index parts and other */
+        if (!handled) {
+            for (ParseData data : SHARED_PARSE_DATA) {
+                parse(event, defStyle, lineText, ranges, data);
+            }
+        }
 
-		if (lineText.startsWith(searchText)) {
-			/*
-			 * download itself is rendered by parsedata, here we only markup
-			 * the remianing links
-			 */
-			addRange(ranges, event.lineOffset, searchText.length(), getColor(color1), bold1);
-			addRange(ranges, event.lineOffset + searchText.length(), lineText.length(), getColor(color2), bold2);
-			return true;
-		}
-		return false;
-	}
+        if (!ranges.isEmpty()) {
+            event.styles = ranges.toArray(new StyleRange[ranges.size()]);
+        }
+    }
 
-	private void parse(LineStyleEvent event, StyleRange defStyle, String currentText, List<StyleRange> ranges,
-			ParseData data) {
-		if (data.isSearchingSimpleSubstring()) {
-			parseByIndex(event, defStyle, currentText, ranges, data);
-		} else {
-			throw new UnsupportedOperationException("Unsupported/unimplemented");
-		}
+    private void parse(LineStyleEvent event, StyleRange defStyle, String currentText, List<StyleRange> ranges, ParseData data) {
+        if (data.isSearchingByStartEndString()) {
+            parseBySubstringStartEnd(event, defStyle, currentText, ranges, data);
+        } else if (data.isSearchingSimpleSubstring()) {
+            parseByIndexOf(event, defStyle, currentText, ranges, data);
+        } else {
+            throw new UnsupportedOperationException("Unsupported/unimplemented");
+        }
 
-	}
+    }
 
-	private void parseByIndex(LineStyleEvent event, StyleRange startStyle, String currentText, List<StyleRange> ranges,
-			ParseData data) {
-		int fromIndex = 0;
-		int pos = 0;
-		int length = currentText.length();
-		do {
-			if (fromIndex >= length) {
-				break;
-			}
-			pos = currentText.indexOf(data.subString, fromIndex);
-			fromIndex = pos + 1;
+    private void parseByIndexOf(LineStyleEvent event, StyleRange startStyle, String currentText, List<StyleRange> ranges, ParseData data) {
+        int fromIndex = 0;
+        int pos = 0;
+        int length = currentText.length();
+        do {
+            if (fromIndex >= length) {
+                break;
+            }
+            pos = currentText.indexOf(data.subString, fromIndex);
+            fromIndex = pos + 1;
 
-			if (pos != -1) {
-				addRange(ranges, event.lineOffset + pos, data.subString.length(), getColor(data.color), data.bold);
-			}
-		} while (pos != -1);
-	}
+            if (pos != -1) {
+                addRange(ranges, event.lineOffset + pos, data.subString.length(),data);
+            }
+        } while (pos != -1);
+    }
 
-	private Color getColor(RGB rgb) {
-		return AsciiDoctorEditorActivator.getDefault().getColorManager().getColor(rgb);
-	}
+    private void parseBySubstringStartEnd(LineStyleEvent event, StyleRange startStyle, String currentText, List<StyleRange> ranges, ParseData data) {
+        int fromIndex = 0;
+        int pos = 0;
+        int length = currentText.length();
+        do {
+            if (fromIndex >= length) {
+                break;
+            }
+            pos = currentText.indexOf(data.startString, fromIndex);
+            fromIndex = pos + 1;
 
-	private static class ParseData {
-		public boolean bold;
-		private String subString;
-		private RGB color;
+            if (pos != -1) {
+                int endPos = currentText.indexOf(data.endString);
+                if (endPos != -1) {
+                    addRange(ranges, event.lineOffset + pos, endPos - pos+data.endString.length(), data);
+                }
+            }
+        } while (pos != -1);
+    }
 
-		private boolean isSearchingSimpleSubstring() {
-			return subString != null;
-		}
-	}
 
-	private void addRange(List<StyleRange> ranges, int start, int length, Color foreground, boolean bold) {
-		addRange(ranges, start, length, foreground, null, bold);
-	}
+    private Color getForegroundColor(ParseData data) {
+        RGB color = data.color;
+        if (data.useHyperLinkColor) {
+            color = JFaceResources.getColorRegistry().getRGB(JFacePreferences.HYPERLINK_COLOR);
+        }
+        return getColor(color);
+    }
 
-	private void addRange(List<StyleRange> ranges, int start, int length, Color foreground, Color background,
-			boolean bold) {
-		StyleRange range = new StyleRange(start, length, foreground, background);
-		if (bold) {
-			range.fontStyle = SWT.BOLD;
-		}
-		ranges.add(range);
-		lastRangeEnd = lastRangeEnd + range.length;
-	}
+    private Color getColor(RGB rgb) {
+        if (rgb==null) {
+            return null;
+        }
+        return AsciiDoctorEditorActivator.getDefault().getColorManager().getColor(rgb);
+    }
+
+    private static class ParseData {
+        private String endString;
+        private String startString;
+        private boolean bold;
+        private String subString;
+        private RGB color;
+        private boolean useHyperLinkColor;
+        private boolean underline;
+        private RGB background;
+
+        private boolean isSearchingSimpleSubstring() {
+            return subString != null;
+        }
+
+        private boolean isSearchingByStartEndString() {
+            return startString != null && endString != null;
+        }
+    }
+
+    private void addRange(List<StyleRange> ranges, int start, int length, ParseData data) {
+        Color foreGround = getForegroundColor(data);
+        Color background = getColor(data.background);;
+        StyleRange range = new StyleRange(start, length, foreGround, background);
+        if (data.bold) {
+            range.fontStyle = SWT.BOLD;
+        }
+        range.underline=data.underline;
+        ranges.add(range);
+        lastRangeEnd = lastRangeEnd + range.length;
+    }
 }

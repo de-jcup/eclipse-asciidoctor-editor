@@ -22,8 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import de.jcup.asciidoctoreditor.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.LogAdapter;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 
 import static org.mockito.Mockito.*;
 

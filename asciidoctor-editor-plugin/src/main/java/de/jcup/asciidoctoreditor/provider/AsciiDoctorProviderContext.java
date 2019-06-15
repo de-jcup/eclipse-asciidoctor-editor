@@ -20,9 +20,8 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.asciidoctor.Asciidoctor;
-
 import de.jcup.asciidoctoreditor.LogAdapter;
+import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 
 public class AsciiDoctorProviderContext {
 
@@ -31,7 +30,7 @@ public class AsciiDoctorProviderContext {
     private File baseDir;
     private Path outputFolder;
     private boolean tocVisible;
-    private AsciiDoctorInstanceProvider provider;
+    private AsciiDoctorAdapterProvider provider;
 
     private AsciiDoctorBaseDirectoryProvider baseDirProvider;
     private AsciiDoctorImageProvider imageProvider;
@@ -44,7 +43,13 @@ public class AsciiDoctorProviderContext {
     private File fileToRender;
     private ImageHandlingMode imageHandlingMode;
 
-    public AsciiDoctorProviderContext(AsciiDoctorInstanceProvider provider, LogAdapter logAdapter) {
+    private Set<AbstractAsciiDoctorProvider> providers = new LinkedHashSet<>();
+    private File editorFileOrNull;
+    private boolean noFooter;
+    private boolean internalPreview;
+    private boolean localResourcesEnabled=true;
+
+    public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
             throw new IllegalArgumentException("logAdapter may never be null!");
         }
@@ -89,15 +94,15 @@ public class AsciiDoctorProviderContext {
         this.asciidocFile = asciidocFile;
         this.baseDir = baseDirProvider.findBaseDir();
     }
-    
+
     public void setImageHandlingMode(ImageHandlingMode imageHandlingMode) {
-		this.imageHandlingMode = imageHandlingMode;
-	}
-    
+        this.imageHandlingMode = imageHandlingMode;
+    }
+
     public ImageHandlingMode getImageHandlingMode() {
-		return imageHandlingMode;
-	}
-    
+        return imageHandlingMode;
+    }
+
     protected void init() {
         logAdapter.resetTimeDiff();
         attributesProvider = register(new AsciiDoctorAttributesProvider(this));
@@ -117,23 +122,24 @@ public class AsciiDoctorProviderContext {
     }
 
     /**
-     * Reset context. After this method is called all cached operations will be recalculated on next rendering time fo editor content
+     * Reset context. After this method is called all cached operations will be
+     * recalculated on next rendering time fo editor content
      */
     public void reset() {
         this.baseDir = null;
         this.outputFolder = null;
         this.asciidocFile = null;
 
-        for (AbstractAsciiDoctorProvider provider: providers){
+        for (AbstractAsciiDoctorProvider provider : providers) {
             provider.reset();
         }
     }
 
-    public Asciidoctor getAsciiDoctor() {
+    public AsciidoctorAdapter getAsciiDoctor() {
         return getProvider().getAsciiDoctor(useInstalled);
     }
 
-    protected AsciiDoctorInstanceProvider getProvider() {
+    protected AsciiDoctorAdapterProvider getProvider() {
         return provider;
     }
 
@@ -175,22 +181,39 @@ public class AsciiDoctorProviderContext {
     public File getFileToRender() {
         return fileToRender;
     }
-   
 
-    private Set<AbstractAsciiDoctorProvider> providers = new LinkedHashSet<>();
-	private File editorFileOrNull;
-    
-    public <T extends AbstractAsciiDoctorProvider> T register(T  provider) {
+    public <T extends AbstractAsciiDoctorProvider> T register(T provider) {
         providers.add(provider);
         return provider;
     }
 
-	public void setEditorFileOrNull(File editorFileOrNull) {
-		this.editorFileOrNull=editorFileOrNull;
-	}
-	
-	public File getEditorFileOrNull() {
-		return editorFileOrNull;
-	}
+    public void setEditorFileOrNull(File editorFileOrNull) {
+        this.editorFileOrNull = editorFileOrNull;
+    }
+
+    public File getEditorFileOrNull() {
+        return editorFileOrNull;
+    }
+
+    public void setNoFooter(boolean noFooter) {
+        this.noFooter = noFooter;
+    }
+
+    public boolean isNoFooter() {
+        return noFooter;
+    }
+
+    public void setInternalPreview(boolean internalPreview) {
+        this.internalPreview = internalPreview;
+    }
+
+    public boolean isInternalPreview() {
+        return internalPreview;
+    }
+    
+    public boolean isUsingOnlyLocalResources() {
+        /* internal preview has problems on enterprise proxies and slows down rendering of preview */
+        return internalPreview && localResourcesEnabled;
+    }
 
 }

@@ -29,7 +29,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.EclipseUtil;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class OpenWithAsciiDoctorEditor extends AbstractHandler{
 

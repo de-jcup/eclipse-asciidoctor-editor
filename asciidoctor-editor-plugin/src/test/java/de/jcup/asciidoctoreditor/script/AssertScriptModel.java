@@ -132,8 +132,8 @@ public class AssertScriptModel {
 		return headlines;
 	}
 	
-	private Collection<AsciiDoctorError> getErrors() {
-		Collection<AsciiDoctorError> errors = model.getErrors();
+	private Collection<AsciiDoctorMarker> getErrors() {
+		Collection<AsciiDoctorMarker> errors = model.getErrors();
 		assertNotNull(errors);
 		return errors;
 	}

@@ -27,26 +27,25 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.ast.DocumentHeader;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.TestscriptsUtil;
+import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 
 public class AsciiDoctorProviderContextTest {
 
-	private Asciidoctor asciidoctor;
+	private AsciidoctorAdapter asciidoctor;
 	private LogAdapter logAdapter;
-    private AsciiDoctorInstanceProvider provider;
+    private AsciiDoctorAdapterProvider provider;
 
 	
 	@Before
 	public void before(){
-		asciidoctor=mock(Asciidoctor.class);
+		asciidoctor=mock(AsciidoctorAdapter.class);
 		logAdapter = mock(LogAdapter.class);
-		provider = mock(AsciiDoctorInstanceProvider.class);
+		provider = mock(AsciiDoctorAdapterProvider.class);
 		
 		when(provider.getAsciiDoctor(true)).thenReturn(asciidoctor);
 		when(provider.getAsciiDoctor(false)).thenReturn(asciidoctor);
@@ -123,15 +122,13 @@ public class AsciiDoctorProviderContextTest {
 		
 		tempDirectory.toFile().deleteOnExit();
 		System.out.println(tempDirectory.toAbsolutePath());
-		DocumentHeader header = mock(DocumentHeader.class);
 		HashMap<String, Object> map1 = new HashMap<>();
 		HashMap<String, Object> map2 = new HashMap<>();
 		if (imageDirSet){
 			File imagesFolder = TestscriptsUtil.assertFileInTestscripts("images");
 			map1.put("imagesdir", imagesFolder.getAbsolutePath());
 		}
-		when(header.getAttributes()).thenReturn(map1).thenReturn(map2);
-		when(asciidoctor.readDocumentHeader(any(File.class))).thenReturn(header);
+		when(asciidoctor.resolveAttributes(any(File.class))).thenReturn(map1).thenReturn(map2);
 	
 		/* execute*/
 		context.getImageProvider().ensureImages();

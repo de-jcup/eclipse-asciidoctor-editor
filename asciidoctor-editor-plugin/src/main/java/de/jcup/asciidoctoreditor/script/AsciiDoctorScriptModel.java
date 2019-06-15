@@ -25,7 +25,7 @@ public class AsciiDoctorScriptModel {
 
 	Collection<AsciiDoctorHeadline> headlines = new ArrayList<>();
 	Collection<AsciiDoctorInclude> includes = new ArrayList<>(); 
-	Collection<AsciiDoctorError> errors = new ArrayList<>();
+	Collection<AsciiDoctorMarker> errors = new ArrayList<>();
 	Collection<AsciiDoctorInlineAnchor> inlineAnchors = new ArrayList<>();
 	List<ParseToken> debugTokenList;
 
@@ -41,7 +41,7 @@ public class AsciiDoctorScriptModel {
 		return inlineAnchors;
 	}
 
-	public Collection<AsciiDoctorError> getErrors() {
+	public Collection<AsciiDoctorMarker> getErrors() {
 		return errors;
 	}
 

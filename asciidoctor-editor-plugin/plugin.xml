@@ -54,7 +54,7 @@
             extensions="ditaa"
             icon="icons/ditaa-asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="de.jcup.asciidoctoreditor.AsciiDoctorDitaaEditor"
+            class="de.jcup.asciidoctoreditor.diagram.ditaa.AsciiDoctorDitaaEditor"
             id="asciidoctoreditor.editors.AsciiDoctorDitaaEditor">
       </editor>
       <editor
@@ -62,7 +62,7 @@
             extensions="plantuml,pu,puml,iuml"
             icon="icons/plantuml-asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="de.jcup.asciidoctoreditor.AsciiDoctorPlantUMLEditor"
+            class="de.jcup.asciidoctoreditor.diagram.plantuml.AsciiDoctorPlantUMLEditor"
             id="asciidoctoreditor.editors.AsciiDoctorPlantUMLEditor">
       </editor>
    </extension>
@@ -107,7 +107,7 @@
    <extension 
    		id="de.jcup.asciidoctoreditor.script.problem"
     	point="org.eclipse.core.resources.markers"
-    	name="AsciiDoctoreditor script problem">
+    	name="AsciiDoctor editor marker">
         <super type="org.eclipse.core.resources.problemmarker"/>
         <super type="org.eclipse.core.resources.textmarker"/>
         <persistent value="false"/>
@@ -129,6 +129,20 @@
 	         label="Asciidoctor Console">
 	   </consoleFactory>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.console.consolePatternMatchListeners">
+    <consolePatternMatchListener
+            class="de.jcup.asciidoctoreditor.console.AsciiDoctorConsolePatternMatchListenerDelegate"
+            id="de.jcup.asciidoctoreditor.console.AsciiDoctorConsolePatternMatchListener"
+            regex="file:.*\.adoc">
+             <enablement>
+            <instanceof
+                  value="de.jcup.asciidoctoreditor.console.AsciiDoctorConsole">
+            </instanceof>
+         </enablement>
+        </consolePatternMatchListener>
+    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          CONTEXT                                     -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->

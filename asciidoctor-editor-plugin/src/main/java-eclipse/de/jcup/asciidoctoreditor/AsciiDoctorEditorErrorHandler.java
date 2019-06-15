@@ -15,6 +15,7 @@
  */
  package de.jcup.asciidoctoreditor;
 
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class AsciiDoctorEditorErrorHandler{
 

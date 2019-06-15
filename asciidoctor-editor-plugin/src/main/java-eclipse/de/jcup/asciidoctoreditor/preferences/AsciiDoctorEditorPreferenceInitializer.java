@@ -15,12 +15,12 @@ package de.jcup.asciidoctoreditor.preferences;
  *
  */
 
-import static de.jcup.asciidoctoreditor.AsciiDoctorEditorColorConstants.*;
-import static de.jcup.asciidoctoreditor.AsciiDoctorEditorUtil.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferenceConstants.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferenceConstants.*;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorPlantUMLEditorSyntaxColorPreferenceConstants.*;
+import static de.jcup.asciidoctoreditor.ui.AsciiDoctorEditorColorConstants.*;
+import static de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil.*;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -76,6 +76,8 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 				"-r asciidoctor-diagram\n--no-header-footer\n");
 		store.setDefault(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT.getId(), true);
 		
+		store.setDefault(P_ASP_SERVER_PORT.getId(), 4444);
+		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */
 		/* +++++++++++++++++ */
@@ -104,8 +106,6 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* ++++++++++++++ */
 		/* + Validation + */
 		/* ++++++++++++++ */
-		store.setDefault(VALIDATE_GRAPHVIZ.getId(), true);
-
 		store.setDefault(VALIDATE_ERROR_LEVEL.getId(), AsciiDoctorEditorValidationErrorLevel.WARNING.getId());
 		
 		/* ++++++++++++++ */

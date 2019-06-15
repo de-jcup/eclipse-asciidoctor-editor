@@ -30,8 +30,8 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
-import de.jcup.asciidoctoreditor.EclipseUtil;
 import de.jcup.asciidoctoreditor.PreviewLayout;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 import de.jcup.eclipse.commons.ui.ColorUtil;
 
 public class AsciiDoctorEditorPreferences {
@@ -233,4 +233,9 @@ public class AsciiDoctorEditorPreferences {
 	public boolean isStoringPlantUmlFiles() {
 		return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
 	}
+
+    public int getAspServerPort() {
+        return getPreferenceStore().getInt(P_ASP_SERVER_PORT.getId());
+
+    }
 }
