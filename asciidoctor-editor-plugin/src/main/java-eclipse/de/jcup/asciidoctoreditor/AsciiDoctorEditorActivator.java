@@ -90,7 +90,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
             File aspServer = new File(aspFolder,"asp-server-asciidoctorj.jar");
             aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
             aspServerAdapter.setPort(AsciiDoctorEditorPreferences.getInstance().getAspServerPort());
-            aspServerAdapter.setLogAdapter(AsciiDoctorEclipseLogAdapter.INSTANCE);
+            aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);
             if (! aspServerAdapter.isAlive()) { // check if new setup is alive
                 AsciiDoctorConsoleUtil.output(">> ASP server not alive at port "+aspServerAdapter.getPort()+", so starting new instance");
                 aspServerAdapter.stopServer(); // stop old processes

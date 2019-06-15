@@ -71,7 +71,7 @@ public class AsciiDoctorWrapper {
 			Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions(asciiDoctorBackendType);
 
 			AsciidoctorAdapter asciiDoctor = context.getAsciiDoctor();
-			asciiDoctor.convertFile(context.getFileToRender(), defaultOptions);
+			asciiDoctor.convertFile(data.editorFileOrNull, context.getFileToRender(), defaultOptions);
 
 			refreshParentFolderIfNecessary();
 

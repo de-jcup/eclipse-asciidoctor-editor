@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface AsciidoctorAdapter {
 
-    void convertFile(File filename, Map<String, Object> options);
+    void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options);
 
     Map<String, Object> resolveAttributes(File baseDir);
 

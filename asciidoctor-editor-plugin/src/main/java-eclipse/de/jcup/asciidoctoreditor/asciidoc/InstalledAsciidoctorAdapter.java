@@ -38,13 +38,13 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
     }
 
     @Override
-    public void convertFile(File filename, Map<String, Object> options) {
+    public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options) {
 
-        List<String> commands = buildCommands(filename, options);
+        List<String> commands = buildCommands(asciiDocFile, options);
         String commandLineString = createCommandLineString(commands);
 
         ProcessBuilder pb = new ProcessBuilder(commands);
-        AsciiDoctorConsoleUtil.output(">> rendering:" + filename.getName());
+        AsciiDoctorConsoleUtil.output(">> rendering:" + asciiDocFile.getName());
         try {
             StringBuffer lineStringBuffer = null;
             Process process = pb.start();
@@ -72,7 +72,7 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
             }
             if (exitCode > 0) {
                 AsciiDoctorEclipseLogAdapter.INSTANCE
-                        .logWarn("Installed Asciidoctor rendering failed for '" + filename.getName() + "'\n\nCommandLine was:\n" + commandLineString
+                        .logWarn("Installed Asciidoctor rendering failed for '" + asciiDocFile.getName() + "'\n\nCommandLine was:\n" + commandLineString
                                 + "\n\nResulted in exitcode:" + exitCode + ", \nLast output:" + lineStringBuffer);
                 throw new InstalledAsciidoctorException("FAILED - Asciidoctor exitcode:" + exitCode + " - last output:" + lineStringBuffer);
 

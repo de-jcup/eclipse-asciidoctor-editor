@@ -36,7 +36,7 @@ private static final String BODY = "<body";
         StringBuilder sb = new StringBuilder();
         int bodyIndex = origin.indexOf(BODY);
 
-        /* isAlreadyCompleteHTML... Asciidoctor 2.x does provide correct html. 1.5.4 did not ... */
+        /* isAlreadyCompleteHTML... Asciidoctor 2.x does provide correct html. 1.5.4 did not ... , also installed one does not always return full html*/
         boolean isAlreadyCompleteHTML = bodyIndex!=-1;
         
         String content = origin;

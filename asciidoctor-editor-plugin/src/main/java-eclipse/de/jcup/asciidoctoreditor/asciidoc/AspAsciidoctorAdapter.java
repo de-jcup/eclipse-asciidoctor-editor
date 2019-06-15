@@ -52,9 +52,14 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
     }
 
     @Override
-    public void convertFile(File filename, Map<String, Object> options) {
+    public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options) {
         try {
-            Response response = client.convertFile(filename.toPath(), options);
+            if (editorFileOrNull==null) {
+                AsciiDoctorConsoleUtil.output( "ASP: Processing content");
+            }else {
+                AsciiDoctorConsoleUtil.output( "ASP: Processing file:"+editorFileOrNull.getAbsolutePath());
+            }
+            Response response = client.convertFile(asciiDocFile.toPath(), options);
             handleServerLog(response);
         } catch (AspClientException e) {
            AsciiDoctorConsoleUtil.error(e.getMessage());
@@ -72,8 +77,8 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
     private void handleServerLogAsync(ServerLog serverLog) {
         for (ServerLogEntry entry: serverLog.getEntries()) {
             int eclipseSeverity = -1 ;
-            ServerLogSeverity sever = entry.getSeverity();
-            switch(sever) {
+            ServerLogSeverity severity = entry.getSeverity();
+            switch(severity) {
             case ERROR:
             case FATAL:
                 eclipseSeverity=IMarker.SEVERITY_ERROR;
@@ -89,7 +94,12 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             default:
                 break;
             }
-            AsciiDoctorConsoleUtil.output(entry.getSeverity()+":"+entry.getMessage());
+            String message = "ASP: "+severity+": "+entry.getMessage();
+            if (eclipseSeverity==IMarker.SEVERITY_ERROR){
+                AsciiDoctorConsoleUtil.error(message);
+            }else {
+                AsciiDoctorConsoleUtil.output(message);
+            }
             if (eclipseSeverity==-1) {
                 continue;
             }
