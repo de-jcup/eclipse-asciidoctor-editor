@@ -150,7 +150,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
     protected void createCodeAssistencGroup(Composite composite) {
         Group codeAssistGroup = new Group(composite, SWT.NONE);
-        codeAssistGroup.setText("Code assistence");
+        codeAssistGroup.setText("Code assistance");
         codeAssistGroup.setLayout(new GridLayout());
         codeAssistGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
