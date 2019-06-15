@@ -39,12 +39,15 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
 
     @Override
     public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options) {
-
+        if (editorFileOrNull==null) {
+            AsciiDoctorConsoleUtil.output( "Installed asciidoctor: Processing content");
+        }else {
+            AsciiDoctorConsoleUtil.output( "Installed asciidoctor: Processing file:"+editorFileOrNull.getAbsolutePath());
+        }
         List<String> commands = buildCommands(asciiDocFile, options);
         String commandLineString = createCommandLineString(commands);
 
         ProcessBuilder pb = new ProcessBuilder(commands);
-        AsciiDoctorConsoleUtil.output(">> rendering:" + asciiDocFile.getName());
         try {
             StringBuffer lineStringBuffer = null;
             Process process = pb.start();
