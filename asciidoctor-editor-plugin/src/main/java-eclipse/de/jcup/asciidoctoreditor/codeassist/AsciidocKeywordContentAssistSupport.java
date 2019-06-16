@@ -87,13 +87,15 @@ public class AsciidocKeywordContentAssistSupport extends ProposalProviderContent
     }
 
     protected void addKeyWord(DocumentKeyWord keyword) {
+        if (keyword==AsciiDoctorIncludeKeywords.INCLUDE){
+            /* is done by snippet*/
+            return;
+        }
         String text = keyword.getText();
         if (keyword instanceof StartLineAndHavingDoubleColonsDocumentKeyword){
             if (keyword instanceof AsciiDoctorIncludeKeywords){
                 text+="fileName";
-                if (keyword==AsciiDoctorIncludeKeywords.INCLUDE){
-                    text+=".adoc";
-                }else if (keyword==AsciiDoctorIncludeKeywords.PLANTUML){
+                if (keyword==AsciiDoctorIncludeKeywords.PLANTUML){
                     /* we add different examples*/
                     simpleWordCompletion.add(text+".plantuml[format=svg, title=\"title\"]");
                     simpleWordCompletion.add(text+".plantuml[]");

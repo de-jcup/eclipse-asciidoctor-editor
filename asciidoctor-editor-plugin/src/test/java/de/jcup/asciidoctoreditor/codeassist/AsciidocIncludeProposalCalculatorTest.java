@@ -79,23 +79,28 @@ public class AsciidocIncludeProposalCalculatorTest {
         
     }
     
+    
     @Test
-    public void editorFile1_include_subfolder2_results_in_1_file() throws Exception {
+    public void otherfile4_dot_dot_slash_subfolder2_results_in_2_files() throws Exception {
         /* prepare */
-        String text = "include::subfolder2/";
+        File otherFile14 = TestResourcesLoader.assertTestFile("codeassist/include/test1/subfolder1/otherfile4.adoc");
+        
+        String text = "include::../subfolder2/";
         int index = text.length();
         
         /* execute */
-        Set<AsciidocIncludeProposalData> result = toTest.calculate(editorFile1, text, index);
+        Set<AsciidocIncludeProposalData> result = toTest.calculate(otherFile14, text, index);
         
         /* test */
         assertNotNull(result);
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
         Iterator<AsciidocIncludeProposalData> it = result.iterator();
-        assertEquals("include::subfolder2/ditaa-file1.ditaa[]",it.next().getInclude());
-        assertEquals("include::subfolder2/puml-file1.puml[]",it.next().getInclude());
+        assertEquals("include::../subfolder2/ditaa-file1.ditaa[]",it.next().getInclude());
+        assertEquals("include::../subfolder2/puml-file1.puml[]",it.next().getInclude());
+        assertEquals("include::../subfolder2/subfolder3/",it.next().getInclude());
         
     }
+    
     
     @Test
     public void editorFile1_include_sub_results_in_2_folders() throws Exception {
@@ -114,5 +119,24 @@ public class AsciidocIncludeProposalCalculatorTest {
         assertEquals("include::subfolder2/",it.next().getInclude());
         
     }
+    
+    @Test
+    public void editorFile1_include_subfolder2_slash_sub_results_in_1_folder() throws Exception {
+        /* prepare */
+        String text = "include::subfolder2/sub";
+        int index = text.length()-1;
+        
+        /* execute */
+        Set<AsciidocIncludeProposalData> result = toTest.calculate(editorFile1, text, index);
+        
+        /* test */
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        Iterator<AsciidocIncludeProposalData> it = result.iterator();
+        assertEquals("include::subfolder2/subfolder3/",it.next().getInclude());
+        
+    }
+    
+
 
 }

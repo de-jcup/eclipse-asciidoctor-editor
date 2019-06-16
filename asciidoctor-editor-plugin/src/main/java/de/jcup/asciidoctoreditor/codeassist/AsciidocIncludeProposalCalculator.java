@@ -2,14 +2,13 @@ package de.jcup.asciidoctoreditor.codeassist;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class AsciidocIncludeProposalCalculator {
     
+    private static final char SEPARATOR = File.separatorChar;
     private AsciidocIncludeExistingTextCalculator calculator = new AsciidocIncludeExistingTextCalculator();
     
     
@@ -23,15 +22,28 @@ public class AsciidocIncludeProposalCalculator {
         }
         String path = inspect.substring("include::".length());
         
-       
         File parent = editorFile.getParentFile();
-        String editorParentPath = parent.getAbsolutePath()+"/";
-        String search = null;
+      
+        int lastDirIndex = path.lastIndexOf(SEPARATOR);
+        if (lastDirIndex!=-1) {
+            /* means we got something ala include::subdir1/subdir with subdir1/subdir2 as structure - so we are already inside subdir1 in path */ 
+            String subPathBefore = path.substring(0,lastDirIndex);
+            File newParent = new File(parent.getAbsolutePath()+SEPARATOR+subPathBefore);
+            if (!newParent.exists()) {
+                return Collections.emptySet();
+            }
+            parent=newParent;
+            path = path.substring(lastDirIndex+1);
+        }
+        
+        
+        String separatedParentPath = parent.getAbsolutePath()+SEPARATOR;
+        String search = null; 
         if (path.length()>0) {
             /* path given */
-            File f = new File(parent.getAbsolutePath()+"/"+path);
-            if (f.exists()) {
-                parent = f;
+            File newParent = new File(separatedParentPath+path);
+            if (newParent.exists()) {
+                parent = newParent;
             }else {
                 /* only part given? - keep parent as, but mark search*/
                 search = path;
@@ -44,6 +56,7 @@ public class AsciidocIncludeProposalCalculator {
             @Override
             public boolean accept(File pathname) {
                 if (pathname.equals(editorFile)){
+                    /* filter editor file itself always */
                     return false;
                 }
                 if (toSearch!=null) {
@@ -59,6 +72,8 @@ public class AsciidocIncludeProposalCalculator {
         if (files==null) {
             return Collections.emptySet();
         }
+        
+        String editorParentPath = editorFile.getParentFile().getAbsolutePath()+SEPARATOR;
         Set<AsciidocIncludeProposalData> set = new TreeSet<AsciidocIncludeProposalData>();
         for (File child: files) {
             String absPathChild = child.getAbsolutePath();

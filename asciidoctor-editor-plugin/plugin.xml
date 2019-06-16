@@ -712,10 +712,10 @@ ${cursor}
         </template>
         <template
             name="include"
-            description="Include snippet"
+            description="Include, starts dynamic include content assist"
             contextTypeId="de.jcup.asciidoctoreditor.template.contexttype"
             id="de.jcup.asciidoctoreditor.template.default.include">
-         <pattern>include::${filename}.adoc[]
+         <pattern>include::
          
 </pattern>
         </template>
