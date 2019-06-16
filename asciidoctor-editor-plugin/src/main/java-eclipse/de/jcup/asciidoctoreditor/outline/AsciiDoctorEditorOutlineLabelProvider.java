@@ -125,7 +125,7 @@ public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider imp
 		return editorActivator.getColorManager();
 	}
 	
-	private Image getImage(String path) {
+	public static final Image getImage(String path) {
         return EclipseUtil.getImage(path, AsciiDoctorEditorActivator.PLUGIN_ID);
     }
 

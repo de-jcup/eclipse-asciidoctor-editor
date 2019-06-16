@@ -14,6 +14,7 @@ public class AsciidocIncludeProposalData implements Comparable<AsciidocIncludePr
     public String getInclude() {
         return include;
     }
+    @Deprecated// do we really need here a extra label - normaly always same as include..
     public String getLabel() {
         return label;
     }

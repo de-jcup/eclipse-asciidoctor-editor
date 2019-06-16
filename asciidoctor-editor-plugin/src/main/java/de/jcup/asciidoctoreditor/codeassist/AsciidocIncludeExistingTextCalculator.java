@@ -2,10 +2,16 @@ package de.jcup.asciidoctoreditor.codeassist;
 
 public class AsciidocIncludeExistingTextCalculator {
     
-    public String resolveIncludeTextOrNull(String fullSource, int indexForCtrlSpace) {
-        int index = indexForCtrlSpace;
+    /**
+     * Resolves full include texzt
+     * @param fullSource
+     * @param posBeforeCtrlSpace - is index+1...
+     * @return full include text or <code>null</code> when not available
+     */
+    public String resolveIncludeTextOrNull(String fullSource, int posBeforeCtrlSpace) {
+        int index = posBeforeCtrlSpace-1;
         if (fullSource.length()<=index) {
-            return null;
+            index = fullSource.length()-1;
         }
         StringBuilder sb = new StringBuilder();
         while (index>=0) {
