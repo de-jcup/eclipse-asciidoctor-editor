@@ -5,6 +5,6 @@ import de.jcup.eclipse.commons.codeassist.SupportableContentAssistProcessor;
 public class AsciidocContentAssistProcessor extends SupportableContentAssistProcessor {
 
     public AsciidocContentAssistProcessor(){
-        super(new AsciidocKeywordContentAssistSupport(AsciiDoctorEditorActivator.getDefault()));
+        super(new AsciidocKeywordContentAssistSupport(AsciiDoctorEditorActivator.getDefault()), new DynamicIncludeContentAssistSupport(AsciiDoctorEditorActivator.getDefault()));
     }
 }
