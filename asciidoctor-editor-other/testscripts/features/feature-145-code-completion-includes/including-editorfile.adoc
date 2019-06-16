@@ -1,0 +1,6 @@
+include::subfolder2/subfolder3/subfolder3-file1.adoc[]
+
+[plantuml]
+----
+include::subfolder2/subfolder3/plantuml-file2.puml[]
+---- 
