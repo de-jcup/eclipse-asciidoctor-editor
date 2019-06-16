@@ -32,6 +32,7 @@ import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelIncludeValidator;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
@@ -44,6 +45,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
     boolean ignoreNextCaretMove;
 
     private AsciiDoctorContentOutlinePage outlinePage;
+    private AsciiDoctorScriptModelIncludeValidator includeValidator = new AsciiDoctorScriptModelIncludeValidator();
 
     public AsciidoctorEditorOutlineSupport(AsciiDoctorEditor editor) {
         super(editor);
@@ -127,6 +129,8 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
                 AsciiDoctorEditorUtil.logError("Was not able to build validation model", e);
                 model = FALLBACK_MODEL;
             }
+            AsciiDoctorEditorUtil.removeScriptErrors(getEditor());
+            validate(model);
 
             getOutlinePage().rebuild(model);
 
@@ -142,6 +146,10 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
                 getEditor().addErrorMarkers(model, severity);
             }
         });
+    }
+   
+    private void validate(AsciiDoctorScriptModel model) {
+        includeValidator.validate(model, getEditor().getEditorFileOrNull());
     }
 
     AsciiDoctorScriptModel buildModelWithoutValidation() {

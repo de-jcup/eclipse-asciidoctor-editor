@@ -13,82 +13,90 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.outline;
+package de.jcup.asciidoctoreditor.outline;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Item {
 
-	ItemType type;
-	String name;
-	int offset;
-	int length;
-	int endOffset;
-	String prefix;
-	
-	List<Item> children=new ArrayList<>();
-	Item parent;
-	String fullString;
-	String id;
-	
-	public List<Item> getChildren() {
-		return children;
-	}
-	public Item getParent() {
-		return parent;
-	}
-	/**
-	 * @return item type , or <code>null</code>
-	 */
-	public ItemType getItemType(){
-		return type;
-	}
+    ItemType type;
+    String name;
+    int offset;
+    int length;
+    int endOffset;
+    String prefix;
 
-	public String getName() {
-		return name;
-	}
-	public String getPrefix() {
-		return prefix;
-	}
+    public Item() {
 
-	public int getOffset() {
-		return offset;
-	}
+    }
 
-	public int getLength() {
-		return length;
-	}
-	
-	public int getEndOffset() {
-		return endOffset;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Item:");
-		sb.append("label:");
-		sb.append(name);
-		sb.append(",type:");
-		sb.append(type);
-		sb.append(",offset:");
-		sb.append(offset);
-		sb.append(",length:");
-		sb.append(length);
-		sb.append(",endOffset:");
-		sb.append(endOffset);
-		return sb.toString();
-	}
+    List<Item> children = new ArrayList<>();
+    Item parent;
+    String fullString;
+    String id;
 
-	public String buildSearchString() {
-		return name;
-	}
-	
-	public String getFullString() {
-		return fullString == null ? name : fullString;
-	}
-	public String getId() {
-		return id;
-	}
+    public List<Item> getChildren() {
+        return children;
+    }
+
+    public Item getParent() {
+        return parent;
+    }
+
+    /**
+     * @return item type , or <code>null</code>
+     */
+    public ItemType getItemType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public int getEndOffset() {
+        return endOffset;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Item:");
+        sb.append("label:");
+        sb.append(name);
+        sb.append(",type:");
+        sb.append(type);
+        sb.append(",offset:");
+        sb.append(offset);
+        sb.append(",length:");
+        sb.append(length);
+        sb.append(",endOffset:");
+        sb.append(endOffset);
+        return sb.toString();
+    }
+
+    public String buildSearchString() {
+        return name;
+    }
+
+    public String getFullString() {
+        return fullString == null ? name : fullString;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

@@ -17,14 +17,14 @@
 
 public class AsciiDoctorInclude {
 
-	String label;
+	String target;
 	int position;
 	int lengthToNameEnd;
 	public int end;
 	private String fullExpression;
 	
 	public AsciiDoctorInclude(String fullExpression, String target, int position, int end, int lengthTonNameEnd){
-		this.label=target;
+		this.target=target;
 		this.fullExpression=fullExpression;
 		this.position=position;
 		this.end=end;
@@ -35,8 +35,12 @@ public class AsciiDoctorInclude {
 		return lengthToNameEnd;
 	}
 	
+	public String getTarget() {
+	    return target;
+	}
+	
 	public String getLabel() {
-		return label;
+		return getTarget();
 	}
 
 	public int getPosition() {
@@ -49,7 +53,7 @@ public class AsciiDoctorInclude {
 	
 	@Override
 	public String toString() {
-		return "include:"+label+"[pos:"+position+",end:"+end+",lengthToNameEnd:"+lengthToNameEnd+"]";
+		return "include::"+target+"[pos:"+position+",end:"+end+",lengthToNameEnd:"+lengthToNameEnd+"]";
 	}
 
 	public String getFullExpression() {
