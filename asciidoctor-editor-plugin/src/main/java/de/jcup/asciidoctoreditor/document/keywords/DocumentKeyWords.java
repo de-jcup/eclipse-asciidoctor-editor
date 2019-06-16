@@ -23,19 +23,33 @@ import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 public class DocumentKeyWords {
 	private static final DocumentKeyWord[] ALL_KEYWORDS = createAllKeywords();
+	private static final DocumentKeyWord[] ALL_KEYWORDS_EXCEPT_INCLUDES = createAllKeywordsExceptIncludes();
 	
 	public static DocumentKeyWord[] getAll(){
 		return ALL_KEYWORDS;
 	}
 	
-	private static DocumentKeyWord[] createAllKeywords() {
+	public static DocumentKeyWord[] getAllExcedptIncludes(){
+        return ALL_KEYWORDS_EXCEPT_INCLUDES;
+    }
+	
+	private static DocumentKeyWord[] createAllKeywordsExceptIncludes() {
 		List<DocumentKeyWord> list = new ArrayList<>();
-		list.addAll(Arrays.asList(AsciiDoctorAdmonitionParagraphKeyWords.values()));
+		addAllExceptIncludes(list);
+		return list.toArray(new DocumentKeyWord[list.size()]);
+	}
+
+    private static void addAllExceptIncludes(List<DocumentKeyWord> list) {
+        list.addAll(Arrays.asList(AsciiDoctorAdmonitionParagraphKeyWords.values()));
 		list.addAll(Arrays.asList(AsciiDoctorAdmonitionBlockKeyWords.values()));
 		list.addAll(Arrays.asList(AsciiDoctorSectionTitleKeyWords.values()));
 		list.addAll(Arrays.asList(AsciiDoctorCommandKeyWords.values()));
-		list.addAll(Arrays.asList(AsciiDoctorIncludeKeywords.values()));
 		list.addAll(Arrays.asList(AsciiDoctorSpecialAttributesKeyWords.values()));
-		return list.toArray(new DocumentKeyWord[list.size()]);
+    }
+	private static DocumentKeyWord[] createAllKeywords() {
+	    List<DocumentKeyWord> list = new ArrayList<>();
+	    addAllExceptIncludes(list);
+	    list.addAll(Arrays.asList(AsciiDoctorIncludeKeywords.values()));
+	    return list.toArray(new DocumentKeyWord[list.size()]);
 	}
 }

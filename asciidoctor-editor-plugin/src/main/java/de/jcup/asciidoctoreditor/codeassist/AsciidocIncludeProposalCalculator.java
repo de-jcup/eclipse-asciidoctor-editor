@@ -2,13 +2,19 @@ package de.jcup.asciidoctoreditor.codeassist;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class AsciidocIncludeProposalCalculator {
     
     private AsciidocIncludeExistingTextCalculator calculator = new AsciidocIncludeExistingTextCalculator();
+    
+    
+    public AsciidocIncludeProposalCalculator() {
+    }
     
     public Set<AsciidocIncludeProposalData> calculate(File editorFile, String fullSource, int indexForCtrlSpace) {
         String inspect = calculator.resolveIncludeTextOrNull(fullSource, indexForCtrlSpace);
@@ -37,16 +43,16 @@ public class AsciidocIncludeProposalCalculator {
             
             @Override
             public boolean accept(File pathname) {
+                if (pathname.equals(editorFile)){
+                    return false;
+                }
                 if (toSearch!=null) {
                     if (pathname.getName().startsWith(toSearch)) {
                         return true;
                     }
                     return false;
                 }
-                if (pathname.isDirectory()) {
-                    return true;
-                }
-                return pathname.getName().endsWith(".adoc");
+                return true;
             }
         });
         
@@ -55,9 +61,6 @@ public class AsciidocIncludeProposalCalculator {
         }
         Set<AsciidocIncludeProposalData> set = new TreeSet<AsciidocIncludeProposalData>();
         for (File child: files) {
-            if (child.equals(editorFile)){
-                continue;
-            }
             String absPathChild = child.getAbsolutePath();
             String include = "include::"+absPathChild.substring(editorParentPath.length());
             if (child.isDirectory()) {
@@ -71,6 +74,7 @@ public class AsciidocIncludeProposalCalculator {
         }
         return set;
     }
+
 
     
 }

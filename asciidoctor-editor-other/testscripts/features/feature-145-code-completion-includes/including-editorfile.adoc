@@ -1,1 +1,1 @@
-include::subfolder1/ 
+include::subfolder2/subfolder2-file1.adoc[]

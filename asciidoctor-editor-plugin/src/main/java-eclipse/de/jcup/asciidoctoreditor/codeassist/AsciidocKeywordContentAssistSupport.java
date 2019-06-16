@@ -46,7 +46,8 @@ public class AsciidocKeywordContentAssistSupport extends ProposalProviderContent
                     return null;
                 }
                 String word = (String) target;
-                for (DocumentKeyWord keyword: DocumentKeyWords.getAll()) {
+                for (DocumentKeyWord keyword: DocumentKeyWords.getAllExcedptIncludes()) {
+                    
                     if (word.equalsIgnoreCase(keyword.getText())){
                         return keyword.getTooltip();
                     }

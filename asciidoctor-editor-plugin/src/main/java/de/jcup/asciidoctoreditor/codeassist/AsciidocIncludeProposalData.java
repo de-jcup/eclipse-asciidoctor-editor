@@ -47,6 +47,13 @@ public class AsciidocIncludeProposalData implements Comparable<AsciidocIncludePr
         }
         return include.compareTo(o.include);
     }
+
+    @Override
+    public String toString() {
+        return "AsciidocIncludeProposalData [include=" + include + "]";
+    }
+    
+    
     
     
 }

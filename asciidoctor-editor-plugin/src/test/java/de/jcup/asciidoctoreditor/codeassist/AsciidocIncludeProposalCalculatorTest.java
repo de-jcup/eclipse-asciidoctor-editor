@@ -35,11 +35,13 @@ public class AsciidocIncludeProposalCalculatorTest {
         
         /* test */
         assertNotNull(result);
-        assertEquals(3, result.size());
+        assertEquals(5, result.size());
         Iterator<AsciidocIncludeProposalData> it = result.iterator();
         assertEquals("include::otherfile1.adoc[]",it.next().getInclude());
+        assertEquals("include::otherfile2.txt[]",it.next().getInclude());
         assertEquals("include::otherfile3.adoc[]",it.next().getInclude());
         assertEquals("include::subfolder1/",it.next().getInclude());
+        assertEquals("include::subfolder2/",it.next().getInclude());
         
     }
     
@@ -78,7 +80,25 @@ public class AsciidocIncludeProposalCalculatorTest {
     }
     
     @Test
-    public void editorFile1_include_sub_results_in_1_folder() throws Exception {
+    public void editorFile1_include_subfolder2_results_in_1_file() throws Exception {
+        /* prepare */
+        String text = "include::subfolder2/";
+        int index = text.length();
+        
+        /* execute */
+        Set<AsciidocIncludeProposalData> result = toTest.calculate(editorFile1, text, index);
+        
+        /* test */
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        Iterator<AsciidocIncludeProposalData> it = result.iterator();
+        assertEquals("include::subfolder2/ditaa-file1.ditaa[]",it.next().getInclude());
+        assertEquals("include::subfolder2/puml-file1.puml[]",it.next().getInclude());
+        
+    }
+    
+    @Test
+    public void editorFile1_include_sub_results_in_2_folders() throws Exception {
         /* prepare */
         String text = "include::sub";
         int index = text.length()-1;
@@ -88,9 +108,10 @@ public class AsciidocIncludeProposalCalculatorTest {
         
         /* test */
         assertNotNull(result);
-        assertEquals(1, result.size());
+        assertEquals(2, result.size());
         Iterator<AsciidocIncludeProposalData> it = result.iterator();
         assertEquals("include::subfolder1/",it.next().getInclude());
+        assertEquals("include::subfolder2/",it.next().getInclude());
         
     }
 
