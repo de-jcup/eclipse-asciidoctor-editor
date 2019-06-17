@@ -58,6 +58,8 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	
 	P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR("aspLogsShownAsMarkerInEditor"),
 	
+	P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES("dynamicIncludeCodeAssistEnabled")
+	
 	;
 
 	private String id;

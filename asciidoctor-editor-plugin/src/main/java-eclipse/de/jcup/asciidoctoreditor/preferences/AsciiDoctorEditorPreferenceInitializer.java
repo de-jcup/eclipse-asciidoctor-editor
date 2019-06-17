@@ -56,8 +56,12 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* bracket color */
 		preferences.setDefaultColor(P_EDITOR_MATCHING_BRACKETS_COLOR, GRAY_JAVA);
 
+		/* +++++++++++++++ */
+        /* + Code assist + */
+		/* +++++++++++++++ */
 		store.setDefault(P_CODE_ASSIST_ADD_KEYWORDS.getId(), true);
 		store.setDefault(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(), true);
+		store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES.getId(), true);
 
 		/* ++++++++++++ */
 		/* + Tooltips + */

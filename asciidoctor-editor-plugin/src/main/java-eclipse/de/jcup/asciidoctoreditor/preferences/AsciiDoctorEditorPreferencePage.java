@@ -129,7 +129,6 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         createExternalPreviewParts(composite);
         createAsciidoctorGroup(composite);
         createSpacer(composite);
-        createCodeAssistencGroup(composite);
 
     }
 
@@ -147,32 +146,6 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         gd.horizontalSpan = 2;
         gd.heightHint = convertHeightInCharsToPixels(1) / 2;
         spacer.setLayoutData(gd);
-    }
-
-    protected void createCodeAssistencGroup(Composite composite) {
-        Group codeAssistGroup = new Group(composite, SWT.NONE);
-        codeAssistGroup.setText("Code assistance");
-        codeAssistGroup.setLayout(new GridLayout());
-        codeAssistGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-        // why devNull ? because of layout problems on field editors + groups.
-        // See
-        // https://stackoverflow.com/questions/490015/layout-problems-in-fieldeditorpreferencepage
-        Composite devNull = new Composite(codeAssistGroup, SWT.NONE);
-
-        BooleanFieldEditor codeAssistWithAsciiDoctorKeywords = new BooleanFieldEditor(P_CODE_ASSIST_ADD_KEYWORDS.getId(), "AsciiDoctor keywords", devNull);
-        codeAssistWithAsciiDoctorKeywords.getDescriptionControl(devNull)
-                .setToolTipText("When enabled the standard keywords supported by asciidoctor editor are always automatically available as code proposals");
-        addField(codeAssistWithAsciiDoctorKeywords);
-
-        devNull = new Composite(codeAssistGroup, SWT.NONE);
-        BooleanFieldEditor codeAssistWithSimpleWords = new BooleanFieldEditor(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(), "Existing words", devNull);
-        codeAssistWithSimpleWords.getDescriptionControl(devNull).setToolTipText("When enabled the current source will be scanned for words. The existing words will be available as code proposals");
-        addField(codeAssistWithSimpleWords);
-        devNull = new Composite(codeAssistGroup, SWT.NONE);
-        BooleanFieldEditor toolTipsEnabled = new BooleanFieldEditor(P_TOOLTIPS_ENABLED.getId(), "Tooltips for keywords", devNull);
-        toolTipsEnabled.getDescriptionControl(devNull).setToolTipText("When enabled tool tips will occure for keywords");
-        addField(toolTipsEnabled);
     }
 
     protected void createUIGroup(Composite composite) {

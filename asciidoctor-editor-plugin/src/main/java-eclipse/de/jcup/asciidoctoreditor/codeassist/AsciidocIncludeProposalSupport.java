@@ -10,6 +10,7 @@ import java.util.Set;
 import org.eclipse.ui.IEditorPart;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.eclipse.commons.codeassist.AbstractWordCodeCompletition;
 import de.jcup.eclipse.commons.codeassist.ProposalProvider;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
@@ -24,7 +25,7 @@ public class AsciidocIncludeProposalSupport extends AbstractWordCodeCompletition
     @Override
     public Set<ProposalProvider> calculate(String text, int index) {
         IEditorPart activeEditor = EclipseUtil.getActiveEditor();
-        if (! (activeEditor instanceof AsciiDoctorEditor)) {
+        if (! (activeEditor instanceof AsciiDoctorEditor) || ! AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForIncludesEnabled()) {
             return Collections.emptySet();
         }
         AsciiDoctorEditor editor = (AsciiDoctorEditor) activeEditor;

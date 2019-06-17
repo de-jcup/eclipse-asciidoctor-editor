@@ -259,4 +259,7 @@ public class AsciiDoctorEditorPreferences {
     public boolean isShowingAspLogsAsMarkerInEditor() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR);
     }
+    public boolean isDynamicCodeAssistForIncludesEnabled() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES);
+    }
 }
