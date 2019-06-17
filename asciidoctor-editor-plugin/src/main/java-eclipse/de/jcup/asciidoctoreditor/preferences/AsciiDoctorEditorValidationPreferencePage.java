@@ -42,7 +42,8 @@ public class AsciiDoctorEditorValidationPreferencePage extends FieldEditorPrefer
 	@Override
 	protected void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
-
+		BooleanFieldEditor editor = createEditor(VALIDATE_INCLUDES, parent);
+		editor.getDescriptionControl(parent).setToolTipText("Will validate included file exists and is not a directory");
 
 		createComboBox(VALIDATE_ERROR_LEVEL, parent);
 	}

@@ -29,6 +29,7 @@ import de.jcup.asciidoctoreditor.outline.AsciiDoctorContentOutlinePage;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorQuickOutlineDialog;
 import de.jcup.asciidoctoreditor.outline.Item;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
@@ -149,7 +150,11 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
     }
    
     private void validate(AsciiDoctorScriptModel model) {
-        includeValidator.validate(model, getEditor().getEditorFileOrNull());
+        AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+        
+        if (preferences.isIncludeValidationEnabled()) {
+            includeValidator.validate(model, getEditor().getEditorFileOrNull());
+        }
     }
 
     AsciiDoctorScriptModel buildModelWithoutValidation() {

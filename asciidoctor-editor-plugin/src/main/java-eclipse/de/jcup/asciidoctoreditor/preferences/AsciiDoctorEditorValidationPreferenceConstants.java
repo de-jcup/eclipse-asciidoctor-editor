@@ -21,6 +21,8 @@ package de.jcup.asciidoctoreditor.preferences;
 public enum AsciiDoctorEditorValidationPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled{
 	VALIDATE_ERROR_LEVEL("validationErrorLevel","Validation error level"),
 	
+	VALIDATE_INCLUDES("validateIncludesEnabled","Validate includes"),
+	
 	;
 
 	private String id;

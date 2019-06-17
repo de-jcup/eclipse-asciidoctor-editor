@@ -39,7 +39,11 @@ public class AsciiDoctorEditorPreferences {
 	private static AsciiDoctorEditorPreferences INSTANCE = new AsciiDoctorEditorPreferences();
 	private IPreferenceStore store;
 
-	private AsciiDoctorEditorPreferences() {
+	public static AsciiDoctorEditorPreferences getInstance() {
+    	return INSTANCE;
+    }
+
+    private AsciiDoctorEditorPreferences() {
 		store = new ScopedPreferenceStore(InstanceScope.INSTANCE, AsciiDoctorEditorActivator.PLUGIN_ID);
 		store.addPropertyChangeListener(new IPropertyChangeListener() {
 
@@ -114,7 +118,7 @@ public class AsciiDoctorEditorPreferences {
 		}
 	}
 
-	public String getStringPreference(AsciiDoctorEditorPreferenceConstants id) {
+	public String getStringPreference(PreferenceIdentifiable id) {
 		String data = getPreferenceStore().getString(id.getId());
 		if (data == null) {
 			data = "";
@@ -122,26 +126,60 @@ public class AsciiDoctorEditorPreferences {
 		return data;
 	}
 
-	public int getIntegerPreference(AsciiDoctorEditorPreferenceConstants id) {
+	public int getIntegerPreference(PreferenceIdentifiable id) {
 		int data = getPreferenceStore().getInt(id.getId());
 		return data;
 	}
 
-	public boolean getBooleanPreference(AsciiDoctorEditorPreferenceConstants id) {
+	public boolean getBooleanPreference(PreferenceIdentifiable id) {
 		boolean data = getPreferenceStore().getBoolean(id.getId());
 		return data;
 	}
 
-	public void setBooleanPreference(AsciiDoctorEditorPreferenceConstants id, boolean value) {
+	public void setBooleanPreference(PreferenceIdentifiable id, boolean value) {
 		getPreferenceStore().setValue(id.getId(), value);
 	}
 	
 
-	public void setStringPreference(AsciiDoctorEditorPreferenceConstants id,
+	public void setStringPreference(PreferenceIdentifiable id,
 			String value) {
 		getPreferenceStore().setValue(id.getId(), value);
 	}
+	
 
+    public boolean getDefaultBooleanPreference(PreferenceIdentifiable id) {
+        boolean data = getPreferenceStore().getDefaultBoolean(id.getId());
+        return data;
+    }
+
+    public RGB getColor(PreferenceIdentifiable identifiable) {
+        RGB color = PreferenceConverter.getColor(getPreferenceStore(), identifiable.getId());
+        return color;
+    }
+
+    /**
+     * Returns color as a web color in format "#RRGGBB"
+     * 
+     * @param identifiable
+     * @return web color string
+     */
+    public String getWebColor(PreferenceIdentifiable identifiable) {
+        RGB color = getColor(identifiable);
+        if (color == null) {
+            return null;
+        }
+        String webColor = ColorUtil.convertToHexColor(color);
+        return webColor;
+    }
+
+    public void setDefaultColor(PreferenceIdentifiable identifiable, RGB color) {
+        PreferenceConverter.setDefault(getPreferenceStore(), identifiable.getId(), color);
+    }
+
+    
+    /* ----------------------------------------------------------------------------------------- */
+    /* - ....................... Dedicated getter/setter ..................................... - */
+    /* ----------------------------------------------------------------------------------------- */
 	public boolean isLinkOutlineWithEditorEnabled() {
 		return getBooleanPreference(P_LINK_OUTLINE_WITH_EDITOR);
 	}
@@ -155,39 +193,6 @@ public class AsciiDoctorEditorPreferences {
 
 	public IPreferenceStore getPreferenceStore() {
 		return store;
-	}
-
-	public boolean getDefaultBooleanPreference(AsciiDoctorEditorPreferenceConstants id) {
-		boolean data = getPreferenceStore().getDefaultBoolean(id.getId());
-		return data;
-	}
-
-	public RGB getColor(PreferenceIdentifiable identifiable) {
-		RGB color = PreferenceConverter.getColor(getPreferenceStore(), identifiable.getId());
-		return color;
-	}
-
-	/**
-	 * Returns color as a web color in format "#RRGGBB"
-	 * 
-	 * @param identifiable
-	 * @return web color string
-	 */
-	public String getWebColor(PreferenceIdentifiable identifiable) {
-		RGB color = getColor(identifiable);
-		if (color == null) {
-			return null;
-		}
-		String webColor = ColorUtil.convertToHexColor(color);
-		return webColor;
-	}
-
-	public void setDefaultColor(PreferenceIdentifiable identifiable, RGB color) {
-		PreferenceConverter.setDefault(getPreferenceStore(), identifiable.getId(), color);
-	}
-
-	public static AsciiDoctorEditorPreferences getInstance() {
-		return INSTANCE;
 	}
 
 	public int getAutoRefreshInSecondsForExternalBrowser() {
@@ -237,5 +242,9 @@ public class AsciiDoctorEditorPreferences {
     public int getAspServerPort() {
         return getPreferenceStore().getInt(P_ASP_SERVER_PORT.getId());
 
+    }
+
+    public boolean isIncludeValidationEnabled() {
+        return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_INCLUDES);
     }
 }

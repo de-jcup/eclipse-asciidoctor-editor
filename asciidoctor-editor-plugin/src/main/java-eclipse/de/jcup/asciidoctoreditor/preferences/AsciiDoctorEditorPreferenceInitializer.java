@@ -107,6 +107,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* + Validation + */
 		/* ++++++++++++++ */
 		store.setDefault(VALIDATE_ERROR_LEVEL.getId(), AsciiDoctorEditorValidationErrorLevel.WARNING.getId());
+		store.setDefault(VALIDATE_INCLUDES.getId(),true);
 		
 		/* ++++++++++++++ */
 		/* + automatically create/update png file(s) in the same location as PlantumUML file(s) + */

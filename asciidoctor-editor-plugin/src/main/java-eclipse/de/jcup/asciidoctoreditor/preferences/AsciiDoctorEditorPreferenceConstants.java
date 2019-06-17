@@ -55,6 +55,7 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT("showConsoleOnErrorOutput"),
 	
 	P_ASP_SERVER_PORT("aspServerPort"),
+	
 	;
 
 	private String id;

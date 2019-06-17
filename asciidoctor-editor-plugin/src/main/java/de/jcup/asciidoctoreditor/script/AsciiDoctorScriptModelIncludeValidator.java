@@ -17,10 +17,10 @@ public class AsciiDoctorScriptModelIncludeValidator {
             }
             File file = new File(editorFile.getParentFile().getAbsolutePath()+File.separatorChar+target);
             if (! file.exists()) {
-                AsciiDoctorMarker marker = new AsciiDoctorMarker(include.getPosition(), include.getEnd(), "Include failure, file not found:"+file.getAbsolutePath());
+                AsciiDoctorMarker marker = new AsciiDoctorMarker(include.getPosition(), include.getEnd(), "Validation failed:Include file not found:"+file.getAbsolutePath());
                 model.getErrors().add(marker);
             }else if (file.canExecute() && file.isDirectory()) {
-                AsciiDoctorMarker marker = new AsciiDoctorMarker(include.getPosition(), include.getEnd(), "Include points to a directory not a file:"+file.getAbsolutePath());
+                AsciiDoctorMarker marker = new AsciiDoctorMarker(include.getPosition(), include.getEnd(), "Validation failed:Include points to a directory not a file:"+file.getAbsolutePath());
                 model.getErrors().add(marker);
             }
         }
