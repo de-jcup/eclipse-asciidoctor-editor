@@ -18,27 +18,32 @@ package de.jcup.asciidoctoreditor.preferences;
 /**
  * Constant definitions for plug-in preferences
  */
-public enum AsciiDoctorEditorValidationPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled{
-	VALIDATE_ERROR_LEVEL("validationErrorLevel","Validation error level"),
-	
-	VALIDATE_INCLUDES("validateIncludesEnabled","Validate includes"),
-	
-	;
+public enum AsciiDoctorEditorValidationPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled {
+    
+    VALIDATE_ERROR_LEVEL("validationErrorLevel", "Validation error level"),
 
-	private String id;
-	private String labelText;
+    VALIDATE_INCLUDES("validateIncludesEnabled", "Validate includes"),
 
-	private AsciiDoctorEditorValidationPreferenceConstants(String id, String labelText) {
-		this.id = id;
-		this.labelText=labelText;
-	}
+    VALIDATE_IMAGES("validateImagesEnabled", "Validate images"),
 
-	public String getLabelText() {
-		return labelText;
-	}
-	
-	public String getId() {
-		return id;
-	}
+    VALIDATE_DIAGRAMS("validateDiagramsEnabled", "Validate diagrams"),
+
+    ;
+
+    private String id;
+    private String labelText;
+
+    private AsciiDoctorEditorValidationPreferenceConstants(String id, String labelText) {
+        this.id = id;
+        this.labelText = labelText;
+    }
+
+    public String getLabelText() {
+        return labelText;
+    }
+
+    public String getId() {
+        return id;
+    }
 
 }

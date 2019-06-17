@@ -18,6 +18,9 @@ package de.jcup.asciidoctoreditor;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorValidationPreferenceConstants.*;
 import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 
+import java.io.File;
+import java.util.Collection;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
@@ -33,7 +36,8 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelIncludeValidator;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorFileReferenceValidator;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
@@ -46,7 +50,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
     boolean ignoreNextCaretMove;
 
     private AsciiDoctorContentOutlinePage outlinePage;
-    private AsciiDoctorScriptModelIncludeValidator includeValidator = new AsciiDoctorScriptModelIncludeValidator();
+    private AsciiDoctorFileReferenceValidator referenceValidator = new AsciiDoctorFileReferenceValidator();
 
     public AsciidoctorEditorOutlineSupport(AsciiDoctorEditor editor) {
         super(editor);
@@ -113,7 +117,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
     /**
      * Does rebuild the outline - this is done asynchronous
      */
-    public void rebuildOutline() {
+    public void rebuildOutlineAndValidate() {
 
         String text = getEditor().getDocumentText();
 
@@ -130,7 +134,6 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
                 AsciiDoctorEditorUtil.logError("Was not able to build validation model", e);
                 model = FALLBACK_MODEL;
             }
-            AsciiDoctorEditorUtil.removeScriptErrors(getEditor());
             validate(model);
 
             getOutlinePage().rebuild(model);
@@ -148,13 +151,33 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
             }
         });
     }
-   
+
     private void validate(AsciiDoctorScriptModel model) {
         AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
-        
+
+        File editorFileOrNull = getEditor().getEditorFileOrNull();
+        Collection<AsciiDoctorMarker> errors = model.getErrors();
+
         if (preferences.isIncludeValidationEnabled()) {
-            includeValidator.validate(model, getEditor().getEditorFileOrNull());
+            referenceValidator.validate(editorFileOrNull, model.getIncludes(), errors);
         }
+
+        if (preferences.isDiagramValidationEnabled()) {
+            String diagramPath = getEditor().getDiagramPathOrNull();
+            if (diagramPath != null) {
+                File imagesFolder = new File(diagramPath);
+                referenceValidator.validate(imagesFolder, model.getDiagrams(), errors);
+            }
+        }
+
+        if (preferences.isImageValidationEnabled()) {
+            String imagesPath = getEditor().getImagesPathOrNull();
+            if (imagesPath != null) {
+                File imagesFolder = new File(imagesPath);
+                referenceValidator.validate(imagesFolder, model.getImages(), errors);
+            }
+        }
+
     }
 
     AsciiDoctorScriptModel buildModelWithoutValidation() {

@@ -15,21 +15,65 @@
  */
  package de.jcup.asciidoctoreditor.script;
 
-public class AsciiDoctorInclude {
-
+public class AsciiDoctorFileReference {
+    
 	String target;
 	int position;
 	int lengthToNameEnd;
 	public int end;
+	private String targetPrefix;
 	private String fullExpression;
+    private String filePath;
 	
-	public AsciiDoctorInclude(String fullExpression, String target, int position, int end, int lengthTonNameEnd){
-		this.target=target;
-		this.fullExpression=fullExpression;
+	public AsciiDoctorFileReference(String fullExpression, int position, int end, int lengthTonNameEnd){
+	    this.fullExpression=fullExpression;
+		this.target=calculateName(fullExpression);
 		this.position=position;
 		this.end=end;
 		this.lengthToNameEnd=lengthTonNameEnd;
+		
+		this.targetPrefix=resolveTargetPrefix();
+		this.filePath=resolveFilePath();
 	}
+	
+	private String calculateName(String include) {
+        if (include == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char charAt : include.toCharArray()) {
+            if (charAt=='[' || Character.isWhitespace(charAt)){
+                break;
+            }
+            sb.append(charAt);
+        }
+        return sb.toString().trim();
+    }
+	
+    private String resolveTargetPrefix() {
+	    if (target==null) {
+	        return "";
+	    }
+	    int prefixIndex=target.indexOf("::");
+	    if (prefixIndex==-1) {
+	        return "";
+	    }
+        return target.substring(0,prefixIndex+2);
+    }
+    
+    private String resolveFilePath() {
+        if (target==null) {
+            return "null";
+        }
+        if (targetPrefix==null || targetPrefix.isEmpty()) {
+            return target;
+        }
+        String filePath = target;
+        if (filePath.startsWith(targetPrefix)) {
+            filePath=filePath.substring(targetPrefix.length());
+        }
+        return filePath;
+    }
 
 	public int getLengthToNameEnd() {
 		return lengthToNameEnd;
@@ -37,6 +81,10 @@ public class AsciiDoctorInclude {
 	
 	public String getTarget() {
 	    return target;
+	}
+	
+	public String getTargetPrefix() {
+	    return targetPrefix;
 	}
 	
 	public String getLabel() {
@@ -59,5 +107,10 @@ public class AsciiDoctorInclude {
 	public String getFullExpression() {
 		return fullExpression;
 	}
+
+    public String getFilePath() {
+        return filePath;
+    }
+   
 
 }

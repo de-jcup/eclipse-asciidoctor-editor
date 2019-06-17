@@ -15,6 +15,8 @@
  */
 package de.jcup.asciidoctoreditor.script;
 
+import static de.jcup.asciidoctoreditor.script.parser.SimpleReferenceParser.*;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import de.jcup.asciidoctoreditor.script.parser.SimpleHeadlineParser;
-import de.jcup.asciidoctoreditor.script.parser.SimpleIncludeParser;
 import de.jcup.asciidoctoreditor.script.parser.SimpleInlineAnchorParser;
 
 /**
@@ -35,7 +36,6 @@ public class AsciiDoctorScriptModelBuilder {
 
 
 	private SimpleHeadlineParser headlineParser = new SimpleHeadlineParser();
-	private SimpleIncludeParser includeParser = new SimpleIncludeParser();
 	private SimpleInlineAnchorParser inlineAnchorParser = new SimpleInlineAnchorParser();
 
 	/**
@@ -49,12 +49,21 @@ public class AsciiDoctorScriptModelBuilder {
 		AsciiDoctorScriptModel model = new AsciiDoctorScriptModel();
 
 		Collection<AsciiDoctorHeadline> headlines = headlineParser.parse(asciidoctorScript);
-		Collection<AsciiDoctorInclude> includes = includeParser.parse(asciidoctorScript);
+		Collection<AsciiDoctorFileReference> includes = INCLUDE_PARSER.parse(asciidoctorScript);
+		Collection<AsciiDoctorFileReference> images = IMAGE_PARSER.parse(asciidoctorScript);
+		Collection<AsciiDoctorFileReference> plantuml = PLANTUML_PARSER.parse(asciidoctorScript);
+		Collection<AsciiDoctorFileReference> ditaa = DITAA_PARSER.parse(asciidoctorScript);
 		Collection<AsciiDoctorInlineAnchor> inlineAnchors = inlineAnchorParser.parse(asciidoctorScript);
 
+		
+		
 		model.getHeadlines().addAll(headlines);
 		model.getIncludes().addAll(includes);
 		model.getInlineAnchors().addAll(inlineAnchors);
+		model.getImages().addAll(images);
+		
+		model.getDiagrams().addAll(plantuml);
+		model.getDiagrams().addAll(ditaa);
 
 		
 		handleHeadlinesWithAnchorsBefore(model);

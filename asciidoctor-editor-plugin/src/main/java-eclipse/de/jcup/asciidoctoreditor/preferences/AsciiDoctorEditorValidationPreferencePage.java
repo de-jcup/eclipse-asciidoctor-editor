@@ -45,6 +45,12 @@ public class AsciiDoctorEditorValidationPreferencePage extends FieldEditorPrefer
 		BooleanFieldEditor editor = createEditor(VALIDATE_INCLUDES, parent);
 		editor.getDescriptionControl(parent).setToolTipText("Will validate included file exists and is not a directory");
 
+		editor = createEditor(VALIDATE_DIAGRAMS, parent);
+        editor.getDescriptionControl(parent).setToolTipText("Will validate referenced diagram file exists and is not a directory");
+        
+        editor = createEditor(VALIDATE_IMAGES, parent);
+        editor.getDescriptionControl(parent).setToolTipText("Will validate referenced image file exists and is not a directory");
+		
 		createComboBox(VALIDATE_ERROR_LEVEL, parent);
 	}
 

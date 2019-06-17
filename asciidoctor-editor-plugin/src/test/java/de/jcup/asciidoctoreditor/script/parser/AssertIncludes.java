@@ -20,13 +20,13 @@ import static org.junit.Assert.*;
 import java.util.Iterator;
 import java.util.List;
 
-import de.jcup.asciidoctoreditor.script.AsciiDoctorInclude;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorFileReference;
 
 public class AssertIncludes {
 
-	private List<AsciiDoctorInclude> includes;
+	private List<AsciiDoctorFileReference> includes;
 
-	public AssertIncludes(List<AsciiDoctorInclude> headlines) {
+	public AssertIncludes(List<AsciiDoctorFileReference> headlines) {
 		this.includes = headlines;
 	}
 	public AssertIncludes hasIncludes(int size) {
@@ -35,10 +35,10 @@ public class AssertIncludes {
 	}
 	public AssertInclude hasInclude(String target) {
 		assertNotNull(target);
-		Iterator<AsciiDoctorInclude> it = includes.iterator();
+		Iterator<AsciiDoctorFileReference> it = includes.iterator();
 		while (it.hasNext()) {
 
-			AsciiDoctorInclude headlineFound = it.next();
+			AsciiDoctorFileReference headlineFound = it.next();
 			if (target.equals(headlineFound.getLabel())) {
 				return new AssertInclude(headlineFound);
 			}
@@ -47,15 +47,15 @@ public class AssertIncludes {
 		return null;
 	}
 
-	public static AssertIncludes assertIncludes(List<AsciiDoctorInclude> headlines) {
+	public static AssertIncludes assertIncludes(List<AsciiDoctorFileReference> headlines) {
 		assertNotNull(headlines);
 		return new AssertIncludes(headlines);
 	}
 
 	public class AssertInclude {
-		private AsciiDoctorInclude include;
+		private AsciiDoctorFileReference include;
 
-		private AssertInclude(AsciiDoctorInclude headline) {
+		private AssertInclude(AsciiDoctorFileReference headline) {
 			assertNotNull(headline);
 			this.include = headline;
 		}

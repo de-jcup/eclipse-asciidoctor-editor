@@ -76,7 +76,11 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 				"-r asciidoctor-diagram\n--no-header-footer\n");
 		store.setDefault(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT.getId(), true);
 		
+		/* ++++++++++++++ */
+		/* + ASP server + */
+		/* ++++++++++++++ */
 		store.setDefault(P_ASP_SERVER_PORT.getId(), 4444);
+		store.setDefault(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), true);
 		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */
@@ -108,6 +112,8 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* ++++++++++++++ */
 		store.setDefault(VALIDATE_ERROR_LEVEL.getId(), AsciiDoctorEditorValidationErrorLevel.WARNING.getId());
 		store.setDefault(VALIDATE_INCLUDES.getId(),true);
+		store.setDefault(VALIDATE_IMAGES.getId(),true);
+		store.setDefault(VALIDATE_DIAGRAMS.getId(),true);
 		
 		/* ++++++++++++++ */
 		/* + automatically create/update png file(s) in the same location as PlantumUML file(s) + */

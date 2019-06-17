@@ -23,6 +23,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.script.ASPMarker;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
@@ -75,6 +77,9 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
     }
 
     private void handleServerLogAsync(ServerLog serverLog) {
+        if (!AsciiDoctorEditorPreferences.getInstance().isShowingAspLogsAsMarkerInEditor()) {
+            return;
+        }
         for (ServerLogEntry entry: serverLog.getEntries()) {
             int eclipseSeverity = -1 ;
             ServerLogSeverity severity = entry.getSeverity();
@@ -104,15 +109,15 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
                 continue;
             }
                 
-            AsciiDoctorMarker error = new AsciiDoctorMarker(-1, -1, entry.getMessage());
+            AsciiDoctorMarker marker = new ASPMarker(-1, -1, entry.getMessage());
             File file = entry.getFile();
             IFile resource = null;
             if (file!=null) {
                 resource = EclipseResourceHelper.DEFAULT.toIFile(file);
-                AsciiDoctorEditorUtil.addAsciiDoctorMarker(entry.getLineNumber(), error, eclipseSeverity,resource);
+                AsciiDoctorEditorUtil.addAsciiDoctorMarker(entry.getLineNumber(), marker, eclipseSeverity,resource);
             }else {
                 /* fallback, we need a resource to have markers */
-                AsciiDoctorEditorUtil.addAsciiDoctorMarker(EclipseUtil.getActiveEditor(),entry.getLineNumber(),error,eclipseSeverity);
+                AsciiDoctorEditorUtil.addAsciiDoctorMarker(EclipseUtil.getActiveEditor(),entry.getLineNumber(),marker,eclipseSeverity);
             }
         }
         

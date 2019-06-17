@@ -39,14 +39,17 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.script.ASPMarker;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.ui.UnpersistedMarkerHelper;
 
 public class AsciiDoctorEditorUtil {
 	private static final IProgressMonitor NULL_MONITOR = new NullProgressMonitor();
 
-	private static UnpersistedMarkerHelper scriptProblemMarkerHelper = new UnpersistedMarkerHelper(
+	private static UnpersistedMarkerHelper validationMarkerHelper = new UnpersistedMarkerHelper(
 			"de.jcup.asciidoctoreditor.script.problem");
+	private static UnpersistedMarkerHelper aspMarkerHelper = new UnpersistedMarkerHelper(
+	        "de.jcup.asciidoctoreditor.asp.marker");
 
 	public static AsciiDoctorEditorPreferences getPreferences() {
 		return AsciiDoctorEditorPreferences.getInstance();
@@ -119,7 +122,8 @@ public class AsciiDoctorEditorUtil {
 		if (editorResource == null) {
 			return;
 		}
-		scriptProblemMarkerHelper.removeMarkers(editorResource);
+		validationMarkerHelper.removeMarkers(editorResource);
+		aspMarkerHelper.removeMarkers(editorResource);
 	}
 
 	public static void addAsciiDoctorMarker(IEditorPart editor, int line, AsciiDoctorMarker marker, int severity) {
@@ -147,8 +151,13 @@ public class AsciiDoctorEditorUtil {
             return;
         }
 		try {
-			scriptProblemMarkerHelper.createScriptMarker(severity, editorResource, marker.getMessage(), line,
-					marker.getStart(), +marker.getEnd());
+		    if (marker instanceof ASPMarker) {
+		        aspMarkerHelper.createScriptMarker(severity, editorResource, marker.getMessage(), line,
+		                marker.getStart(), +marker.getEnd());
+		    }else {
+		        validationMarkerHelper.createScriptMarker(severity, editorResource, marker.getMessage(), line,
+		                marker.getStart(), +marker.getEnd());
+		    }
 		} catch (CoreException e) {
 			logError("Was not able to add error markers", e);
 		}

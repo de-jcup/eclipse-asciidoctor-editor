@@ -99,7 +99,7 @@ public class AsciiDoctorEditorPreferences {
 						geditor.handleColorSettingsChanged();
 					}
 					if (context.validationChanged) {
-						geditor.getOutlineSupport().rebuildOutline();
+					    geditor.validate();
 					}
 				}
 			}
@@ -246,5 +246,17 @@ public class AsciiDoctorEditorPreferences {
 
     public boolean isIncludeValidationEnabled() {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_INCLUDES);
+    }
+
+    public boolean isImageValidationEnabled() {
+        return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_IMAGES);
+    }
+    
+    public boolean isDiagramValidationEnabled() {
+        return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_DIAGRAMS);
+    }
+
+    public boolean isShowingAspLogsAsMarkerInEditor() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR);
     }
 }

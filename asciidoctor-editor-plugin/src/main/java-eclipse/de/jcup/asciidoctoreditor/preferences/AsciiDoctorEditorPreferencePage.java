@@ -47,7 +47,7 @@ import de.jcup.asciidoctoreditor.presentation.AccessibleBooleanFieldEditor;
 import de.jcup.asciidoctoreditor.presentation.AccessibleDirectoryFieldEditor;
 
 /**
- * Parts are inspired by <a href=
+ * Parts are inspired b4444y <a href=
  * "https://github.com/eclipse/eclipse.jdt.ui/blob/master/org.eclipse.jdt.ui/ui/org/eclipse/jdt/internal/ui/preferences/JavaEditorAppearanceConfigurationBlock.java">org.eclipse.jdt.internal.ui.preferences.JavaEditorAppearanceConfigurationBlock
  * </a>
  * 
@@ -67,6 +67,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
     private ArrayList<MasterButtonSlaveSelectionListener> masterSlaveListeners = new ArrayList<>();
     private AccessibleDirectoryFieldEditor pathToAsciidocFieldEditor;
     private IntegerFieldEditor aspServerPort;
+    private AccessibleBooleanFieldEditor aspLogRecordsShownAsMarkerInEditor;
 
     public AsciiDoctorEditorPreferencePage() {
         super(GRID);
@@ -260,18 +261,25 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         groupX2.setLayoutData(groupX2Data);
         groupX2.setLayout(new GridLayout(2,false));
 
+        /* ------------------ */
         /* ASP server setting */
+        /* ------------------ */
         aspServerPort = new IntegerFieldEditor(P_ASP_SERVER_PORT.getId(), "ASP server port", groupX2);
         aspServerPort.getTextControl(groupX2).setToolTipText("Set port for ASP Server (Asciidoctor Server Protocol)");
         aspServerPort.setValidRange(4000, 65536);
         addField(aspServerPort);
-
-        AccessibleBooleanFieldEditor useInstalledAsciidoctor = new AccessibleBooleanFieldEditor(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), "Use installed asciidoctor", devNull1);
+        
+        
+        aspLogRecordsShownAsMarkerInEditor = new AccessibleBooleanFieldEditor(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), "ASP log records shown as marker in editor", groupX2);
+        addField(aspLogRecordsShownAsMarkerInEditor);
+        
+        AccessibleBooleanFieldEditor useInstalledAsciidoctor = new AccessibleBooleanFieldEditor(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), "Use installed asciidoctor instead ASP", devNull1);
         useInstalledAsciidoctor.getDescriptionControl(devNull1).setToolTipText("When enabled the installed asciidoctor will be used instead of ASP variant.\n\n"
                 + "Be aware about adding correct setup for your CLI arguments in preferences!");
         addField(useInstalledAsciidoctor);
 
         createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), aspServerPort.getTextControl(groupX2), false,true);
+        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), aspLogRecordsShownAsMarkerInEditor.getChangeControl(groupX2), false,true);
 
         /* ----------- */
         Composite group2 = new Composite(group, SWT.NONE);

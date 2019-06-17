@@ -93,6 +93,7 @@ import de.jcup.asciidoctoreditor.preview.EnsureFileRunnable;
 import de.jcup.asciidoctoreditor.preview.ScrollSynchronizer;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideIternalPreviewRunner;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
@@ -470,12 +471,42 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         File file = new File(diagramRootDirectory, fileName);
         openFileWithEclipseDefault(file);
     }
+    
+    /**
+     * @return diagram path as string, or <code>null</code>
+     */
+    public String getDiagramPathOrNull() {
+        AsciiDoctorProviderContext context = getWrapper().getContext();
+        File editorFile = getEditorFileOrNull();
+        if (editorFile==null) {
+            return null;
+        }
+        context.setAsciidocFile(editorFile);
+        File rootDir = context.getDiagramProvider().getDiagramRootDirectory();
+        if (rootDir==null) {
+            return null;
+        }
+        return rootDir.getAbsolutePath();
+    }
 
+    /**
+     * @return images path as string, or <code>null</code>
+     */
+    public String getImagesPathOrNull() {
+        AsciiDoctorProviderContext context = getWrapper().getContext();
+        File editorFile = getEditorFileOrNull();
+        if (editorFile==null) {
+            return null;
+        }
+        context.setAsciidocFile(editorFile);
+        return context.getImageProvider().getCachedSourceImagesPath();
+    }
+    
     public void openImage(String fileName) {
         if (fileName == null) {
             return;
         }
-        String imagespath = getWrapper().getContext().getImageProvider().getCachedSourceImagesPath();
+        String imagespath = getImagesPathOrNull();
         File file = new File(imagespath, fileName);
         openFileWithEclipseDefault(file);
     }
@@ -578,8 +609,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         sashForm.setOrientation(wanted);
     }
 
+    /**
+     * Cleans validation errors and does rebuild outline and validate again
+     */
     public void validate() {
-        outlineSupport.rebuildOutline();
+        removeValidationErrors();
+        rebuildOutlineAndValidate();
     }
 
     protected ContentTransformer createCustomContentTransformer() {
@@ -621,24 +656,32 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         } else {
             editorId = file.getFullPath().toFile().hashCode();
         }
-        outlineSupport.rebuildOutline();
         if (browserAccess == null) {
             /*
              * happens when eclipse is starting editors opened before are initialized. The
              * createPartControl is not already called
              */
+            validate();
             return;
         }
         buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
     }
 
+
     @Override
     protected void editorSaved() {
         super.editorSaved();
-
-        outlineSupport.rebuildOutline();
-
+        
         buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
+    }
+
+    public void removeValidationErrors() {
+        AsciiDoctorEditorUtil.removeScriptErrors(this);
+        
+    }
+    
+    public void rebuildOutlineAndValidate() {
+        outlineSupport.rebuildOutlineAndValidate();
     }
 
     public void ensureInternalBrowserShowsURL(IProgressMonitor monitor) {

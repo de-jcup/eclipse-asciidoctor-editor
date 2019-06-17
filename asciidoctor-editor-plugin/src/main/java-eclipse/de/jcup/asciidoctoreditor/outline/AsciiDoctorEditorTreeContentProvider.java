@@ -23,7 +23,7 @@ import java.util.Map;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorInclude;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorFileReference;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.parser.ParseToken;
@@ -125,7 +125,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 	}
 
 	protected void addIncludes(AsciiDoctorScriptModel model, List<Item> list) {
-		for (AsciiDoctorInclude include : model.getIncludes()) {
+		for (AsciiDoctorFileReference include : model.getIncludes()) {
 			Item item = new Item();
 			item.name = include.getLabel();
 			item.type = ItemType.INCLUDE;

@@ -24,7 +24,9 @@ import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 public class AsciiDoctorScriptModel {
 
 	Collection<AsciiDoctorHeadline> headlines = new ArrayList<>();
-	Collection<AsciiDoctorInclude> includes = new ArrayList<>(); 
+	Collection<AsciiDoctorFileReference> includes = new ArrayList<>(); 
+	Collection<AsciiDoctorFileReference> images = new ArrayList<>(); 
+	Collection<AsciiDoctorFileReference> diagrams = new ArrayList<>(); 
 	Collection<AsciiDoctorMarker> errors = new ArrayList<>();
 	Collection<AsciiDoctorInlineAnchor> inlineAnchors = new ArrayList<>();
 	List<ParseToken> debugTokenList;
@@ -33,9 +35,16 @@ public class AsciiDoctorScriptModel {
 		return headlines;
 	}
 
-	public Collection<AsciiDoctorInclude> getIncludes() {
+	public Collection<AsciiDoctorFileReference> getIncludes() {
 		return includes;
 	}
+	public Collection<AsciiDoctorFileReference> getImages() {
+	    return images;
+	}
+	
+	public Collection<AsciiDoctorFileReference> getDiagrams() {
+        return diagrams;
+    }
 	
 	public Collection<AsciiDoctorInlineAnchor> getInlineAnchors() {
 		return inlineAnchors;
@@ -64,6 +73,8 @@ public class AsciiDoctorScriptModel {
 	public boolean hasDebugTokens() {
 		return debugTokenList != null;
 	}
+
+    
 
 
 }

@@ -1,4 +1,4 @@
-include::subfolder2/subfolder3/subfolder3-file1.adoc[]
+include::subfolder2/subfolder3/subfolder3-file1.adoc[]  
 
 [plantuml]
 ----

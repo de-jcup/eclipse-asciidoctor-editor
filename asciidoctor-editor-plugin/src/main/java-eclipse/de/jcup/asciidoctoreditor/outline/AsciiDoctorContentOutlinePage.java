@@ -101,7 +101,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 		 * (async)
 		 */
 		if (input == null && editor != null) {
-			editor.getOutlineSupport().rebuildOutline();
+			editor.getOutlineSupport().rebuildOutlineAndValidate();
 		}
 
 	}

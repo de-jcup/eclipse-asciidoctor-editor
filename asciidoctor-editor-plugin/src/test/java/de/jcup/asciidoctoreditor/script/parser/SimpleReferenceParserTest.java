@@ -22,13 +22,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.jcup.asciidoctoreditor.script.AsciiDoctorInclude;
-public class SimpleIncludeParserTest {
-	private SimpleIncludeParser parserToTest;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorFileReference;
+public class SimpleReferenceParserTest {
+	private SimpleReferenceParser parserToTest;
 	
 	@Before
 	public void before(){
-		parserToTest=new SimpleIncludeParser();
+		parserToTest=SimpleReferenceParser.INCLUDE_PARSER;
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class SimpleIncludeParserTest {
 		//.............01234567890 123456789012
 
 		/* execute */
-		List<AsciiDoctorInclude> result = parserToTest.parse(text);
+		List<AsciiDoctorFileReference> result = parserToTest.parse(text);
 
 		/* test */
 		/* @formatter:off*/
@@ -60,7 +60,7 @@ public class SimpleIncludeParserTest {
 		//.............01234567890123456789 012345678901 23456789012345678901
 
 		/* execute */
-		List<AsciiDoctorInclude> result = parserToTest.parse(text);
+		List<AsciiDoctorFileReference> result = parserToTest.parse(text);
 
 		/* test */
 		/* @formatter:off*/
@@ -86,7 +86,7 @@ public class SimpleIncludeParserTest {
 		//.............0123456789 0123456789012345678
 
 		/* execute */
-		List<AsciiDoctorInclude> result = parserToTest.parse(text);
+		List<AsciiDoctorFileReference> result = parserToTest.parse(text);
 
 		/* test */
 		/* @formatter:off*/

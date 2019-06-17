@@ -33,6 +33,7 @@ public class RebuildAsciiDocViewAction extends ToolbarAction {
 		asciiDoctorEditor.resetCache();
 		asciiDoctorEditor.refreshAsciiDocView();
 		initUI();
+		
 	}
 
 	private void initUI() {

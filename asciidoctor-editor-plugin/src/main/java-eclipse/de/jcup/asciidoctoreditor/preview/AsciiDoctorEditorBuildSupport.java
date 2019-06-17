@@ -48,7 +48,7 @@ import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupport {
     private Pattern tempFolderPattern;
-
+    private BuildDoneListener revalidateAfterBuild = new RevalidateAfterBuildListener();
     public AsciiDoctorEditorBuildSupport(AsciiDoctorEditor editor) {
         super(editor);
     }
@@ -69,7 +69,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
     }
 
     public void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode, boolean internalPreview) {
-        showRebuildingInPreviewAndTriggerFullRebuildAsJob(mode, AsciiDoctorBackendType.HTML5, false,internalPreview, null);
+        showRebuildingInPreviewAndTriggerFullRebuildAsJob(mode, AsciiDoctorBackendType.HTML5, false,internalPreview, revalidateAfterBuild);
     }
 
     public boolean isAutoBuildEnabledForExternalPreview() {
@@ -83,15 +83,16 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
      * @param forceInitialize when <code>false</code> build is only done when not already building
      */
     protected void showRebuildingInPreviewAndTriggerFullRebuildAsJob(BuildAsciiDocMode mode, AsciiDoctorBackendType backend, boolean forceInitialize, boolean internalPreview, BuildDoneListener buildListener) {
+        getEditor().validate();
 
         boolean rebuildEnabled = true;
         if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !getEditor().isInternalPreview()) {
             rebuildEnabled = isAutoBuildEnabledForExternalPreview();
         }
         if (!rebuildEnabled) {
+            /* at least validate + rebuild outline */
             return;
         }
-
         if (!forceInitialize && getEditor().getOutputBuildSemaphore().availablePermits() == 0) {
             /* already rebuilding -so ignore */
             return;
@@ -402,6 +403,15 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             logError("Was not able to write transformed file:" + filename, e);
             return null;
         }
+    }
+    
+    private class RevalidateAfterBuildListener implements BuildDoneListener{
+
+        @Override
+        public void buildDone() {
+           getEditor().rebuild();
+        }
+        
     }
 
 }
