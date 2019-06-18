@@ -13,4 +13,5 @@
    <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha2.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha2"/>
    <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha3.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha3"/>
    <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha4.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha4"/>
+   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha5.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha5"/>
 </site>
