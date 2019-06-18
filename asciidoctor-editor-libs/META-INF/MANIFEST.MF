@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Asciidoctor editor libs
+Bundle-Name: Asciidoctor editor library plugin
 Bundle-SymbolicName: de.jcup.asciidoctoreditor.libs
-Bundle-Version: 2.0.0
+Bundle-Version: 2.0.1
 Bundle-Vendor: Albert Tregnaghi
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: de.jcup.asciidoctoreditor.libs
