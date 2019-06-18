@@ -25,13 +25,7 @@ import org.osgi.framework.Bundle;
 import de.jcup.eclipse.commons.EclipseResourceHelper;
 
 /**
- * This wrapper is used to have correct access to asciidoctor inside
- * OSGI/eclipse.<br>
- * <br>
- * <u>In a nutshell: </u><br>
- * <ol>
- * <li>Using the lib plugin</li>
- * </ol>
+ * This installer is used to install libraries (or server) into user home dir<br>
  * <br>
  * 
  * @author Albert Tregnaghi
@@ -100,7 +94,7 @@ public class PluginContentInstaller {
             targetVersionCSSfolder.mkdirs();
 
             try {
-                copyFolderOrFail(targetVersionCSSfolder, "asp",LIBS_PLUGIN_ID);
+                copyFolderOrFail(targetVersionCSSfolder, "libs",LIBS_PLUGIN_ID);
             } catch (IOException e) {
                 throw new IllegalStateException("Not able to install Server files from libs plugin", e);
             }
