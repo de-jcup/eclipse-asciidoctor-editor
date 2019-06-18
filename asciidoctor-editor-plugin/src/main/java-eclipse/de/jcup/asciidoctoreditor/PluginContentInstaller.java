@@ -129,6 +129,9 @@ public class PluginContentInstaller {
 	
 	private void copyFolderOrFail(File targetFolder, String sourceFolder, String pluginID) throws IOException {
 		File folderInPlugin = EclipseResourceHelper.DEFAULT.getFileInPlugin(sourceFolder, pluginID);
+		if (folderInPlugin == null) {
+            throw new IllegalStateException("sourceFolder:" + sourceFolder +" not found in plugin!");
+        }
 		if (!folderInPlugin.exists()) {
 			throw new IllegalStateException("folder:" + folderInPlugin.getAbsolutePath() + " does not exist!");
 		}
