@@ -86,7 +86,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
                 return;
             }
         }else {
-            File aspFolder = PluginContentInstaller.INSTANCE.getASPFolder();
+            File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
             File aspServer = new File(aspFolder,"asp-server-asciidoctorj.jar");
             aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
             aspServerAdapter.setPort(AsciiDoctorEditorPreferences.getInstance().getAspServerPort());

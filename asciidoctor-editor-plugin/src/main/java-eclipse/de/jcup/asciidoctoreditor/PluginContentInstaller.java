@@ -32,6 +32,9 @@ import de.jcup.eclipse.commons.EclipseResourceHelper;
  *
  */
 public class PluginContentInstaller {
+    private static final String CSS = "css";
+    private static final String ADDONS = "addons";
+    private static final String LIBS = "libs";
     private static final String CSS_PLUGIN_ID = "de.jcup.asciidoctoreditor.css";
 	private static final String LIBS_PLUGIN_ID = "de.jcup.asciidoctoreditor.libs";
 	public static final PluginContentInstaller INSTANCE = new PluginContentInstaller();
@@ -40,9 +43,9 @@ public class PluginContentInstaller {
 		
 	}
 
-	public File getASPFolder(){
+	public File getLibsFolder(){
 		String versionName = getLibVersionName();
-		return ensureServerArtefactsAreAvailable(versionName);
+		return ensureLibsAreAvailable(versionName);
 	}
 	
 	public File getAddonsFolder(){
@@ -71,14 +74,14 @@ public class PluginContentInstaller {
 }
 	
 	private File ensureCSSArtefactsAreAvailable(String versionName) {
-        File cssFolder = getHomeSubSubFolder("css");
+        File cssFolder = getHomeSubSubFolder(CSS);
 
         File targetVersionCSSfolder = new File(cssFolder, versionName);
         if (!targetVersionCSSfolder.exists()) {
             targetVersionCSSfolder.mkdirs();
 
             try {
-                copyFolderOrFail(targetVersionCSSfolder, "css",CSS_PLUGIN_ID);
+                copyFolderOrFail(targetVersionCSSfolder, CSS,CSS_PLUGIN_ID);
             } catch (IOException e) {
                 throw new IllegalStateException("Not able to install CSS files from css plugin", e);
             }
@@ -86,15 +89,15 @@ public class PluginContentInstaller {
         }
         return targetVersionCSSfolder;
 }
-	private File ensureServerArtefactsAreAvailable(String versionName) {
-        File cssFolder = getHomeSubSubFolder("asp");
+	private File ensureLibsAreAvailable(String versionName) {
+        File libsFolder = getHomeSubSubFolder(LIBS);
 
-        File targetVersionCSSfolder = new File(cssFolder, versionName);
+        File targetVersionCSSfolder = new File(libsFolder, versionName);
         if (!targetVersionCSSfolder.exists()) {
             targetVersionCSSfolder.mkdirs();
 
             try {
-                copyFolderOrFail(targetVersionCSSfolder, "libs",LIBS_PLUGIN_ID);
+                copyFolderOrFail(targetVersionCSSfolder, LIBS,LIBS_PLUGIN_ID);
             } catch (IOException e) {
                 throw new IllegalStateException("Not able to install Server files from libs plugin", e);
             }
@@ -105,14 +108,14 @@ public class PluginContentInstaller {
 	
 	private File ensureEditorAddonsAreAvailable() {
 		String versionName = getEditorVersionName();
-		File cssFolder = getHomeSubSubFolder("addons");
+		File cssFolder = getHomeSubSubFolder(ADDONS);
 
 		File targetVersionAddonsfolder = new File(cssFolder, versionName);
 		if (!targetVersionAddonsfolder.exists()) {
 			targetVersionAddonsfolder.mkdirs();
 
 			try {
-				copyFolderOrFail(targetVersionAddonsfolder, "addons",AsciiDoctorEditorActivator.PLUGIN_ID);
+				copyFolderOrFail(targetVersionAddonsfolder, ADDONS,AsciiDoctorEditorActivator.PLUGIN_ID);
 			} catch (IOException e) {
 				throw new IllegalStateException("Not able to install addon files from editor plugin", e);
 			}
