@@ -23,6 +23,10 @@ public class ASPServerAdapter {
     public ASPServerAdapter() {
         this.client = new AspClient();
     }
+    
+    public AspClient getClient() {
+        return client;
+    }
 
     public void setPort(int port) {
         if (this.port == port) {
@@ -136,7 +140,7 @@ public class ASPServerAdapter {
                 process = pb.start();
                 int exitCode = process.waitFor();
                 if (consoleAdapter != null) {
-                    consoleAdapter.output(">> Running ASP Server at port "+port+" stopped, exit code was:" + exitCode);
+                    consoleAdapter.output(">> Former running ASP Server at port "+port+" stopped, exit code was:" + exitCode);
                 }
             } catch (Exception e) {
                 String message = ">> FATAL ASP server connection failure :" + e.getMessage();

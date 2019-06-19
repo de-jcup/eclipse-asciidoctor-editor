@@ -53,10 +53,11 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     private Map<StyledText, IConsolePageParticipant> viewers = new HashMap<StyledText, IConsolePageParticipant>();
 
     private AsciiDoctorEditorTaskTagsSupportProvider taskSupportProvider;
-    private ASPServerAdapter aspServerAdapter = new ASPServerAdapter();
+    private ASPServerAdapter aspServerAdapter;
 
     public AsciiDoctorEditorActivator() {
         colorManager = new ColorManager();
+        aspServerAdapter =  new ASPServerAdapter();
         templateSupportProvider = new TemplateSupportProvider(new AsciidoctorEditorTemplateSupportConfig(), this);
         taskSupportProvider = new AsciiDoctorEditorTaskTagsSupportProvider(this);
         TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
@@ -64,6 +65,10 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
 
     public ColorManager getColorManager() {
         return colorManager;
+    }
+    
+    public ASPServerAdapter getAspServerAdapter() {
+        return aspServerAdapter;
     }
 
     public void start(BundleContext context) throws Exception {
@@ -73,6 +78,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
 
         taskSupportProvider.getTodoTaskSupport().install();
     }
+    
     public void updateASPServerStart() {
         Thread t = new Thread(()->internalUpdateASPServerStart(),"Update ASP server start");
         t.start();

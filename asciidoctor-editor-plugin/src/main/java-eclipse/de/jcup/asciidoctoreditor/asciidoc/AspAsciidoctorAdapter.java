@@ -16,12 +16,12 @@
 package de.jcup.asciidoctoreditor.asciidoc;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 
+import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.ASPMarker;
@@ -38,9 +38,6 @@ import de.jcup.eclipse.commons.EclipseResourceHelper;
 
 public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
     
-    private AspClient client = new  AspClient();
-    
-
     @Override
     public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options) {
         try {
@@ -49,12 +46,18 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             }else {
                 AsciiDoctorConsoleUtil.output( "ASP: Processing file:"+editorFileOrNull.getAbsolutePath());
             }
-            Response response = client.convertFile(asciiDocFile.toPath(), options);
+            Response response = getClient().convertFile(asciiDocFile.toPath(), options);
             handleServerLog(response);
         } catch (AspClientException e) {
            AsciiDoctorConsoleUtil.error(e.getMessage());
            throw new ASPAsciidoctorException("Cannot convert file"+asciiDocFile,e);
         }
+    }
+    
+    public AspClient getClient() {
+        AsciiDoctorEditorActivator activator = AsciiDoctorEditorActivator.getDefault();
+        ASPServerAdapter aspServerAdapter = activator.getAspServerAdapter();
+        return aspServerAdapter.getClient();
     }
     
     private void handleServerLog(Response response) {
