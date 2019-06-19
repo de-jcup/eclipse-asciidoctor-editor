@@ -106,7 +106,7 @@ public class ASPServerAdapter {
         
         public void run() {
             String javaCommand = null;
-            if (pathToJava == null || pathToJava.isEmpty()) {
+            if (pathToJava == null || pathToJava.trim().isEmpty()) {
                 javaCommand = "java";
             }else {
                 javaCommand=pathToJava+"/java";

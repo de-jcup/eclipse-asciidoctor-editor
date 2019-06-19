@@ -96,7 +96,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
             File aspServer = new File(aspFolder,"asp-server-asciidoctorj.jar");
            
             String pathToJava= AsciiDoctorEditorPreferences.getInstance().getPathToJavaForASPLaunch();
-            aspServerAdapter.setPathToJava(pathToJava.trim());
+            aspServerAdapter.setPathToJava(pathToJava);
             aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
             aspServerAdapter.setPort(AsciiDoctorEditorPreferences.getInstance().getAspServerPort());
             aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);

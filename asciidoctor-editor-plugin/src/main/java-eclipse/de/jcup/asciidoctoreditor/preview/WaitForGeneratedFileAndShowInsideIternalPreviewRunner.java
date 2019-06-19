@@ -49,7 +49,7 @@ public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements En
 					// after 20 seconds there seems to be no chance to get
 					// the generated preview file back
 					browserAccess.safeBrowserSetText(
-							"<html><body><h3>Preview file generation timed out, so preview not available.</h3></body></html>");
+							"<html><body><h3>Preview file generation timed out, so preview not available at:\n<pre>"+getPreviewFile()+"</pre></h3></body></html>");
 					return;
 				}
 				Thread.sleep(300);

@@ -37,83 +37,90 @@ import de.jcup.asp.client.AspClientException;
 import de.jcup.eclipse.commons.EclipseResourceHelper;
 
 public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
-    
+
     @Override
     public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options) {
         try {
-            if (editorFileOrNull==null) {
-                AsciiDoctorConsoleUtil.output( "ASP: Processing content");
-            }else {
-                AsciiDoctorConsoleUtil.output( "ASP: Processing file:"+editorFileOrNull.getAbsolutePath());
+            if (editorFileOrNull == null) {
+                AsciiDoctorConsoleUtil.output("ASP: Processing content");
+            } else {
+                AsciiDoctorConsoleUtil.output("ASP: Processing file:" + editorFileOrNull.getAbsolutePath());
             }
             Response response = getClient().convertFile(asciiDocFile.toPath(), options);
             handleServerLog(response);
         } catch (AspClientException e) {
-           AsciiDoctorConsoleUtil.error(e.getMessage());
-           throw new ASPAsciidoctorException("Cannot convert file"+asciiDocFile,e);
+            Throwable rootCause = e;
+            while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+                rootCause = rootCause.getCause();
+            }
+            String rootMessage="";
+            if (rootCause!=null && rootCause!=e) {
+                rootMessage=rootCause.getMessage();
+            }
+            AsciiDoctorConsoleUtil.error(e.getMessage()+rootMessage);
+            throw new ASPAsciidoctorException("Cannot convert file" + asciiDocFile, e);
         }
     }
-    
+
     public AspClient getClient() {
         AsciiDoctorEditorActivator activator = AsciiDoctorEditorActivator.getDefault();
         ASPServerAdapter aspServerAdapter = activator.getAspServerAdapter();
         return aspServerAdapter.getClient();
     }
-    
+
     private void handleServerLog(Response response) {
         ServerLog serverLog = response.getServerLog();
-        EclipseUtil.safeAsyncExec(()->{
+        EclipseUtil.safeAsyncExec(() -> {
             handleServerLogAsync(serverLog);
         });
-        
+
     }
 
     private void handleServerLogAsync(ServerLog serverLog) {
         if (!AsciiDoctorEditorPreferences.getInstance().isShowingAspLogsAsMarkerInEditor()) {
             return;
         }
-        for (ServerLogEntry entry: serverLog.getEntries()) {
-            int eclipseSeverity = -1 ;
+        for (ServerLogEntry entry : serverLog.getEntries()) {
+            int eclipseSeverity = -1;
             ServerLogSeverity severity = entry.getSeverity();
-            switch(severity) {
+            switch (severity) {
             case ERROR:
             case FATAL:
-                eclipseSeverity=IMarker.SEVERITY_ERROR;
+                eclipseSeverity = IMarker.SEVERITY_ERROR;
                 break;
             case INFO:
-                eclipseSeverity=IMarker.SEVERITY_INFO;
+                eclipseSeverity = IMarker.SEVERITY_INFO;
                 break;
             case WARN:
-                eclipseSeverity=IMarker.SEVERITY_WARNING;
+                eclipseSeverity = IMarker.SEVERITY_WARNING;
                 break;
             case UNKNOWN:
             case DEBUG:
             default:
                 break;
             }
-            String message = "ASP: "+severity+": "+entry.getMessage();
-            if (eclipseSeverity==IMarker.SEVERITY_ERROR){
+            String message = "ASP: " + severity + ": " + entry.getMessage();
+            if (eclipseSeverity == IMarker.SEVERITY_ERROR) {
                 AsciiDoctorConsoleUtil.error(message);
-            }else {
+            } else {
                 AsciiDoctorConsoleUtil.output(message);
             }
-            if (eclipseSeverity==-1) {
+            if (eclipseSeverity == -1) {
                 continue;
             }
-                
+
             AsciiDoctorMarker marker = new ASPMarker(-1, -1, entry.getMessage());
             File file = entry.getFile();
             IFile resource = null;
-            if (file!=null) {
+            if (file != null) {
                 resource = EclipseResourceHelper.DEFAULT.toIFile(file);
-                AsciiDoctorEditorUtil.addAsciiDoctorMarker(entry.getLineNumber(), marker, eclipseSeverity,resource);
-            }else {
+                AsciiDoctorEditorUtil.addAsciiDoctorMarker(entry.getLineNumber(), marker, eclipseSeverity, resource);
+            } else {
                 /* fallback, we need a resource to have markers */
-                AsciiDoctorEditorUtil.addAsciiDoctorMarker(EclipseUtil.getActiveEditor(),entry.getLineNumber(),marker,eclipseSeverity);
+                AsciiDoctorEditorUtil.addAsciiDoctorMarker(EclipseUtil.getActiveEditor(), entry.getLineNumber(), marker, eclipseSeverity);
             }
         }
-        
-    }
 
+    }
 
 }

@@ -148,7 +148,7 @@ public class AsciiDoctorWrapper {
 	 * Resets cached values: baseDir, imagesDir
 	 */
 	public void resetCaches() {
-		context.reset();
+	    context.reset();
 	}
 
 	public Path getTempFolder() {
