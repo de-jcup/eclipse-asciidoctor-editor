@@ -18,30 +18,30 @@ package de.jcup.asciidoctoreditor.provider;
 import java.io.File;
 import java.util.Map;
 
-public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider{
-	
-	private Map<String, Object> cachedAttributes;
+public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
-	AsciiDoctorAttributesProvider(AsciiDoctorProviderContext context){
-		super(context);
-	}
+    private Map<String, Object> cachedAttributes;
 
-	protected Map<String, Object> getCachedAttributes() {
-		if (cachedAttributes == null) {
-			cachedAttributes = resolveAttributes(getContext().getBaseDir());
-		}
-		return cachedAttributes;
-	}
+    AsciiDoctorAttributesProvider(AsciiDoctorProviderContext context) {
+        super(context);
+    }
 
-	protected Map<String, Object> resolveAttributes(File baseDir) {
-	    getContext().getLogAdapter().resetTimeDiff();
-		Map<String,Object> map = getContext().getAsciiDoctor().resolveAttributes(baseDir);
-		getContext().getLogAdapter().logTimeDiff("resolved attributes from base dir:"+baseDir);
-		return map;
-	}
+    protected Map<String, Object> getCachedAttributes() {
+        if (cachedAttributes == null) {
+            cachedAttributes = resolveAttributes(getContext().getBaseDir());
+        }
+        return cachedAttributes;
+    }
 
-	public void reset() {
-		cachedAttributes=null;
-	}
+    protected Map<String, Object> resolveAttributes(File baseDir) {
+        getContext().getLogAdapter().resetTimeDiff();
+        Map<String, Object> map = getContext().getAsciiDoctor().resolveAttributes(baseDir);
+        getContext().getLogAdapter().logTimeDiff("resolved attributes from base dir:" + baseDir);
+        return map;
+    }
+
+    public void reset() {
+        cachedAttributes = null;
+    }
 
 }

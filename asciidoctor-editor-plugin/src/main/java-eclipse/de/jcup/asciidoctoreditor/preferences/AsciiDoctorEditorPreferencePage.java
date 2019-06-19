@@ -65,9 +65,12 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
     }
 
     private ArrayList<MasterButtonSlaveSelectionListener> masterSlaveListeners = new ArrayList<>();
-    private AccessibleDirectoryFieldEditor pathToAsciidocFieldEditor;
+    private AccessibleDirectoryFieldEditor pathToInstalledAsciidoctor;
     private IntegerFieldEditor aspServerPort;
     private AccessibleBooleanFieldEditor aspLogRecordsShownAsMarkerInEditor;
+    private AccessibleDirectoryFieldEditor pathToJavaForASPlaunch;
+    private AccessibleBooleanFieldEditor useInstalledAsciidoctor;
+    private Composite baseComposite;
 
     public AsciiDoctorEditorPreferencePage() {
         super(GRID);
@@ -88,7 +91,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
     @Override
     public void performDefaults() {
         super.performDefaults();
-        pathToAsciidocFieldEditor.setStringValue("");
+        pathToInstalledAsciidoctor.setStringValue("");
         masterSlaveListeners.forEach((a) -> a.updateSlaveComponent());
 
     }
@@ -98,7 +101,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         boolean ok = super.performOk();
         // we handle the directory field special, not added as field, so setting default
         // in this way
-        AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR, pathToAsciidocFieldEditor.getStringValue());
+        AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR, pathToInstalledAsciidoctor.getStringValue());
         AsciiDoctorEditorActivator.getDefault().updateASPServerStart();
         return ok;
     }
@@ -123,13 +126,23 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
     @Override
     protected void createFieldEditors() {
-        Composite composite = createComposite();
+        baseComposite = createComposite();
 
-        createUIGroup(composite);
-        createExternalPreviewParts(composite);
-        createAsciidoctorGroup(composite);
-        createSpacer(composite);
-
+        createUIGroup(baseComposite);
+        createExternalPreviewParts(baseComposite);
+        
+        createSpacer(baseComposite);
+        createAsciidoctorGroup(baseComposite);
+        createSpacer(baseComposite);
+//        
+        createASPGroup(baseComposite);
+//        createSpacer(baseComposite);
+//        
+        createInstalledAsciidoctorGroup(baseComposite);
+    }
+    
+    public Composite getBaseComposite() {
+        return baseComposite;
     }
 
     protected Composite createComposite() {
@@ -215,64 +228,121 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         super.checkState();
         // we handle the directory field special, not added as field, so validating
         // value in this way
-        if (!pathToAsciidocFieldEditor.checkState()) {
+        if (pathToInstalledAsciidoctor !=null && !pathToInstalledAsciidoctor.checkState()) {
             setValid(false);
         }
+        
+        if (pathToJavaForASPlaunch !=null && !pathToJavaForASPlaunch.checkState()) {
+            setValid(false);
+        }
+//        String path = pathToInstalledAsciidoctor.getStringValue();
+//        if (path==null || path.isEmpty()) {
+//            return;
+//        }
+//        File file = new File(path);
+//        if (!file.exists()) {
+//            setErrorMessage("Path to java invalid - executable does not exist");
+//        }else {
+//            String filename=file.getName();
+//            if ("java".contentEquals(filename) || "java.exe".contentEquals(filename)) {
+//                return;
+//            }
+//            setErrorMessage("Path to java invalid - not a java executable");
+//        }
     }
+    protected void createAsciidoctorGroup(Composite group) {
 
-    protected void createAsciidoctorGroup(Composite composite) {
-
-        Group group = new Group(composite, SWT.NONE);
-        group.setText("Asciidoctor");
-        group.setLayout(new GridLayout(1, false));
-        group.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-        Composite devNull1 = new Composite(group, SWT.NONE);
-        
-        Composite groupX2 = new Composite(devNull1, SWT.NONE);
-        GridData groupX2Data = new GridData(SWT.FILL, SWT.TOP, true, false);
-        groupX2.setLayoutData(groupX2Data);
-        groupX2.setLayout(new GridLayout(2,false));
-
-        /* ------------------ */
-        /* ASP server setting */
-        /* ------------------ */
-        aspServerPort = new IntegerFieldEditor(P_ASP_SERVER_PORT.getId(), "ASP server port", groupX2);
-        aspServerPort.getTextControl(groupX2).setToolTipText("Set port for ASP Server (Asciidoctor Server Protocol)");
-        aspServerPort.setValidRange(4000, 65536);
-        addField(aspServerPort);
-        
-        
-        aspLogRecordsShownAsMarkerInEditor = new AccessibleBooleanFieldEditor(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), "ASP log records shown as marker in editor", groupX2);
-        addField(aspLogRecordsShownAsMarkerInEditor);
-        
-        AccessibleBooleanFieldEditor useInstalledAsciidoctor = new AccessibleBooleanFieldEditor(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), "Use installed asciidoctor instead ASP", devNull1);
-        useInstalledAsciidoctor.getDescriptionControl(devNull1).setToolTipText("When enabled the installed asciidoctor will be used instead of ASP variant.\n\n"
+        useInstalledAsciidoctor = new AccessibleBooleanFieldEditor(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), "Use installed asciidoctor instead ASP", group);
+        useInstalledAsciidoctor.getDescriptionControl(group).setToolTipText("When enabled the installed asciidoctor will be used instead of ASP variant.\n\n"
                 + "Be aware about adding correct setup for your CLI arguments in preferences!");
         addField(useInstalledAsciidoctor);
 
-        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), aspServerPort.getTextControl(groupX2), false,true);
-        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), aspLogRecordsShownAsMarkerInEditor.getChangeControl(groupX2), false,true);
 
-        /* ----------- */
-        Composite group2 = new Composite(group, SWT.NONE);
-        GridData group2Data = new GridData(SWT.FILL, SWT.TOP, true, false);
-        group2.setLayoutData(group2Data);
-        group2.setLayout(new GridLayout());
+    }
+    
+    protected void createASPGroup(Composite composite) {
 
-        Composite devNull2a = new Composite(group2, SWT.NONE);
-        pathToAsciidocFieldEditor = new AccessibleDirectoryFieldEditor(P_PATH_TO_INSTALLED_ASCIICDOCTOR.getId(), "Path to Asciidoctor", devNull2a);
-        pathToAsciidocFieldEditor.getTextControl(devNull2a).setMessage("Not defined");
-        pathToAsciidocFieldEditor.getTextControl(devNull2a)
+        Group aspGroup = new Group(composite, SWT.NONE);
+        aspGroup.setText("ASP - Asciidoctor server protocol");
+        aspGroup.setLayout(new GridLayout(1, false));
+        aspGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        Composite content = aspGroup;
+        /* ------------------ */
+        /* ASP server setting */
+        /* ------------------ */
+        Composite serverportComposite = new Composite(content, SWT.NONE);
+        aspServerPort = new IntegerFieldEditor(P_ASP_SERVER_PORT.getId(), "ASP server port", serverportComposite);
+        aspServerPort.getTextControl(serverportComposite).setToolTipText("Set port for ASP Server (Asciidoctor Server Protocol)");
+        
+        aspServerPort.setValidRange(4000, 65536);
+        serverportComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        serverportComposite.setLayout(new GridLayout(2,false));
+        addField(aspServerPort);
+        
+        aspLogRecordsShownAsMarkerInEditor = new AccessibleBooleanFieldEditor(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), "ASP log records shown as marker in editor", content);
+        addField(aspLogRecordsShownAsMarkerInEditor);
+
+        Composite pathComposite = new Composite(content, SWT.NONE);
+        pathToJavaForASPlaunch = new AccessibleDirectoryFieldEditor(P_PATH_TO_JAVA_FOR_ASP_LAUNCH.getId(), "Path to Java", pathComposite);
+        pathToJavaForASPlaunch.getTextControl(pathComposite).setMessage("Use installed java");
+        pathToJavaForASPlaunch.getTextControl(pathComposite)
+                .setToolTipText("Complete path to another java runtime. This is the execution which is called to launch ASP server. If empty, installed java will be used");
+        pathToJavaForASPlaunch.setEmptyStringAllowed(true);
+        pathToJavaForASPlaunch.setErrorMessage("Invalid path to java runtime");
+        
+        pathToJavaForASPlaunch.getTextControl(pathComposite).addFocusListener(new FocusListener() {
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                /* when focus lost we must check */
+                checkState();
+            }
+
+            @Override
+            public void focusGained(FocusEvent e) {
+
+            }
+        });
+        
+        pathComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        pathComposite.setLayout(new GridLayout(3,false));
+//      not:addField(pathToInstalledAsciidoctor); >>>> when not adding field as field editor it looks good. so text must be set to preferences by special code * field editors s...cks!
+        pseudoAddField(pathToJavaForASPlaunch);
+        
+        Button changeControl = useInstalledAsciidoctor.getChangeControl(getBaseComposite());
+        createDependency(changeControl, aspLogRecordsShownAsMarkerInEditor.getChangeControl(content), false,true);
+        createDependency(changeControl, aspServerPort.getLabelControl(serverportComposite), false,true);
+        createDependency(changeControl, aspServerPort.getTextControl(serverportComposite), false,true);
+        createDependency(changeControl, pathToJavaForASPlaunch.getTextControl(pathComposite), false,true);
+        createDependency(changeControl, pathToJavaForASPlaunch.getLabelControl(pathComposite), false,true);
+        createDependency(changeControl, content, false,true);
+        
+
+
+    }
+
+
+    protected void createInstalledAsciidoctorGroup(Composite composite) {
+
+        Group installedAsciidoctorGroup = new Group(composite, SWT.NONE);
+        installedAsciidoctorGroup.setText("Installed Asciidoctor");
+        installedAsciidoctorGroup.setLayout(new GridLayout(1, false));
+        installedAsciidoctorGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        Composite content=installedAsciidoctorGroup;
+
+        Composite pathToInstalledComposite = new Composite(content, SWT.NONE);
+        pathToInstalledAsciidoctor = new AccessibleDirectoryFieldEditor(P_PATH_TO_INSTALLED_ASCIICDOCTOR.getId(), "Path to Asciidoctor", pathToInstalledComposite);
+        pathToInstalledAsciidoctor.getTextControl(pathToInstalledComposite).setMessage("Not defined");
+        pathToInstalledAsciidoctor.getTextControl(pathToInstalledComposite)
                 .setToolTipText("If not defined, installed asciidoctor instance must\nbe available from PATH in environment - otherwise it must be a valid directory.");
-        pathToAsciidocFieldEditor.setEmptyStringAllowed(true);
-        pathToAsciidocFieldEditor.setErrorMessage("Invalid path to installed Asciidoctor");
-        devNull2a.setLayout(new GridLayout(3, false));
-        devNull2a.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        pathToInstalledAsciidoctor.setEmptyStringAllowed(true);
+        pathToInstalledAsciidoctor.setErrorMessage("Invalid path to installed Asciidoctor");
+        pathToInstalledComposite.setLayout(new GridLayout(3, false));
+        pathToInstalledComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-//		not:addField(pathToAsciidocFieldEditor); >>>> when not adding field as field editor it looks good. so text must be set to preferences by special code * field editors s...cks!
-        pseudoAddField(pathToAsciidocFieldEditor);
-        pathToAsciidocFieldEditor.getTextControl(devNull2a).addFocusListener(new FocusListener() {
+//		not:addField(pathToInstalledAsciidoctor); >>>> when not adding field as field editor it looks good. so text must be set to preferences by special code * field editors s...cks!
+        pseudoAddField(pathToInstalledAsciidoctor);
+        pathToInstalledAsciidoctor.getTextControl(pathToInstalledComposite).addFocusListener(new FocusListener() {
 
             @Override
             public void focusLost(FocusEvent e) {
@@ -286,11 +356,8 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
             }
         });
 
-        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), pathToAsciidocFieldEditor.getTextControl(devNull2a), false);
-        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), pathToAsciidocFieldEditor.getLabelControl(devNull2a), false);
-        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), pathToAsciidocFieldEditor.getChangeControl(devNull2a), false);
 
-        Composite devNull2 = new Composite(group2, SWT.NONE);
+        Composite devNull2 = new Composite(content, SWT.NONE);
 
         MultiLineStringFieldEditor cliArguments = new MultiLineStringFieldEditor(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS.getId(), "Custom arguments for Asciidoctor CLI call", devNull2);
         cliArguments.getTextControl().setToolTipText("Setup arguments which shall be added to CLI call of installed asciidoctor instance.\n\nYou can use multiple lines.");
@@ -300,15 +367,19 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         devNull2.setLayout(new GridLayout());
         addField(cliArguments);
 
-        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), cliArguments.getTextControl(devNull2), false);
-        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), cliArguments.getLabelControl(devNull2), false);
-        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), group2, false);
-
-        Composite devNull3 = new Composite(group2, SWT.NONE);
+        Composite devNull3 = new Composite(content, SWT.NONE);
         AccessibleBooleanFieldEditor consoleEnabled = new AccessibleBooleanFieldEditor(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT.getId(), "Show console when asciidoctor writes to standard error",
                 devNull3);
         addField(consoleEnabled);
-        createDependency(useInstalledAsciidoctor.getChangeControl(devNull1), consoleEnabled.getChangeControl(devNull3), false);
+
+        Button changeControl = useInstalledAsciidoctor.getChangeControl(getBaseComposite());
+        createDependency(changeControl, pathToInstalledAsciidoctor.getTextControl(pathToInstalledComposite), false);
+        createDependency(changeControl, pathToInstalledAsciidoctor.getLabelControl(pathToInstalledComposite), false);
+        createDependency(changeControl, pathToInstalledAsciidoctor.getChangeControl(pathToInstalledComposite), false);
+        createDependency(changeControl, cliArguments.getTextControl(devNull2), false);
+        createDependency(changeControl, cliArguments.getLabelControl(devNull2), false);
+        createDependency(changeControl, consoleEnabled.getChangeControl(devNull3), false);
+        createDependency(changeControl, content, false);
 
     }
 

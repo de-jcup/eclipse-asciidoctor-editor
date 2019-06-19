@@ -262,4 +262,8 @@ public class AsciiDoctorEditorPreferences {
     public boolean isDynamicCodeAssistForIncludesEnabled() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES);
     }
+
+    public String getPathToJavaForASPLaunch() {
+        return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_FOR_ASP_LAUNCH);
+    }
 }

@@ -40,18 +40,6 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
     
     private AspClient client = new  AspClient();
     
-    @Override
-    public Map<String, Object> resolveAttributes(File baseDir) {
-        try {
-            Response response = client.resolveAttributes(baseDir);
-            Map<String, Object> attributes = response.getAttributes();
-            handleServerLog(response);
-            return attributes;
-        } catch (AspClientException e) {
-           AsciiDoctorConsoleUtil.error(e.getMessage());
-        }
-        return new HashMap<String, Object>();
-    }
 
     @Override
     public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options) {
@@ -65,6 +53,7 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             handleServerLog(response);
         } catch (AspClientException e) {
            AsciiDoctorConsoleUtil.error(e.getMessage());
+           throw new ASPAsciidoctorException("Cannot convert file"+asciiDocFile,e);
         }
     }
     

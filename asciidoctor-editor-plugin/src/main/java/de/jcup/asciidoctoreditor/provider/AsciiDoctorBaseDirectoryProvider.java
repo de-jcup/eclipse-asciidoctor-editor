@@ -18,8 +18,10 @@ package de.jcup.asciidoctoreditor.provider;
 import java.io.File;
 import java.io.FileFilter;
 
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileFilter;
+
 public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvider {
-	private static FileFilter ADOC_FILE_FILTER = new ADocFilter();
+	private static FileFilter ADOC_FILE_FILTER = new AsciiDocFileFilter(false);
 
 	AsciiDoctorBaseDirectoryProvider(AsciiDoctorProviderContext context) {
 		super(context);
@@ -71,34 +73,6 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
 			return false;
 		}
 		return true;
-	}
-
-	private static class ADocFilter implements FileFilter {
-
-		static final String[] validFileEndings = new String[] {".adoc", ".asciidoc"};
-		@Override
-		public boolean accept(File file) {
-			if (file == null || !file.isFile()) {
-				return false;
-			}
-			if(!hasValidFileEnding(file)) {
-				return false;
-			}
-			return true;
-		}
-		
-		
-		private boolean hasValidFileEnding(File file) {
-			String fileName = file.getName();
-			for (String validFileEnding : validFileEndings) {
-				if (fileName.endsWith(validFileEnding)) {
-					return true;
-				}
-			}
-			
-			return false;
-		}
-
 	}
 
 	public File findBaseDir() {

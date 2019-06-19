@@ -1,5 +1,6 @@
 package de.jcup.asciidoctoreditor.asciidoc;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -74,7 +75,7 @@ public class ASPServerAdapter {
             return false;
         }
         started = true;
-        Thread thread = new Thread(new ServerStartRunnable(), "ASP Server at port:" + port);
+        Thread thread = new Thread(new ServerStartRunnable(port), "ASP Server at port:" + port);
         thread.setDaemon(true);
         thread.start();
         return true;
@@ -89,22 +90,39 @@ public class ASPServerAdapter {
         if (!process.isAlive()) {
             return;
         }
-        if (consoleAdapter != null) {
-            consoleAdapter.output(">> Stopping ASP server");
-        }
         process.destroyForcibly();
         process = null;
     }
 
     private class ServerStartRunnable implements Runnable {
-
+        int port;
+        private ServerStartRunnable(int port){
+            this.port=port;
+        }
+        
         public void run() {
-            if (pathToJava == null) {
-                pathToJava = "java";
+            String javaCommand = null;
+            if (pathToJava == null || pathToJava.isEmpty()) {
+                javaCommand = "java";
+            }else {
+                javaCommand=pathToJava+"/java";
+                File test = new File(javaCommand);
+                if (! test.exists()) {
+                    if (consoleAdapter != null) {
+                        consoleAdapter.output(">> Not able to start java because not found on defined location:"+ javaCommand);
+                    }
+                    return;
+                }
+                if (! test.canExecute()) {
+                    if (consoleAdapter != null) {
+                        consoleAdapter.output(">> Not able to start java because existing but not executable: "+ javaCommand);
+                    }
+                    return;
+                }
             }
 
             List<String> commands = new ArrayList<String>();
-            commands.add(pathToJava);
+            commands.add(javaCommand);
             commands.add("-Dasp.server.port=" + port);
             commands.add("-jar");
             commands.add(pathToServerJar);
@@ -118,7 +136,7 @@ public class ASPServerAdapter {
                 process = pb.start();
                 int exitCode = process.waitFor();
                 if (consoleAdapter != null) {
-                    consoleAdapter.output(">> ASP Server exited with:" + exitCode);
+                    consoleAdapter.output(">> Running ASP Server at port "+port+" stopped, exit code was:" + exitCode);
                 }
             } catch (Exception e) {
                 String message = ">> FATAL ASP server connection failure :" + e.getMessage();

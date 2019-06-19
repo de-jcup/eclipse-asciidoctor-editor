@@ -54,7 +54,7 @@
          point="org.eclipse.ui.editors">
       <editor
       		name="Asciidoctor Editor"
-            extensions="asciidoc,adoc"
+            extensions="asciidoc,adoc,asc,ad"
             icon="icons/asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.jcup.asciidoctoreditor.AsciiDoctorEditor"
@@ -155,7 +155,7 @@
     <consolePatternMatchListener
             class="de.jcup.asciidoctoreditor.console.AsciiDoctorConsolePatternMatchListenerDelegate"
             id="de.jcup.asciidoctoreditor.console.AsciiDoctorConsolePatternMatchListener"
-            regex="file:.*\.adoc">
+            regex="file:.*\.a((sc(iidoc)?)|d(oc)?)$">
              <enablement>
             <instanceof
                   value="de.jcup.asciidoctoreditor.console.AsciiDoctorConsole">

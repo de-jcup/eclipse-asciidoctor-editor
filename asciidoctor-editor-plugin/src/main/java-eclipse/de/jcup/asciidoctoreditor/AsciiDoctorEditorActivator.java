@@ -55,9 +55,6 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     private AsciiDoctorEditorTaskTagsSupportProvider taskSupportProvider;
     private ASPServerAdapter aspServerAdapter = new ASPServerAdapter();
 
-    /**
-     * The constructor
-     */
     public AsciiDoctorEditorActivator() {
         colorManager = new ColorManager();
         templateSupportProvider = new TemplateSupportProvider(new AsciidoctorEditorTemplateSupportConfig(), this);
@@ -76,8 +73,11 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
 
         taskSupportProvider.getTodoTaskSupport().install();
     }
-
     public void updateASPServerStart() {
+        Thread t = new Thread(()->internalUpdateASPServerStart(),"Update ASP server start");
+        t.start();
+    }
+    private void internalUpdateASPServerStart() {
         boolean usesInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor();
         if (usesInstalledAsciidoctor) {
             if (aspServerAdapter.isServerStarted()) {
@@ -88,14 +88,19 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
         }else {
             File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
             File aspServer = new File(aspFolder,"asp-server-asciidoctorj.jar");
+           
+            String pathToJava= AsciiDoctorEditorPreferences.getInstance().getPathToJavaForASPLaunch();
+            aspServerAdapter.setPathToJava(pathToJava.trim());
             aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
             aspServerAdapter.setPort(AsciiDoctorEditorPreferences.getInstance().getAspServerPort());
             aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);
             if (! aspServerAdapter.isAlive()) { // check if new setup is alive
-                AsciiDoctorConsoleUtil.output(">> ASP server not alive at port "+aspServerAdapter.getPort()+", so starting new instance");
                 aspServerAdapter.stopServer(); // stop old processes
+                AsciiDoctorConsoleUtil.output(">> ASP server not alive at port "+aspServerAdapter.getPort()+", so starting new instance");
                 aspServerAdapter.startServer();
                 return;
+            }else {
+                AsciiDoctorConsoleUtil.output(">> ASP server already alive at port "+aspServerAdapter.getPort()+", so reusing instance");
             }
         }
 

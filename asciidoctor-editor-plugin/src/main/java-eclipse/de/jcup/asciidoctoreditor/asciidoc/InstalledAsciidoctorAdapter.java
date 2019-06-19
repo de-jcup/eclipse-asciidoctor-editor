@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
@@ -31,12 +32,7 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
-    @Override
-    public Map<String, Object> resolveAttributes(File baseDir) {
-        return new AspAsciidoctorAdapter().resolveAttributes(baseDir);
-        
-    }
-
+    
     @Override
     public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options) {
         if (editorFileOrNull==null) {
