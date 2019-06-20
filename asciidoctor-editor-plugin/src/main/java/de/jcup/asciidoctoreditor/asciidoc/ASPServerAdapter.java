@@ -1,12 +1,14 @@
 package de.jcup.asciidoctoreditor.asciidoc;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import de.jcup.asciidoctoreditor.ConsoleAdapter;
 import de.jcup.asciidoctoreditor.LogAdapter;
+import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asp.client.AspClient;
 
 public class ASPServerAdapter {
@@ -19,6 +21,7 @@ public class ASPServerAdapter {
     private Process process;
     private AspClient client;
     private boolean started;
+    private boolean showServerOutput;
 
     public ASPServerAdapter() {
         this.client = new AspClient();
@@ -36,6 +39,10 @@ public class ASPServerAdapter {
         client.setPortNumber(port);
     }
 
+    public void setShowServerOutput(boolean showServerOutput) {
+        this.showServerOutput = showServerOutput;
+    }
+    
     public int getPort() {
         return port;
     }
@@ -135,9 +142,23 @@ public class ASPServerAdapter {
                 consoleAdapter.output(">> Starting ASP server at port:" + port);
             }
             ProcessBuilder pb = new ProcessBuilder(commands);
-            pb.inheritIO();
+            StringBuffer lineStringBuffer=  new StringBuffer();
             try {
                 process = pb.start();
+                try (InputStream is = process.getInputStream()) {
+                    int c;
+                    while ((c = is.read()) != -1) {
+                        if (showServerOutput) {
+                            if (c=='\n') {
+                                AsciiDoctorConsoleUtil.output(lineStringBuffer.toString());
+                                lineStringBuffer = new StringBuffer();
+                            }else {
+                                lineStringBuffer.append((char) c);
+                            }
+                        }
+                    }
+                    AsciiDoctorConsoleUtil.output(lineStringBuffer.toString());
+                }
                 int exitCode = process.waitFor();
                 if (consoleAdapter != null) {
                     consoleAdapter.output(">> Former running ASP Server at port "+port+" stopped, exit code was:" + exitCode);

@@ -85,6 +85,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     }
     private void internalUpdateASPServerStart() {
         boolean usesInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor();
+        boolean showASPServerOutput = AsciiDoctorEditorPreferences.getInstance().isShowingASPServerOutput();
         if (usesInstalledAsciidoctor) {
             if (aspServerAdapter.isServerStarted()) {
                 AsciiDoctorConsoleUtil.output(">> Stopping ASP server because using now installed asciidoctor");
@@ -99,6 +100,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
             aspServerAdapter.setPathToJava(pathToJava);
             aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
             aspServerAdapter.setPort(AsciiDoctorEditorPreferences.getInstance().getAspServerPort());
+            aspServerAdapter.setShowServerOutput(showASPServerOutput);
             aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);
             if (! aspServerAdapter.isAlive()) { // check if new setup is alive
                 aspServerAdapter.stopServer(); // stop old processes

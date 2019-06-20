@@ -266,4 +266,8 @@ public class AsciiDoctorEditorPreferences {
     public String getPathToJavaForASPLaunch() {
         return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_FOR_ASP_LAUNCH);
     }
+
+    public boolean isShowingASPServerOutput() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE);
+    }
 }

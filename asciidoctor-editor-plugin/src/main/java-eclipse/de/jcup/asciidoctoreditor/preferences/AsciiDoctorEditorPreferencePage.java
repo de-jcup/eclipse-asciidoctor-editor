@@ -71,6 +71,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
     private AccessibleDirectoryFieldEditor pathToJavaForASPlaunch;
     private AccessibleBooleanFieldEditor useInstalledAsciidoctor;
     private Composite baseComposite;
+    private AccessibleBooleanFieldEditor aspServerOutputShownInConsole;
 
     public AsciiDoctorEditorPreferencePage() {
         super(GRID);
@@ -282,6 +283,9 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         
         aspLogRecordsShownAsMarkerInEditor = new AccessibleBooleanFieldEditor(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), "ASP log records shown as marker in editor", content);
         addField(aspLogRecordsShownAsMarkerInEditor);
+        
+        aspServerOutputShownInConsole = new AccessibleBooleanFieldEditor(P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE.getId(), "Output of started ASP server is shown in console", content);
+        addField(aspServerOutputShownInConsole);
 
         Composite pathComposite = new Composite(content, SWT.NONE);
         pathToJavaForASPlaunch = new AccessibleDirectoryFieldEditor(P_PATH_TO_JAVA_FOR_ASP_LAUNCH.getId(), "Path to Java", pathComposite);
