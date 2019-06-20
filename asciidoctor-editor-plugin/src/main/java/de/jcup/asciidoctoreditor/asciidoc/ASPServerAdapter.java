@@ -26,7 +26,7 @@ public class ASPServerAdapter {
     public ASPServerAdapter() {
         this.client = new AspClient();
     }
-    
+
     public AspClient getClient() {
         return client;
     }
@@ -38,11 +38,15 @@ public class ASPServerAdapter {
         this.port = port;
         client.setPortNumber(port);
     }
+    
+    public boolean isShowServerOutput() {
+        return showServerOutput;
+    }
 
     public void setShowServerOutput(boolean showServerOutput) {
         this.showServerOutput = showServerOutput;
     }
-    
+
     public int getPort() {
         return port;
     }
@@ -107,26 +111,27 @@ public class ASPServerAdapter {
 
     private class ServerStartRunnable implements Runnable {
         int port;
-        private ServerStartRunnable(int port){
-            this.port=port;
+
+        private ServerStartRunnable(int port) {
+            this.port = port;
         }
-        
+
         public void run() {
             String javaCommand = null;
             if (pathToJava == null || pathToJava.trim().isEmpty()) {
                 javaCommand = "java";
-            }else {
-                javaCommand=pathToJava+"/java";
+            } else {
+                javaCommand = pathToJava + "/java";
                 File test = new File(javaCommand);
-                if (! test.exists()) {
+                if (!test.exists()) {
                     if (consoleAdapter != null) {
-                        consoleAdapter.output(">> Not able to start java because not found on defined location:"+ javaCommand);
+                        consoleAdapter.output(">> Not able to start java because not found on defined location:" + javaCommand);
                     }
                     return;
                 }
-                if (! test.canExecute()) {
+                if (!test.canExecute()) {
                     if (consoleAdapter != null) {
-                        consoleAdapter.output(">> Not able to start java because existing but not executable: "+ javaCommand);
+                        consoleAdapter.output(">> Not able to start java because existing but not executable: " + javaCommand);
                     }
                     return;
                 }
@@ -142,17 +147,17 @@ public class ASPServerAdapter {
                 consoleAdapter.output(">> Starting ASP server at port:" + port);
             }
             ProcessBuilder pb = new ProcessBuilder(commands);
-            StringBuffer lineStringBuffer=  new StringBuffer();
+            StringBuffer lineStringBuffer = new StringBuffer();
             try {
                 process = pb.start();
-                try (InputStream is = process.getInputStream()) {
-                    int c;
-                    while ((c = is.read()) != -1) {
-                        if (showServerOutput) {
-                            if (c=='\n') {
+                if (showServerOutput) { // only fetch input stream when configured, so faster and process termination works also faster
+                    try (InputStream is = process.getInputStream()) {
+                        int c;
+                        while ((c = is.read()) != -1) {
+                            if (c == '\n') {
                                 AsciiDoctorConsoleUtil.output(lineStringBuffer.toString());
                                 lineStringBuffer = new StringBuffer();
-                            }else {
+                            } else {
                                 lineStringBuffer.append((char) c);
                             }
                         }
@@ -161,7 +166,7 @@ public class ASPServerAdapter {
                 }
                 int exitCode = process.waitFor();
                 if (consoleAdapter != null) {
-                    consoleAdapter.output(">> Former running ASP Server at port "+port+" stopped, exit code was:" + exitCode);
+                    consoleAdapter.output(">> Former running ASP Server at port " + port + " stopped, exit code was:" + exitCode);
                 }
             } catch (Exception e) {
                 String message = ">> FATAL ASP server connection failure :" + e.getMessage();
