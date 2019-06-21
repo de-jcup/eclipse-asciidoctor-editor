@@ -15,7 +15,6 @@
  */
 package de.jcup.asciidoctoreditor;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,9 +25,6 @@ import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import de.jcup.asciidoctoreditor.asciidoc.ASPServerAdapter;
-import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
-import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.template.AsciidoctorEditorTemplateSupportConfig;
 import de.jcup.asciidoctoreditor.ui.ColorManager;
 import de.jcup.eclipse.commons.PluginContextProvider;
@@ -53,11 +49,12 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     private Map<StyledText, IConsolePageParticipant> viewers = new HashMap<StyledText, IConsolePageParticipant>();
 
     private AsciiDoctorEditorTaskTagsSupportProvider taskSupportProvider;
-    private ASPServerAdapter aspServerAdapter;
+
+    private ASPSupport aspSupport;
 
     public AsciiDoctorEditorActivator() {
         colorManager = new ColorManager();
-        aspServerAdapter =  new ASPServerAdapter();
+        aspSupport = new ASPSupport();
         templateSupportProvider = new TemplateSupportProvider(new AsciidoctorEditorTemplateSupportConfig(), this);
         taskSupportProvider = new AsciiDoctorEditorTaskTagsSupportProvider(this);
         TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
@@ -67,57 +64,24 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
         return colorManager;
     }
     
-    public ASPServerAdapter getAspServerAdapter() {
-        return aspServerAdapter;
+    public ASPSupport getAspSupport() {
+        return aspSupport;
     }
+   
 
     public void start(BundleContext context) throws Exception {
         super.start(context);
-        updateASPServerStart();
+        getAspSupport().start();
         plugin = this;
 
         taskSupportProvider.getTodoTaskSupport().install();
     }
     
-    public void updateASPServerStart() {
-        Thread t = new Thread(()->internalUpdateASPServerStart(),"Update ASP server start");
-        t.start();
-    }
-    private void internalUpdateASPServerStart() {
-        boolean usesInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor();
-        boolean showASPServerOutput = AsciiDoctorEditorPreferences.getInstance().isShowingASPServerOutput();
-        boolean showServerOutputChanged = showASPServerOutput==aspServerAdapter.isShowServerOutput();
-        if (usesInstalledAsciidoctor) {
-            if (aspServerAdapter.isServerStarted()) {
-                AsciiDoctorConsoleUtil.output(">> Stopping ASP server because using now installed asciidoctor");
-                aspServerAdapter.stopServer();
-                return;
-            }
-        }else {
-            File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
-            File aspServer = new File(aspFolder,"asp-server-asciidoctorj.jar");
-           
-            String pathToJava= AsciiDoctorEditorPreferences.getInstance().getPathToJavaForASPLaunch();
-            aspServerAdapter.setPathToJava(pathToJava);
-            aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
-            aspServerAdapter.setPort(AsciiDoctorEditorPreferences.getInstance().getAspServerPort());
-            aspServerAdapter.setShowServerOutput(showASPServerOutput);
-            aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);
-            if (showServerOutputChanged || ! aspServerAdapter.isAlive()) { // check if new setup is alive or server output has changed
-                aspServerAdapter.stopServer(); // stop old processes
-                AsciiDoctorConsoleUtil.output(">> ASP server not alive at port "+aspServerAdapter.getPort()+", so starting new instance");
-                aspServerAdapter.startServer();
-                return;
-            }else {
-                AsciiDoctorConsoleUtil.output(">> ASP server already alive at port "+aspServerAdapter.getPort()+", so reusing instance");
-            }
-        }
-
-    }
+    
 
     public void stop(BundleContext context) throws Exception {
         plugin = null;
-        aspServerAdapter.stopServer();
+        getAspSupport().stop();
         taskSupportProvider.getTodoTaskSupport().uninstall();
         colorManager.dispose();
         super.stop(context);

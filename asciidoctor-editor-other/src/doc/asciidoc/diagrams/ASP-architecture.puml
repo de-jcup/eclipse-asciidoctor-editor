@@ -1,0 +1,48 @@
+interface AsciiDoctorAdapter
+component AsciiDoctorEditorActivator
+component AsciiDoctorWrapper
+package "ASP parts"{
+    component "ASP Support" as aspSupport #LightGreen
+    component ASPAsciiDoctorAdapter #LightGreen
+    component ASPClient #LightGreen
+    node "ASP Server instance" as aspServer #LightGreen
+    component ASPServerAdapter #LightGreen
+note right  of aspSupport
+The ASP support will provide 
+the asp client to ASPAsciiDoctorAdapter, 
+but will wait until server instance is 
+really available... 
+
+So its ensured that html or pdf jobs
+are not failing because server instance
+is initializing.
+
+end note
+}
+component InstalledAsciiDoctorAdapter #lightgray
+
+component AsciiDoctorEditorBuildSupport
+component AsciiDoctorEditorPDFLauncher
+component AsciiDoctorEditorPreferencePage
+
+AsciiDoctorEditorBuildSupport --> AsciiDoctorWrapper : job ("build")
+AsciiDoctorEditorPDFLauncher --> AsciiDoctorWrapper : job ("pdf")
+
+AsciiDoctorEditorPreferencePage --> aspSupport #green
+aspSupport --> ASPServerAdapter  #green :delegates to
+AsciiDoctorWrapper --> AsciiDoctorAdapter : calls
+
+AsciiDoctorAdapter - ASPAsciiDoctorAdapter 
+AsciiDoctorAdapter - InstalledAsciiDoctorAdapter  
+
+AsciiDoctorEditorActivator -> aspSupport #green : requestStart
+
+AsciiDoctorEditorActivator -> aspSupport #green : requestStop
+
+
+ASPServerAdapter-> ASPClient #green : "create and\nconfigure client"
+ASPServerAdapter-> aspServer #green : "start and \nstops server instance"
+
+ASPClient <--> aspServer : communicate
+ASPAsciiDoctorAdapter --> ASPClient  
+ASPAsciiDoctorAdapter . aspSupport 

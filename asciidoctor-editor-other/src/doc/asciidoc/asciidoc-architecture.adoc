@@ -1,0 +1,9 @@
+= Asciidoc Editor Architecture
+
+This is a simple document describing some of the
+architecture parts inside `Asciidoctor Editor for Eclipse`
+
+Currently it contains just some simple content.
+
+== ASP parts
+plantuml::diagrams/ASP-architecture.puml[] 

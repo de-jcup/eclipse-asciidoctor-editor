@@ -46,7 +46,7 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             } else {
                 AsciiDoctorConsoleUtil.output("ASP: Processing file:" + editorFileOrNull.getAbsolutePath());
             }
-            Response response = getClient().convertFile(asciiDocFile.toPath(), options);
+            Response response = resolveClient().convertFile(asciiDocFile.toPath(), options);
             handleServerLog(response);
         } catch (AspClientException e) {
             Throwable rootCause = e;
@@ -62,10 +62,9 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
         }
     }
 
-    public AspClient getClient() {
+    private AspClient resolveClient() {
         AsciiDoctorEditorActivator activator = AsciiDoctorEditorActivator.getDefault();
-        ASPServerAdapter aspServerAdapter = activator.getAspServerAdapter();
-        return aspServerAdapter.getClient();
+        return activator.getAspSupport().getAspClient();
     }
 
     private void handleServerLog(Response response) {
