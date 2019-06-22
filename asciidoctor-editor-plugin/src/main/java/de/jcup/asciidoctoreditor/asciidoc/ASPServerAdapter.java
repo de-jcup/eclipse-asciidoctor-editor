@@ -74,7 +74,7 @@ public class ASPServerAdapter {
     }
 
     /**
-     * Start server
+     * Start server in own thread
      * 
      * @return <code>true</code> when server has been started
      */

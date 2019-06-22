@@ -16,19 +16,51 @@ public class ASPSupport {
     }
     
     public AspClient getAspClient() {
+        waitForServerAvailable(new FallbackRestartHandler());
+        return aspServerAdapter.getClient();
+    }
+    
+    private abstract class ServerNotAvailableHandler{
+        protected abstract void handleNotAvailable();
+    }
+    
+    private class FallbackRestartHandler extends ServerNotAvailableHandler{
+        
+        @Override
+        protected void handleNotAvailable() {
+            AsciiDoctorConsoleUtil.output("> ASP server not available at port " + aspServerAdapter.getPort()+", trigger server restart NOW");
+            aspServerAdapter.startServer();
+            
+            /* wait until this server become available. If this fails, there must be something odd and we trigger a illegal state exception + do log*/
+            waitForServerAvailable(new FallbackRestartNotPossibleSoFailHandler());
+        }
+        
+    }
+    
+    private class FallbackRestartNotPossibleSoFailHandler extends ServerNotAvailableHandler{
+
+        @Override
+        protected void handleNotAvailable() {
+            AsciiDoctorConsoleUtil.output("> ASP server restart failed! Maybe another application already running on port:"+aspServerAdapter.getPort());
+            throw new IllegalStateException("ASP server initialization timed out and restart was not successful!");
+        }
+    }
+        
+    
+    
+    private void waitForServerAvailable(ServerNotAvailableHandler notAvailableHandler) {
         int count = 0;
         while (isServerNotInitialized()) {
             try {
                 Thread.sleep(1000);
                 count ++;
                 if (count>10) {
-                    throw new IllegalStateException("ASP server initialization timed out");
+                   notAvailableHandler.handleNotAvailable();
                 }
             } catch (InterruptedException e) {
                Thread.currentThread().interrupt();
             }
         }
-        return aspServerAdapter.getClient();
     }
 
     private boolean isServerNotInitialized() {
@@ -39,14 +71,14 @@ public class ASPSupport {
      * Initial start - is called by plugin activator
      */
     public void start() {
-        updateASPServerStart();
+        startStopASPServerOnDemandInOwnThread();
     }
     
     /**
      * Called by preference page
      */
     public void configurationChanged() {
-        updateASPServerStart();
+        startStopASPServerOnDemandInOwnThread();
         
     }
     /**
@@ -58,10 +90,11 @@ public class ASPSupport {
     }
     
     
-    private void updateASPServerStart() {
+    private void startStopASPServerOnDemandInOwnThread() {
         Thread t = new Thread(()->internalUpdateASPServerStart(),"Update ASP server start");
         t.start();
     }
+    
     private void internalUpdateASPServerStart() {
         boolean usesInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor();
         boolean showASPServerOutput = AsciiDoctorEditorPreferences.getInstance().isShowingASPServerOutput();
