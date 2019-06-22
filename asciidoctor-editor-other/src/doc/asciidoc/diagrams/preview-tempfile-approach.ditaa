@@ -1,6 +1,3 @@
-=== Diagram 1
-[ditaa]
-----
      
    +-----------------------------------+ 
    | Eclipse restart with opened Files | 
@@ -30,31 +27,3 @@
      |   changes layout                    ^
      |   to external                       |  
      +-------------------------------------+ 
-----
-
-
-
-//
-//==== Sequence diagram
-//[plantuml, sample-plantuml-diagram11, alt="Sequence diagram  workflow"]
-//----
-//@startuml
-//participant User
-//
-//User -> MainThread: Opens editor
-//activate MainThread #FFBBBB
-//
-//MainThread -> MainThread: Internal call
-//activate MainThread #DarkSalmon
-//
-//MainThread -> Job: << create temporary files >>
-//activate Job
-//
-//Job --> MainThread: RequestCreated
-//deactivate Job
-//deactivate A
-//MainThread -> User: Done
-//deactivate A
-//
-//@enduml
-//----

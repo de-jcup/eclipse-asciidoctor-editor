@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import de.jcup.asciidoctoreditor.ConsoleAdapter;
 import de.jcup.asciidoctoreditor.LogAdapter;
-import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asp.client.AspClient;
 
 public class ASPServerAdapter {
@@ -155,21 +154,25 @@ public class ASPServerAdapter {
                         int c;
                         while ((c = is.read()) != -1) {
                             if (c == '\n') {
-                                AsciiDoctorConsoleUtil.output(lineStringBuffer.toString());
+                                if (consoleAdapter != null) {
+                                    consoleAdapter.output(lineStringBuffer.toString());
+                                }
                                 lineStringBuffer = new StringBuffer();
                             } else {
                                 lineStringBuffer.append((char) c);
                             }
                         }
                     }
-                    AsciiDoctorConsoleUtil.output(lineStringBuffer.toString());
+                    if (consoleAdapter != null) {
+                        consoleAdapter.output(lineStringBuffer.toString());
+                    }
                 }
                 int exitCode = process.waitFor();
                 if (consoleAdapter != null) {
                     consoleAdapter.output(">> Former running ASP Server at port " + port + " stopped, exit code was:" + exitCode);
                 }
             } catch (Exception e) {
-                String message = ">> FATAL ASP server connection failure :" + e.getMessage();
+                String message = ">> FATAL ASP server connection failure :" + e;
                 if (consoleAdapter != null) {
                     consoleAdapter.output(message);
                 } else {

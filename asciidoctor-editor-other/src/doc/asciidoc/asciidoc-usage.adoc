@@ -1,13 +1,17 @@
-== Install asciidoctor
+= Asciidoctor Editor usage
+
+== Using installed asiidoctor version
+
+=== Install asciidoctor
 For details look also at https://asciidoctor.org/docs/install-toolchain/
 
-=== Windows
+==== Windows
 
-==== Install ruby 
+===== Install ruby 
 First of all - if not already done - we must install ruby from
 https://rubyinstaller.org/ (e.g. `rubyinstaller-devkit-2.4.4-2-x64.exe` )
 
-==== Install asciidoc
+===== Install asciidoc
 
 `gem install asciidoctor`
 
@@ -16,3 +20,9 @@ https://rubygems.org/gems/asciidoctor-diagram/versions/1.2.1
 
 https://asciidoctor.org/docs/asciidoctor-pdf/
 `gem install asciidoctor-pdf --pre` (pre necessary because pdf still alpha...)
+
+
+==== Linux
+Asciidoc is normaly provided by your package managers. E.g. on a Ubuntu based system
+use
+`sudo apt install asciidoctor` and you should be done.
