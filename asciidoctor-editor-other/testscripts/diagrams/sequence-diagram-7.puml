@@ -1,4 +1,3 @@
-plantuml,pu,puml,iuml and ditaa@startuml
 Alice -> Bob: Authentication Request
 
 alt successful case
@@ -21,4 +20,3 @@ else Another type of failure
    Bob -> Alice: Please repeat
    
 end
-@enduml
