@@ -146,13 +146,13 @@ public class ASPServerAdapter {
             commands.add("-jar");
             commands.add(pathToServerJar);
 
-            if (consoleAdapter != null) {
-                consoleAdapter.output(">> Starting ASP server at port:" + port);
-            }
             ProcessBuilder pb = new ProcessBuilder(commands);
             StringBuffer lineStringBuffer = new StringBuffer();
             try {
                 process = pb.start();
+                if (consoleAdapter != null) {
+                    consoleAdapter.output(">> Triggered ASP server start at port:" + port);
+                }
                 if (showServerOutput) { // only fetch input stream when configured, so faster and process termination works also faster
                     try (InputStream is = process.getInputStream()) {
                         int c;
