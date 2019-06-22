@@ -58,8 +58,11 @@ public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
 		addParseDataByIndex(ServerLogSeverity.ERROR, BRIGHT_RED);
 		
 		addParseDataByIndex("invalid option:", BRIGHT_RED);
-		
-		addParseDataStartEndPattern("file:",".adoc",null,false,true);
+
+		String[] endsAccepted = new String[] {".adoc",".puml",".iuml",".pu",".plantuml",".ditaa",".ad",".asc",".asciidoc"};
+		for (String endAccepted: endsAccepted) {
+		    addParseDataStartEndPattern("file:",endAccepted,null,false,true);
+		}
 
 	}
 

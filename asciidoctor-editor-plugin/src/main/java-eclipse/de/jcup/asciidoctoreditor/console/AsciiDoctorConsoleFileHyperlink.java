@@ -2,6 +2,7 @@ package de.jcup.asciidoctoreditor.console;
 
 import java.io.File;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.console.IHyperlink;
 
@@ -21,6 +22,7 @@ public class AsciiDoctorConsoleFileHyperlink implements IHyperlink {
             return;
         }
         if (!file.exists()) {
+            MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Link problem", "The file "+file.getAbsolutePath()+" does not exist!");
             return;
         }
         try {

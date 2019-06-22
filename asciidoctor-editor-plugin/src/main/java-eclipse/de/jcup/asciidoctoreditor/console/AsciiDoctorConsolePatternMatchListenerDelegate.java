@@ -38,7 +38,6 @@ public class AsciiDoctorConsolePatternMatchListenerDelegate implements IPatternM
         }
         String absoluteFilePath = content.substring("file:".length());
         File file = new File(absoluteFilePath);
-      
         
         IHyperlink hyperlink = new AsciiDoctorConsoleFileHyperlink(file);
             console.addHyperlink(hyperlink, offset, length);

@@ -1,4 +1,4 @@
-@startuml
+plantuml,pu,puml,iuml and ditaa@startuml
 Alice -> Bob: Authentication Request
 
 alt successful case
