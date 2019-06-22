@@ -21,6 +21,7 @@ import static de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil.*;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
@@ -29,6 +30,7 @@ import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -237,20 +239,6 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         if (pathToJavaForASPlaunch !=null && !pathToJavaForASPlaunch.checkState()) {
             setValid(false);
         }
-//        String path = pathToInstalledAsciidoctor.getStringValue();
-//        if (path==null || path.isEmpty()) {
-//            return;
-//        }
-//        File file = new File(path);
-//        if (!file.exists()) {
-//            setErrorMessage("Path to java invalid - executable does not exist");
-//        }else {
-//            String filename=file.getName();
-//            if ("java".contentEquals(filename) || "java.exe".contentEquals(filename)) {
-//                return;
-//            }
-//            setErrorMessage("Path to java invalid - not a java executable");
-//        }
     }
     protected void createAsciidoctorGroup(Composite group) {
 
@@ -278,7 +266,24 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         
         aspServerPort.setValidRange(4000, 65536);
         serverportComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        serverportComposite.setLayout(new GridLayout(2,false));
+        serverportComposite.setLayout(new GridLayout(3,false));
+        
+        Button button = new Button(serverportComposite, SWT.NONE);
+        button.setText("Stop");
+        button.setToolTipText("Will stop current running server instance - no \nmatter which new port is set inside this preferences!");
+        button.addSelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                boolean stopped = AsciiDoctorEditorActivator.getDefault().getAspSupport().stop();
+                if (stopped) {
+                    MessageDialog.openInformation(getShell(), "ASP server shutdown" , "Server has been stopped!");
+                }else {
+                    MessageDialog.openWarning(getShell(), "ASP server shutdown" , "Was not able to shutdown server instance.\nEither this server was not created by this eclipse instance or the process was already stopped");
+                }
+            }
+          
+         });
         addField(aspServerPort);
         
         aspLogRecordsShownAsMarkerInEditor = new AccessibleBooleanFieldEditor(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), "ASP log records shown as marker in editor", content);

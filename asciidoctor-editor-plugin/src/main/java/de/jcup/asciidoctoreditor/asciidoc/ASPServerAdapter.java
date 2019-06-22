@@ -95,17 +95,21 @@ public class ASPServerAdapter {
         return true;
     }
 
-    public void stopServer() {
+    /**
+     * Stop server
+     * @return <code>true</code> when server shutdown was successful, <code>false</code> when server was already not running 
+     */
+    public boolean stopServer() {
         started = false;
         if (process == null) {
-            return;
+            return false;
 
         }
         if (!process.isAlive()) {
-            return;
+            return false;
         }
         process.destroyForcibly();
-        process = null;
+        return true;
     }
 
     private class ServerStartRunnable implements Runnable {
@@ -172,7 +176,13 @@ public class ASPServerAdapter {
                     consoleAdapter.output(">> Former running ASP Server at port " + port + " stopped, exit code was:" + exitCode);
                 }
             } catch (Exception e) {
-                String message = ">> FATAL ASP server connection failure :" + e;
+                String message =null;
+                if (e instanceof NullPointerException) {
+                    /* this can happen when process has been forced to terminate by user (process becomes null, while waiting)!*/
+                    message = ">> FATAL ASP server connection failure :" + e;
+                }else {
+                    message = ">> FATAL ASP server connection failure :" + e;
+                }
                 if (consoleAdapter != null) {
                     consoleAdapter.output(message);
                 } else {

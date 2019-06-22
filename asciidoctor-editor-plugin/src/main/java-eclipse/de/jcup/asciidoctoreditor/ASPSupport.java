@@ -50,10 +50,11 @@ public class ASPSupport {
         
     }
     /**
-     * Shutdown - called by plugin activator
+     * Shutdown - called by plugin activator on plugin stop, or also in preferences
+     * @return <code>true</code> when server has been stopped, <code>false</code> when stop was not possible (e.g. when no server instance was running)
      */
-    public void stop() {
-        aspServerAdapter.stopServer();
+    public boolean stop() {
+        return aspServerAdapter.stopServer();
     }
     
     
