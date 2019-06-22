@@ -32,11 +32,9 @@ public class AsciiDoctorConsoleFileHyperlink implements IHyperlink {
 
     @Override
     public void linkEntered() {
-        System.out.println("entered");
     }
 
     @Override
     public void linkExited() {
-        System.out.println("exited");
     }
 }

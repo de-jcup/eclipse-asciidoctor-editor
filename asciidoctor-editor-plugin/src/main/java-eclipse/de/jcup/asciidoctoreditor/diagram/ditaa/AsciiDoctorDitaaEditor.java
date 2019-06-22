@@ -52,7 +52,9 @@ public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 	}
 
 	protected void initToolbar() {
-
+	    /* necessary for refresh */
+	    rebuildAction = new RebuildAsciiDocViewAction(this);
+	    
 		IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
 		viewToolBarManager.add(new ChangeLayoutAction(this));
 		viewToolBarManager.add(new RebuildAsciiDocViewAction(this));

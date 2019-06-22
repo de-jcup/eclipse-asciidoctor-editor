@@ -409,7 +409,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
 
         @Override
         public void buildDone() {
-           getEditor().rebuild();
+           getEditor().rebuildOutlineAndValidate();
         }
         
     }

@@ -159,9 +159,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private MonospacedFormatAction monoSpacedFormatAction;
     private AsciidoctorEditorOutlineSupport outlineSupport;
     private IProject project;
-    private RebuildAsciiDocViewAction rebuildAction;
     private SashForm sashForm;
     private Composite topComposite;
+    protected RebuildAsciiDocViewAction rebuildAction;
 
     public long getEditorId() {
         return editorId;
@@ -230,6 +230,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         browserAccess = new BrowserAccess(sashForm);
         initPreview(sashForm);
+        
         initToolbar(); // init after browser creation so we toolbar icons are
                        // set depending on browser visible or not...
 
@@ -809,12 +810,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             setVerticalSplit(initialLayout.isVertical());
         }
     }
-
     protected void initToolbar() {
+        rebuildAction = new RebuildAsciiDocViewAction(this);
+
         italicFormatAction = new ItalicFormatAction(this);
         boldFormatAction = new BoldFormatAction(this);
         monoSpacedFormatAction = new MonospacedFormatAction(this);
-        rebuildAction = new RebuildAsciiDocViewAction(this);
 
         addLineBreakAction = new AddLineBreakAction(this);
 
