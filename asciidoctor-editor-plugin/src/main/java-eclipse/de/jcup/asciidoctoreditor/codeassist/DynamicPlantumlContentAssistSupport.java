@@ -10,19 +10,20 @@ import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalInfoProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 
-public class DynamicIncludeContentAssistSupport extends ProposalProviderContentAssistSupport{
+public class DynamicPlantumlContentAssistSupport extends ProposalProviderContentAssistSupport {
 
-    public DynamicIncludeContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("include::",new EditorFileParentAsBaseParentResolver(),new DynamicIncludesEnabledResolver(),new CodeAssistFileFilter()));
+    public DynamicPlantumlContentAssistSupport(PluginContextProvider provider) {
+        super(provider, new AsciidocReferenceProposalSupport("plantuml::", new DiagramBaseParentResolver(), new DynamicPlantumlEnabledResolver(),
+                new CodeAssistFileFilter(".puml", ".plantuml", ".pu", ".iuml")));
     }
-    
+
     @Override
     protected ProposalInfoProvider createProposalInfoBuilder() {
         return new ProposalInfoProvider() {
-            
+
             @Override
             public Object getProposalInfo(IProgressMonitor monitor, Object target) {
-                if (! (target instanceof String)){
+                if (!(target instanceof String)) {
                     return null;
                 }
                 String word = (String) target;
@@ -31,18 +32,18 @@ public class DynamicIncludeContentAssistSupport extends ProposalProviderContentA
 
             @Override
             public Image getImage(Object target) {
-                return AsciiDoctorEditorOutlineLabelProvider.getImage(AsciidoctorIconConstants.PATH_OUTLINE_ICON_INCLUDE);
+                return AsciiDoctorEditorOutlineLabelProvider.getImage(AsciidoctorIconConstants.PATH_OUTLINE_ICON_PLANTUML);
             }
         };
     }
-    
-    private static class DynamicIncludesEnabledResolver implements EnableStateResolver{
+
+    private static class DynamicPlantumlEnabledResolver implements EnableStateResolver {
 
         @Override
         public boolean isEnabled() {
-            return AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForIncludesEnabled();
+            return AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForPlantumlEnabled();
         }
-        
+
     }
 
 }

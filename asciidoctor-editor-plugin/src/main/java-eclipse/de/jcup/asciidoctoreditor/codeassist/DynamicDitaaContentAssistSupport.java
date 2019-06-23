@@ -10,10 +10,10 @@ import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalInfoProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 
-public class DynamicIncludeContentAssistSupport extends ProposalProviderContentAssistSupport{
+public class DynamicDitaaContentAssistSupport extends ProposalProviderContentAssistSupport{
 
-    public DynamicIncludeContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("include::",new EditorFileParentAsBaseParentResolver(),new DynamicIncludesEnabledResolver(),new CodeAssistFileFilter()));
+    public DynamicDitaaContentAssistSupport(PluginContextProvider provider) {
+        super(provider, new AsciidocReferenceProposalSupport("ditaa::",new DiagramBaseParentResolver(),new DynamicDitaaEnabledResolver(),new CodeAssistFileFilter(".ditaa")));
     }
     
     @Override
@@ -31,16 +31,16 @@ public class DynamicIncludeContentAssistSupport extends ProposalProviderContentA
 
             @Override
             public Image getImage(Object target) {
-                return AsciiDoctorEditorOutlineLabelProvider.getImage(AsciidoctorIconConstants.PATH_OUTLINE_ICON_INCLUDE);
+                return AsciiDoctorEditorOutlineLabelProvider.getImage(AsciidoctorIconConstants.PATH_OUTLINE_ICON_DITAA);
             }
         };
     }
-    
-    private static class DynamicIncludesEnabledResolver implements EnableStateResolver{
+
+    private static class DynamicDitaaEnabledResolver implements EnableStateResolver{
 
         @Override
         public boolean isEnabled() {
-            return AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForIncludesEnabled();
+            return AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForDitaaEnabled();
         }
         
     }

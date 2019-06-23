@@ -60,6 +60,20 @@ public class AsciiDoctorEditorCodeAssistencePreferencePage extends FieldEditorPr
         BooleanFieldEditor dynamicIncludeCodeAssist = new BooleanFieldEditor(P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES.getId(), "Dynamic code assist for includes", parent);
         dynamicIncludeCodeAssist.getDescriptionControl(parent).setToolTipText("When enabled file pathes are dynamically suggested for includes");
         addField(dynamicIncludeCodeAssist);
+        
+        BooleanFieldEditor dynamicImageCodeAssist = new BooleanFieldEditor(P_CODE_ASSIST_DYNAMIC_FOR_IMAGES.getId(), "Dynamic code assist for images", parent);
+        dynamicImageCodeAssist.getDescriptionControl(parent).setToolTipText("When enabled file pathes are dynamically suggested for images");
+        addField(dynamicImageCodeAssist);
+        
+        BooleanFieldEditor dynamicPlantumlMacroCodeAssist = new BooleanFieldEditor(P_CODE_ASSIST_DYNAMIC_FOR_PLANTUML_MACRO.getId(), "Dynamic code assist for plantuml macros", parent);
+        dynamicPlantumlMacroCodeAssist.getDescriptionControl(parent).setToolTipText("When enabled file pathes are dynamically suggested for plantuml macros");
+        addField(dynamicPlantumlMacroCodeAssist);
+        
+        BooleanFieldEditor dynamicDitaaMacroCodeAssist = new BooleanFieldEditor(P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO.getId(), "Dynamic code assist for ditaa macros", parent);
+        dynamicDitaaMacroCodeAssist.getDescriptionControl(parent).setToolTipText("When enabled file pathes are dynamically suggested for ditaa macros");
+        addField(dynamicDitaaMacroCodeAssist);
+        
+        
     }
 	
 	

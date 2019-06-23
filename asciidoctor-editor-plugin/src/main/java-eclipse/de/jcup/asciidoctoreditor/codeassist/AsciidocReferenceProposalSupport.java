@@ -5,27 +5,35 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.ui.IEditorPart;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.eclipse.commons.codeassist.AbstractWordCodeCompletition;
 import de.jcup.eclipse.commons.codeassist.ProposalProvider;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
-public class AsciidocIncludeProposalSupport extends AbstractWordCodeCompletition {
+public class AsciidocReferenceProposalSupport extends AbstractWordCodeCompletition {
 
-    private AsciidocIncludeProposalCalculator calculator = new AsciidocIncludeProposalCalculator();
+    private AsciidocReferenceProposalCalculator calculator;
+    private EnableStateResolver enableStateResolver;
     
-    public AsciidocIncludeProposalSupport(){
+    public AsciidocReferenceProposalSupport(String prefix, BaseParentDirResolver baseDirResolver, EnableStateResolver enableStateResolver, CodeAssistFileFilter fileFilter){
+        Objects.requireNonNull(prefix);
+        Objects.requireNonNull(baseDirResolver);
+        Objects.requireNonNull(enableStateResolver);
+        Objects.requireNonNull(fileFilter);
+        
+        this.enableStateResolver=enableStateResolver;
+        calculator = new AsciidocReferenceProposalCalculator(prefix, baseDirResolver,fileFilter);
     }
     
     @Override
     public Set<ProposalProvider> calculate(String text, int index) {
         IEditorPart activeEditor = EclipseUtil.getActiveEditor();
-        if (! (activeEditor instanceof AsciiDoctorEditor) || ! AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForIncludesEnabled()) {
+        if (! (activeEditor instanceof AsciiDoctorEditor) || enableStateResolver.isDisabled()) {
             return Collections.emptySet();
         }
         AsciiDoctorEditor editor = (AsciiDoctorEditor) activeEditor;
@@ -34,8 +42,8 @@ public class AsciidocIncludeProposalSupport extends AbstractWordCodeCompletition
             return Collections.emptySet();
         }
         Set<ProposalProvider> set = new LinkedHashSet<ProposalProvider>();
-        Set<AsciidocIncludeProposalData> asciidocIncludeProposalData = calculator.calculate(file,text,index);
-        for (AsciidocIncludeProposalData d: asciidocIncludeProposalData) {
+        Set<AsciidocReferenceProposalData> asciidocReferenceProposalData = calculator.calculate(file,text,index);
+        for (AsciidocReferenceProposalData d: asciidocReferenceProposalData) {
             set.add(new AsciidocIncludeProposalProvider(d));
         }
         return set;
@@ -49,10 +57,10 @@ public class AsciidocIncludeProposalSupport extends AbstractWordCodeCompletition
     
     public class AsciidocIncludeProposalProvider implements ProposalProvider{
         
-        private AsciidocIncludeProposalData asciidocIncludeProposalData;
+        private AsciidocReferenceProposalData asciidocReferenceProposalData;
 
-        private AsciidocIncludeProposalProvider(AsciidocIncludeProposalData asciidocIncludeProposalData){
-            this.asciidocIncludeProposalData=asciidocIncludeProposalData;
+        private AsciidocIncludeProposalProvider(AsciidocReferenceProposalData asciidocReferenceProposalData){
+            this.asciidocReferenceProposalData=asciidocReferenceProposalData;
         }
 
         @Override
@@ -62,12 +70,12 @@ public class AsciidocIncludeProposalSupport extends AbstractWordCodeCompletition
 
         @Override
         public List<String> getCodeTemplate() {
-            return Arrays.asList(asciidocIncludeProposalData.getInclude());
+            return Arrays.asList(asciidocReferenceProposalData.getProposedCode());
         }
 
         @Override
         public String getLabel() {
-           return asciidocIncludeProposalData.getLabel();
+           return asciidocReferenceProposalData.getLabel();
         }
         
     }

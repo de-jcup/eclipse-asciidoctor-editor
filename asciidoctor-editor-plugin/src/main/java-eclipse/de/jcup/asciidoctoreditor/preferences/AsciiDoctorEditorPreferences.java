@@ -263,6 +263,18 @@ public class AsciiDoctorEditorPreferences {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES);
     }
 
+    public boolean isDynamicCodeAssistForImagesEnabled() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_IMAGES);
+    }
+
+    public boolean isDynamicCodeAssistForPlantumlEnabled() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_PLANTUML_MACRO);
+    }
+    
+    public boolean isDynamicCodeAssistForDitaaEnabled() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO);
+    }
+
     public String getPathToJavaForASPLaunch() {
         return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_FOR_ASP_LAUNCH);
     }
@@ -270,4 +282,6 @@ public class AsciiDoctorEditorPreferences {
     public boolean isShowingASPServerOutput() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE);
     }
+
+
 }

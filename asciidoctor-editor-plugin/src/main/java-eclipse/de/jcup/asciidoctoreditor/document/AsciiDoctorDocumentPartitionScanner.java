@@ -33,8 +33,6 @@ import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScanner {
 
-	private OnlyLettersKeyWordDetector onlyLettersWordDetector = new OnlyLettersKeyWordDetector();
-
 	public AsciiDoctorDocumentPartitionScanner() {
 		IToken boldText = createToken(TEXT_BOLD);
 		IToken italicText = createToken(TEXT_ITALIC);
@@ -85,7 +83,6 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		buildLineStartsWithRule(rules, asciidoctorCommand, "]", AsciiDoctorCommandKeyWords.values());
 		buildLineStartsWithRule(rules, includeKeyword, "]", AsciiDoctorIncludeKeywords.values());
 
-//		buildLineStartsWithRule(rules, knownVariables, "", AsciiDoctorSpecialAttributesKeyWords.values());
 		rules.add(new AsciiDoctorLineStartsWithRule(":", ":", false, knownVariables));
 		rules.add(new SingleLineRule("{", "}", knownVariables, (char) -1, true));
 
@@ -101,12 +98,6 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 	private void aLineStartsWith(String startsWith, List<IPredicateRule> rules, IToken token){
 		aLineStartsWith(startsWith, rules, token,false);
 	}
-	private void buildWordRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {
-		for (DocumentKeyWord keyWord : values) {
-			rules.add(new ExactWordPatternRule(onlyLettersWordDetector, createWordStart(keyWord), token,
-					keyWord.isBreakingOnEof()));
-		}
-	}
 
 	private void aLineStartsWith(String startsWith, List<IPredicateRule> rules, IToken token, boolean endOnSpace){
 		String endsWith=null;
@@ -114,11 +105,6 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 			endsWith=" ";
 		}
 		rules.add(new AsciiDoctorLineStartsWithRule(startsWith, endsWith,false, token));
-	}
-	
-
-	private String createWordStart(DocumentKeyWord keyWord) {
-		return keyWord.getText();
 	}
 
 	private IToken createToken(AsciiDoctorDocumentIdentifier identifier) {

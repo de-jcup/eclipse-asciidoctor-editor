@@ -5,12 +5,12 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AsciidocIncludeExistingTextCalculatorTest {
-    private AsciidocIncludeExistingTextCalculator toTest;
+public class AsciidocReferenceExistingTextCalculatorTest {
+    private AsciidocReferenceExistingTextCalculator toTest;
 
     @Before
     public void before() {
-        toTest = new AsciidocIncludeExistingTextCalculator();
+        toTest = new AsciidocReferenceExistingTextCalculator("include::");
     }
 
     @Test
@@ -20,7 +20,7 @@ public class AsciidocIncludeExistingTextCalculatorTest {
         int index = text.length();
 
         /* execute */
-        String result = toTest.resolveIncludeTextOrNull(text, index);
+        String result = toTest.resolveReferenceTextOrNull(text, index);
 
         /* test */
         assertEquals("include::", result);
@@ -33,7 +33,7 @@ public class AsciidocIncludeExistingTextCalculatorTest {
         int index = text.length();
 
         /* execute */
-        String result = toTest.resolveIncludeTextOrNull(text, index);
+        String result = toTest.resolveReferenceTextOrNull(text, index);
 
         /* test */
         assertEquals("include::subfolder1/", result);
@@ -46,7 +46,7 @@ public class AsciidocIncludeExistingTextCalculatorTest {
         int index = text.length();
 
         /* execute */
-        String result = toTest.resolveIncludeTextOrNull(text, index);
+        String result = toTest.resolveReferenceTextOrNull(text, index);
 
         /* test */
         assertEquals("include::subfolder2/subfolder3", result);
@@ -60,7 +60,7 @@ public class AsciidocIncludeExistingTextCalculatorTest {
         text+="/subfolder3";
 
         /* execute */
-        String result = toTest.resolveIncludeTextOrNull(text, index);
+        String result = toTest.resolveReferenceTextOrNull(text, index);
 
         /* test */
         assertEquals("include::subfolder2", result);
@@ -74,7 +74,7 @@ public class AsciidocIncludeExistingTextCalculatorTest {
         text+="subfolder3";
 
         /* execute */
-        String result = toTest.resolveIncludeTextOrNull(text, index);
+        String result = toTest.resolveReferenceTextOrNull(text, index);
 
         /* test */
         assertEquals("include::subfolder2/", result);
@@ -87,7 +87,7 @@ public class AsciidocIncludeExistingTextCalculatorTest {
         int index = text.length();
 
         /* execute */
-        String result = toTest.resolveIncludeTextOrNull(text, index);
+        String result = toTest.resolveReferenceTextOrNull(text, index);
 
         /* test */
         assertEquals("include::file1", result);
@@ -100,7 +100,7 @@ public class AsciidocIncludeExistingTextCalculatorTest {
         int index = text.length()-1;
 
         /* execute */
-        String result = toTest.resolveIncludeTextOrNull(text, index);
+        String result = toTest.resolveReferenceTextOrNull(text, index);
 
         /* test */
         assertEquals("include::file", result);
@@ -113,7 +113,7 @@ public class AsciidocIncludeExistingTextCalculatorTest {
         int index = text.length();
 
         /* execute */
-        String result = toTest.resolveIncludeTextOrNull(text, index);
+        String result = toTest.resolveReferenceTextOrNull(text, index);
 
         /* test */
         assertEquals("include::file1", result);

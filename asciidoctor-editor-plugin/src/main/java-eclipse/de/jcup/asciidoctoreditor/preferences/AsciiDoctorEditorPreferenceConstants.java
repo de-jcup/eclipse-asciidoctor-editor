@@ -60,9 +60,16 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	
 	P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES("dynamicIncludeCodeAssistEnabled"), 
 	
+	P_CODE_ASSIST_DYNAMIC_FOR_IMAGES("dynamicImageCodeAssistEnabled"),
+
+	P_CODE_ASSIST_DYNAMIC_FOR_PLANTUML_MACRO("dynamicPlantumlMacroCodeAssistEnabled"),
+	
+	P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO("dynamicDitaaMacroCodeAssistEnabled"),
+
 	P_PATH_TO_JAVA_FOR_ASP_LAUNCH("pathToJavaForASPLaunch"), 
 	
 	P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE("aspServerOutputShownInConsole"),
+	
 	
 	;
 

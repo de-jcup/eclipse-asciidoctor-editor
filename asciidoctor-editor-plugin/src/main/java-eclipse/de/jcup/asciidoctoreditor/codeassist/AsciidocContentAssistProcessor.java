@@ -1,10 +1,15 @@
 package de.jcup.asciidoctoreditor.codeassist;
-import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
-import de.jcup.eclipse.commons.codeassist.SupportableContentAssistProcessor;
+import static de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator.*;
 
+import de.jcup.eclipse.commons.codeassist.SupportableContentAssistProcessor;
 public class AsciidocContentAssistProcessor extends SupportableContentAssistProcessor {
 
     public AsciidocContentAssistProcessor(){
-        super(new AsciidocKeywordContentAssistSupport(AsciiDoctorEditorActivator.getDefault()), new DynamicIncludeContentAssistSupport(AsciiDoctorEditorActivator.getDefault()));
+        super(new AsciidocKeywordContentAssistSupport(getDefault()), 
+                new DynamicIncludeContentAssistSupport(getDefault()),
+                new DynamicImageContentAssistSupport(getDefault()),
+                new DynamicPlantumlContentAssistSupport(getDefault()),
+                new DynamicDitaaContentAssistSupport(getDefault())
+                        );
     }
 }

@@ -1,0 +1,8 @@
+ditaa::diagrams/diagram2.ditaa[] 
+
+plantuml::diagrams/class-diagram-2.puml[]
+
+image::dot-example.svg[]
+
+image::if_7_Pen_write_writer_2991007.svg[] 
+

@@ -52,16 +52,9 @@ import de.jcup.asciidoctoreditor.AsciiDoctorTextHover;
 import de.jcup.asciidoctoreditor.codeassist.PlantumlContentAssistProcessor;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLDocumentIdentifiers;
-import de.jcup.asciidoctoreditor.document.keywords.PlantUMLColorDocumentKeywords;
-import de.jcup.asciidoctoreditor.document.keywords.PlantUMLKeywordDocumentKeywords;
-import de.jcup.asciidoctoreditor.document.keywords.PlantUMLMissingKeywordDocumentKeywords;
-import de.jcup.asciidoctoreditor.document.keywords.PlantUMLPreprocessorDocumentKeywords;
-import de.jcup.asciidoctoreditor.document.keywords.PlantUMLSkinparameterDocumentKeywords;
-import de.jcup.asciidoctoreditor.document.keywords.PlantUMLTypeDocumentKeywords;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
 import de.jcup.asciidoctoreditor.presentation.PresentationSupport;
 import de.jcup.asciidoctoreditor.ui.ColorManager;
-import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 /**
  * 

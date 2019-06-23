@@ -11,14 +11,14 @@ import org.junit.Test;
 
 import de.jcup.asciidoctoreditor.TestResourcesLoader;
 
-public class AsciidocIncludeProposalCalculatorTest {
+public class AsciidocReferenceProposalCalculatorTest {
 
-    private AsciidocIncludeProposalCalculator toTest;
+    private AsciidocReferenceProposalCalculator toTest;
     private File editorFile1;
 
     @Before
     public void before() {
-        toTest = new AsciidocIncludeProposalCalculator();
+        toTest = new AsciidocReferenceProposalCalculator("include::", new EditorFileParentAsBaseParentResolver(),new CodeAssistFileFilter());
         editorFile1 = TestResourcesLoader.assertTestFile("codeassist/include/test1/editorfile1.adoc");
         /* Hmm. we should use a mock for internal calculator - currently no mockit available, so let as is */
     }
@@ -31,17 +31,17 @@ public class AsciidocIncludeProposalCalculatorTest {
         int index = text.length();
         
         /* execute */
-        Set<AsciidocIncludeProposalData> result = toTest.calculate(editorFile1, text, index);
+        Set<AsciidocReferenceProposalData> result = toTest.calculate(editorFile1, text, index);
         
         /* test */
         assertNotNull(result);
         assertEquals(5, result.size());
-        Iterator<AsciidocIncludeProposalData> it = result.iterator();
-        assertEquals("include::otherfile1.adoc[]",it.next().getInclude());
-        assertEquals("include::otherfile2.txt[]",it.next().getInclude());
-        assertEquals("include::otherfile3.adoc[]",it.next().getInclude());
-        assertEquals("include::subfolder1/",it.next().getInclude());
-        assertEquals("include::subfolder2/",it.next().getInclude());
+        Iterator<AsciidocReferenceProposalData> it = result.iterator();
+        assertEquals("include::otherfile1.adoc[]",it.next().getProposedCode());
+        assertEquals("include::otherfile2.txt[]",it.next().getProposedCode());
+        assertEquals("include::otherfile3.adoc[]",it.next().getProposedCode());
+        assertEquals("include::subfolder1/",it.next().getProposedCode());
+        assertEquals("include::subfolder2/",it.next().getProposedCode());
         
     }
     
@@ -53,13 +53,13 @@ public class AsciidocIncludeProposalCalculatorTest {
         int index = text.length();
         
         /* execute */
-        Set<AsciidocIncludeProposalData> result = toTest.calculate(editorFile1, text, index);
+        Set<AsciidocReferenceProposalData> result = toTest.calculate(editorFile1, text, index);
         
         /* test */
         assertNotNull(result);
         assertEquals(1, result.size());
-        Iterator<AsciidocIncludeProposalData> it = result.iterator();
-        assertEquals("include::subfolder1/otherfile4.adoc[]",it.next().getInclude());        
+        Iterator<AsciidocReferenceProposalData> it = result.iterator();
+        assertEquals("include::subfolder1/otherfile4.adoc[]",it.next().getProposedCode());        
     }
     
     @Test
@@ -69,13 +69,13 @@ public class AsciidocIncludeProposalCalculatorTest {
         int index = text.length();
         
         /* execute */
-        Set<AsciidocIncludeProposalData> result = toTest.calculate(editorFile1, text, index);
+        Set<AsciidocReferenceProposalData> result = toTest.calculate(editorFile1, text, index);
         
         /* test */
         assertNotNull(result);
         assertEquals(1, result.size());
-        Iterator<AsciidocIncludeProposalData> it = result.iterator();
-        assertEquals("include::subfolder1/otherfile4.adoc[]",it.next().getInclude());
+        Iterator<AsciidocReferenceProposalData> it = result.iterator();
+        assertEquals("include::subfolder1/otherfile4.adoc[]",it.next().getProposedCode());
         
     }
     
@@ -89,15 +89,15 @@ public class AsciidocIncludeProposalCalculatorTest {
         int index = text.length();
         
         /* execute */
-        Set<AsciidocIncludeProposalData> result = toTest.calculate(otherFile14, text, index);
+        Set<AsciidocReferenceProposalData> result = toTest.calculate(otherFile14, text, index);
         
         /* test */
         assertNotNull(result);
         assertEquals(3, result.size());
-        Iterator<AsciidocIncludeProposalData> it = result.iterator();
-        assertEquals("include::../subfolder2/ditaa-file1.ditaa[]",it.next().getInclude());
-        assertEquals("include::../subfolder2/puml-file1.puml[]",it.next().getInclude());
-        assertEquals("include::../subfolder2/subfolder3/",it.next().getInclude());
+        Iterator<AsciidocReferenceProposalData> it = result.iterator();
+        assertEquals("include::../subfolder2/ditaa-file1.ditaa[]",it.next().getProposedCode());
+        assertEquals("include::../subfolder2/puml-file1.puml[]",it.next().getProposedCode());
+        assertEquals("include::../subfolder2/subfolder3/",it.next().getProposedCode());
         
     }
     
@@ -109,14 +109,14 @@ public class AsciidocIncludeProposalCalculatorTest {
         int index = text.length()-1;
         
         /* execute */
-        Set<AsciidocIncludeProposalData> result = toTest.calculate(editorFile1, text, index);
+        Set<AsciidocReferenceProposalData> result = toTest.calculate(editorFile1, text, index);
         
         /* test */
         assertNotNull(result);
         assertEquals(2, result.size());
-        Iterator<AsciidocIncludeProposalData> it = result.iterator();
-        assertEquals("include::subfolder1/",it.next().getInclude());
-        assertEquals("include::subfolder2/",it.next().getInclude());
+        Iterator<AsciidocReferenceProposalData> it = result.iterator();
+        assertEquals("include::subfolder1/",it.next().getProposedCode());
+        assertEquals("include::subfolder2/",it.next().getProposedCode());
         
     }
     
@@ -127,13 +127,13 @@ public class AsciidocIncludeProposalCalculatorTest {
         int index = text.length()-1;
         
         /* execute */
-        Set<AsciidocIncludeProposalData> result = toTest.calculate(editorFile1, text, index);
+        Set<AsciidocReferenceProposalData> result = toTest.calculate(editorFile1, text, index);
         
         /* test */
         assertNotNull(result);
         assertEquals(1, result.size());
-        Iterator<AsciidocIncludeProposalData> it = result.iterator();
-        assertEquals("include::subfolder2/subfolder3/",it.next().getInclude());
+        Iterator<AsciidocReferenceProposalData> it = result.iterator();
+        assertEquals("include::subfolder2/subfolder3/",it.next().getProposedCode());
         
     }
     

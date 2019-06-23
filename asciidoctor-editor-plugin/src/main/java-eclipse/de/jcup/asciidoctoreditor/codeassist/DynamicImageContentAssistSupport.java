@@ -10,10 +10,10 @@ import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalInfoProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 
-public class DynamicIncludeContentAssistSupport extends ProposalProviderContentAssistSupport{
+public class DynamicImageContentAssistSupport extends ProposalProviderContentAssistSupport{
 
-    public DynamicIncludeContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("include::",new EditorFileParentAsBaseParentResolver(),new DynamicIncludesEnabledResolver(),new CodeAssistFileFilter()));
+    public DynamicImageContentAssistSupport(PluginContextProvider provider) {
+        super(provider, new AsciidocReferenceProposalSupport("image::",new ImageBaseParentResolver(),new DynamicImageEnabledResolver(),new CodeAssistFileFilter(".png",".svg",".jpg",".jpeg",".gif").ignoreCase()));
     }
     
     @Override
@@ -31,16 +31,16 @@ public class DynamicIncludeContentAssistSupport extends ProposalProviderContentA
 
             @Override
             public Image getImage(Object target) {
-                return AsciiDoctorEditorOutlineLabelProvider.getImage(AsciidoctorIconConstants.PATH_OUTLINE_ICON_INCLUDE);
+                return AsciiDoctorEditorOutlineLabelProvider.getImage(AsciidoctorIconConstants.PATH_OUTLINE_ICON_IMAGE);
             }
         };
     }
-    
-    private static class DynamicIncludesEnabledResolver implements EnableStateResolver{
+
+    private static class DynamicImageEnabledResolver implements EnableStateResolver{
 
         @Override
         public boolean isEnabled() {
-            return AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForIncludesEnabled();
+            return AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForImagesEnabled();
         }
         
     }
