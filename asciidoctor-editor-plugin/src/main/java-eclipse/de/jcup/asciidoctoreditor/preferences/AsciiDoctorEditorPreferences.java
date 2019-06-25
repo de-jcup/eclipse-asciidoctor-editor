@@ -241,7 +241,6 @@ public class AsciiDoctorEditorPreferences {
 
     public int getAspServerPort() {
         return getPreferenceStore().getInt(P_ASP_SERVER_PORT.getId());
-
     }
 
     public boolean isIncludeValidationEnabled() {

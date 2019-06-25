@@ -149,6 +149,14 @@ public class ASPServerAdapter {
             ProcessBuilder pb = new ProcessBuilder(commands);
             StringBuffer lineStringBuffer = new StringBuffer();
             try {
+                if (!showServerOutput) {
+                    // Next line is strange, but important for initial startup when no library files area available and must be copied.
+                    // when missing, it happens that the generation (api client call) will block infinite.
+                    // Doing the pb.inheritIO() seems to solve it - but I have currently no idea why...
+                    // Showing server output does also solve the problem.
+                    // --> so do this as a workaround...
+                    pb.inheritIO();
+                }
                 process = pb.start();
                 if (consoleAdapter != null) {
                     consoleAdapter.output(">> Triggered ASP server start at port:" + port);
