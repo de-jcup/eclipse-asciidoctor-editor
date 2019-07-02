@@ -34,19 +34,20 @@ import de.jcup.asp.api.ServerLogEntry;
 import de.jcup.asp.api.ServerLogSeverity;
 import de.jcup.asp.client.AspClient;
 import de.jcup.asp.client.AspClientException;
+import de.jcup.asp.client.AspClientProgressMonitor;
 import de.jcup.eclipse.commons.EclipseResourceHelper;
 
 public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
 
     @Override
-    public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options) {
+    public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options, AspClientProgressMonitor monitor) {
         try {
             if (editorFileOrNull == null) {
                 AsciiDoctorConsoleUtil.output("ASP: Processing content");
             } else {
                 AsciiDoctorConsoleUtil.output("ASP: Processing file:" + editorFileOrNull.getAbsolutePath());
             }
-            Response response = resolveClient().convertFile(asciiDocFile.toPath(), options);
+            Response response = resolveClient().convertFile(asciiDocFile.toPath(), options,monitor);
             handleServerLog(response);
         } catch (AspClientException e) {
             Throwable rootCause = e;

@@ -1,13 +1,12 @@
 interface AsciiDoctorAdapter
 component AsciiDoctorEditorActivator
 component AsciiDoctorWrapper
-package "ASP parts"{
+package "asciidoctor editor ASP parts" {
     component "ASP Support" as aspSupport #LightGreen
     component ASPAsciiDoctorAdapter #LightGreen
-    component ASPClient #LightGreen
-    node "ASP Server instance" as aspServer #LightGreen
+   
     component ASPServerAdapter #LightGreen
-note right  of aspSupport
+note right of aspSupport
 The ASP support will provide 
 the asp client to ASPAsciiDoctorAdapter, 
 but will wait until server instance is 
@@ -19,6 +18,17 @@ is initializing.
 
 end note
 }
+
+package "asp" {
+    component ASPClient #LightBlue
+    node "ASP Server instance" as aspServer #LightBlue
+}
+
+'note left of ASPClient
+'    ASP client is part of ASP project and will only be instanciated
+'end note
+
+
 component InstalledAsciiDoctorAdapter #lightgray
 
 component AsciiDoctorEditorBuildSupport

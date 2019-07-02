@@ -33,12 +33,14 @@ import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.PluginContentInstaller;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
+import de.jcup.asciidoctoreditor.asp.AspProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 import de.jcup.asciidoctoreditor.provider.ImageHandlingMode;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
+import de.jcup.asp.client.AspClientProgressMonitor;
 
 public class AsciiDoctorWrapper {
 
@@ -63,7 +65,7 @@ public class AsciiDoctorWrapper {
 		return context;
 	}
 
-	public void convert(WrapperConvertData data, AsciiDoctorBackendType asciiDoctorBackendType) throws Exception {
+	public void convert(WrapperConvertData data, AsciiDoctorBackendType asciiDoctorBackendType, AspClientProgressMonitor monitor) throws Exception {
 		try {
 		    initContext(context, data);
 
@@ -71,7 +73,7 @@ public class AsciiDoctorWrapper {
 			Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions(asciiDoctorBackendType);
 
 			AsciidoctorAdapter asciiDoctor = context.getAsciiDoctor();
-			asciiDoctor.convertFile(data.editorFileOrNull, context.getFileToRender(), defaultOptions);
+			asciiDoctor.convertFile(data.editorFileOrNull, context.getFileToRender(), defaultOptions,monitor);
 
 			refreshParentFolderIfNecessary();
 
