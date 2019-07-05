@@ -22,7 +22,7 @@ allprojects{
 		
 }
 
-def doAutomateEclipseSetup = ['asciidoctor-editor-other'];
+def doAutomateEclipseSetup = ['asciidoctor-editor-other','asciidoctor-editor-gradle-dep'];
 
 subprojects {
     apply plugin: 'java'

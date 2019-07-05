@@ -40,6 +40,7 @@ import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
 import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
 import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
+import de.jcup.asciidoctoreditor.asp.AspProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
@@ -215,7 +216,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             data.editorFileOrNull=editorFileOrNull;
             data.internalPreview = internalPreview;
             
-			wrapper.convert(data, backend);
+			wrapper.convert(data, backend, new AspProgressMonitorAdapter(monitor));
 
             monitor.worked(++worked);
 

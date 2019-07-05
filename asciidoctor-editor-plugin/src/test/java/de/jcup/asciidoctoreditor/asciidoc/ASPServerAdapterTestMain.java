@@ -10,7 +10,6 @@ public class ASPServerAdapterTestMain {
        
        Thread.sleep(10000);
        adapter.stopServer();
-       adapter.setPort(4444);
        adapter.startServer();
        Thread.sleep(10000);
        adapter.stopServer();

@@ -27,30 +27,38 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
 		super(context);
 	}
 
+	private File tempFolder;
+	
+	public void setTempFolder(File tempFolder) {
+        this.tempFolder = tempFolder;
+    }
+	
+	public File getTempFolder() {
+	    if (tempFolder==null) {
+	        tempFolder= new File(System.getProperty("java.io.tmpdir"));
+	    }
+        return tempFolder;
+    }
+	
 	private File cachedBaseDir;
-
-	private File findBaseDir(File startFrom) {
-		if (cachedBaseDir == null) {
-			cachedBaseDir = findBaseDirNotCached(startFrom);
-		}
-		return cachedBaseDir;
-	}
 
 	private File findBaseDirNotCached(File startFrom) {
 	    getContext().getLogAdapter().resetTimeDiff();
 		File file = resolveUnSaveBaseDir(startFrom);
-		File tempFolder = new File(System.getProperty("java.io.tmpdir"));
+		File tempFolder = getTempFolder();
 		if (tempFolder.equals(file)){
 			/* this is a fuse - we got this situation with https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/97 . It will be fixed,
 			 * but preventing those situations is very important. So this exception will break cycles and is also check in a test case
 			 */
-			throw new IllegalStateException("Tempfolder may never be the base dir folder!");
+			throw new IllegalStateException("Tempfolder may never be the base dir folder!\nTempfolder:"+tempFolder.getAbsolutePath());
 		}
 		getContext().getLogAdapter().logTimeDiff("findBaseDirNotCached, started from:"+startFrom+", result:"+file);
 		return file;
 	}
 
-	protected File resolveUnSaveBaseDir(File dir) {
+	
+	
+	private File resolveUnSaveBaseDir(File dir) {
 		// very simple approach just go up until no longer any asciidoc files
 		// are found
 		// if no longer .adoc files assume this is the end and use directory
@@ -58,12 +66,24 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
 			return new File(".");// should not happen but fall back...
 		}
 		File parentFile = dir.getParentFile();
+		if (getTempFolder().equals(parentFile)) {
+		    /* when we come to our base temp folder this will be a stop at all - avoid effects occurred in issue_97 */
+		    return dir;
+		}
 		if (containsADocFiles(parentFile)) {
-			return findBaseDir(parentFile);
+			return findBaseDirNotCached(parentFile);
 		}
 		return dir;
 	}
 
+	private File findCachedBaseDirOrStartSearch(File startFrom) {
+        if (cachedBaseDir == null) {
+            cachedBaseDir = findBaseDirNotCached(startFrom);
+        }
+        return cachedBaseDir;
+    }
+
+	
 	private boolean containsADocFiles(File dir) {
 		if (!dir.isDirectory()) {
 			return false;
@@ -80,7 +100,7 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
 		if (asciiDocFile == null) {
 			 throw new IllegalStateException("No asciidoc file set!");
 		}
-		return findBaseDir(asciiDocFile.getParentFile());
+		return findCachedBaseDirOrStartSearch(asciiDocFile.getParentFile());
 	}
 
 	public void reset() {

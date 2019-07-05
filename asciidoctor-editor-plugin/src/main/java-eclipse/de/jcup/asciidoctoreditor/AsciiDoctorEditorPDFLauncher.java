@@ -13,6 +13,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
 import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
+import de.jcup.asciidoctoreditor.asp.AspProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
@@ -123,7 +124,7 @@ public class AsciiDoctorEditorPDFLauncher {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    wrapper.convert(data, AsciiDoctorBackendType.PDF);
+                    wrapper.convert(data, AsciiDoctorBackendType.PDF, new AspProgressMonitorAdapter(monitor));
                     done = true;
                     return Status.OK_STATUS;
                 } catch (Exception e) {

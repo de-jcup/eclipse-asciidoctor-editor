@@ -29,11 +29,12 @@ import de.jcup.asciidoctoreditor.OSUtil;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
+import de.jcup.asp.client.AspClientProgressMonitor;
 
 public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
     
     @Override
-    public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options) {
+    public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options, AspClientProgressMonitor monitor) {
         if (editorFileOrNull==null) {
             AsciiDoctorConsoleUtil.output( "Installed asciidoctor: Processing content");
         }else {
@@ -41,7 +42,9 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
         }
         List<String> commands = buildCommands(asciiDocFile, options);
         String commandLineString = createCommandLineString(commands);
-
+        if (monitor.isCanceled()) {
+            return;
+        }
         ProcessBuilder pb = new ProcessBuilder(commands);
         try {
             StringBuffer lineStringBuffer = null;

@@ -27,6 +27,7 @@ import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -68,12 +69,12 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
     private ArrayList<MasterButtonSlaveSelectionListener> masterSlaveListeners = new ArrayList<>();
     private AccessibleDirectoryFieldEditor pathToInstalledAsciidoctor;
-    private IntegerFieldEditor aspServerPort;
+    private IntegerFieldEditor aspServerMinPort;
+    private IntegerFieldEditor aspServerMaxPort;
     private AccessibleBooleanFieldEditor aspLogRecordsShownAsMarkerInEditor;
     private AccessibleDirectoryFieldEditor pathToJavaForASPlaunch;
     private AccessibleBooleanFieldEditor useInstalledAsciidoctor;
     private Composite baseComposite;
-    private AccessibleBooleanFieldEditor aspServerOutputShownInConsole;
 
     public AsciiDoctorEditorPreferencePage() {
         super(GRID);
@@ -101,6 +102,28 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
     @Override
     public boolean performOk() {
+        int min = 0;
+        int max = 0;
+        setErrorMessage(null);
+        setValid(true);
+        try {
+            min = aspServerMinPort.getIntValue();
+            max = aspServerMaxPort.getIntValue();
+            if (max <= min) {
+                setErrorMessage("ASP min port must be smaller than max !");
+                setValid(false);
+                return false;
+            } else {
+                if (max - min > 50) {
+                    setErrorMessage("ASP max-min diff must be between 1 and 50!");
+                    setValid(false);
+                    return false;
+                }
+            }
+        } catch (NumberFormatException e) {
+            /* ignore done by field editors */
+        }
+        
         boolean ok = super.performOk();
         // we handle the directory field special, not added as field, so setting default
         // in this way
@@ -111,11 +134,11 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
     }
 
     protected void createDependency(Button master, Control slave) {
-        createDependency(master, slave, true,false);
+        createDependency(master, slave, true, false);
     }
-    
+
     protected void createDependency(Button master, Control slave, boolean indent) {
-        createDependency(master,slave,indent,false);
+        createDependency(master, slave, indent, false);
     }
 
     protected void createDependency(Button master, Control slave, boolean indent, boolean negative) {
@@ -123,7 +146,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         if (indent) {
             indent(slave);
         }
-        MasterButtonSlaveSelectionListener listener = new MasterButtonSlaveSelectionListener(master, slave,negative);
+        MasterButtonSlaveSelectionListener listener = new MasterButtonSlaveSelectionListener(master, slave, negative);
         master.addSelectionListener(listener);
         this.masterSlaveListeners.add(listener);
     }
@@ -134,17 +157,14 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         createUIGroup(baseComposite);
         createExternalPreviewParts(baseComposite);
-        
+
         createSpacer(baseComposite);
         createAsciidoctorGroup(baseComposite);
         createSpacer(baseComposite);
-//        
         createASPGroup(baseComposite);
-//        createSpacer(baseComposite);
-//        
         createInstalledAsciidoctorGroup(baseComposite);
     }
-    
+
     public Composite getBaseComposite() {
         return baseComposite;
     }
@@ -226,7 +246,6 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         createDependency(autobuildForExternalPreviewEnabled.getChangeControl(devNull1), autorefreshSeconds.getTextControl(devNull2));
     }
-
     @Override
     protected void checkState() {
         super.checkState();
@@ -240,16 +259,17 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
             setValid(false);
         }
     }
+    
+
     protected void createAsciidoctorGroup(Composite group) {
 
         useInstalledAsciidoctor = new AccessibleBooleanFieldEditor(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), "Use installed asciidoctor instead ASP", group);
-        useInstalledAsciidoctor.getDescriptionControl(group).setToolTipText("When enabled the installed asciidoctor will be used instead of ASP variant.\n\n"
-                + "Be aware about adding correct setup for your CLI arguments in preferences!");
+        useInstalledAsciidoctor.getDescriptionControl(group)
+                .setToolTipText("When enabled the installed asciidoctor will be used instead of ASP variant.\n\n" + "Be aware about adding correct setup for your CLI arguments in preferences!");
         addField(useInstalledAsciidoctor);
 
-
     }
-    
+
     protected void createASPGroup(Composite composite) {
 
         Group aspGroup = new Group(composite, SWT.NONE);
@@ -261,36 +281,42 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         /* ASP server setting */
         /* ------------------ */
         Composite serverportComposite = new Composite(content, SWT.NONE);
-        aspServerPort = new IntegerFieldEditor(P_ASP_SERVER_PORT.getId(), "ASP server port", serverportComposite);
-        aspServerPort.getTextControl(serverportComposite).setToolTipText("Set port for ASP Server (Asciidoctor Server Protocol)");
-        
-        aspServerPort.setValidRange(4000, 65536);
+        aspServerMinPort = new IntegerFieldEditor(P_ASP_SERVER_MIN_PORT.getId(), "ASP Server port range: min", serverportComposite);
+        aspServerMinPort.getLabelControl(serverportComposite)
+                .setToolTipText("Set port range used by ASP server auto port detection - means a free port in given range is detected and used to start new server instance");
+        aspServerMinPort.getTextControl(serverportComposite).setToolTipText("Set min port for ASP auto port detection");
+        aspServerMinPort.setValidRange(1000, 65506);
+        aspServerMinPort.setValidateStrategy(StringFieldEditor.VALIDATE_ON_KEY_STROKE);
+
+        aspServerMaxPort = new IntegerFieldEditor(P_ASP_SERVER_MAX_PORT.getId(), "max:", serverportComposite);
+        aspServerMaxPort.getTextControl(serverportComposite).setToolTipText("Set max port for ASP auto port detection");
+        aspServerMaxPort.setValidRange(1030, 65536);
+
         serverportComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        serverportComposite.setLayout(new GridLayout(3,false));
-        
+        serverportComposite.setLayout(new GridLayout(5, false));
+
         Button button = new Button(serverportComposite, SWT.NONE);
         button.setText("Stop");
-        button.setToolTipText("Will stop current running server instance - no \nmatter which new port is set inside this preferences!");
+        button.setToolTipText("Will stop current running server instance - no \nmatter which port range is set inside this preferences!");
         button.addSelectionListener(new SelectionAdapter() {
-            
+
             @Override
             public void widgetSelected(SelectionEvent event) {
                 boolean stopped = AsciiDoctorEditorActivator.getDefault().getAspSupport().stop();
                 if (stopped) {
-                    MessageDialog.openInformation(getShell(), "ASP server shutdown" , "Server has been stopped!");
-                }else {
-                    MessageDialog.openWarning(getShell(), "ASP server shutdown" , "Was not able to shutdown server instance.\nEither this server was not created by this eclipse instance or the process was already stopped");
+                    MessageDialog.openInformation(getShell(), "ASP server shutdown", "Server has been stopped!");
+                } else {
+                    MessageDialog.openWarning(getShell(), "ASP server shutdown",
+                            "Was not able to shutdown server instance.\nEither this server was not created by this eclipse instance or the process was already stopped");
                 }
             }
-          
-         });
-        addField(aspServerPort);
-        
+
+        });
+        addField(aspServerMinPort);
+        addField(aspServerMaxPort);
+
         aspLogRecordsShownAsMarkerInEditor = new AccessibleBooleanFieldEditor(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), "ASP log records shown as marker in editor", content);
         addField(aspLogRecordsShownAsMarkerInEditor);
-        
-        aspServerOutputShownInConsole = new AccessibleBooleanFieldEditor(P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE.getId(), "Output of started ASP server is shown in console", content);
-        addField(aspServerOutputShownInConsole);
 
         Composite pathComposite = new Composite(content, SWT.NONE);
         pathToJavaForASPlaunch = new AccessibleDirectoryFieldEditor(P_PATH_TO_JAVA_FOR_ASP_LAUNCH.getId(), "Path to Java", pathComposite);
@@ -299,7 +325,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
                 .setToolTipText("Complete path to another java runtime. This is the execution which is called to launch ASP server. If empty, installed java will be used");
         pathToJavaForASPlaunch.setEmptyStringAllowed(true);
         pathToJavaForASPlaunch.setErrorMessage("Invalid path to java runtime");
-        
+
         pathToJavaForASPlaunch.getTextControl(pathComposite).addFocusListener(new FocusListener() {
 
             @Override
@@ -313,24 +339,21 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
             }
         });
-        
+
         pathComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        pathComposite.setLayout(new GridLayout(3,false));
+        pathComposite.setLayout(new GridLayout(3, false));
 //      not:addField(pathToInstalledAsciidoctor); >>>> when not adding field as field editor it looks good. so text must be set to preferences by special code * field editors s...cks!
         pseudoAddField(pathToJavaForASPlaunch);
-        
-        Button changeControl = useInstalledAsciidoctor.getChangeControl(getBaseComposite());
-        createDependency(changeControl, aspLogRecordsShownAsMarkerInEditor.getChangeControl(content), false,true);
-        createDependency(changeControl, aspServerPort.getLabelControl(serverportComposite), false,true);
-        createDependency(changeControl, aspServerPort.getTextControl(serverportComposite), false,true);
-        createDependency(changeControl, pathToJavaForASPlaunch.getTextControl(pathComposite), false,true);
-        createDependency(changeControl, pathToJavaForASPlaunch.getLabelControl(pathComposite), false,true);
-        createDependency(changeControl, content, false,true);
-        
 
+        Button changeControl = useInstalledAsciidoctor.getChangeControl(getBaseComposite());
+        createDependency(changeControl, aspLogRecordsShownAsMarkerInEditor.getChangeControl(content), false, true);
+        createDependency(changeControl, aspServerMinPort.getLabelControl(serverportComposite), false, true);
+        createDependency(changeControl, aspServerMinPort.getTextControl(serverportComposite), false, true);
+        createDependency(changeControl, pathToJavaForASPlaunch.getTextControl(pathComposite), false, true);
+        createDependency(changeControl, pathToJavaForASPlaunch.getLabelControl(pathComposite), false, true);
+        createDependency(changeControl, content, false, true);
 
     }
-
 
     protected void createInstalledAsciidoctorGroup(Composite composite) {
 
@@ -338,7 +361,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         installedAsciidoctorGroup.setText("Installed Asciidoctor");
         installedAsciidoctorGroup.setLayout(new GridLayout(1, false));
         installedAsciidoctorGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        Composite content=installedAsciidoctorGroup;
+        Composite content = installedAsciidoctorGroup;
 
         Composite pathToInstalledComposite = new Composite(content, SWT.NONE);
         pathToInstalledAsciidoctor = new AccessibleDirectoryFieldEditor(P_PATH_TO_INSTALLED_ASCIICDOCTOR.getId(), "Path to Asciidoctor", pathToInstalledComposite);
@@ -365,7 +388,6 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
             }
         });
-
 
         Composite devNull2 = new Composite(content, SWT.NONE);
 
@@ -442,11 +464,11 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         private Button master;
         private Control slave;
         private boolean negative;
-        
+
         public MasterButtonSlaveSelectionListener(Button master, Control slave, boolean negative) {
             this.master = master;
             this.slave = slave;
-            this.negative=negative;
+            this.negative = negative;
         }
 
         @Override
@@ -463,7 +485,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
             boolean state = master.getSelection();
             if (negative) {
                 slave.setEnabled(!state);
-            }else {
+            } else {
                 slave.setEnabled(state);
             }
         }
