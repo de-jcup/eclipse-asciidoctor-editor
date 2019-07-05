@@ -9,10 +9,7 @@ jdk:
 before_install:
 - chmod +x gradlew
 
-#after_success:
-#- ./gradlew jacocoTestReport coveralls
+script:
+- ./gradlew clean installLibraries
+- ./gradlew test
 
-#cache:
-# directories:
-# - ~/.gradle/wrapper
-# - ~/.gradle/caches
