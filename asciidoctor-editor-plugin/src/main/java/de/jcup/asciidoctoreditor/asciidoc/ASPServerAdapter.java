@@ -1,5 +1,7 @@
 package de.jcup.asciidoctoreditor.asciidoc;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Objects;
 
 import de.jcup.asciidoctoreditor.ConsoleAdapter;
@@ -12,14 +14,18 @@ import de.jcup.asp.server.asciidoctorj.launcher.ExternalProcessAsciidoctorJServe
 
 public class ASPServerAdapter {
 
+    public static final int DEFAULT_MIN_PORT = 4444;
+    public static final int DEFAULT_MAX_PORT = 4484;
     private ConsoleAdapter consoleAdapter;
     private LogAdapter logAdapter;
+    
+    private int minPort = DEFAULT_MIN_PORT;
+    private int maxPort = DEFAULT_MAX_PORT;
+    
     private int port;
     private String pathToJava;
     private String pathToServerJar;
     private AspClient client;
-    private boolean started;
-    private boolean showServerOutput;
     private ExternalProcessAsciidoctorJServerLauncher launcher;
 
     public ASPServerAdapter() {
@@ -29,21 +35,14 @@ public class ASPServerAdapter {
         return client;
     }
 
-    public void setPort(int port) {
-        if (this.port == port) {
-            return;
-        }
-        this.port = port;
+    public void setMinPort(int minPort) {
+        this.minPort = minPort;
     }
 
-    public boolean isShowServerOutput() {
-        return showServerOutput;
+    public void setMaxPort(int maxPort) {
+        this.maxPort = maxPort;
     }
-
-    public void setShowServerOutput(boolean showServerOutput) {
-        this.showServerOutput = showServerOutput;
-    }
-
+    
     public int getPort() {
         return port;
     }
@@ -78,6 +77,8 @@ public class ASPServerAdapter {
         if (launcher != null) {
             launcher.stopServer();
         }
+        this.port=getFreePortToUse(minPort,maxPort);
+        
         launcher = new ExternalProcessAsciidoctorJServerLauncher(pathToServerJar, port);
         launcher.setLogHandler(new LogHandler() {
 
@@ -110,6 +111,21 @@ public class ASPServerAdapter {
         
     }
 
+    private int getFreePortToUse(int minPort, int maxPort) {
+        for (int p=minPort; p<=maxPort;p++) {
+            try {
+                ServerSocket socket = new ServerSocket(p);
+                socket.close();
+                // able to open a server socket on port p, so it will be possible for ASP server as well
+                // we use this port;
+                return p;
+            } catch (IOException e) {
+                /* ignore */
+            }
+        }
+        throw new IllegalStateException("No port free between "+minPort+" - "+maxPort+" for usage of ASP Server!");
+    }
+
     /**
      * Stop server
      * 
@@ -124,6 +140,6 @@ public class ASPServerAdapter {
     }
 
     public boolean isServerStarted() {
-        return started;
+        return isAlive();
     }
 }

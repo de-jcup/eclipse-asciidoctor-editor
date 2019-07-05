@@ -239,9 +239,14 @@ public class AsciiDoctorEditorPreferences {
 		return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
 	}
 
-    public int getAspServerPort() {
-        return getPreferenceStore().getInt(P_ASP_SERVER_PORT.getId());
+    public int getAspServerMinPort() {
+        return getPreferenceStore().getInt(P_ASP_SERVER_MIN_PORT.getId());
     }
+    
+    public int getAspServerMaxPort() {
+        return getPreferenceStore().getInt(P_ASP_SERVER_MAX_PORT.getId());
+    }
+
 
     public boolean isIncludeValidationEnabled() {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_INCLUDES);
@@ -277,10 +282,5 @@ public class AsciiDoctorEditorPreferences {
     public String getPathToJavaForASPLaunch() {
         return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_FOR_ASP_LAUNCH);
     }
-
-    public boolean isShowingASPServerOutput() {
-        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE);
-    }
-
 
 }

@@ -97,8 +97,6 @@ public class ASPSupport {
     
     private void internalUpdateASPServerStart() {
         boolean usesInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor();
-        boolean showASPServerOutput = AsciiDoctorEditorPreferences.getInstance().isShowingASPServerOutput();
-//        boolean showServerOutputChanged = showASPServerOutput!=aspServerAdapter.isShowServerOutput();
         if (usesInstalledAsciidoctor) {
             if (aspServerAdapter.isServerStarted()) {
                 AsciiDoctorConsoleUtil.output(">> Stopping ASP server because using now installed asciidoctor");
@@ -106,14 +104,17 @@ public class ASPSupport {
                 return;
             }
         }else {
+            if (aspServerAdapter.isAlive()) {
+                return;
+            }
             File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
             File aspServer = new File(aspFolder,"asp-server-asciidoctorj.jar");
            
             String pathToJava= AsciiDoctorEditorPreferences.getInstance().getPathToJavaForASPLaunch();
             aspServerAdapter.setPathToJava(pathToJava);
             aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
-            aspServerAdapter.setPort(AsciiDoctorEditorPreferences.getInstance().getAspServerPort());
-            aspServerAdapter.setShowServerOutput(showASPServerOutput);
+            aspServerAdapter.setMinPort(AsciiDoctorEditorPreferences.getInstance().getAspServerMinPort());
+            aspServerAdapter.setMaxPort(AsciiDoctorEditorPreferences.getInstance().getAspServerMaxPort());
             aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);
             aspServerAdapter.startServer();
         }

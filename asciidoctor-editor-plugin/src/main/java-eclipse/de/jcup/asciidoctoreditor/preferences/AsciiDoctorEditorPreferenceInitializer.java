@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.jcup.asciidoctoreditor.PreviewLayout;
+import de.jcup.asciidoctoreditor.asciidoc.ASPServerAdapter;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 
 /**
@@ -87,9 +88,9 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* ++++++++++++++ */
 		/* + ASP server + */
 		/* ++++++++++++++ */
-		store.setDefault(P_ASP_SERVER_PORT.getId(), 4444);
+		store.setDefault(P_ASP_SERVER_MIN_PORT.getId(), ASPServerAdapter.DEFAULT_MIN_PORT);
+		store.setDefault(P_ASP_SERVER_MAX_PORT.getId(), ASPServerAdapter.DEFAULT_MAX_PORT);
 		store.setDefault(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), true);
-		store.setDefault(P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE.getId(), false);
 		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */
