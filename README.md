@@ -28,6 +28,7 @@ For more information
 ### Setup 
 - call `git clone https://github.com/de-jcup/eclipse-asciidoctor-editor.git` 
 - open a shell and go into `eclipse-asciidoctor-editor` folder
+- call `gradlew installLibraries` - this will install current asp dependencies etc. (so its not inside git)
 - call `gradlew eclipse`
 - After this is done open your eclipse and import *ALL* existing eclipse projects from `eclipse-asciidoctor-editor` into your workspace
 ### Build

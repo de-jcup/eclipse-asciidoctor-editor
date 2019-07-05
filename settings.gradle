@@ -1,4 +1,5 @@
 
 include 'asciidoctor-editor-plugin',
 'asciidoctor-editor-other',
+'asciidoctor-editor-gradle-dep',
 'asciidoctor-converter-plugin'		

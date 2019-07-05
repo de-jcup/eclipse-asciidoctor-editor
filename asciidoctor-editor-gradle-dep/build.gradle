@@ -1,0 +1,48 @@
+repositories {
+    maven {
+        url  "https://dl.bintray.com/de-jcup/asp" 
+    }
+}
+
+def aspServerVersion="0.3.0"
+def aspLauncherVersion="0.3.0"
+
+configurations{
+    plugin_lib.extendsFrom compile
+    plugin_editor.extendsFrom compile
+}
+
+configurations.plugin_lib {
+     transitive = false
+}
+
+configurations.plugin_editor {
+     transitive = false
+}
+  
+dependencies {
+    plugin_lib "de.jcup.asp:asp-server-asciidoctorj:${aspServerVersion}:dist" 
+    plugin_editor "de.jcup.asp:asp-server-asciidoctorj-launcher:${aspLauncherVersion}:dist"
+}
+
+task installEditorPluginParts(type: Copy){
+    def regexp = "(.+)-${aspServerVersion}(.+)"
+    println "regexp:$regexp"
+    
+    from configurations.plugin_editor
+    rename regexp, '$1$2'
+    into "${rootProject.projectDir}/asciidoctor-editor-plugin/lib"
+}
+task installLibPluginParts(type: Copy){
+    def regexp = "(.+)-${aspLauncherVersion}(.+)"
+    from configurations.plugin_lib
+    rename regexp, '$1$2'
+    into "${rootProject.projectDir}/asciidoctor-editor-libs/libs"
+}
+/**
+ * Only necessary when initial setup or asp version changes
+ */
+task installLibraries(dependsOn: [installEditorPluginParts,installLibPluginParts]) {
+    
+    
+}

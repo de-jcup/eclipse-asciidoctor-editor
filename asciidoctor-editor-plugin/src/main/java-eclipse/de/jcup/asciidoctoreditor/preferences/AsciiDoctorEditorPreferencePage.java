@@ -115,7 +115,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
                 return false;
             } else {
                 if (max - min > 50) {
-                    setErrorMessage("ASP max-min must be between 1 and 50 ports!");
+                    setErrorMessage("ASP max-min diff must be between 1 and 50!");
                     setValid(false);
                     return false;
                 }
