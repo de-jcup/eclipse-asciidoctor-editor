@@ -27,7 +27,6 @@ dependencies {
 
 task installEditorPluginParts(type: Copy){
     def regexp = "(.+)-${aspServerVersion}(.+)"
-    println "regexp:$regexp"
     
     from configurations.plugin_editor
     rename regexp, '$1$2'
@@ -35,6 +34,7 @@ task installEditorPluginParts(type: Copy){
 }
 task installLibPluginParts(type: Copy){
     def regexp = "(.+)-${aspLauncherVersion}(.+)"
+    
     from configurations.plugin_lib
     rename regexp, '$1$2'
     into "${rootProject.projectDir}/asciidoctor-editor-libs/libs"
@@ -44,5 +44,6 @@ task installLibPluginParts(type: Copy){
  */
 task installLibraries(dependsOn: [installEditorPluginParts,installLibPluginParts]) {
     
+tasks.assemble.dependsOn installLibraries
     
 }

@@ -9,7 +9,3 @@ jdk:
 before_install:
 - chmod +x gradlew
 
-script:
-- ./gradlew clean installLibraries
-- ./gradlew test
-

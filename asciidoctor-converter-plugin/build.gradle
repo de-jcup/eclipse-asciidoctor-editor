@@ -11,3 +11,5 @@ task installLibraries(type: Copy) {
     into "${rootProject.projectDir}/asciidoctor-converter-plugin/lib"
     from configurations.compile /*configurations.testRuntime - configurations.runtime*/
 }
+
+tasks.assemble.dependsOn installLibraries
