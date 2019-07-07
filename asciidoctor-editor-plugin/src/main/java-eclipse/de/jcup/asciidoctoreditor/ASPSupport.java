@@ -108,7 +108,7 @@ public class ASPSupport {
                 return;
             }
             File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
-            File aspServer = new File(aspFolder,"asp-server-asciidoctorj.jar");
+            File aspServer = new File(aspFolder,"asp-server-asciidoctorj-dist.jar");
            
             String pathToJava= AsciiDoctorEditorPreferences.getInstance().getPathToJavaForASPLaunch();
             aspServerAdapter.setPathToJava(pathToJava);
