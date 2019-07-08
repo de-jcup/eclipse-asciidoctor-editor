@@ -17,7 +17,9 @@ public class ASPSupport {
     
     public AspClient getAspClient() {
         waitForServerAvailable(new FallbackRestartHandler());
-        return aspServerAdapter.getClient();
+        
+        AspClient client = aspServerAdapter.getClient();
+        return client;
     }
     
     private abstract class ServerNotAvailableHandler{
@@ -96,7 +98,8 @@ public class ASPSupport {
     }
     
     private void internalUpdateASPServerStart() {
-        boolean usesInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor();
+        AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+        boolean usesInstalledAsciidoctor = preferences.isUsingInstalledAsciidoctor();
         if (usesInstalledAsciidoctor) {
             if (aspServerAdapter.isServerStarted()) {
                 AsciiDoctorConsoleUtil.output(">> Stopping ASP server because using now installed asciidoctor");
@@ -104,20 +107,23 @@ public class ASPSupport {
                 return;
             }
         }else {
+            aspServerAdapter.setShowServerOutput(preferences.isShowingAspServerOutputInConsole());
+            aspServerAdapter.setShowCommunication(AsciiDoctorEditorPreferences.getInstance().isShowingAspCommunicationInConsole());
+        }
             if (aspServerAdapter.isAlive()) {
                 return;
             }
             File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
             File aspServer = new File(aspFolder,"asp-server-asciidoctorj-dist.jar");
            
-            String pathToJava= AsciiDoctorEditorPreferences.getInstance().getPathToJavaForASPLaunch();
+            String pathToJava= preferences.getPathToJavaForASPLaunch();
             aspServerAdapter.setPathToJava(pathToJava);
             aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
-            aspServerAdapter.setMinPort(AsciiDoctorEditorPreferences.getInstance().getAspServerMinPort());
-            aspServerAdapter.setMaxPort(AsciiDoctorEditorPreferences.getInstance().getAspServerMaxPort());
+            aspServerAdapter.setMinPort(preferences.getAspServerMinPort());
+            aspServerAdapter.setMaxPort(preferences.getAspServerMaxPort());
             aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);
+            aspServerAdapter.setLogAdapter(AsciiDoctorEclipseLogAdapter.INSTANCE);
             aspServerAdapter.startServer();
-        }
 
     }
    

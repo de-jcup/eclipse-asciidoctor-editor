@@ -21,7 +21,7 @@ import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 public class AsciiDoctorEclipseConsoleAdapter implements ConsoleAdapter{
 
 	public static final ConsoleAdapter INSTANCE = new AsciiDoctorEclipseConsoleAdapter();
-	
+		
 	private AsciiDoctorEclipseConsoleAdapter(){
 		
 	}

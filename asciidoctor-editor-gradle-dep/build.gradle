@@ -4,8 +4,8 @@ repositories {
     }
 }
 
-def aspServerVersion="0.3.0"
-def aspLauncherVersion="0.3.0"
+def aspServerVersion="1.0.0"
+def aspLauncherVersion="1.0.0"
 
 configurations{
     plugin_lib.extendsFrom compile

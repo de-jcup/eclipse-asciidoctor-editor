@@ -75,6 +75,8 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
     private AccessibleDirectoryFieldEditor pathToJavaForASPlaunch;
     private AccessibleBooleanFieldEditor useInstalledAsciidoctor;
     private Composite baseComposite;
+    private AccessibleBooleanFieldEditor aspServerOutputShownInConsole;
+    private AccessibleBooleanFieldEditor aspCommunicationShownInConsole;
 
     public AsciiDoctorEditorPreferencePage() {
         super(GRID);
@@ -317,6 +319,10 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         aspLogRecordsShownAsMarkerInEditor = new AccessibleBooleanFieldEditor(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), "ASP log records shown as marker in editor", content);
         addField(aspLogRecordsShownAsMarkerInEditor);
+        aspServerOutputShownInConsole = new AccessibleBooleanFieldEditor(P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE.getId(), "ASP server output shown in console", content);
+        addField(aspServerOutputShownInConsole);
+        aspCommunicationShownInConsole = new AccessibleBooleanFieldEditor(P_ASP_COMMUNICATION_SHOWN_IN_CONSOLE.getId(), "ASP communication shown in console", content);
+        addField(aspCommunicationShownInConsole);
 
         Composite pathComposite = new Composite(content, SWT.NONE);
         pathToJavaForASPlaunch = new AccessibleDirectoryFieldEditor(P_PATH_TO_JAVA_FOR_ASP_LAUNCH.getId(), "Path to Java", pathComposite);
@@ -347,6 +353,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         Button changeControl = useInstalledAsciidoctor.getChangeControl(getBaseComposite());
         createDependency(changeControl, aspLogRecordsShownAsMarkerInEditor.getChangeControl(content), false, true);
+        createDependency(changeControl, aspServerOutputShownInConsole.getChangeControl(content), false, true);
         createDependency(changeControl, aspServerMinPort.getLabelControl(serverportComposite), false, true);
         createDependency(changeControl, aspServerMinPort.getTextControl(serverportComposite), false, true);
         createDependency(changeControl, pathToJavaForASPlaunch.getTextControl(pathComposite), false, true);

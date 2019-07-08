@@ -91,6 +91,8 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		store.setDefault(P_ASP_SERVER_MIN_PORT.getId(), ASPServerAdapter.DEFAULT_MIN_PORT);
 		store.setDefault(P_ASP_SERVER_MAX_PORT.getId(), ASPServerAdapter.DEFAULT_MAX_PORT);
 		store.setDefault(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), true);
+		store.setDefault(P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE.getId(), false);
+		store.setDefault(P_ASP_COMMUNICATION_SHOWN_IN_CONSOLE.getId(), false);
 		
 		/* +++++++++++++++++ */
 		/* + Editor Colors + */

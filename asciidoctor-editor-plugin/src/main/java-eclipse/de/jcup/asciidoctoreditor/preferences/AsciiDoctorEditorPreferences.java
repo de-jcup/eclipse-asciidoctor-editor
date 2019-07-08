@@ -36,116 +36,111 @@ import de.jcup.eclipse.commons.ui.ColorUtil;
 
 public class AsciiDoctorEditorPreferences {
 
-	private static AsciiDoctorEditorPreferences INSTANCE = new AsciiDoctorEditorPreferences();
-	private IPreferenceStore store;
+    private static AsciiDoctorEditorPreferences INSTANCE = new AsciiDoctorEditorPreferences();
+    private IPreferenceStore store;
 
-	public static AsciiDoctorEditorPreferences getInstance() {
-    	return INSTANCE;
+    public static AsciiDoctorEditorPreferences getInstance() {
+        return INSTANCE;
     }
 
     private AsciiDoctorEditorPreferences() {
-		store = new ScopedPreferenceStore(InstanceScope.INSTANCE, AsciiDoctorEditorActivator.PLUGIN_ID);
-		store.addPropertyChangeListener(new IPropertyChangeListener() {
+        store = new ScopedPreferenceStore(InstanceScope.INSTANCE, AsciiDoctorEditorActivator.PLUGIN_ID);
+        store.addPropertyChangeListener(new IPropertyChangeListener() {
 
-			@Override
-			public void propertyChange(PropertyChangeEvent event) {
-				if (event == null) {
-					return;
-				}
-				String property = event.getProperty();
-				if (property == null) {
-					return;
-				}
-				ChangeContext context = new ChangeContext();
-				for (AsciiDoctorEditorSyntaxColorPreferenceConstants c : AsciiDoctorEditorSyntaxColorPreferenceConstants
-						.values()) {
-					if (property.equals(c.getId())) {
-						context.colorChanged = true;
-						break;
-					}
-				}
-				for (AsciiDoctorEditorValidationPreferenceConstants c : AsciiDoctorEditorValidationPreferenceConstants
-						.values()) {
-					if (property.equals(c.getId())) {
-						context.validationChanged = true;
-						break;
-					}
-				}
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                if (event == null) {
+                    return;
+                }
+                String property = event.getProperty();
+                if (property == null) {
+                    return;
+                }
+                ChangeContext context = new ChangeContext();
+                for (AsciiDoctorEditorSyntaxColorPreferenceConstants c : AsciiDoctorEditorSyntaxColorPreferenceConstants.values()) {
+                    if (property.equals(c.getId())) {
+                        context.colorChanged = true;
+                        break;
+                    }
+                }
+                for (AsciiDoctorEditorValidationPreferenceConstants c : AsciiDoctorEditorValidationPreferenceConstants.values()) {
+                    if (property.equals(c.getId())) {
+                        context.validationChanged = true;
+                        break;
+                    }
+                }
 
-				updateColorsInAsciiDoctorEditors(context);
+                updateColorsInAsciiDoctorEditors(context);
 
-			}
+            }
 
-			private void updateColorsInAsciiDoctorEditors(ChangeContext context) {
-				if (!context.hasChanges()) {
-					return;
-				}
-				/* inform all AsciiDoctorWrapper editors about color changes */
-				IWorkbenchPage activePage = EclipseUtil.getActivePage();
-				if (activePage == null) {
-					return;
-				}
-				IEditorReference[] references = activePage.getEditorReferences();
-				for (IEditorReference ref : references) {
-					IEditorPart editor = ref.getEditor(false);
-					if (editor == null) {
-						continue;
-					}
-					if (!(editor instanceof AsciiDoctorEditor)) {
-						continue;
-					}
-					AsciiDoctorEditor geditor = (AsciiDoctorEditor) editor;
-					if (context.colorChanged) {
-						geditor.handleColorSettingsChanged();
-					}
-					if (context.validationChanged) {
-					    geditor.validate();
-					}
-				}
-			}
-		});
+            private void updateColorsInAsciiDoctorEditors(ChangeContext context) {
+                if (!context.hasChanges()) {
+                    return;
+                }
+                /* inform all AsciiDoctorWrapper editors about color changes */
+                IWorkbenchPage activePage = EclipseUtil.getActivePage();
+                if (activePage == null) {
+                    return;
+                }
+                IEditorReference[] references = activePage.getEditorReferences();
+                for (IEditorReference ref : references) {
+                    IEditorPart editor = ref.getEditor(false);
+                    if (editor == null) {
+                        continue;
+                    }
+                    if (!(editor instanceof AsciiDoctorEditor)) {
+                        continue;
+                    }
+                    AsciiDoctorEditor geditor = (AsciiDoctorEditor) editor;
+                    if (context.colorChanged) {
+                        geditor.handleColorSettingsChanged();
+                    }
+                    if (context.validationChanged) {
+                        geditor.validate();
+                    }
+                }
+            }
+        });
 
-	}
+    }
 
-	private class ChangeContext {
-		private boolean colorChanged = false;
-		private boolean validationChanged = false;
+    private class ChangeContext {
+        private boolean colorChanged = false;
+        private boolean validationChanged = false;
 
-		private boolean hasChanges() {
-			boolean changedAtAll = colorChanged;
-			changedAtAll = changedAtAll || validationChanged;
-			return changedAtAll;
-		}
-	}
+        private boolean hasChanges() {
+            boolean changedAtAll = colorChanged;
+            changedAtAll = changedAtAll || validationChanged;
+            return changedAtAll;
+        }
+    }
 
-	public String getStringPreference(PreferenceIdentifiable id) {
-		String data = getPreferenceStore().getString(id.getId());
-		if (data == null) {
-			data = "";
-		}
-		return data;
-	}
+    public String getStringPreference(PreferenceIdentifiable id) {
+        String data = getPreferenceStore().getString(id.getId());
+        if (data == null) {
+            data = "";
+        }
+        return data;
+    }
 
-	public int getIntegerPreference(PreferenceIdentifiable id) {
-		int data = getPreferenceStore().getInt(id.getId());
-		return data;
-	}
+    public int getIntegerPreference(PreferenceIdentifiable id) {
+        int data = getPreferenceStore().getInt(id.getId());
+        return data;
+    }
 
-	public boolean getBooleanPreference(PreferenceIdentifiable id) {
-		boolean data = getPreferenceStore().getBoolean(id.getId());
-		return data;
-	}
+    public boolean getBooleanPreference(PreferenceIdentifiable id) {
+        boolean data = getPreferenceStore().getBoolean(id.getId());
+        return data;
+    }
 
-	public void setBooleanPreference(PreferenceIdentifiable id, boolean value) {
-		getPreferenceStore().setValue(id.getId(), value);
-	}
-	
+    public void setBooleanPreference(PreferenceIdentifiable id, boolean value) {
+        getPreferenceStore().setValue(id.getId(), value);
+    }
 
-	public void setStringPreference(PreferenceIdentifiable id,
-			String value) {
-		getPreferenceStore().setValue(id.getId(), value);
-	}
-	
+    public void setStringPreference(PreferenceIdentifiable id, String value) {
+        getPreferenceStore().setValue(id.getId(), value);
+    }
 
     public boolean getDefaultBooleanPreference(PreferenceIdentifiable id) {
         boolean data = getPreferenceStore().getDefaultBoolean(id.getId());
@@ -176,77 +171,76 @@ public class AsciiDoctorEditorPreferences {
         PreferenceConverter.setDefault(getPreferenceStore(), identifiable.getId(), color);
     }
 
-    
     /* ----------------------------------------------------------------------------------------- */
     /* - ....................... Dedicated getter/setter ..................................... - */
     /* ----------------------------------------------------------------------------------------- */
-	public boolean isLinkOutlineWithEditorEnabled() {
-		return getBooleanPreference(P_LINK_OUTLINE_WITH_EDITOR);
-	}
-	public boolean isLinkEditorWithPreviewEnabled() {
-		return getBooleanPreference(P_LINK_EDITOR_WITH_PREVIEW);
-	}
+    public boolean isLinkOutlineWithEditorEnabled() {
+        return getBooleanPreference(P_LINK_OUTLINE_WITH_EDITOR);
+    }
 
-	public boolean isAutoBuildEnabledForExternalPreview() {
-		return getBooleanPreference(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED);
-	}
+    public boolean isLinkEditorWithPreviewEnabled() {
+        return getBooleanPreference(P_LINK_EDITOR_WITH_PREVIEW);
+    }
 
-	public IPreferenceStore getPreferenceStore() {
-		return store;
-	}
+    public boolean isAutoBuildEnabledForExternalPreview() {
+        return getBooleanPreference(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED);
+    }
 
-	public int getAutoRefreshInSecondsForExternalBrowser() {
-		if (!isAutoBuildEnabledForExternalPreview()) {
-			/*
-			 * when disabled auto build a refresh does not make any sense... so
-			 * always return 0 seconds
-			 */
-			return 0;
-		}
-		return getPreferenceStore().getInt(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId());
-	}
+    public IPreferenceStore getPreferenceStore() {
+        return store;
+    }
 
-	public PreviewLayout getInitialLayoutModeForNewEditors() {
-		String layoutMode = getStringPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT);
-		PreviewLayout layout = PreviewLayout.fromId(layoutMode);
-		if (layout == null) {
-			layout = PreviewLayout.VERTICAL;
-		}
-		return layout;
-	}
+    public int getAutoRefreshInSecondsForExternalBrowser() {
+        if (!isAutoBuildEnabledForExternalPreview()) {
+            /*
+             * when disabled auto build a refresh does not make any sense... so always
+             * return 0 seconds
+             */
+            return 0;
+        }
+        return getPreferenceStore().getInt(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId());
+    }
 
-	public boolean isUsingInstalledAsciidoctor() {
-		return getBooleanPreference(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED);
-	}
-	
-	public String getArgumentsForInstalledAsciidoctor(){
-		return getStringPreference(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS);
-	}
+    public PreviewLayout getInitialLayoutModeForNewEditors() {
+        String layoutMode = getStringPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT);
+        PreviewLayout layout = PreviewLayout.fromId(layoutMode);
+        if (layout == null) {
+            layout = PreviewLayout.VERTICAL;
+        }
+        return layout;
+    }
 
-	public boolean isConsoleAlwaysShownOnError() {
-		return getBooleanPreference(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT);
-	}
+    public boolean isUsingInstalledAsciidoctor() {
+        return getBooleanPreference(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED);
+    }
 
-	public String getPathToInstalledAsciidoctor() {
-		return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR);
-	}
+    public String getArgumentsForInstalledAsciidoctor() {
+        return getStringPreference(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS);
+    }
 
-	public boolean isUsingPreviewImageDirectory() {
-		return getBooleanPreference(P_USE_PREVIEW_IMAGEDIRECTORY);
-	}
+    public boolean isConsoleAlwaysShownOnError() {
+        return getBooleanPreference(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT);
+    }
 
-	public boolean isStoringPlantUmlFiles() {
-		return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
-	}
+    public String getPathToInstalledAsciidoctor() {
+        return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR);
+    }
+
+    public boolean isUsingPreviewImageDirectory() {
+        return getBooleanPreference(P_USE_PREVIEW_IMAGEDIRECTORY);
+    }
+
+    public boolean isStoringPlantUmlFiles() {
+        return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
+    }
 
     public int getAspServerMinPort() {
         return getPreferenceStore().getInt(P_ASP_SERVER_MIN_PORT.getId());
     }
-    
+
     public int getAspServerMaxPort() {
         return getPreferenceStore().getInt(P_ASP_SERVER_MAX_PORT.getId());
     }
-
 
     public boolean isIncludeValidationEnabled() {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_INCLUDES);
@@ -255,7 +249,7 @@ public class AsciiDoctorEditorPreferences {
     public boolean isImageValidationEnabled() {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_IMAGES);
     }
-    
+
     public boolean isDiagramValidationEnabled() {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_DIAGRAMS);
     }
@@ -263,6 +257,15 @@ public class AsciiDoctorEditorPreferences {
     public boolean isShowingAspLogsAsMarkerInEditor() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR);
     }
+
+    public boolean isShowingAspServerOutputInConsole() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE);
+    }
+    
+    public boolean isShowingAspCommunicationInConsole() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_COMMUNICATION_SHOWN_IN_CONSOLE);
+    }
+
     public boolean isDynamicCodeAssistForIncludesEnabled() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES);
     }
@@ -274,7 +277,7 @@ public class AsciiDoctorEditorPreferences {
     public boolean isDynamicCodeAssistForPlantumlEnabled() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_PLANTUML_MACRO);
     }
-    
+
     public boolean isDynamicCodeAssistForDitaaEnabled() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO);
     }
