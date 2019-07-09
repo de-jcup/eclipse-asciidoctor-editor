@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Asciidoctor-editor-css
 Bundle-SymbolicName: de.jcup.asciidoctoreditor.css
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: de.jcup.asciidoctoreditor.css.AsciiDoctorCSSActivator
 Bundle-Vendor: Albert Tregnaghi
 Require-Bundle: org.eclipse.core.runtime
