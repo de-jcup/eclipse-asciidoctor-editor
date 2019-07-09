@@ -120,6 +120,9 @@ public class ASPServerAdapter {
         launcher.setOutputHandler(outputHandler);
         try {
             String key = launcher.launch(30);
+            /* Next line is a temporary workaround until fixed in ASP itself - on windows we got \r\n so having \r inside key... we must trim to avoid the problem */
+            key = key.trim();
+            
             outputHandler.output(">> ASP Server has been started successfully");
             this.client = new AspClient(key);
             this.client.setPortNumber(port);
