@@ -72,8 +72,6 @@ public class AsciiDoctorEditorPDFLauncher {
             monitor.beginTask("Create and show PDF", IProgressMonitor.UNKNOWN);
             try {
                 monitor.subTask("Initialize");
-                Thread.sleep(2000); // give the user the chance to cancel the operation - while conversion is
-                                    // running cancel cannot be done
                 createAndOpen(monitor, wrapper, data);
 
             } catch (Exception e) {

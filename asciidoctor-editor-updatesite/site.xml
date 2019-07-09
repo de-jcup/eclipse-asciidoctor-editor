@@ -9,13 +9,5 @@
    <feature url="features/de.jcup.asciidoctoreditor_1.4.3.jar" id="de.jcup.asciidoctoreditor" version="1.4.3"/>
    <feature url="features/de.jcup.asciidoctor.converter_1.0.2.jar" id="de.jcup.asciidoctor.converter" version="1.0.2"/>
    <feature url="features/de.jcup.asciidoctoreditor_1.4.4.jar" id="de.jcup.asciidoctoreditor" version="1.4.4"/>
-   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha1.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha1"/>
-   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha2.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha2"/>
-   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha3.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha3"/>
-   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha4.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha4"/>
-   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha5.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha5"/>
-   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.alpha6.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.alpha6"/>
-   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.beta1.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.beta1"/>
-   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.beta2.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.beta2"/>
-   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.beta3.jar" id="de.jcup.asciidoctoreditor" version="2.0.0.beta3"/>
+   <feature url="features/de.jcup.asciidoctoreditor_2.0.0.jar" id="de.jcup.asciidoctoreditor" version="2.0.0"/>
 </site>
