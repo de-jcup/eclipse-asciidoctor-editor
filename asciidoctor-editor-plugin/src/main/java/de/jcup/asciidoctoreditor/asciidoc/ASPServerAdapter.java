@@ -120,6 +120,7 @@ public class ASPServerAdapter {
         launcher.setOutputHandler(outputHandler);
         try {
             String key = launcher.launch(30);
+            outputHandler.output(">> ASP Server has been started successfully");
             this.client = new AspClient(key);
             this.client.setPortNumber(port);
             this.client.setOutputHandler(outputHandler);

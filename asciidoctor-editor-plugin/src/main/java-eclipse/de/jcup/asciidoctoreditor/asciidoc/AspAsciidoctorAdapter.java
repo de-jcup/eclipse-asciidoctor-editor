@@ -83,6 +83,7 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
         for (ServerLogEntry entry : serverLog.getEntries()) {
             int eclipseSeverity = -1;
             ServerLogSeverity severity = entry.getSeverity();
+            boolean ignore = false;
             switch (severity) {
             case ERROR:
             case FATAL:
@@ -97,7 +98,11 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             case UNKNOWN:
             case DEBUG:
             default:
+                ignore=true;
                 break;
+            }
+            if (ignore) {
+                continue;
             }
             String message = "ASP: " + severity + ": " + entry.getMessage();
             if (eclipseSeverity == IMarker.SEVERITY_ERROR) {
@@ -108,14 +113,16 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             if (eclipseSeverity == -1) {
                 continue;
             }
-
             AsciiDoctorMarker marker = new ASPMarker(-1, -1, entry.getMessage());
             File file = entry.getFile();
             IFile resource = null;
             if (file != null) {
                 resource = EclipseResourceHelper.DEFAULT.toIFile(file);
-                AsciiDoctorEditorUtil.addAsciiDoctorMarker(entry.getLineNumber(), marker, eclipseSeverity, resource);
-            } else {
+                if (resource!=null) {
+                    AsciiDoctorEditorUtil.addAsciiDoctorMarker(entry.getLineNumber(), marker, eclipseSeverity, resource);
+                }
+            } 
+            if (resource==null) {
                 /* fallback, we need a resource to have markers */
                 AsciiDoctorEditorUtil.addAsciiDoctorMarker(EclipseUtil.getActiveEditor(), entry.getLineNumber(), marker, eclipseSeverity);
             }
