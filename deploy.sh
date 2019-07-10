@@ -28,5 +28,5 @@ if [ -z "$BINTRAY_GPG_PP" ]; then
     echo "bintray version not set"
     show_help_and_exit;
 fi
-./pushToBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup asciidoctoreditor update-site ${BINTRAY_VERSION} ./asciidoctor-editor-updatesite/
-./signBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup asciidoctoreditor update-site ${BINTRAY_VERSION} ${BINTRAY_GPG_PP}
+./pushToBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup asciidoctoreditor update-site ${BINTRAY_VERSION} ./asciidoctor-editor-updatesite/ ${BINTRAY_GPG_PP}
+
