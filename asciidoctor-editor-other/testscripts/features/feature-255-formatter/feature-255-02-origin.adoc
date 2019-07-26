@@ -1,0 +1,16 @@
+//345678901234567890123456789012345678901234567890123456789012345678901234567890
+//       10        20        30        40        50        60        70        80
+
+== Headline 
+Some text which is okay
+
+[source,bash]
+----
+stuff inside which is long, very long, very very long, long, very long, very very longlong, very long, very very longlong, very long, very very long
+----
+
+==== 
+Other parts
+====
+
+ Additional

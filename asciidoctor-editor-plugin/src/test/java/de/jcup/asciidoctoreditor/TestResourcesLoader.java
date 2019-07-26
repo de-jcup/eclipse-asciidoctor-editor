@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class TestResourcesLoader {
-	private static File testResourceRootFolder = new File("./asciidoctor-editor-editor-plugin/src/test/resources");
+	private static File testResourceRootFolder = new File("./asciidoctor-editor-plugin/src/test/resources");
 	static{
 		if (!testResourceRootFolder.exists()){
 			// workaround for difference between eclipse test and gradle execution (being in root folder...)

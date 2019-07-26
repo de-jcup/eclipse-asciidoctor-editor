@@ -24,11 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestScriptLoader {
-	private static File testScriptRootFolder = new File("./asciidoctoreditor-other/testscripts");
+    private static String path = "asciidoctor-editor-other/testscripts";
+	private static File testScriptRootFolder = new File("./"+path);
 	static{
 		if (!testScriptRootFolder.exists()){
 			// workaround for difference between eclipse test and gradle execution (being in root folder...)
-			testScriptRootFolder = new File("./../asciidoctoreditor-other/testscripts");
+			testScriptRootFolder = new File("./../"+path);
 		}
 	}
 	
@@ -46,14 +47,20 @@ public class TestScriptLoader {
 		
 		File file = new File(testScriptRootFolder,testScriptName);
 		if (!file.exists()){
-			throw new IllegalArgumentException("Test case corrupt! Test script file does not exist:"+file);
+			throw new IllegalArgumentException("Test case corrupt! Test script file does not exist:"+file.getAbsolutePath());
 		}
+		boolean firstLine=true;
 		StringBuilder sb = new StringBuilder();
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))){
 			String line = null;
 			while ((line=br.readLine())!=null){
-				sb.append(line);
-				sb.append("\n");
+				if (firstLine) {
+				    firstLine=false;
+				}else {
+				    sb.append("\n");
+				}
+			    sb.append(line);
+				
 			}
 		}
 		return sb.toString();
