@@ -35,7 +35,7 @@ class ParseContext implements CodePosSupport{
 
 	public enum VariableType {
 		/**
-		 * Initial - no type defined
+		 * Initial - no blockType defined
 		 */
 		INITIAL,
 

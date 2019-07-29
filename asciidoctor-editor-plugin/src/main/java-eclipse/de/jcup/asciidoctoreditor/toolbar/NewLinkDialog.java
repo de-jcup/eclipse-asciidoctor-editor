@@ -77,7 +77,7 @@ public class NewLinkDialog extends TitleAreaDialog {
 		data.horizontalSpan=2;
 		
 		Group linkTypeGroup = new Group(container, SWT.NONE);
-		linkTypeGroup.setText("Link type:");
+		linkTypeGroup.setText("Link blockType:");
 		linkTypeGroup.setLayout(new RowLayout(SWT.VERTICAL));
 		linkTypeGroup.setLayoutData(data);
 		

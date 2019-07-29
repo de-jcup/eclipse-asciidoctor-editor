@@ -75,7 +75,7 @@ public enum PlantUMLTypeDocumentKeywords implements DocumentKeyWord {
 
 	@Override
 	public String getTooltip() {
-		return "This is a keyword representing a 'type' in plantuml. Please refer to online documentation for more information";
+		return "This is a keyword representing a 'blockType' in plantuml. Please refer to online documentation for more information";
 	}
 
 	@Override

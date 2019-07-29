@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * A field editor for a string type preference, adopted from org.eclipse.jface.preference.StringFieldEditor, 
+ * A field editor for a string blockType preference, adopted from org.eclipse.jface.preference.StringFieldEditor, 
  * but with multiline support
  * <p>
  * This class may be used as is, or subclassed as required.

@@ -50,7 +50,7 @@ public class NewCodeBlockInsertAction extends InsertTextAction {
 		dlg.setLabelProvider(provider);
 		dlg.setInitialSelections(new String[] { JAVA }); // we use string array here for legacy depedne
 		dlg.setInput(new String[] { JAVA, RUBY, XML, JSON });
-		dlg.setTitle("Select source code type");
+		dlg.setTitle("Select source code blockType");
 
 		int result = dlg.open();
 		if (result == Window.CANCEL || dlg.getResult() == null || dlg.getResult().length == 0) {

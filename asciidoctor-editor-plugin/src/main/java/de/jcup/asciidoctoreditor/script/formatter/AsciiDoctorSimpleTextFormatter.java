@@ -1,6 +1,11 @@
-package de.jcup.asciidoctoreditor.script;
+package de.jcup.asciidoctoreditor.script.formatter;
 
-public class AsciiDoctorFormatter {
+/**
+ * Formats given text to max column size
+ * @author albert
+ *
+ */
+public class AsciiDoctorSimpleTextFormatter {
 
     public String format(String origin, AsciiDoctorFormatterConfig config) {
         if (origin == null) {

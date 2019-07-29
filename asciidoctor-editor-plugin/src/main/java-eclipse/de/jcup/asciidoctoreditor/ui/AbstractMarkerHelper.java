@@ -86,7 +86,7 @@ abstract class AbstractMarkerHelper {
 	}
 
 	/**
-	 * Creates a marker on the given resource with the given type and
+	 * Creates a marker on the given resource with the given blockType and
 	 * attributes.
 	 * <p>
 	 * This method modifies the workspace (progress is not reported to the
@@ -98,7 +98,7 @@ abstract class AbstractMarkerHelper {
 	 * @param attributes
 	 *            the attribute map
 	 * @param markerType
-	 *            the type of marker
+	 *            the blockType of marker
 	 * @throws CoreException
 	 *             if this method fails
 	 * @see IResource#createMarker(java.lang.String)
@@ -124,7 +124,7 @@ abstract class AbstractMarkerHelper {
 	}
 
 	/**
-	 * Removes all markers from this file having defined marker type
+	 * Removes all markers from this file having defined marker blockType
 	 * 
 	 * @param resource
 	 */

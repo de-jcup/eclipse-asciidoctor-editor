@@ -62,10 +62,10 @@ private static final String BODY = "<body";
 
         sb.append(content);
         if (!context.isInternalPreview() && refreshAutomaticallyInSeconds > 0) {
-            sb.append("<script type=\"text/javascript\">pageloadEvery(" + refreshAutomaticallyInSeconds * 1000 + ");</script>");
+            sb.append("<script blockType=\"text/javascript\">pageloadEvery(" + refreshAutomaticallyInSeconds * 1000 + ");</script>");
         }
         if (context.isInternalPreview()) {
-            sb.append("<script type=\"text/javascript\">\n");
+            sb.append("<script blockType=\"text/javascript\">\n");
             sb.append("function doScrollTo(anchorId){\n");
             sb.append("   element = document.getElementById(anchorId);\n");
             sb.append("   if (element !=null) {\n");
@@ -124,7 +124,7 @@ private static final String BODY = "<body";
             pathToFile = file.getAbsolutePath();
         }
         if (pathToFile.endsWith(".js")) {
-            return "<script type=\"text/javascript\" src=\"" + pathToFile + "\"></script>\n";
+            return "<script blockType=\"text/javascript\" src=\"" + pathToFile + "\"></script>\n";
         }
         return "<link rel=\"stylesheet\" href=\"" + pathToFile + "\">\n";
     }

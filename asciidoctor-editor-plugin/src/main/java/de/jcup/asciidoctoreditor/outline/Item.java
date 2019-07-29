@@ -45,7 +45,7 @@ public class Item {
     }
 
     /**
-     * @return item type , or <code>null</code>
+     * @return item blockType , or <code>null</code>
      */
     public ItemType getItemType() {
         return type;
@@ -77,7 +77,7 @@ public class Item {
         sb.append("Item:");
         sb.append("label:");
         sb.append(name);
-        sb.append(",type:");
+        sb.append(",blockType:");
         sb.append(type);
         sb.append(",offset:");
         sb.append(offset);

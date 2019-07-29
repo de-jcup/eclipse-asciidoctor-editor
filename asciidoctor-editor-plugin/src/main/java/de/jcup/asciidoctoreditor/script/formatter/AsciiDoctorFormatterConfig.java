@@ -1,4 +1,4 @@
-package de.jcup.asciidoctoreditor.script;
+package de.jcup.asciidoctoreditor.script.formatter;
 
 public class AsciiDoctorFormatterConfig {
 

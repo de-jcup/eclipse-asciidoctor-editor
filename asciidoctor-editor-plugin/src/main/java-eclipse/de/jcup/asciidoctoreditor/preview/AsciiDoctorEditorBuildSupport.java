@@ -80,7 +80,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
     /**
      * Shows rebuilding info in preview and triggers a full rebuild as a job in eclipse
      * @param mode builder mode
-     * @param backend backend type provider
+     * @param backend backend blockType provider
      * @param forceInitialize when <code>false</code> build is only done when not already building
      */
     protected void showRebuildingInPreviewAndTriggerFullRebuildAsJob(BuildAsciiDocMode mode, AsciiDoctorBackendType backend, boolean forceInitialize, boolean internalPreview, BuildDoneListener buildListener) {

@@ -60,7 +60,7 @@ public class NewLinkInsertAction extends InsertTextAction {
 			sb.append(">>");
 			break;
 		default:
-			sb.append("Unsupported type:"+data.linkType);
+			sb.append("Unsupported blockType:"+data.linkType);
 		}
 		sb.append(" ");
 		context.nextOffset=context.selectedOffset+sb.length();
