@@ -336,7 +336,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public IDocument getDocument() {
-        return getDocumentProvider().getDocument(getEditorInput());
+        IDocumentProvider  documentProvider = getDocumentProvider();
+        if (documentProvider==null) {
+            return null;
+        }
+        return documentProvider.getDocument(getEditorInput());
     }
 
     public String getForeGroundColorAsWeb() {

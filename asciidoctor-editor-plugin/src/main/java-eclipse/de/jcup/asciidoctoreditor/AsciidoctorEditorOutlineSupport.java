@@ -120,6 +120,9 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
     public void rebuildOutlineAndValidate() {
 
         String text = getEditor().getDocumentText();
+        if (text==null) {
+            return;
+        }
 
         IPreferenceStore store = getEditor().getPreferences().getPreferenceStore();
 
