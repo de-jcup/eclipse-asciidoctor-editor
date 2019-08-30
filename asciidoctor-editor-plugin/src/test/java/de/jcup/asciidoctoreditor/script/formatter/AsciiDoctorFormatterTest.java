@@ -5,10 +5,19 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.jcup.asciidoctoreditor.TestScriptLoader;
 
+@Ignore 
+/**
+ * There seems to be a parser written in java for asciidoctor in next future. So stop implementing this. 
+ * TODO de-jcup,2019-08-30: Remove impl and test when parser available
+ * https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/255
+ * @author de-jcup
+ *
+ */
 public class AsciiDoctorFormatterTest {
 
     private AsciiDoctorFormatter formatterToTest;
