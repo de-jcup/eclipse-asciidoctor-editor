@@ -48,18 +48,37 @@
     
    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          CONTENT TYPE                                -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            id="de.jcup.asciidoctoreditor.content.asciidoc"
+            name="Asciidoc file"
+            base-type="org.eclipse.core.runtime.text"
+            priority="high">
+            <property name="charset" default="UTF-8"/>
+      </content-type>
+      <file-association
+            content-type="de.jcup.asciidoctoreditor.content.asciidoc"
+            file-extensions="asciidoc,adoc,asc,ad">
+      </file-association>
+   </extension>
+   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          EDITOR                                      -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <extension
          point="org.eclipse.ui.editors">
       <editor
       		name="Asciidoctor Editor"
-            extensions="asciidoc,adoc,asc,ad"
             icon="icons/asciidoctor-editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="de.jcup.asciidoctoreditor.AsciiDoctorEditor"
 	        default="true"  
             id="asciidoctoreditor.editors.AsciiDoctorEditor">
+            
+            <contentTypeBinding contentTypeId="org.eclipse.core.runtime.text"/>
       </editor>
       <editor
       		name="Ditaa Editor (Asciidoctor)"
