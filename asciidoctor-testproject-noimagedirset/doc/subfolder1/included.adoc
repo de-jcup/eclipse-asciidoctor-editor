@@ -1,4 +1,4 @@
 == Included headline
 *next shows a image starting from base location means no `:imagesdir:` set:*
 
-image::./../images/asciidoctor-editor-logo.png[] 
+image::./../images/asciidoctor-editor-logo.png[]

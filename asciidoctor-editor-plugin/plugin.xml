@@ -97,15 +97,26 @@
             id="asciidoctoreditor.editors.AsciiDoctorPlantUMLEditor">
       </editor>
    </extension>
-   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--        SEARCH                                                        -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+    id="AsciidoctorEditorResultPage"
+    point="org.eclipse.search.searchResultViewPages">
+    <viewPage
+        id="de.jcup.asciidoctoreditor.search.asciidoc.resultpage"
+        searchResultClass="de.jcup.asciidoctoreditor.search.AsciidocSearchResult"
+        class="de.jcup.asciidoctoreditor.search.AsciidocSearchResultPage">
+    </viewPage>
+   </extension>
+
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--        POPUP                                                         -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-   
     <extension point="org.eclipse.ui.menus">
         <!-- http://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2Fworkbench_cmd_menus.htm -->
+   <!--
         <menuContribution locationURI="popup:org.eclipse.ui.popup.any?before=additions">
-                <!-- Detect new root project --> 
                 <command
             	  commandId="asciidoctoreditor.command.openWithAsciiDoctorEditor"
                   icon="icons/asciidoctor-editor.png"
@@ -130,8 +141,8 @@
                 </command>
                 
         </menuContribution>
+   -->
    </extension>
-   
     <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          MARKER                          			 -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
@@ -274,7 +285,12 @@
             categoryId="asciidoctoreditor.commands.category"
             id="asciidoctoreditor.editor.commands.source.addlinebreak">
       </command>
-      
+      <command
+            name="References in workspace"
+            description="Search for references in workspace"
+            categoryId="asciidoctoreditor.commands.category"
+            id="asciidoctoreditor.editor.commands.references.workspace">
+      </command>
 	</extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          HANDLERS                                    -->
@@ -322,6 +338,10 @@
       <handler
             commandId="asciidoctoreditor.editor.commands.source.addlinebreak"
             class="de.jcup.asciidoctoreditor.handlers.AddLineBreakHandler">
+      </handler>
+      <handler
+            commandId="asciidoctoreditor.editor.commands.references.workspace"
+            class="de.jcup.asciidoctoreditor.handlers.ReferencesWorkspaceHandler">
       </handler>
     </extension> 
     
@@ -384,6 +404,12 @@
             commandId="asciidoctoreditor.editor.commands.source.addlinebreak"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">    
         </key>
+		<key
+            sequence="M1+M2+G"
+            contextId="asciidoctoreditor.editors.AsciiDoctorEditor.context"
+            commandId="asciidoctoreditor.editor.commands.references.workspace"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">    
+        </key>
     </extension> 
     
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -417,6 +443,7 @@
             <command commandId="asciidoctoreditor.editor.commands.source.addlinebreak"
             		 icon="icons/toolbar/add_linebreak.png"
              />
+             <command commandId="asciidoctoreditor.editor.commands.references.workspace" />
                
       </menuContribution>
       
@@ -459,8 +486,61 @@
              />
          </menu>
       </menuContribution>
-      
+        <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+                <menu
+                      id="egradle.popup.any"
+                      label="References"
+                      >
+                     <visibleWhen
+                            checkEnabled="false">
+                            
+                         <with
+                               variable="activeMenuSelection">
+                            <and>
+                               <count
+                                     value="1">
+                               </count>
+                               <iterate
+                                     ifEmpty="false">
+                                  <adapt
+                                        type="org.eclipse.core.resources.IFile">
+                                        
+                                     <test
+                                           property="de.jcup.asciidoctoreditor.isAsciidocFile"
+                                           value="true">
+                                     </test>
+                                  </adapt>
+                               </iterate>
+                            </and>
+                         </with>
+                      </visibleWhen>
+                   <command
+                         commandId="asciidoctoreditor.editor.commands.references.workspace"
+                         icon="icons/references_workspace.png"
+                         label="Workspace"
+                         style="push"
+                         tooltip="Shows references of asciidoctor file inside workspace">
+                   </command>
+                </menu>
+                
+        </menuContribution>
       </extension> 
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          PROPERTY TESTERS                            -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension point="org.eclipse.core.expressions.propertyTesters">
+      <!-- see https://wiki.eclipse.org/Platform_Expression_Framework -->
+      <!-- see http://help.eclipse.org/neon/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/workbench_cmd_expressions.htm -->
+      <!-- see http://www.robertwloch.net/2011/01/eclipse-tips-tricks-property-testers-with-command-core-expressions/ -->
+      <propertyTester
+          class="de.jcup.asciidoctoreditor.AsciidocfilePropertyTester"
+          id="e.jcup.asciidoctoreditor.propertytester.asciidocfile"
+          namespace="de.jcup.asciidoctoreditor"
+          properties="isAsciidocFile"
+          type="org.eclipse.core.resources.IFile">
+      </propertyTester>
+      
+   </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          PREFERENCES                                 -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
