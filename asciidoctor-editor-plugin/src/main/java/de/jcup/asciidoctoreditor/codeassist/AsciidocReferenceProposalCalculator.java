@@ -17,6 +17,8 @@ package de.jcup.asciidoctoreditor.codeassist;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -24,7 +26,6 @@ import java.util.TreeSet;
 
 public class AsciidocReferenceProposalCalculator {
     
-    private static final char SEPARATOR = File.separatorChar;
     private AsciidocReferenceExistingTextCalculator calculator;
     private String prefix;
     private BaseParentDirResolver baseParentDirResolver;
@@ -51,36 +52,35 @@ public class AsciidocReferenceProposalCalculator {
         if (referenceText==null) {
             return Collections.emptySet();
         }
-        String path = referenceText.substring(getPrefix().length());
+        Path path = Paths.get(referenceText.substring(getPrefix().length()));
         
         File parent = baseParentDirResolver.getBaseParentDir(editorFile);
         if (parent==null) {
             return Collections.emptySet();
         }
       
-        int lastDirIndex = path.lastIndexOf(SEPARATOR);
-        if (lastDirIndex!=-1) {
+        Path parentPath = path.getParent();
+        if (parentPath!=null && !parentPath.toString().isEmpty()) {
             /* means we got something ala include::subdir1/subdir with subdir1/subdir2 as structure - so we are already inside subdir1 in path */ 
-            String subPathBefore = path.substring(0,lastDirIndex);
-            File newParent = new File(parent.getAbsolutePath()+SEPARATOR+subPathBefore);
+            File newParent = parent.toPath().resolve(parentPath).toFile();
             if (!newParent.exists()) {
                 return Collections.emptySet();
             }
-            parent=newParent;
-            path = path.substring(lastDirIndex+1);
+            parent = newParent;
+            path = parentPath.relativize(path);
         }
         
         
-        String separatedParentPath = parent.getAbsolutePath()+SEPARATOR;
+        Path separatedParentPath = parent.toPath();
         String search = null; 
-        if (path.length()>0) {
+        if (path.toString().length() > 0) {
             /* path given */
-            File newParent = new File(separatedParentPath+path);
+            File newParent = separatedParentPath.resolve(path).toFile();
             if (newParent.exists()) {
                 parent = newParent;
             }else {
                 /* only part given? - keep parent as, but mark search*/
-                search = path;
+                search = path.toString();
             }
         }
         final String toSearch = search;
@@ -121,17 +121,17 @@ public class AsciidocReferenceProposalCalculator {
     }
 
     private Set<AsciidocReferenceProposalData> buildProposals(File editorFile, File[] files) {
-        String editorParentPath = baseParentDirResolver.getBaseParentDir(editorFile).getAbsolutePath()+SEPARATOR;
+        Path editorParentPath = baseParentDirResolver.getBaseParentDir(editorFile).toPath();
         Set<AsciidocReferenceProposalData> set = new TreeSet<AsciidocReferenceProposalData>();
         for (File child: files) {
-            String absPathChild = child.getAbsolutePath();
-            int editorParentPathLength = editorParentPath.length();
+            Path absPathChild = child.toPath();
+            int editorParentPathLength = editorParentPath.toString().length();
             if (editorParentPathLength>editorParentPathLength) {
                 continue;
             }
-            String proposal = getPrefix()+absPathChild.substring(editorParentPathLength);
+            String proposal = getPrefix()+editorParentPath.relativize(absPathChild).toString().replace("\\", "/");
             if (child.isDirectory()) {
-                proposal+="/";
+                proposal+= "/";
             }else {
                 proposal+="[]";
             }
