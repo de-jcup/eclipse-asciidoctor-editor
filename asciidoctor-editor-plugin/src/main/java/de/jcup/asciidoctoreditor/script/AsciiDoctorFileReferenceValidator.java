@@ -21,6 +21,12 @@ import java.util.Collection;
 
 public class AsciiDoctorFileReferenceValidator {
     
+    private String imagesPath;
+
+    public AsciiDoctorFileReferenceValidator(String imagesPath) {
+        this.imagesPath = imagesPath;
+    }
+
     /**
      * Validates given references, will add markers into error when not valid
      * @param baseFile
@@ -44,6 +50,9 @@ public class AsciiDoctorFileReferenceValidator {
         for (AsciiDoctorFileReference reference: references) {
             String target = reference.getFilePath();
             File file = folder.toPath().resolve(Paths.get(target)).toFile();
+            if(imagesPath != null && reference.isImageReference()) {
+                file = folder.toPath().resolve(imagesPath).resolve(Paths.get(target)).toFile();
+            }
             String problem = null;
             if (! file.exists()) {
                 problem = ".. references not existing file:"+file.getAbsolutePath();
