@@ -329,10 +329,15 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         //So if the path contains a space or a special character it will be percent encoded
         URI absolutePathToTempFolder = tempFolder.toFile().toURI();
         String path = absolutePathToTempFolder.getRawPath();
-        if (path.startsWith("/")) {
+        if (isWindowsOS() && path.startsWith("/")) {
             path = path.substring(1);
         }
         return Pattern.compile(Pattern.quote(path));
+    }
+
+    private boolean isWindowsOS() {
+        String osName = System.getProperty("os.name");
+        return osName != null && osName.toLowerCase().contains("windows");
     }
 
     protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, long editorId) {

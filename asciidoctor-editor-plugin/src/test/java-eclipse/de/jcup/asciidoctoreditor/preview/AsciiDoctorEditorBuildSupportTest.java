@@ -60,11 +60,21 @@ public class AsciiDoctorEditorBuildSupportTest {
         when(asciiDoctorEditor.getWrapper().getTempFolder()).thenReturn(Paths.get(absolutePath));
         AsciiDoctorEditorBuildSupport editorBuildSupport = new AsciiDoctorEditorBuildSupport(asciiDoctorEditor);
 
-        String url = Paths.get(absolutePath, relativePath).toUri().getRawPath().substring(1);
+        String url = Paths.get(absolutePath, relativePath).toUri().getRawPath();
+        if(isWindowsOS()) {
+            url = url.substring(1);
+        }
         String htmlWithRelativePaths = editorBuildSupport
                 .transformAbsolutePathesToRelatives(String.format("<img src=\"%s\"></img>", url.toString()));
 
         assertEquals("src attribute should only contains the relative file path",
                 String.format("<img src=\"%s\"></img>", relativePath), htmlWithRelativePaths);
     }
+    
+    private boolean isWindowsOS() {
+        String osName = System.getProperty("os.name");
+        return osName != null && osName.toLowerCase().contains("windows");
+    }
+
+    
 }
