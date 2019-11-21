@@ -15,6 +15,8 @@
  */
  package de.jcup.asciidoctoreditor.script;
 
+import java.util.Objects;
+
 public class AsciiDoctorFileReference {
     
 	String target;
@@ -110,6 +112,10 @@ public class AsciiDoctorFileReference {
 
     public String getFilePath() {
         return filePath;
+    }
+    
+    public boolean isImageReference() {
+	return Objects.equals(targetPrefix, "image:") || Objects.equals(targetPrefix, "image::");
     }
    
 
