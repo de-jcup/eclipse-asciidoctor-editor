@@ -1,2 +1,0 @@
-:imagesdir: ./images
-include::subfolder1/included.adoc[] 

@@ -1,5 +1,0 @@
-== Included headline
-*next shows a image by using images dir location:*
-
-image::asciidoctor-editor-logo.png[] 
-
