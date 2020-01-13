@@ -18,8 +18,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.expressions,
  org.eclipse.ui.console,
  de.jcup.asciidoctoreditor.libs,
- de.jcup.asciidoctoreditor.css,
- org.mockito;bundle-version="1.10.19";resolution:=optional
+ de.jcup.asciidoctoreditor.css
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui,
