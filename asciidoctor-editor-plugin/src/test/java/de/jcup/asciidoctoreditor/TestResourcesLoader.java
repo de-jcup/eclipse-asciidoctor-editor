@@ -47,8 +47,7 @@ public class TestResourcesLoader {
 
     public static File assertTestFile(String relativePathInTestResources) {
         try{
-            String path = testResourceRootFolder.getCanonicalFile().getAbsolutePath()+"/"+relativePathInTestResources;
-            File file = new File(path);
+            File file = testResourceRootFolder.getCanonicalFile().toPath().resolve(relativePathInTestResources).toFile();
             file = file.getAbsoluteFile();
             if (!file.exists()){
                 throw new IllegalArgumentException("Test case corrupt! Test resource file does not exist:"+file);
