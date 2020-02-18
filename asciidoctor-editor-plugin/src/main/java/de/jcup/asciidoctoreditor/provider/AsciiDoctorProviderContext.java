@@ -20,6 +20,8 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
+
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 
@@ -37,6 +39,7 @@ public class AsciiDoctorProviderContext {
     private AsciiDoctorDiagramProvider diagramProvider;
     private AsciiDoctorAttributesProvider attributesProvider;
     private AsciiDoctorOptionsProvider optionsProvider;
+
     File targetImagesDir;
     int tocLevels;
     private boolean useInstalled;
@@ -47,7 +50,7 @@ public class AsciiDoctorProviderContext {
     private File editorFileOrNull;
     private boolean noFooter;
     private boolean internalPreview;
-    private boolean localResourcesEnabled=true;
+    private boolean localResourcesEnabled = true;
 
     public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
@@ -182,6 +185,20 @@ public class AsciiDoctorProviderContext {
         return fileToRender;
     }
 
+    /**
+     * 
+     * @return target pdf file or <code>null</code>
+     */
+    public File getTargetPDFFileOrNull() {
+        if (fileToRender == null) {
+            return null;
+        }
+        String originName = fileToRender.getName(); /* xyz.adoc, xyz.asciidoc, xyz, xyz.txt */
+        String fileName = FilenameUtils.getBaseName(originName) + ".pdf";
+        File file = new File(fileToRender.getParentFile(), fileName);
+        return file;
+    }
+
     public <T extends AbstractAsciiDoctorProvider> T register(T provider) {
         providers.add(provider);
         return provider;
@@ -210,9 +227,12 @@ public class AsciiDoctorProviderContext {
     public boolean isInternalPreview() {
         return internalPreview;
     }
-    
+
     public boolean isUsingOnlyLocalResources() {
-        /* internal preview has problems on enterprise proxies and slows down rendering of preview */
+        /*
+         * internal preview has problems on enterprise proxies and slows down rendering
+         * of preview
+         */
         return internalPreview && localResourcesEnabled;
     }
 
