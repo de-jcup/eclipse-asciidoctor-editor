@@ -74,6 +74,8 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 
 	P_PATH_TO_JAVA_FOR_ASP_LAUNCH("pathToJavaForASPLaunch"), 
 	
+	P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT("outlineGroupingEnabledPerDefault"), 
+	
 	;
 
 	private String id;

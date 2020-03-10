@@ -128,6 +128,8 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		store.setDefault(VALIDATE_IMAGES.getId(),true);
 		store.setDefault(VALIDATE_DIAGRAMS.getId(),true);
 		
+		store.setDefault(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(),true);
+		
 		/* ++++++++++++++ */
 		/* + automatically create/update png file(s) in the same location as PlantumUML file(s) + */
 		/* ++++++++++++++ */

@@ -18,7 +18,7 @@ package de.jcup.asciidoctoreditor.outline;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Item {
+public class Item implements Comparable<Item>{
 
     ItemType type;
     String name;
@@ -98,5 +98,13 @@ public class Item {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public int compareTo(Item o) {
+        if (o==null) {
+            return -1;
+        }
+        return getOffset()-o.getOffset();
     }
 }

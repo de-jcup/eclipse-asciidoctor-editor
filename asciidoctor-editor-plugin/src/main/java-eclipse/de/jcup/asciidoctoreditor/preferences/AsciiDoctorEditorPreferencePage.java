@@ -223,6 +223,11 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         linkEditorWithPreviewEnabled.getDescriptionControl(devNull)
                 .setToolTipText("When enabled editor caret movements are scrolled in internal preview.\n" + "This works only in some situations e.g. when cursor moves to a headline");
         addField(linkEditorWithPreviewEnabled);
+        
+        BooleanFieldEditor groupOutlineEnabledPerDefault= new BooleanFieldEditor(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(), "Show outline grouped per default", devNull);
+        groupOutlineEnabledPerDefault.getDescriptionControl(devNull)
+        .setToolTipText("This changes default behaviour of editor outline: When enabled outline items are grouped on new opened editor outlines per default.\n\nWhen grouping is turned off the items in outline are ordered by their offset inside document.");
+        addField(groupOutlineEnabledPerDefault);
     }
 
     protected void createExternalPreviewParts(Composite composite) {

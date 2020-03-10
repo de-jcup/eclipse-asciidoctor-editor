@@ -283,6 +283,10 @@ public class AsciiDoctorEditorPreferences {
         return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_FOR_ASP_LAUNCH);
     }
 
+    public boolean isGroupingInOutlineEnabledPerDefault() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT);
+    }
+
     /* ------------------------------------ */
     /* - plantuml parts */ // maybe own class in future?
     /* ------------------------------------ */
@@ -293,5 +297,6 @@ public class AsciiDoctorEditorPreferences {
     public PlantUMLOutputFormat getPlantUMLOutputFormat() {
         return PlantUMLOutputFormat.fromString(getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT));
     }
+
 
 }
