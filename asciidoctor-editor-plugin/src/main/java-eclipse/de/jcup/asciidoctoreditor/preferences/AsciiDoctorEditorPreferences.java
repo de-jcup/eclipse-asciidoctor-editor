@@ -31,6 +31,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.PreviewLayout;
+import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLOutputFormat;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 import de.jcup.eclipse.commons.ui.ColorUtil;
 
@@ -230,10 +231,6 @@ public class AsciiDoctorEditorPreferences {
         return getBooleanPreference(P_USE_PREVIEW_IMAGEDIRECTORY);
     }
 
-    public boolean isStoringPlantUmlFiles() {
-        return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
-    }
-
     public int getAspServerMinPort() {
         return getPreferenceStore().getInt(P_ASP_SERVER_MIN_PORT.getId());
     }
@@ -284,6 +281,17 @@ public class AsciiDoctorEditorPreferences {
 
     public String getPathToJavaForASPLaunch() {
         return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_FOR_ASP_LAUNCH);
+    }
+
+    /* ------------------------------------ */
+    /* - plantuml parts */ // maybe own class in future?
+    /* ------------------------------------ */
+    public boolean isStoringPlantUmlFiles() {
+        return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
+    }
+    
+    public PlantUMLOutputFormat getPlantUMLOutputFormat() {
+        return PlantUMLOutputFormat.fromString(getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT));
     }
 
 }

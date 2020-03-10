@@ -24,6 +24,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLOutputFormat;
+import de.jcup.eclipse.commons.ui.preferences.ChangeableComboFieldEditor;
+
 public class AsciiDoctorPlantUMLEditorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
 	public AsciiDoctorPlantUMLEditorPreferencePage() {
@@ -42,6 +45,18 @@ public class AsciiDoctorPlantUMLEditorPreferencePage extends FieldEditorPreferen
 		BooleanFieldEditor storeDiagramsInproject = new BooleanFieldEditor(P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId(), "Store diagram images in project", parent);
 		storeDiagramsInproject.getDescriptionControl(parent).setToolTipText("When enabled generated diagrams will be stored in eclipse \nproject and parent folder is automatically refreshed.");
 		addField(storeDiagramsInproject);
+		
+		String labelText = "Output format";
+        PlantUMLOutputFormat[] allStyles = PlantUMLOutputFormat.values();
+        String[][] entryNamesAndValues= new String[allStyles.length][2];
+        int index=0;
+        for (PlantUMLOutputFormat style: allStyles) {
+            entryNamesAndValues[index++]=new String[] {
+                    style.name(),style.getAsciiDocFormatString()
+            };
+        }
+        ChangeableComboFieldEditor comboEditor = new ChangeableComboFieldEditor(P_PLANTUML_EDITOR_OUTPUT_FORMAT.getId(), labelText, entryNamesAndValues, parent);
+        addField(comboEditor);
 
 	}
 

@@ -27,20 +27,22 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.ContentTransformer;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.EditorType;
-import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLContentTransformer;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLTextFileDocumentProvider;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 
-public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor {
+public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements PlantUMLDataProvider {
 
 	@Override
 	protected ContentTransformer createCustomContentTransformer() {
-		return new PlantUMLContentTransformer();
+		PlantUMLContentTransformer transformer = new PlantUMLContentTransformer();
+		transformer.setDataProvider(this);
+		return transformer;
 	}
 
 	@Override
@@ -95,5 +97,10 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor {
 			return new AsciiDoctorPlantUMLFileDocumentProvider();
 		}
 	}
+
+    @Override
+    public PlantUMLOutputFormat getOutputFormat() {
+        return AsciiDoctorEditorPreferences.getInstance().getPlantUMLOutputFormat() ;
+    }
 
 }
