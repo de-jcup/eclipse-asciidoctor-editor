@@ -51,14 +51,14 @@ public class CodeAssistFileFilter{
     }
 
     private boolean acceptFile(File file) {
+        if (accepted.isEmpty()) {
+            /* nothing defined , so always true, we keep everything*/
+            return true;
+        }
         String name = file.getName();
         int lastIndex = name.lastIndexOf('.');
         if (lastIndex==-1) {
             return false;
-        }
-        if (accepted.isEmpty()) {
-            /* nothing defined , so always true, we keep everything*/
-            return true;
         }
         String fileEnding = name.substring(lastIndex);
         if (ignoreCase) {
