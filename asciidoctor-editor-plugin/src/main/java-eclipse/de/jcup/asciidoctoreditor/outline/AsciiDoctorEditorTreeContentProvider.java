@@ -130,16 +130,26 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
     }
 
     private void ungroup(Map<Integer, Item> parents, List<Item> list) {
-        List<Item> copyList = new ArrayList<>(list);
+        List<Item> itemsToMoveInHeadlineTree = new ArrayList<>(list);
         List<Item> headlineFlatList = new ArrayList<>();
         
+        /* Build flat line list of parents */
         for (Item parent : parents.values()) {
             findFlatHeadlineParts(parent,headlineFlatList);
         }
-        copyList.removeAll(headlineFlatList);
+        /* parent map contains not first levels - so we must add those too:*/
+        for (Item item: list) {
+            if (item.type==ItemType.HEADLINE) {
+                if (! headlineFlatList.contains(item)) {
+                    headlineFlatList.add(item);
+                }
+            }
+        }
+        /* items which must be moved do not contain already existing headline entries*/
+        itemsToMoveInHeadlineTree.removeAll(headlineFlatList);
         
-        for (Item copyItem : copyList) {
-            if (copyItem.getItemType() == ItemType.HEADLINE) {
+        for (Item itemToMove : itemsToMoveInHeadlineTree) {
+            if (itemToMove.getItemType() == ItemType.HEADLINE) {
                 continue;
             }
             Item targetParent = null;
@@ -158,7 +168,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
              * 
              */
             for (Item parent : headlineFlatList) {
-                int newDiff = copyItem.getOffset()-parent.getOffset();
+                int newDiff = itemToMove.getOffset()-parent.getOffset();
                 if (newDiff<=0) {
                     continue;
                 }
@@ -168,9 +178,9 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
                 }
             }
             if (targetParent != null) {
-                list.remove(copyItem);
+                list.remove(itemToMove);
                 List<Item> childList = targetParent.getChildren();
-                childList.add(copyItem);
+                childList.add(itemToMove);
             }
         }
         
