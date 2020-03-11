@@ -103,6 +103,7 @@ import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.AddLineBreakAction;
 import de.jcup.asciidoctoreditor.toolbar.BoldFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
+import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.CreatePDFAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertAdmonitionAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertSectionTitleAction;
@@ -162,6 +163,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private SashForm sashForm;
     private Composite topComposite;
     protected RebuildAsciiDocViewAction rebuildAction;
+
+    private ClearProjectCacheAsciiDocViewAction clearProjectAction;
 
     public long getEditorId() {
         return editorId;
@@ -816,6 +819,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
     protected void initToolbar() {
         rebuildAction = new RebuildAsciiDocViewAction(this);
+        clearProjectAction = new ClearProjectCacheAsciiDocViewAction(this);
 
         italicFormatAction = new ItalicFormatAction(this);
         boldFormatAction = new BoldFormatAction(this);
@@ -838,18 +842,22 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         viewToolBarManager.add(new ChangeLayoutAction(this));
-        viewToolBarManager.add(rebuildAction);
         viewToolBarManager.add(new ToggleTOCAction(this));
         viewToolBarManager.add(new Separator("simple"));
         viewToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
+        
+        IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        buildToolBarManager.add(rebuildAction);
+        buildToolBarManager.add(clearProjectAction);
 
         IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         otherToolBarManager.add(new OpenInExternalBrowserAction(this));
         otherToolBarManager.add(new CreatePDFAction(this));
-
+        
         // Add to the cool bar manager
         coolBarManager.add(new ToolBarContributionItem(asciiDocToolBarManager, "asciiDocEditor.toolbar.asciiDoc"));
         coolBarManager.add(new ToolBarContributionItem(viewToolBarManager, "asciiDocEditor.toolbar.view"));
+        coolBarManager.add(new ToolBarContributionItem(buildToolBarManager, "asciiDocEditor.toolbar.build"));
         coolBarManager.add(new ToolBarContributionItem(otherToolBarManager, "asciiDocEditor.toolbar.other"));
 
         if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
