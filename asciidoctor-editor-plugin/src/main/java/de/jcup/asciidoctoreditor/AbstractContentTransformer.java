@@ -28,7 +28,7 @@ public abstract class AbstractContentTransformer implements ContentTransformer{
 	/**
 	 * At this point data is never null
 	 * @param data
-	 * @return
+	 * @return transformed string
 	 */
 	protected abstract String saveTransform(ContentTransformerData data) ;
 

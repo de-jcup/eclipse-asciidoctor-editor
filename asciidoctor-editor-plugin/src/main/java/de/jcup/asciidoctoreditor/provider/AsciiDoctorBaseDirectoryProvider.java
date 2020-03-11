@@ -17,6 +17,8 @@ package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileFilter;
 
@@ -40,8 +42,6 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         return tempFolder;
     }
 	
-	private File cachedBaseDir;
-
 	private File findBaseDirNotCached(File startFrom) {
 	    getContext().getLogAdapter().resetTimeDiff();
 		File file = resolveUnSaveBaseDir(startFrom);
@@ -77,11 +77,15 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
 	}
 
 	private File findCachedBaseDirOrStartSearch(File startFrom) {
-        if (cachedBaseDir == null) {
+        File cachedBaseDir = baseDirCache.get(startFrom);
+	    if (cachedBaseDir == null) {
             cachedBaseDir = findBaseDirNotCached(startFrom);
+            baseDirCache.put(startFrom,cachedBaseDir);
         }
         return cachedBaseDir;
     }
+	
+	private Map<File,File> baseDirCache = new HashMap<>();
 
 	
 	private boolean containsADocFiles(File dir) {
@@ -104,6 +108,6 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
 	}
 
 	public void reset() {
-		cachedBaseDir = null;
+		baseDirCache.clear();
 	}
 }
