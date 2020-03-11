@@ -110,7 +110,7 @@ public class ASPServerAdapter {
         }
         this.port = getFreePortToUse(minPort, maxPort);
 
-        launcher = new ExternalProcessAsciidoctorJServerLauncher(pathToServerJar, port);
+        launcher = new ExternalProcessAsciidoctorJServerLauncher(pathToJava, pathToServerJar, port);
         launcher.setShowServerOutput(showServerOutput);
         launcher.setLogHandler(new LogHandler() {
 
