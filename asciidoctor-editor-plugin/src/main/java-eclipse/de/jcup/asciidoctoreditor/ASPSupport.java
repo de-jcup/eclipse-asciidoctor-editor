@@ -140,8 +140,8 @@ public class ASPSupport {
         File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
         File aspServer = new File(aspFolder, "asp-server-asciidoctorj-dist.jar");
 
-        String pathToJava = preferences.getPathToJavaForASPLaunch();
-        aspServerAdapter.setPathToJava(pathToJava);
+        String pathToJavaBinary = preferences.getPathToJavaBinaryForASPLaunch();
+        aspServerAdapter.setPathToJavaBinary(pathToJavaBinary);
         aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
         aspServerAdapter.setMinPort(preferences.getAspServerMinPort());
         aspServerAdapter.setMaxPort(preferences.getAspServerMaxPort());

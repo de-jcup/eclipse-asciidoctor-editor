@@ -279,8 +279,8 @@ public class AsciiDoctorEditorPreferences {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO);
     }
 
-    public String getPathToJavaForASPLaunch() {
-        return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_FOR_ASP_LAUNCH);
+    public String getPathToJavaBinaryForASPLaunch() {
+        return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH);
     }
 
     public boolean isGroupingInOutlineEnabledPerDefault() {

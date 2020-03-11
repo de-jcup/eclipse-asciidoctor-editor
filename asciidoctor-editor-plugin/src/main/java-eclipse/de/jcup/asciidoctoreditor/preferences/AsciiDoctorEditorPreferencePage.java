@@ -48,6 +48,7 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.PreviewLayout;
 import de.jcup.asciidoctoreditor.presentation.AccessibleBooleanFieldEditor;
 import de.jcup.asciidoctoreditor.presentation.AccessibleDirectoryFieldEditor;
+import de.jcup.asciidoctoreditor.presentation.AccessibleFileFieldEditor;
 
 /**
  * Parts are inspired b4444y <a href=
@@ -72,7 +73,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
     private IntegerFieldEditor aspServerMinPort;
     private IntegerFieldEditor aspServerMaxPort;
     private AccessibleBooleanFieldEditor aspLogRecordsShownAsMarkerInEditor;
-    private AccessibleDirectoryFieldEditor pathToJavaForASPlaunch;
+    private AccessibleFileFieldEditor pathToJavaForASPlaunch;
     private AccessibleBooleanFieldEditor useInstalledAsciidoctor;
     private Composite baseComposite;
     private AccessibleBooleanFieldEditor aspServerOutputShownInConsole;
@@ -130,7 +131,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         // we handle the directory field special, not added as field, so setting default
         // in this way
         AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR, pathToInstalledAsciidoctor.getStringValue());
-        AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_FOR_ASP_LAUNCH, pathToJavaForASPlaunch.getStringValue());
+        AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH, pathToJavaForASPlaunch.getStringValue());
         AsciiDoctorEditorActivator.getDefault().getAspSupport().configurationChanged();
         return ok;
     }
@@ -256,7 +257,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
     @Override
     protected void checkState() {
         super.checkState();
-        // we handle the directory field special, not added as field, so validating
+        // we handle the file field special, not added as field, so validating
         // value in this way
         if (pathToInstalledAsciidoctor !=null && !pathToInstalledAsciidoctor.checkState()) {
             setValid(false);
@@ -330,12 +331,12 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         addField(aspCommunicationShownInConsole);
 
         Composite pathComposite = new Composite(content, SWT.NONE);
-        pathToJavaForASPlaunch = new AccessibleDirectoryFieldEditor(P_PATH_TO_JAVA_FOR_ASP_LAUNCH.getId(), "Path to Java", pathComposite);
+        pathToJavaForASPlaunch = new AccessibleFileFieldEditor(P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH.getId(), "Path to Java binary", pathComposite);
         pathToJavaForASPlaunch.getTextControl(pathComposite).setMessage("Use installed java");
         pathToJavaForASPlaunch.getTextControl(pathComposite)
-                .setToolTipText("Complete path to another java runtime. This is the execution which is called to launch ASP server. If empty, installed java will be used");
+                .setToolTipText("Full path to another java executable (java/java.exe) which will be called to launch ASP server.\n\nWhen empty, installed java version will be used.");
         pathToJavaForASPlaunch.setEmptyStringAllowed(true);
-        pathToJavaForASPlaunch.setErrorMessage("Invalid path to java runtime");
+        pathToJavaForASPlaunch.setErrorMessage("Invalid path to java executable");
 
         pathToJavaForASPlaunch.getTextControl(pathComposite).addFocusListener(new FocusListener() {
 
@@ -359,6 +360,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         Button changeControl = useInstalledAsciidoctor.getChangeControl(getBaseComposite());
         createDependency(changeControl, aspLogRecordsShownAsMarkerInEditor.getChangeControl(content), false, true);
         createDependency(changeControl, aspServerOutputShownInConsole.getChangeControl(content), false, true);
+        createDependency(changeControl, aspCommunicationShownInConsole.getChangeControl(content), false, true);
         createDependency(changeControl, aspServerMinPort.getLabelControl(serverportComposite), false, true);
         createDependency(changeControl, aspServerMinPort.getTextControl(serverportComposite), false, true);
         createDependency(changeControl, pathToJavaForASPlaunch.getTextControl(pathComposite), false, true);
