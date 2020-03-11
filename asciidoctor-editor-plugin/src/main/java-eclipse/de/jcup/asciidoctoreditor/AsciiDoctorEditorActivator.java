@@ -75,6 +75,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
         plugin = this;
 
         taskSupportProvider.getTodoTaskSupport().install();
+        
     }
     
     

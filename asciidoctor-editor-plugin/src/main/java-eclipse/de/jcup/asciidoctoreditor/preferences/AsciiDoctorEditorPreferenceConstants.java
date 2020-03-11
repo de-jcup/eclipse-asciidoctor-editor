@@ -72,7 +72,9 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	
 	P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO("dynamicDitaaMacroCodeAssistEnabled"),
 
-	P_PATH_TO_JAVA_FOR_ASP_LAUNCH("pathToJavaForASPLaunch"), 
+	P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH("pathToJavaBinaryForASPLaunch"), 
+	
+	P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT("outlineGroupingEnabledPerDefault"), 
 	
 	;
 

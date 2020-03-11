@@ -16,6 +16,7 @@
 package de.jcup.asciidoctoreditor.script;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Collection;
 
 public class AsciiDoctorFileReferenceValidator {
@@ -42,7 +43,7 @@ public class AsciiDoctorFileReferenceValidator {
         }
         for (AsciiDoctorFileReference reference: references) {
             String target = reference.getFilePath();
-            File file = new File(folder.getAbsolutePath()+File.separatorChar+target);
+            File file = folder.toPath().resolve(Paths.get(target)).toFile();
             String problem = null;
             if (! file.exists()) {
                 problem = ".. references not existing file:"+file.getAbsolutePath();

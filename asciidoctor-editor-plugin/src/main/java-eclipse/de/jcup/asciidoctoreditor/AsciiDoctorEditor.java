@@ -103,6 +103,7 @@ import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.AddLineBreakAction;
 import de.jcup.asciidoctoreditor.toolbar.BoldFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
+import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.CreatePDFAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertAdmonitionAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertSectionTitleAction;
@@ -163,14 +164,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private Composite topComposite;
     protected RebuildAsciiDocViewAction rebuildAction;
 
+    private ClearProjectCacheAsciiDocViewAction clearProjectAction;
+
     public long getEditorId() {
         return editorId;
     }
-    
+
     public ContentTransformer getContentTransformer() {
         return contentTransformer;
     }
-    
+
     public Semaphore getOutputBuildSemaphore() {
         return outputBuildSemaphore;
     }
@@ -178,7 +181,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public File getTemporaryInternalPreviewFile() {
         return temporaryInternalPreviewFile;
     }
-    
+
     public EditorType getType() {
         return EditorType.ASCIIDOC;
     }
@@ -204,7 +207,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public BrowserAccess getBrowserAccess() {
         return browserAccess;
     }
-    
+
     @Override
     public void createPartControl(Composite parent) {
 
@@ -230,7 +233,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         browserAccess = new BrowserAccess(sashForm);
         initPreview(sashForm);
-        
+
         initToolbar(); // init after browser creation so we toolbar icons are
                        // set depending on browser visible or not...
 
@@ -336,8 +339,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public IDocument getDocument() {
-        IDocumentProvider  documentProvider = getDocumentProvider();
-        if (documentProvider==null) {
+        IDocumentProvider documentProvider = getDocumentProvider();
+        if (documentProvider == null) {
             return null;
         }
         return documentProvider.getDocument(getEditorInput());
@@ -476,19 +479,19 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         File file = new File(diagramRootDirectory, fileName);
         openFileWithEclipseDefault(file);
     }
-    
+
     /**
      * @return diagram path as string, or <code>null</code>
      */
     public String getDiagramPathOrNull() {
         AsciiDoctorProviderContext context = getWrapper().getContext();
         File editorFile = getEditorFileOrNull();
-        if (editorFile==null) {
+        if (editorFile == null) {
             return null;
         }
         context.setAsciidocFile(editorFile);
         File rootDir = context.getDiagramProvider().getDiagramRootDirectory();
-        if (rootDir==null) {
+        if (rootDir == null) {
             return null;
         }
         return rootDir.getAbsolutePath();
@@ -500,13 +503,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public String getImagesPathOrNull() {
         AsciiDoctorProviderContext context = getWrapper().getContext();
         File editorFile = getEditorFileOrNull();
-        if (editorFile==null) {
+        if (editorFile == null) {
             return null;
         }
         context.setAsciidocFile(editorFile);
         return context.getImageProvider().getCachedSourceImagesPath();
     }
-    
+
     public void openImage(String fileName) {
         if (fileName == null) {
             return;
@@ -537,8 +540,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             temporaryExternalPreviewFile.delete();
         }
         if (!buildSupport.isAutoBuildEnabledForExternalPreview()) {
-            /* when not enabled, we must force to render the document (not internal preview)*/
-            buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS,false);
+            /*
+             * when not enabled, we must force to render the document (not internal preview)
+             */
+            buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS, false);
         }
         startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
     }
@@ -552,7 +557,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void refreshAsciiDocView() {
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS,internalPreview);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS, internalPreview);
     }
 
     public void resetCache() {
@@ -593,7 +598,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
          * TOC building does always lead to a long time running task, at least inside
          * preview - so we show the initializing info with progressbar
          */
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
     }
 
     public void setVerticalSplit(boolean verticalSplit) {
@@ -669,22 +674,21 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             validate();
             return;
         }
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
     }
-
 
     @Override
     protected void editorSaved() {
         super.editorSaved();
-        
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
+
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
     }
 
     public void removeValidationErrors() {
         AsciiDoctorEditorUtil.removeScriptErrors(this);
-        
+
     }
-    
+
     public void rebuildOutlineAndValidate() {
         outlineSupport.rebuildOutlineAndValidate();
     }
@@ -730,6 +734,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             project = f.getProject();
         }
         return project;
+    }
+
+    public String getProjectName() {
+        IProject p = getProject();
+        if (p == null) {
+            return null;
+        }
+        return p.getName();
     }
 
     private IFile resolveFileOrNull() {
@@ -802,7 +814,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             }
         });
 
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED,internalPreview);
+        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
 
         synchronizer.installInBrowser();
 
@@ -814,8 +826,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             setVerticalSplit(initialLayout.isVertical());
         }
     }
+
     protected void initToolbar() {
         rebuildAction = new RebuildAsciiDocViewAction(this);
+        clearProjectAction = new ClearProjectCacheAsciiDocViewAction(this);
 
         italicFormatAction = new ItalicFormatAction(this);
         boldFormatAction = new BoldFormatAction(this);
@@ -838,10 +852,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         viewToolBarManager.add(new ChangeLayoutAction(this));
-        viewToolBarManager.add(rebuildAction);
         viewToolBarManager.add(new ToggleTOCAction(this));
         viewToolBarManager.add(new Separator("simple"));
         viewToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
+
+        IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        buildToolBarManager.add(rebuildAction);
+        buildToolBarManager.add(clearProjectAction);
 
         IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         otherToolBarManager.add(new OpenInExternalBrowserAction(this));
@@ -850,6 +867,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         // Add to the cool bar manager
         coolBarManager.add(new ToolBarContributionItem(asciiDocToolBarManager, "asciiDocEditor.toolbar.asciiDoc"));
         coolBarManager.add(new ToolBarContributionItem(viewToolBarManager, "asciiDocEditor.toolbar.view"));
+        coolBarManager.add(new ToolBarContributionItem(buildToolBarManager, "asciiDocEditor.toolbar.build"));
         coolBarManager.add(new ToolBarContributionItem(otherToolBarManager, "asciiDocEditor.toolbar.other"));
 
         if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {

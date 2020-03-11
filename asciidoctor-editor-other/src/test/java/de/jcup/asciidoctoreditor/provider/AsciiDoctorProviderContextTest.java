@@ -52,6 +52,70 @@ public class AsciiDoctorProviderContextTest {
 	}
 	
 	@Test
+	public void file_is_testfile_adoc_then_pdf_target_is_testfile_pdf() {
+	    /* prepare */
+        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        File fileToRender = new File("testfile.adoc");
+        context.setFileToRender(fileToRender);
+        
+        /* execute */
+        assertEquals(new File("testfile.pdf"), context.getTargetPDFFileOrNull());
+	}
+	@Test
+    public void file_is_a_without_file_ending_then_pdf_target_is_a_pdf() {
+        /* prepare */
+        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        File fileToRender = new File("a");
+        context.setFileToRender(fileToRender);
+        
+        /* execute */
+        assertEquals(new File("a.pdf"), context.getTargetPDFFileOrNull());
+    }
+	
+	@Test
+    public void file_is_null_pdf_target_is_null() {
+        /* prepare */
+        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        File fileToRender =null;
+        context.setFileToRender(fileToRender);
+        
+        /* execute */
+        assertEquals(null, context.getTargetPDFFileOrNull());
+    }
+	@Test
+    public void file_is_testfile_asciidoc_then_pdf_target_is_testfile_pdf() {
+        /* prepare */
+        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        File fileToRender = new File("testfile.asciidoc");
+        context.setFileToRender(fileToRender);
+        
+        /* execute */
+        assertEquals(new File("testfile.pdf"), context.getTargetPDFFileOrNull());
+    }
+	
+	@Test
+    public void file_is_testfile_txt_then_pdf_target_is_testfile_pdf() {
+        /* prepare */
+        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        File fileToRender = new File("testfile.txt");
+        context.setFileToRender(fileToRender);
+        
+        /* execute */
+        assertEquals(new File("testfile.pdf"), context.getTargetPDFFileOrNull());
+    }
+	
+	@Test
+    public void file_is_testfile_without_file_ending_then_pdf_target_is_testfile_pdf() {
+        /* prepare */
+        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        File fileToRender = new File("testfile");
+        context.setFileToRender(fileToRender);
+        
+        /* execute */
+        assertEquals(new File("testfile.pdf"), context.getTargetPDFFileOrNull());
+    }
+	
+	@Test
 	public void test_normal_creating_context_creates_internal_providers() {
 		/* execute */
 		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);

@@ -38,7 +38,7 @@ public class ASPServerAdapter {
     private int maxPort = DEFAULT_MAX_PORT;
 
     private int port;
-    private String pathToJava;
+    private String pathToJavaBinary;
     private String pathToServerJar;
     private AspClient client;
     private ExternalProcessAsciidoctorJServerLauncher launcher;
@@ -64,11 +64,11 @@ public class ASPServerAdapter {
         return port;
     }
 
-    public void setPathToJava(String pathToJava) {
-        if (Objects.equals(pathToJava, this.pathToJava)) {
+    public void setPathToJavaBinary(String pathToJavaBinary) {
+        if (Objects.equals(pathToJavaBinary, this.pathToJavaBinary)) {
             return;
         }
-        this.pathToJava = pathToJava;
+        this.pathToJavaBinary = pathToJavaBinary;
     }
 
     public void setPathToServerJar(String pathToServerJar) {
@@ -111,6 +111,7 @@ public class ASPServerAdapter {
         this.port = getFreePortToUse(minPort, maxPort);
 
         launcher = new ExternalProcessAsciidoctorJServerLauncher(pathToServerJar, port);
+        launcher.setPathToJavaBinary(pathToJavaBinary);
         launcher.setShowServerOutput(showServerOutput);
         launcher.setLogHandler(new LogHandler() {
 

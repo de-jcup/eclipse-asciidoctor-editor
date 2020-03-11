@@ -70,7 +70,7 @@ public class AsciiDoctorEditorPDFLauncher {
             AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to create/show PDF", e);
         }
     }
-
+    
     private class PDFRunnableWithProgress implements IRunnableWithProgress {
 
         private WrapperConvertData data;
@@ -116,16 +116,19 @@ public class AsciiDoctorEditorPDFLauncher {
             if (monitor.isCanceled()) {
                 return;
             }
-            File origin = wrapper.getContext().getFileToRender();
-            String originName = origin.getName(); /* xyz.adoc */
-            String fileName = originName.substring(0, originName.length() - 4) + "pdf";
-            File file = new File(origin.getParentFile(), fileName);
-
             monitor.subTask("Open in external browser");
+
+            File file = wrapper.getContext().getTargetPDFFileOrNull();
+            
+            if (file==null || !file.exists()) {
+                monitor.setCanceled(true);
+                AsciiDoctorEditorUtil.logError("Was not able to open pdf - file does not exist:"+file,null);
+                return;
+            }
             AsciiDoctorEditorUtil.openFileInExternalBrowser(file);
 
         }
-
+        
         private class PDFConvertJob extends Job {
             private boolean done;
             private Exception failed;

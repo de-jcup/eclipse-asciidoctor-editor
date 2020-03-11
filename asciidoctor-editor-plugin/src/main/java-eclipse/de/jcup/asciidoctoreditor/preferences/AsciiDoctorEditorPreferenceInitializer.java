@@ -27,6 +27,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.jcup.asciidoctoreditor.PreviewLayout;
 import de.jcup.asciidoctoreditor.asciidoc.ASPServerAdapter;
+import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLOutputFormat;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 
 /**
@@ -127,10 +128,13 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		store.setDefault(VALIDATE_IMAGES.getId(),true);
 		store.setDefault(VALIDATE_DIAGRAMS.getId(),true);
 		
+		store.setDefault(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(),true);
+		
 		/* ++++++++++++++ */
 		/* + automatically create/update png file(s) in the same location as PlantumUML file(s) + */
 		/* ++++++++++++++ */
 		store.setDefault(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId(), false);
+		store.setDefault(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT.getId(), PlantUMLOutputFormat.SVG.getAsciiDocFormatString());
 
 		
 	}

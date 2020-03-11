@@ -1,0 +1,2 @@
+include::test1[]
+include::subfolder/test2-from-subfolder[]

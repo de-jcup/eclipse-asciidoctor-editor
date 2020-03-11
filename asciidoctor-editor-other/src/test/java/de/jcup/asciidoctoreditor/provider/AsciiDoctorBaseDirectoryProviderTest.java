@@ -57,6 +57,41 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	}
 	
 	@Test
+    public void asciidoc_files_having_same_name_and_no_common_base_adoc_file_are_rendered_correctly() {
+        
+        File asciidocFile = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder1/001_article.adoc");
+        File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder1/");
+
+        /* prepare */
+        when(context.getAsciiDocFile()).thenReturn(asciidocFile);
+        
+        /* execute */
+        File baseDir = providerToTest.findBaseDir();
+
+        /* test */
+        assertNotNull(baseDir);
+        assertEquals(expectedbaseDir.toString(),baseDir.toString());
+        
+        /* ------ */
+        /* phase 2*/       // we use now subfolder2 with same name
+        /* ------ */
+        
+        asciidocFile = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/001_article.adoc");
+        expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/");
+
+        /* prepare */
+        when(context.getAsciiDocFile()).thenReturn(asciidocFile);
+        
+        /* execute */
+        baseDir = providerToTest.findBaseDir();
+
+        /* test */
+        assertNotNull(baseDir);
+        assertEquals(expectedbaseDir.toString(),baseDir.toString());
+    }
+    
+	
+	@Test
 	public void when_asciidocfile_is_set_base_dir_is_scanned_to_last_adoc_file_found_in_upper_hiararchy1() {
 		
 		File asciidocFile = ensuredTestFile("src/test/resources/basedirtesting/testproject1/mydoc1/subfolder1/testproject1.adoc");

@@ -1,0 +1,7 @@
+I am *subfolder2*:001_article.adoc
+
+== Include both existing
+include::002_include_both_existing.adoc[]
+
+== Include only one time existing 
+include::003_include_one_time_existing2.adoc[]

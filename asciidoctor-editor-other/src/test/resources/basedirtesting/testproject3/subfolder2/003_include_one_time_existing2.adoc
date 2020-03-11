@@ -1,0 +1,1 @@
+I am from subfolder2:002_include_one_time_existing2.adoc
