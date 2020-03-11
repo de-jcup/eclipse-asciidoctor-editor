@@ -34,6 +34,7 @@ import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.PluginContentInstaller;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
+import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
@@ -158,31 +159,30 @@ public class AsciiDoctorWrapper {
     
     public void reinitContext() {
         resetCaches();
+        AsciiDoctorConsoleUtil.output("- cleaned caches");
         this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorAdapterProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        AsciiDoctorConsoleUtil.output("- context recreated");
     }
 
-    public void deleteTempFolder(IProject project) {
-        if (project == null) {
-            return;
-        }
-        Path outputFolder = createTempPath(project);
-        deleteFolder(outputFolder);
-    }
-    
     public void deleteTempFolder() {
         Path tempFolder = getTempFolder();
-        deleteFolder(tempFolder);
+        String pathAsString = tempFolder.toAbsolutePath().toString();
+        deleteFolder(tempFolder, "- deleted temp folder:"+pathAsString,"Wasn't able to delete temp folder:"+pathAsString);
     }
 
-    private void deleteFolder(Path outputFolder) {
+    private void deleteFolder(Path outputFolder, String successMessage, String errorMessage) {
         if (outputFolder == null) {
             return;
         }
+        
         try {
             File file = outputFolder.toFile();
             FileUtils.deleteDirectory(file);
+            
+            AsciiDoctorConsoleUtil.output(successMessage);
         } catch (IOException e) {
-            AsciiDoctorEditorUtil.logError("Was not able to delete temporary folder!", e);
+            AsciiDoctorEditorUtil.logError(errorMessage, e);
+            AsciiDoctorConsoleUtil.error(errorMessage);
         }
     }
 
