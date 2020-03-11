@@ -26,6 +26,7 @@ public class Item implements Comparable<Item>{
     int length;
     int endOffset;
     String prefix;
+    String filePath;
 
     public Item() {
 
@@ -42,6 +43,13 @@ public class Item implements Comparable<Item>{
 
     public Item getParent() {
         return parent;
+    }
+    
+    /**
+     * @return file path (if element references an asciidoc file). The file path starts from base dir of editor!
+     */
+    public String getFilePathOrNull() {
+        return filePath;
     }
 
     /**
@@ -85,6 +93,8 @@ public class Item implements Comparable<Item>{
         sb.append(length);
         sb.append(",endOffset:");
         sb.append(endOffset);
+        sb.append(",filePath:");
+        sb.append(filePath);
         return sb.toString();
     }
 

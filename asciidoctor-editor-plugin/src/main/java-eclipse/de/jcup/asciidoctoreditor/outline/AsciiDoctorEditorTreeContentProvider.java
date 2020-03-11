@@ -212,7 +212,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
             item.length = include.getLengthToNameEnd();
             item.endOffset = include.getEnd();
             item.fullString = include.getFullExpression();
-
+            item.filePath = include.getFilePath();
             list.add(item);
         }
     }
