@@ -46,6 +46,20 @@ public class SearchOperation /*extends WorkspaceModifyOperation */implements IRe
             return;
         }
         
+        /* ---------------- Filter build parts ---------------- */
+        String p = file.getProjectRelativePath().toString();
+        /* TODO de-jcup, 2020-03-11: make next filtering of build/bin configurable and not hard coded...*/
+        if (p.startsWith("bin/")) { // eclipse itself
+            return;
+        }
+        if (p.startsWith("build/")) { // gradle
+            return;
+        }
+        if (p.startsWith("target/")) { // maven
+            return;
+        }
+        /* ---------------- EOF: Filter build parts ---------------- */
+        
         File inspectFile = EclipseResourceHelper.DEFAULT.toFile(file);
         if (inspectFile==null) {
             return;
