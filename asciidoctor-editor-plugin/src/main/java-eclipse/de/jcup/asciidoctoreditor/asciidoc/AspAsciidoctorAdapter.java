@@ -113,7 +113,7 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             if (eclipseSeverity == -1) {
                 continue;
             }
-            AsciiDoctorMarker marker = new ASPMarker(-1, -1, entry.getMessage());
+            AsciiDoctorMarker marker = new ASPMarker(-1, -1, message);
             File file = entry.getFile();
             IFile resource = null;
             if (file != null) {
