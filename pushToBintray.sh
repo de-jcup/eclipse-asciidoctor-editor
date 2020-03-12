@@ -10,7 +10,6 @@ BINTRAY_REPO=$4
 PCK_NAME=$5
 PCK_VERSION=$6
 PATH_TO_REPOSITORY=$7
-GPG_PASSPHRASE=$8
 
 function main() {
 deploy_updatesite
@@ -47,9 +46,9 @@ if [ ! -d $f ]; then
   if [[ "$f" == *content.jar ]] || [[ "$f" == *artifacts.jar ]] 
   then
     echo "Uploading p2 metadata file directly to the repository"
-    curl --header "X-GPG-PASSPHRASE: ${GPG_PASSPHRASE}" -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/$f;publish=0
+    curl --header -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/$f;publish=0
   else 
-    curl --header "X-GPG-PASSPHRASE: ${GPG_PASSPHRASE}" -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/$f;publish=0
+    curl --header -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/$f;publish=0
   fi
   echo ""
 fi
@@ -59,7 +58,7 @@ echo "Processing features dir $FEATUREDIR file..."
 for f in $FEATUREDIR;
 do
   echo "Processing feature: $f file..."
-  curl --header "X-GPG-PASSPHRASE: ${GPG_PASSPHRASE}" -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/$f;publish=0
+  curl --header -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/$f;publish=0
   echo ""
 done
 
@@ -69,7 +68,7 @@ for f in $PLUGINDIR;
 do
    # take action on each file. $f store current file name
   echo "Processing plugin: $f file..."
-  curl --header "X-GPG-PASSPHRASE: ${GPG_PASSPHRASE}" -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/$f;publish=0
+  curl --header -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/$f;publish=0
   echo ""
 done
 
@@ -79,13 +78,13 @@ for f in $BINARYDIR;
 do
    # take action on each file. $f store current file name
   echo "Processing binary: $f file..."
-  curl --header "X-GPG-PASSPHRASE: ${GPG_PASSPHRASE}" -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/$f;publish=0
+  curl --header -X PUT -T $f -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/$f;publish=0
   echo ""
 done
 fi
 
 echo "Publishing the new version"
-curl --header "X-GPG-PASSPHRASE: ${GPG_PASSPHRASE}" -X POST -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/publish -d "{ \"discard\": \"false\" }"
+curl --header -X POST -u ${BINTRAY_USER}:${BINTRAY_API_KEY} https://api.bintray.com/content/${BINTRAY_OWNER}/${BINTRAY_REPO}/${PCK_NAME}/${PCK_VERSION}/publish -d "{ \"discard\": \"false\" }"
 
 }
 
