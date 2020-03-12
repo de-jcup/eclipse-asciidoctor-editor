@@ -108,8 +108,9 @@ public class AsciidocReferenceProposalCalculatorTest {
         
         /* test */
         assertNotNull(result);
-        assertEquals(4, result.size());
+        assertEquals(5, result.size());
         Iterator<AsciidocReferenceProposalData> it = result.iterator();
+        assertEquals("include::../subfolder2/asciidoctor-editor with spaces.png[]",it.next().getProposedCode());
         assertEquals("include::../subfolder2/asciidoctor-editor.png[]",it.next().getProposedCode());
         assertEquals("include::../subfolder2/ditaa-file1.ditaa[]",it.next().getProposedCode());
         assertEquals("include::../subfolder2/puml-file1.puml[]",it.next().getProposedCode());
