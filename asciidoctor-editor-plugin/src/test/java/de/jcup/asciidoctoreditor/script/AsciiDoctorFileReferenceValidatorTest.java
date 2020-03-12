@@ -74,5 +74,33 @@ public class AsciiDoctorFileReferenceValidatorTest {
         /* test */
         assertEquals(1,errors.size());
     }
+    
+    @Test
+    public void resolve_image_file_path_with_imagedir() {
+        /* prepare */
+        validatorToTest.setImageDir("./subfolder2/");
+        File editorFile = TestResourcesLoader.assertTestFile("codeassist/include/test1/editorfile1.adoc");
+        Collection<AsciiDoctorMarker> errors = new ArrayList<>();
+        
+        /* execute */
+        validatorToTest.validate(editorFile, Collections.singleton(new AsciiDoctorFileReference("image::asciidoctor-editor.png", 1, 20, 20)),errors);
+        
+        /* test */
+        assertEquals(0,errors.size());
+    }
+    
+    @Test
+    public void resolved_image_file_path_with_imagedir_not_found() {
+        /* prepare */
+        validatorToTest.setImageDir("./subfolder2/");
+        File editorFile = TestResourcesLoader.assertTestFile("codeassist/include/test1/editorfile1.adoc");
+        Collection<AsciiDoctorMarker> errors = new ArrayList<>();
+        
+        /* execute */
+        validatorToTest.validate(editorFile, Collections.singleton(new AsciiDoctorFileReference("image::unknown.png", 1, 20, 20)),errors);
+        
+        /* test */
+        assertEquals(1,errors.size());
+    }
 
 }
