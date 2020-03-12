@@ -2,7 +2,7 @@
 <feature
       id="de.jcup.asciidoctor.converter"
       label="Asciidoctor converter"
-      version="1.0.3"
+      version="1.1.0"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/asciidoctor-editor">

@@ -28,5 +28,12 @@ if [ -z "$BINTRAY_GPG_PP" ]; then
     echo "bintray version not set"
     show_help_and_exit;
 fi
+
+# call jar signing before pushing to bintray...
+export KEYSTORE_PWD
+export KEYSTORE_LOCATION
+
+signJars
+
 ./pushToBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup asciidoctoreditor update-site ${BINTRAY_VERSION} ./asciidoctor-editor-updatesite/ ${BINTRAY_GPG_PP}
 
