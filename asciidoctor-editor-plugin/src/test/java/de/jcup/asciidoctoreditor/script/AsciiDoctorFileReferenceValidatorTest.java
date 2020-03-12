@@ -90,6 +90,20 @@ public class AsciiDoctorFileReferenceValidatorTest {
     }
     
     @Test
+    public void resolve_image_file_path_with_imagedir__with_filename_having_spaces_inside() {
+        /* prepare */
+        validatorToTest.setImageDir("./subfolder2/");
+        File editorFile = TestResourcesLoader.assertTestFile("codeassist/include/test1/editorfile1.adoc");
+        Collection<AsciiDoctorMarker> errors = new ArrayList<>();
+        
+        /* execute */
+        validatorToTest.validate(editorFile, Collections.singleton(new AsciiDoctorFileReference("image::asciidoctor-editor with spaces.png", 1, 20, 20)),errors);
+        
+        /* test */
+        assertEquals(0,errors.size());
+    }
+    
+    @Test
     public void resolved_image_file_path_with_imagedir_not_found() {
         /* prepare */
         validatorToTest.setImageDir("./subfolder2/");

@@ -29,7 +29,7 @@ public class AsciiDoctorFileReference {
 
     public AsciiDoctorFileReference(String fullExpression, int position, int end, int lengthTonNameEnd) {
         this.fullExpression = fullExpression;
-        this.target = calculateName(fullExpression);
+        this.target = calculateTarget(fullExpression);
         this.position = position;
         this.end = end;
         this.lengthToNameEnd = lengthTonNameEnd;
@@ -38,18 +38,35 @@ public class AsciiDoctorFileReference {
         this.filePath = resolveFilePath();
     }
 
-    private String calculateName(String include) {
-        if (include == null) {
+    private String calculateTarget(String fullExpression) {
+        if (fullExpression == null) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        for (char charAt : include.toCharArray()) {
-            if (charAt == '[' || Character.isWhitespace(charAt)) {
+        for (char charAt : fullExpression.toCharArray()) {
+            if (!isPartOfTarget(charAt)) {
                 break;
             }
             sb.append(charAt);
         }
         return sb.toString().trim();
+    }
+
+    private boolean isPartOfTarget(char charAt) {
+        if(Character.isSpaceChar(charAt)) {
+            /* we allow spaces */
+            return true;
+        }
+        /* we do not allow  [ becaus it terminates target part*/
+        if (charAt == '[' ) {
+            return false;
+        }
+        if (Character.isWhitespace(charAt)) {
+            /* any other whitespace than space is not accepted */
+            return false;
+        }
+        /* all other characters are accepted */
+        return true;
     }
 
     private String resolveTargetPrefix() {
@@ -103,7 +120,7 @@ public class AsciiDoctorFileReference {
 
     @Override
     public String toString() {
-        return "include::" + target + "[pos:" + position + ",end:" + end + ",lengthToNameEnd:" + lengthToNameEnd + "]";
+        return getClass().getSimpleName()+"=" + target + "[pos:" + position + ",end:" + end + ",lengthToNameEnd:" + lengthToNameEnd + "]";
     }
 
     public String getFullExpression() {
@@ -111,7 +128,8 @@ public class AsciiDoctorFileReference {
     }
 
     /**
-     * @return file path (e.g. for an include::abc/xyz/mydoc.adoc file path is abc/xyz/mydoc.adoc)
+     * @return file path (e.g. for an include::abc/xyz/mydoc.adoc file path is
+     *         abc/xyz/mydoc.adoc)
      */
     public String getFilePath() {
         return filePath;
