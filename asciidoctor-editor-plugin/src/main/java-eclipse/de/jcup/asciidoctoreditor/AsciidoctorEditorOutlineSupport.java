@@ -155,7 +155,9 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
     }
 
     private void validate(AsciiDoctorScriptModel model) {
-        AsciiDoctorFileReferenceValidator referenceValidator = new AsciiDoctorFileReferenceValidator(getEditor().getImagesPathOrNull());
+        AsciiDoctorFileReferenceValidator referenceValidator = new AsciiDoctorFileReferenceValidator();
+        referenceValidator.setImageDir(getEditor().getImagesPathOrNull());
+        
         AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
 
         File editorFileOrNull = getEditor().getEditorFileOrNull();

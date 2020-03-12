@@ -16,22 +16,27 @@
 package de.jcup.asciidoctoreditor.script;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 
 public class AsciiDoctorFileReferenceValidator {
     
-    private String imagesPath;
+    private String imageDir;
 
-    public AsciiDoctorFileReferenceValidator(String imagesPath) {
-        this.imagesPath = imagesPath;
+    /**
+     * Set image directory to use for validation. 
+     * @param imageDir directory as string or <code>null</code>
+     */
+    public void setImageDir(String imageDir) {
+        this.imageDir = imageDir;
     }
 
     /**
-     * Validates given references, will add markers into error when not valid
+     * Validates given references, will add error markers when not valid
      * @param baseFile
-     * @param references
-     * @param errors
+     * @param references collection containing file references to check if valid by given base file 
+     * @param errors collection where found errors are added
      */
     public void validate(File baseFile, Collection<AsciiDoctorFileReference> references, Collection<AsciiDoctorMarker> errors) {
         if (errors==null) {
@@ -43,21 +48,38 @@ public class AsciiDoctorFileReferenceValidator {
         if (! baseFile.exists()) {
             return;
         }
-        File folder =baseFile;
-        if (!folder.isDirectory()) {
-            folder=folder.getParentFile();
+        File baseDir =baseFile;
+        if (!baseDir.isDirectory()) {
+            baseDir=baseDir.getParentFile();
         }
         for (AsciiDoctorFileReference reference: references) {
-            String target = reference.getFilePath();
-            File file = folder.toPath().resolve(Paths.get(target)).toFile();
-            if(imagesPath != null && reference.isImageReference()) {
-                file = folder.toPath().resolve(imagesPath).resolve(Paths.get(target)).toFile();
+            
+            /* ------------------------ */
+            /* calculate expected file */
+            /* ------------------------ */
+            String filePathAsString = reference.getFilePath();
+            
+            File expectedFile = null;
+            
+            Path baseDirPath = baseDir.toPath();
+            Path filePath = Paths.get(filePathAsString);
+            
+            if(imageDir != null && reference.isImageReference()) {
+                /* resolve path by given image directory - means absolute file path is calculated by given image directory */
+                expectedFile = baseDirPath.resolve(imageDir).resolve(filePath).toFile();
+            }else {
+                /* here we resolve the file by base dir only */
+                expectedFile = baseDirPath.resolve(filePath).toFile();
             }
+            
+            /* -------------------------------- */
+            /* check file exists and is file ...*/
+            /* -------------------------------- */
             String problem = null;
-            if (! file.exists()) {
-                problem = ".. references not existing file:"+file.getAbsolutePath();
-            }else if (file.isDirectory()) {
-                problem= "..  points to a directory not a file:"+file.getAbsolutePath();
+            if (! expectedFile.exists()) {
+                problem = ".. references not existing file:"+expectedFile.getAbsolutePath();
+            }else if (expectedFile.isDirectory()) {
+                problem= "..  points to a directory not a file:"+expectedFile.getAbsolutePath();
             }
             
             if (problem!=null) {

@@ -33,7 +33,7 @@ public class AsciiDoctorFileReferenceValidatorTest {
 
     @Before
     public void before() {
-        validatorToTest = new AsciiDoctorFileReferenceValidator(null);
+        validatorToTest = new AsciiDoctorFileReferenceValidator();
     }
     
     @Test
@@ -78,7 +78,7 @@ public class AsciiDoctorFileReferenceValidatorTest {
     @Test
     public void resolve_image_file_path_with_imagedir() {
         /* prepare */
-        validatorToTest = new AsciiDoctorFileReferenceValidator("./subfolder2/");
+        validatorToTest.setImageDir("./subfolder2/");
         File editorFile = TestResourcesLoader.assertTestFile("codeassist/include/test1/editorfile1.adoc");
         Collection<AsciiDoctorMarker> errors = new ArrayList<>();
         
@@ -92,7 +92,7 @@ public class AsciiDoctorFileReferenceValidatorTest {
     @Test
     public void resolved_image_file_path_with_imagedir_not_found() {
         /* prepare */
-        validatorToTest = new AsciiDoctorFileReferenceValidator("./subfolder2/");
+        validatorToTest.setImageDir("./subfolder2/");
         File editorFile = TestResourcesLoader.assertTestFile("codeassist/include/test1/editorfile1.adoc");
         Collection<AsciiDoctorMarker> errors = new ArrayList<>();
         
