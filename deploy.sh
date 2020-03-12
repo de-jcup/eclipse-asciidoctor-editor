@@ -5,7 +5,7 @@ BINTRAY_VERSION=$3
 
 function show_help_and_exit() {
     echo "Usage:"
-    echo " deploy.sh bintrayUser apiKey version gpg-passphrase"
+    echo " deploy.sh bintrayUser apiKey version"
     echo " "
     echo " ATTENTION! use always dedicated version!"
     exit 1
