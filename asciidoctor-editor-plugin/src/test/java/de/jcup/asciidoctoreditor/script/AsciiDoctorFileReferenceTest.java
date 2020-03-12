@@ -20,7 +20,35 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class AsciiDoctorFileReferenceTest {
-
+    @Test
+    public void image_abc_without_brackets_is_found__so_even_when_invalid() {
+        /* execute */
+        AsciiDoctorFileReference reference = new AsciiDoctorFileReference("image::abc.png", 1, 2, 3);
+        
+        /* test */
+        assertEquals("image::abc.png", reference.getFullExpression());
+        assertEquals("image::abc.png", reference.getTarget());
+        assertEquals("abc.png", reference.getFilePath());
+        assertEquals("image::", reference.getTargetPrefix());
+        assertEquals(1,reference.getPosition());
+        assertEquals(2,reference.getEnd());
+        assertEquals(3,reference.getLengthToNameEnd()); 
+    }
+    @Test
+    public void image_abc_SPACE_with_spaces_png__is_resulting_in_filePath_abc_SPACE_with_spaces_png() {
+        /* execute */
+        AsciiDoctorFileReference reference = new AsciiDoctorFileReference("image::abc with spaces.png[]", 1, 2, 3);
+        
+        /* test */
+        assertEquals("image::abc with spaces.png[]", reference.getFullExpression());
+        assertEquals("image::abc with spaces.png", reference.getTarget());
+        assertEquals("abc with spaces.png", reference.getFilePath());
+        assertEquals("image::", reference.getTargetPrefix());
+        assertEquals(1,reference.getPosition());
+        assertEquals(2,reference.getEnd());
+        assertEquals(3,reference.getLengthToNameEnd()); 
+    }
+    
     @Test
     public void include_abd_adoc__is_resolved() {
         /* execute */

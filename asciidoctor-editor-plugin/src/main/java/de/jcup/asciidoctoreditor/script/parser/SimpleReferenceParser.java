@@ -74,8 +74,7 @@ public class SimpleReferenceParser {
     		}
     		if (current != null) {
     		    if (inline) {
-    		        /* identifier allowed inline too */
-    		        if (Character.isWhitespace(c)) {
+    		        if (Character.isWhitespace(c) && ! Character.isSpaceChar(c)) {
     		            continue;
     		        }
     		    }

@@ -74,5 +74,44 @@ public class AsciiDoctorFileReferenceValidatorTest {
         /* test */
         assertEquals(1,errors.size());
     }
+    
+    @Test
+    public void resolve_image_file_path_with_imagedir() {
+        /* prepare */
+        File imageFolder = TestResourcesLoader.assertTestFile("codeassist/include/test1/subfolder2");
+        Collection<AsciiDoctorMarker> errors = new ArrayList<>();
+        
+        /* execute */
+        validatorToTest.validate(imageFolder, Collections.singleton(new AsciiDoctorFileReference("image::asciidoctor-editor.png", 1, 20, 20)),errors);
+        
+        /* test */
+        assertEquals(0,errors.size());
+    }
+    
+    @Test
+    public void resolve_image_file_path_with_imagedir__with_filename_having_spaces_inside() {
+        /* prepare */
+        File imageFolder = TestResourcesLoader.assertTestFile("codeassist/include/test1/subfolder2");
+        Collection<AsciiDoctorMarker> errors = new ArrayList<>();
+        
+        /* execute */
+        validatorToTest.validate(imageFolder, Collections.singleton(new AsciiDoctorFileReference("image::asciidoctor-editor with spaces.png", 1, 20, 20)),errors);
+        
+        /* test */
+        assertEquals(0,errors.size());
+    }
+    
+    @Test
+    public void resolved_image_file_path_with_imagedir_not_found() {
+        /* prepare */
+        File imageFolder = TestResourcesLoader.assertTestFile("codeassist/include/test1/subfolder2");
+        Collection<AsciiDoctorMarker> errors = new ArrayList<>();
+        
+        /* execute */
+        validatorToTest.validate(imageFolder, Collections.singleton(new AsciiDoctorFileReference("image::unknown.png", 1, 20, 20)),errors);
+        
+        /* test */
+        assertEquals(1,errors.size());
+    }
 
 }
