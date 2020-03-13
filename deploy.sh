@@ -28,6 +28,8 @@ fi
 export KEYSTORE_PWD
 export KEYSTORE_LOCATION
 
+set -e
+
 ./signJars
 
 ./pushToBintray.sh ${BINTRAY_USER} ${BINTRAY_API_KEY} de-jcup asciidoctoreditor update-site ${BINTRAY_VERSION} ./asciidoctor-editor-updatesite/
