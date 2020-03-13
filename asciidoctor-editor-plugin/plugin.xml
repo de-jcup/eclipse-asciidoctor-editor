@@ -443,7 +443,9 @@
             <command commandId="asciidoctoreditor.editor.commands.source.addlinebreak"
             		 icon="icons/toolbar/add_linebreak.png"
              />
-             <command commandId="asciidoctoreditor.editor.commands.references.workspace" />
+             <command commandId="asciidoctoreditor.editor.commands.references.workspace" 
+                    icon="icons/references_workspace.png"
+             />
                
       </menuContribution>
       
@@ -484,12 +486,16 @@
             <command commandId="asciidoctoreditor.editor.commands.source.addlinebreak"
                      icon="icons/toolbar/add_linebreak.png"
              />
+            <command commandId="asciidoctoreditor.editor.commands.references.workspace"
+                     icon="icons/references_workspace.png"
+             />
          </menu>
       </menuContribution>
         <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions">
                 <menu
-                      id="egradle.popup.any"
+                      id="asciidoctoreditor.popup.any"
                       label="References"
+                      icon="icons/asciidoctor-editor.png"
                       >
                      <visibleWhen
                             checkEnabled="false">
