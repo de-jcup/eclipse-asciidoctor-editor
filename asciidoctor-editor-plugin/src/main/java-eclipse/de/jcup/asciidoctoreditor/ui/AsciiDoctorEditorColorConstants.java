@@ -121,6 +121,11 @@ public interface AsciiDoctorEditorColorConstants {
     public static final RGB DARKTHEME_DEFAULT_COMMENTS = rgb(63,127,95) ;
     public static final RGB DARKTHEME_DEFAULT_COMMANDS = rgb(77,154,6) ;
     public static final RGB DARKTHEME_DEFAULT_KNOWN_VARIABLES = rgb(138,226,52);
+
+    public static final RGB DARK_THEME_LIGHT_GREEN = rgb(79,191,63);
+    public static final RGB DARK_THEME_MEDIUM_ORANGE = rgb(193,125,17);//C17D11
+    public static final RGB DARK_THEME_MEDIUM_BLUE = rgb(52,101,164);//#34 65 A4
+    public static final RGB DARK_THEME_LIGHT_BLUE = rgb(114,159,207);
 	
 	public static RGB rgb(int r, int g, int b) {
 		return new RGB(r, g, b);

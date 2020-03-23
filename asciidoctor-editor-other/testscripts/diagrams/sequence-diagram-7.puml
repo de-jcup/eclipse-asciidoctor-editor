@@ -1,5 +1,5 @@
 Alice -> Bob: Authentication Request
-
+== Divider ==
 alt successful case
 
     Bob -> Alice: Authentication Accepted

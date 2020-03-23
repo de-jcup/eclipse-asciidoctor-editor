@@ -28,6 +28,9 @@ public enum AsciiDoctorPlantUMLEditorSyntaxColorPreferenceConstants implements P
 	COLOR_PLANTUML_COMMENT("colorPlantUMLComment", "Comments"),
 	COLOR_PLANTUML_TYPE("colorPlantUMLType","Types"),
 	COLOR_PLANTUML_SKINPARAMETER("colorPlantUMLSkinparameter","Skin parameters"),
+	COLOR_PLANTUML_DIVIDER("colorPlantUMLDivider","Dividers"),
+	COLOR_PLANTUML_ARROW("colorPlantUMLArrow","Arrows"),
+	COLOR_PLANTUML_LABEL("colorPlantUMLLabel","Labels"),
 	
 	;
 

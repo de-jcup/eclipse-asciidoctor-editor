@@ -29,6 +29,13 @@ public enum PlantUMLMissingKeywordDocumentKeywords implements DocumentKeyWord {
           EXTENDS("extends"),
           ANNOTATION("annotation"),
           TITLE("title"),
+          AUTOACTIVATE("autoactivate"),
+          
+          START_MINDMAP("@startmindmap"),
+          END_MINDMAP("@endmindmap"),
+
+          END_HEADER("endheader"),
+          END_LEGEND("endlegend"),
 	;
 
 	private String text;

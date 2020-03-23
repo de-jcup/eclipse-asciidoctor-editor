@@ -20,6 +20,7 @@ import static de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLDocumentIden
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.MultiLineRule;
@@ -27,6 +28,7 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
+import de.jcup.asciidoctoreditor.document.keywords.PlantUMLArrowKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLColorDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLKeywordDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLMissingKeywordDocumentKeywords;
@@ -37,54 +39,111 @@ import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartitionScanner {
 
-	private OnlyLettersKeyWordDetector onlyLettersWordDetector = new OnlyLettersKeyWordDetector();
+    private OnlyLettersKeyWordDetector onlyLettersWordDetector = new OnlyLettersKeyWordDetector();
 
-	public AsciiDoctorPlantUMLDocumentPartitionScanner() {
-		IToken note = createToken(PLANTUML_NOTE);
-		IToken comment = createToken(PLANTUML_COMMENT);
+    public AsciiDoctorPlantUMLDocumentPartitionScanner() {
+        IToken note = createToken(PLANTUML_NOTE);
+        IToken comment = createToken(PLANTUML_COMMENT);
+        IToken divider = createToken(PLANTUML_DIVIDER);
 
-		IToken color = createToken(PLANTUML_COLOR);
-		IToken skinparameter = createToken(PLANTUML_SKINPARAMETER);
-		IToken type = createToken(PLANTUML_TYPE);
-		
-		IToken string = createToken(PLANTUML_DOUBLE_STRING);
-		
-		IToken preprocessor = createToken(PLANTUML_PREPROCESSOR);
-		IToken keyword = createToken(PLANTUML_KEYWORD);
+        IToken color = createToken(PLANTUML_COLOR);
+        IToken skinparameter = createToken(PLANTUML_SKINPARAMETER);
+        IToken type = createToken(PLANTUML_TYPE);
 
-		List<IPredicateRule> rules = new ArrayList<>();
-		rules.add(new SingleLineRule("'", "", comment, (char) -1, true));
-		rules.add(new MultiLineRule("/'", "'/", comment, (char) -1, true));
-		
-		rules.add(new SingleLineRule("\"", "\"", string, (char) -1, true));
-		rules.add(new SingleLineRule("note", " ", note, (char) -1, true));
-		rules.add(new SingleLineRule("end note", " ", note, (char) -1, true));
-		
-		rules.add(new SingleLineRule("@startuml", "", preprocessor, (char) -1, true));
-		rules.add(new SingleLineRule("@enduml", "", preprocessor, (char) -1, true));
+        IToken string = createToken(PLANTUML_DOUBLE_STRING);
 
-		buildWordRules(rules, color, PlantUMLColorDocumentKeywords.values());
-		buildWordRules(rules, keyword, PlantUMLKeywordDocumentKeywords.values());
-		buildWordRules(rules, keyword, PlantUMLMissingKeywordDocumentKeywords.values());
-		buildWordRules(rules, preprocessor, PlantUMLPreprocessorDocumentKeywords.values());
-		buildWordRules(rules, skinparameter, PlantUMLSkinparameterDocumentKeywords.values());
-		buildWordRules(rules, type, PlantUMLTypeDocumentKeywords.values());
+        IToken preprocessor = createToken(PLANTUML_PREPROCESSOR);
+        IToken keyword = createToken(PLANTUML_KEYWORD);
+        IToken arrow = createToken(PLANTUML_ARROW);
+        IToken label = createToken(PLANTUML_LABEL);
 
-		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
-	}
+        List<IPredicateRule> rules = new ArrayList<>();
+        rules.add(new SingleLineRule("'", "", comment, (char) -1, true));
+        rules.add(new MultiLineRule("/'", "'/", comment, (char) -1, true));
 
-	private void buildWordRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {
-		for (DocumentKeyWord keyWord : values) {
-			rules.add(new ExactWordPatternRule(onlyLettersWordDetector, createWordStart(keyWord), token,
-					keyWord.isBreakingOnEof()));
-		}
-	}
+        rules.add(new SingleLineRule("\"", "\"", string, (char) -1, true));
+        rules.add(new SingleLineRule("note", " ", note, (char) -1, true));
+        rules.add(new SingleLineRule("end note", " ", note, (char) -1, true));
 
-	private String createWordStart(DocumentKeyWord keyWord) {
-		return keyWord.getText();
-	}
+        rules.add(new SingleLineRule("===", "===", divider, (char) -1, true));
+        rules.add(new SingleLineRule("==", "==", divider, (char) -1, true));
 
-	private IToken createToken(AsciiDoctorDocumentIdentifier identifier) {
-		return new Token(identifier.getId());
-	}
+        rules.add(new SingleLineRule("@startuml", "", preprocessor, (char) -1, true));
+        rules.add(new SingleLineRule("@enduml", "", preprocessor, (char) -1, true));
+        rules.add(new SingleLineRule(":", "", label, (char) -1, true));
+
+        
+        buildWordRules(rules, color, PlantUMLColorDocumentKeywords.values());
+        rules.add(new HashColorRule(color));
+        buildWordRules(rules, keyword, PlantUMLKeywordDocumentKeywords.values());
+        buildWordRules(rules, keyword, PlantUMLMissingKeywordDocumentKeywords.values());
+        buildWordRules(rules, preprocessor, PlantUMLPreprocessorDocumentKeywords.values());
+        buildWordRules(rules, skinparameter, PlantUMLSkinparameterDocumentKeywords.values());
+        buildWordRules(rules, type, PlantUMLTypeDocumentKeywords.values());
+        
+        buildWordRules(rules, arrow, PlantUMLArrowKeywords.values());
+
+        setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
+    }
+
+    private void buildWordRules(List<IPredicateRule> rules, IToken token, DocumentKeyWord[] values) {
+        for (DocumentKeyWord keyWord : values) {
+            rules.add(new ExactWordPatternRule(onlyLettersWordDetector, createWordStart(keyWord), token, keyWord.isBreakingOnEof()));
+        }
+    }
+
+    private String createWordStart(DocumentKeyWord keyWord) {
+        return keyWord.getText();
+    }
+
+    private IToken createToken(AsciiDoctorDocumentIdentifier identifier) {
+        return new Token(identifier.getId());
+    }
+
+    private class HashColorRule implements IPredicateRule {
+
+        private IToken successToken;
+
+        public HashColorRule(IToken token) {
+            this.successToken = token;
+        }
+
+        @Override
+        public IToken evaluate(ICharacterScanner scanner) {
+            return evaluate(scanner, true);
+        }
+
+        @Override
+        public IToken getSuccessToken() {
+            return successToken;
+        }
+
+        @Override
+        public IToken evaluate(ICharacterScanner scanner, boolean resume) {
+            char first = (char) scanner.read();
+            if ('#' != first) {
+                scanner.unread();
+                return Token.UNDEFINED;
+            }
+            // okay we start with #
+            int countOfScans = 1;
+
+            char c;
+            do {
+                c = (char) scanner.read();
+                countOfScans++;
+                if (Character.isWhitespace(c)) {
+                    /* a space terminates */
+                    return successToken;
+                }
+            } while (Character.isDigit(c) || Character.isAlphabetic(c));
+
+            /* scanner roll back */
+            for (int i = 0; i < countOfScans; i++) {
+                scanner.unread();
+            }
+            return Token.UNDEFINED;
+        }
+
+    }
 }

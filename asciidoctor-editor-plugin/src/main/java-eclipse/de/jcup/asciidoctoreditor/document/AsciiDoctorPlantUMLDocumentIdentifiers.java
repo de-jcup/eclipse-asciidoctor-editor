@@ -32,7 +32,12 @@ public enum AsciiDoctorPlantUMLDocumentIdentifiers implements AsciiDoctorDocumen
 	PLANTUML_DOUBLE_STRING,
 	
 	PLANTUML_COMMENT,
+
+	PLANTUML_DIVIDER,
 	
+	PLANTUML_ARROW,
+
+	PLANTUML_LABEL,
 	;
 
 
