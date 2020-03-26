@@ -22,11 +22,11 @@ import java.util.Map;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileFilter;
 
-public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvider {
+public class AsciiDoctorRootDirectoryProvider extends AbstractAsciiDoctorProvider {
     private static FileFilter ADOC_FILE_FILTER = new AsciiDocFileFilter(false);
     private Map<File, File> baseDirCache = new HashMap<>();
 
-    AsciiDoctorBaseDirectoryProvider(AsciiDoctorProviderContext context) {
+    AsciiDoctorRootDirectoryProvider(AsciiDoctorProviderContext context) {
         super(context);
     }
 
@@ -104,7 +104,7 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         return true;
     }
 
-    public File findBaseDir() {
+    public File findRootDirectory() {
         File asciiDocFile = getContext().getAsciiDocFile();
         if (asciiDocFile == null) {
             throw new IllegalStateException("No asciidoc file set!");

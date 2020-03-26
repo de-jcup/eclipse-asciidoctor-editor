@@ -97,7 +97,7 @@ public class ReferencesWorkspaceHandler extends AbstractHandler {
         if (context==null) {
             return;
         }
-        File baseDir = context.getBaseDir();
+        File baseDir = context.getCachedRootDirectory();
         if (baseDir==null) {
             return;
         }

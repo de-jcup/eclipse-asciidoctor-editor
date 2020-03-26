@@ -30,10 +30,10 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.nio.file.Files;
 
-public class AsciiDoctorBaseDirectoryProviderTest {
+public class AsciiDoctorRootDirectoryProviderTest {
 
 	private AsciiDoctorProviderContext context;
-	private AsciiDoctorBaseDirectoryProvider providerToTest;
+	private AsciiDoctorRootDirectoryProvider providerToTest;
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -44,7 +44,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		context = mock(AsciiDoctorProviderContext.class);
 		logAdapter = mock(LogAdapter.class);
 		when(context.getLogAdapter()).thenReturn(logAdapter);
-		providerToTest = new AsciiDoctorBaseDirectoryProvider(context);
+		providerToTest = new AsciiDoctorRootDirectoryProvider(context);
 	}
 	
 	@Test
@@ -53,7 +53,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		expectedException.expect(IllegalStateException.class);
 		
 		/* execute */
-		providerToTest.findBaseDir();
+		providerToTest.findRootDirectory();
 	}
 	
 	@Test
@@ -66,7 +66,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
         when(context.getAsciiDocFile()).thenReturn(asciidocFile);
         
         /* execute */
-        File baseDir = providerToTest.findBaseDir();
+        File baseDir = providerToTest.findRootDirectory();
 
         /* test */
         assertNotNull(baseDir);
@@ -83,7 +83,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
         when(context.getAsciiDocFile()).thenReturn(asciidocFile);
         
         /* execute */
-        baseDir = providerToTest.findBaseDir();
+        baseDir = providerToTest.findRootDirectory();
 
         /* test */
         assertNotNull(baseDir);
@@ -101,7 +101,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		File baseDir = providerToTest.findBaseDir();
+		File baseDir = providerToTest.findRootDirectory();
 
 		/* test */
 		assertNotNull(baseDir);
@@ -118,7 +118,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		File baseDir = providerToTest.findBaseDir();
+		File baseDir = providerToTest.findRootDirectory();
 
 		/* test */
 		assertNotNull(baseDir);
@@ -140,7 +140,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		providerToTest.findBaseDir();
+		providerToTest.findRootDirectory();
 
 	}
 	
@@ -153,7 +153,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		File baseDir = providerToTest.findBaseDir();
+		File baseDir = providerToTest.findRootDirectory();
 		
 		/* test */
 		File problematic = new File(System.getProperty("java.io.tmpdir"));

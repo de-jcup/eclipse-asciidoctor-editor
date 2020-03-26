@@ -63,7 +63,7 @@ public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider{
 	
 	public String getCachedSourceImagesPath() {
 		if (cachedSourceImagesPath == null) {
-			cachedSourceImagesPath = resolveImagesDirPath(getContext().getBaseDir());
+			cachedSourceImagesPath = resolveImagesDirPath(getContext().getCachedRootDirectory());
 		}
 		return cachedSourceImagesPath;
 	}

@@ -29,12 +29,12 @@ public class AsciiDoctorProviderContext {
 
     private LogAdapter logAdapter;
     private File asciidocFile;
-    private File baseDir;
+    private File cachedRootDirectory;
     private Path outputFolder;
     private boolean tocVisible;
     private AsciiDoctorAdapterProvider provider;
 
-    private AsciiDoctorBaseDirectoryProvider baseDirProvider;
+    private AsciiDoctorRootDirectoryProvider rootDirectoryProvider;
     private AsciiDoctorImageProvider imageProvider;
     private AsciiDoctorDiagramProvider diagramProvider;
     private AsciiDoctorAttributesProvider attributesProvider;
@@ -73,8 +73,8 @@ public class AsciiDoctorProviderContext {
         this.tocLevels = tocLevels;
     }
 
-    public AsciiDoctorBaseDirectoryProvider getBaseDirProvider() {
-        return baseDirProvider;
+    public AsciiDoctorRootDirectoryProvider getRootDirectoryProvider() {
+        return rootDirectoryProvider;
     }
 
     public AsciiDoctorImageProvider getImageProvider() {
@@ -95,7 +95,7 @@ public class AsciiDoctorProviderContext {
 
     public void setAsciidocFile(File asciidocFile) {
         this.asciidocFile = asciidocFile;
-        this.baseDir = baseDirProvider.findBaseDir();
+        this.cachedRootDirectory = rootDirectoryProvider.findRootDirectory();
     }
 
     public void setImageHandlingMode(ImageHandlingMode imageHandlingMode) {
@@ -114,7 +114,7 @@ public class AsciiDoctorProviderContext {
         logAdapter.logTimeDiff("time to create images provider");
         optionsProvider = register(new AsciiDoctorOptionsProvider(this));
         logAdapter.logTimeDiff("time to create options provider");
-        baseDirProvider = register(new AsciiDoctorBaseDirectoryProvider(this));
+        rootDirectoryProvider = register(new AsciiDoctorRootDirectoryProvider(this));
         logAdapter.logTimeDiff("time to create base dir provider");
         diagramProvider = register(new AsciiDoctorDiagramProvider(this));
         logAdapter.logTimeDiff("time to create diagram provider");
@@ -129,7 +129,7 @@ public class AsciiDoctorProviderContext {
      * recalculated on next rendering time fo editor content
      */
     public void reset() {
-        this.baseDir = null;
+        this.cachedRootDirectory = null;
         this.outputFolder = null;
         this.asciidocFile = null;
 
@@ -154,11 +154,17 @@ public class AsciiDoctorProviderContext {
         return tocVisible;
     }
 
-    public File getBaseDir() {
-        if (baseDir == null) {
-            baseDir = baseDirProvider.findBaseDir();
+    /**
+     * If not already resolved directory provider is called to find root directory.
+     * The root directory represents the top directory where the last .adoc file is found
+     * @return directory being the rootdirectory for asciidoc parts inside this project.
+     * 
+     */
+    public File getCachedRootDirectory() {
+        if (cachedRootDirectory == null) {
+            cachedRootDirectory = rootDirectoryProvider.findRootDirectory();
         }
-        return baseDir;
+        return cachedRootDirectory;
     }
 
     public LogAdapter getLogAdapter() {

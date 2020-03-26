@@ -140,7 +140,7 @@ public class AsciiDoctorWrapper {
 
         context.setAsciidocFile(data.asciiDocFile);
         if (data.useHiddenFile) {
-            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder()));
+            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getCachedRootDirectory(), getTempFolder()));
         } else {
             context.setFileToRender(data.asciiDocFile);
         }

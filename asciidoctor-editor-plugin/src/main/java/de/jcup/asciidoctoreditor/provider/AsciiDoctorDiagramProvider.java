@@ -25,7 +25,7 @@ public class AsciiDoctorDiagramProvider extends AbstractAsciiDoctorProvider{
 	}
 
 	public File getDiagramRootDirectory() {
-		return getContext().getBaseDir();
+		return getContext().getCachedRootDirectory();
 	}
 
     @Override

@@ -28,7 +28,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
     protected Map<String, Object> getCachedAttributes() {
         if (cachedAttributes == null) {
-            cachedAttributes = resolveAttributes(getContext().getBaseDir());
+            cachedAttributes = resolveAttributes(getContext().getCachedRootDirectory());
         }
         return cachedAttributes;
     }

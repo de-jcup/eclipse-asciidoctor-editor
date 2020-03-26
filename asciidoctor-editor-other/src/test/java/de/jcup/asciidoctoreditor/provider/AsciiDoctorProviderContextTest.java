@@ -123,7 +123,7 @@ public class AsciiDoctorProviderContextTest {
 		/* test */
 		assertNotNull(context.getAsciiDoctor());
 		assertNotNull(context.getAttributesProvider());
-		assertNotNull(context.getBaseDirProvider());
+		assertNotNull(context.getRootDirectoryProvider());
 		assertNotNull(context.getImageProvider());
 		assertNotNull(context.getOptionsProvider());
 		

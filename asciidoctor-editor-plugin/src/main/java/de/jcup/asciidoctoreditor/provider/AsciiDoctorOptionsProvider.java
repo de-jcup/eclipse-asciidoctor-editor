@@ -45,7 +45,7 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 					showTitle(true).
 					noFooter(getContext().isNoFooter()).
 					sourceHighlighter("coderay").
-					attribute("eclipse-editor-basedir",getContext().getBaseDir().getAbsolutePath()).
+					attribute("eclipse-editor-basedir",getContext().getCachedRootDirectory().getAbsolutePath()).
 				    attribute("icons", "font").
 					attribute("source-highlighter","coderay").
 					attribute("coderay-css", "style").
@@ -90,7 +90,7 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
              * for relative pathes - without attribute ':imagedir:' set in asciidoc files
              * this seems to be necessary
              */
-            attrBuilder.imagesDir(getContext().getBaseDir().getAbsolutePath());
+            attrBuilder.imagesDir(getContext().getCachedRootDirectory().getAbsolutePath());
         } else if (imageHandlingMode == ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL) {
             String imagesoutpath = null;
             File editorFileOrNull = getContext().getEditorFileOrNull();
@@ -110,7 +110,7 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 
         OptionsBuilder opts = OptionsBuilder.options().toDir(destionationFolder).safe(SafeMode.UNSAFE).backend(backend.getBackendString()).headerFooter(getContext().isTOCVisible()).
 
-                attributes(attrs).option("sourcemap", "true").baseDir(getContext().getBaseDir());
+                attributes(attrs).option("sourcemap", "true").baseDir(getContext().getCachedRootDirectory());
         /* @formatter:on*/
         return opts.asMap();
     }
