@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -33,45 +32,47 @@ import de.jcup.asciidoctoreditor.EclipseResourceHelper;
 import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.PluginContentInstaller;
-import de.jcup.asciidoctoreditor.TemporaryFileType;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
-import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorProjectProviderContext;
 import de.jcup.asciidoctoreditor.provider.ImageHandlingMode;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.asp.client.AspClientProgressMonitor;
 
-public class AsciiDoctorWrapper {
+public class AsciiDoctorProjectWrapper {
 
     private LogAdapter logAdapter;
     private AsciiDoctorWrapperHTMLBuilder htmlBuilder;
 
-    private AsciiDoctorProviderContext context;
-    private Path tempFolder;
+    private AsciiDoctorProjectProviderContext context;
 
-    public AsciiDoctorWrapper(IProject project, LogAdapter logAdapter) {
+    public AsciiDoctorProjectWrapper(IProject project, LogAdapter logAdapter) {
         if (logAdapter == null) {
             throw new IllegalArgumentException("log adapter may not be null!");
         }
+        if (project == null) {
+            throw new IllegalArgumentException("project may not be null!");
+        }
         this.logAdapter = logAdapter;
-        this.tempFolder = createTempPath(project);
-        this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorAdapterProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        File projectLocation = project.getLocation().toFile();
+        this.context = new AsciiDoctorProjectProviderContext(projectLocation, project.getName(), createTempPath(project), EclipseAsciiDoctorAdapterProvider.INSTANCE,
+                AsciiDoctorEclipseLogAdapter.INSTANCE);
         this.htmlBuilder = new AsciiDoctorWrapperHTMLBuilder(context);
 
     }
 
-    public AsciiDoctorProviderContext getContext() {
+    public AsciiDoctorProjectProviderContext getContext() {
         return context;
     }
 
-    public void convert(WrapperConvertData data, AsciiDoctorBackendType asciiDoctorBackendType, AspClientProgressMonitor monitor) throws Exception {
+    public void convert(WrapperConvertData data, AspClientProgressMonitor monitor) throws Exception {
         try {
-            initContext(context, data);
+            updateContext(context, data);
 
             AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
-            Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions(asciiDoctorBackendType);
+            Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions(data.backendType);
 
             AsciidoctorAdapter asciiDoctor = context.getAsciiDoctor();
             asciiDoctor.convertFile(data.editorFileOrNull, context.getFileToRender(), defaultOptions, monitor);
@@ -107,40 +108,32 @@ public class AsciiDoctorWrapper {
         }
     }
 
-    private void initContext(AsciiDoctorProviderContext context, WrapperConvertData data) throws IOException {
+    private void updateContext(AsciiDoctorProjectProviderContext context, WrapperConvertData data) throws IOException {
         AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+
+        context.setAsciidocFile(data.asciiDocFile);
 
         context.setInternalPreview(data.internalPreview);
         context.setUseInstalled(preferences.isUsingInstalledAsciidoctor());
         context.setEditorFileOrNull(data.editorFileOrNull);
         int tocLevels = preferences.getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_TOC_LEVELS);
         context.setTocLevels(tocLevels);
+        context.setImageHandlingMode(ImageHandlingMode.DEFAULT);
 
         EditorType type = data.targetType;
-        if (type == EditorType.ASCIIDOC) {
-            if (AsciiDoctorEditorPreferences.getInstance().isUsingPreviewImageDirectory()) {
-                context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
-            } else {
-                context.setImageHandlingMode(ImageHandlingMode.RELATIVE_PATHES);
+        if (type == EditorType.PLANTUML) {
+            if (AsciiDoctorEditorPreferences.getInstance().isStoringPlantUmlFiles()) {
+                context.setImageHandlingMode(ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL);
             }
-        } else {
-            if (type == EditorType.PLANTUML) {
-                if (AsciiDoctorEditorPreferences.getInstance().isStoringPlantUmlFiles()) {
-                    context.setImageHandlingMode(ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL);
-                } else {
-                    context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
-                }
-            } else {
-                /* currently all other editor types ( ditaa) will use images dir approach */
-                context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
-            }
-            context.setNoFooter(true);
         }
-        context.setOutputFolder(getTempFolder());
+        context.setNoFooter(true);
 
-        context.setAsciidocFile(data.asciiDocFile);
+        File hiddenEditorTempFile = context.getTempFileProvider().createHiddenEditorTempFile(data.asciiDocFile, data.editorId);
+
+        context.setOutputFolder(hiddenEditorTempFile.getParentFile().toPath());
+
         if (data.useHiddenFile) {
-            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getCachedRootDirectory(), getTempFolder()));
+            context.setFileToRender(hiddenEditorTempFile);
         } else {
             context.setFileToRender(data.asciiDocFile);
         }
@@ -156,29 +149,30 @@ public class AsciiDoctorWrapper {
         }
         context.reset();
     }
-    
+
     public void reinitContext() {
         resetCaches();
         AsciiDoctorConsoleUtil.output("- cleaned caches");
-        this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorAdapterProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        this.context = new AsciiDoctorProjectProviderContext(context.getProjectLocation(), context.getProjectName(), context.getTempFolder(), EclipseAsciiDoctorAdapterProvider.INSTANCE,
+                AsciiDoctorEclipseLogAdapter.INSTANCE);
         AsciiDoctorConsoleUtil.output("- context recreated");
     }
 
     public void deleteTempFolder() {
         Path tempFolder = getTempFolder();
         String pathAsString = tempFolder.toAbsolutePath().toString();
-        deleteFolder(tempFolder, "- deleted temp folder:"+pathAsString,"Wasn't able to delete temp folder:"+pathAsString);
+        deleteFolder(tempFolder, "- deleted temp folder:" + pathAsString, "Wasn't able to delete temp folder:" + pathAsString);
     }
 
     private void deleteFolder(Path outputFolder, String successMessage, String errorMessage) {
         if (outputFolder == null) {
             return;
         }
-        
+
         try {
             File file = outputFolder.toFile();
             FileUtils.deleteDirectory(file);
-            
+
             AsciiDoctorConsoleUtil.output(successMessage);
         } catch (IOException e) {
             AsciiDoctorEditorUtil.logError(errorMessage, e);
@@ -187,7 +181,7 @@ public class AsciiDoctorWrapper {
     }
 
     public Path getTempFolder() {
-        return tempFolder;
+        return getContext().getTempFolder();
     }
 
     private Path createTempPath(IProject project) {
@@ -202,21 +196,6 @@ public class AsciiDoctorWrapper {
             }
         }
         return AsciiDocFileUtils.createTempFolderForId(id);
-    }
-
-    public File getTempFileFor(File editorFile, long editorId, TemporaryFileType type) {
-        File parent = getTempFolder().toFile();
-
-        String baseName = FilenameUtils.getBaseName(editorFile.getName());
-        StringBuilder sb = new StringBuilder();
-        if (!(editorFile.getName().startsWith("" + editorId))) {
-            sb.append(editorId);
-            sb.append("_");
-        }
-        sb.append(type.getPrefix());
-        sb.append(baseName);
-        sb.append(".html");
-        return new File(parent, sb.toString());
     }
 
     public void dispose() {

@@ -79,7 +79,7 @@ public class AsciiDoctorEditorPreferences {
                 if (!context.hasChanges()) {
                     return;
                 }
-                /* inform all AsciiDoctorWrapper editors about color changes */
+                /* inform all AsciiDoctorProjectWrapper editors about color changes */
                 IWorkbenchPage activePage = EclipseUtil.getActivePage();
                 if (activePage == null) {
                     return;
@@ -225,10 +225,6 @@ public class AsciiDoctorEditorPreferences {
 
     public String getPathToInstalledAsciidoctor() {
         return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR);
-    }
-
-    public boolean isUsingPreviewImageDirectory() {
-        return getBooleanPreference(P_USE_PREVIEW_IMAGEDIRECTORY);
     }
 
     public int getAspServerMinPort() {

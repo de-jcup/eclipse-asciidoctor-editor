@@ -45,6 +45,11 @@ public class TestResourcesLoader {
 		return sb.toString();
 	}
 
+	/**
+	 * Asserts given test file does exist
+	 * @param relativePathInTestResources
+	 * @return file
+	 */
     public static File assertTestFile(String relativePathInTestResources) {
         try{
             File file = testResourceRootFolder.getCanonicalFile().toPath().resolve(relativePathInTestResources).toFile();

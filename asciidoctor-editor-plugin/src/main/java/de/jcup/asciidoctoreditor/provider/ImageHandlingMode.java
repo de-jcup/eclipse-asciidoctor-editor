@@ -15,17 +15,17 @@
  */
 package de.jcup.asciidoctoreditor.provider;
 
-public enum ImageHandlingMode{
-	/**
-	 * Transform attribute imagesdir, copy images and define also outputdir (for diagram generation )to target image dir in temp project
-	 */
-	IMAGESDIR_FROM_PREVIEW_DIRECTORY,
+public enum ImageHandlingMode {
+    /*
+     * inspect imagesdir attribute - if not set handles relativ pathes, generated
+     * images are stored inside temp folder, so not visible in workspace
+     */
+    DEFAULT,
 
-	/** Special variant for project having no 'imagesdir' set, but using relative path instead */
-	RELATIVE_PATHES,
-	
-	/** Variant to keep generated diagram files - will be used by plantuml editor */
-	STORE_DIAGRAM_FILES_LOCAL,
-	;
-	
+    /**
+     * Like DEFAULT, but this variant stores generated diagram files inside
+     * workspace - will be used by plantuml editor when enabled in preferences
+     */
+    STORE_DIAGRAM_FILES_LOCAL,;
+
 }

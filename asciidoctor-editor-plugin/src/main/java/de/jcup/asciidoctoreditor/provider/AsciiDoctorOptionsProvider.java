@@ -24,11 +24,12 @@ import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.SafeMode;
 
+import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
 
 public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 
-    AsciiDoctorOptionsProvider(AsciiDoctorProviderContext context) {
+    AsciiDoctorOptionsProvider(AsciiDoctorProjectProviderContext context) {
         super(context);
     }
 
@@ -45,13 +46,14 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 					showTitle(true).
 					noFooter(getContext().isNoFooter()).
 					sourceHighlighter("coderay").
-					attribute("eclipse-editor-basedir",getContext().getCachedRootDirectory().getAbsolutePath()).
+					attribute("eclipse-editor-basedir",getContext().getRootDirectory().getAbsolutePath()).
 				    attribute("icons", "font").
 					attribute("source-highlighter","coderay").
 					attribute("coderay-css", "style").
 					attribute("env", "eclipse").
 					attribute("env-eclipse");
 		 /* @formatter:on*/
+
         Map<String, Object> cachedAttributes = getContext().getAttributesProvider().getCachedAttributes();
         for (String key : cachedAttributes.keySet()) {
             Object value = cachedAttributes.get(key);
@@ -65,8 +67,18 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
                 // instead of being at left side)
                 continue;
             }
+            if ("basebackend-html".equals(key)) {
+                if (AsciiDoctorBackendType.PDF.equals(backend)) {
+                    // we ignore this for PDF
+                    continue;
+                }
+            }
             attrBuilder.attribute(key, value);
         }
+        // we always override "outfilesuffix" to have no unexpected output file endings
+        // by users settings
+        attrBuilder.attribute("outfilesuffix", backend.getOutfilesuffix());
+
         if (getContext().isTOCVisible()) {
             attrBuilder.attribute("toc", "left");
             if (getContext().tocLevels > 0) {
@@ -74,24 +86,33 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
             }
         }
         ImageHandlingMode imageHandlingMode = getContext().getImageHandlingMode();
-        if (imageHandlingMode == ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY) {
+        getContext().getImageCopyProvider().ensureImages();
+
+        if (AsciiDoctorBackendType.PDF.equals(backend)) {
             /*
-             * when this is enabled, we do:<br> 1. Force images copied and available at
-             * target image directory, so images in html preview in same origin 2. Image
-             * output directory (e.g. for diagram generation) targets also this image output
-             * directory 3. Images directory attribute is set to target directory, so
-             * diagram output and existing images are in same folder
+             * PDF is different: we need to resolve the path to images by location of
+             * rendered file:
              */
-            getContext().getImageProvider().ensureImages();
-            attrBuilder.attribute("imagesoutdir", createAbsolutePath(getContext().targetImagesDir.toPath()));
-            attrBuilder.imagesDir(getContext().targetImagesDir.getAbsolutePath());
-        } else if (imageHandlingMode == ImageHandlingMode.RELATIVE_PATHES) {
-            /*
-             * for relative pathes - without attribute ':imagedir:' set in asciidoc files
-             * this seems to be necessary
-             */
-            attrBuilder.imagesDir(getContext().getCachedRootDirectory().getAbsolutePath());
-        } else if (imageHandlingMode == ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL) {
+            String absoluteImagePath = "" + cachedAttributes.get(AttributeSearchParameter.IMAGES_DIR_ATTRIBUTE.getName());
+            if (absoluteImagePath.isEmpty() || ".".equals(absoluteImagePath) || "null".equals(absoluteImagePath)) {
+                /* in PDF we need a absolute image dir set! */
+                File editorFile = getContext().getEditorFileOrNull();
+                if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
+                    getContext().getLogAdapter().logInfo("absolute path is not set ('" + absoluteImagePath + "' for editor file:" + editorFile);
+                }
+                if (editorFile != null) {
+                    absoluteImagePath = editorFile.getParentFile().getAbsolutePath();
+                    attrBuilder.attribute("imagesoutdir", absoluteImagePath);
+                    attrBuilder.imagesDir(absoluteImagePath);
+                    if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
+                        getContext().getLogAdapter().logInfo(">> changed absolute image path to " + absoluteImagePath);
+                    }
+                }
+
+            }
+        }
+
+        if (imageHandlingMode == ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL) {
             String imagesoutpath = null;
             File editorFileOrNull = getContext().getEditorFileOrNull();
             if (editorFileOrNull != null) {
@@ -99,20 +120,26 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
                 attrBuilder.imagesDir(imagesoutpath);
                 attrBuilder.attribute("imagesoutdir", imagesoutpath);
             }
-        } else {
-            /* other mode(s) currently not implemented */
         }
 
         attrs = attrBuilder.get();
         attrs.setAttribute("outdir", createAbsolutePath(outputFolder));
 
         File destionationFolder = outputFolder.toFile();
-
-        OptionsBuilder opts = OptionsBuilder.options().toDir(destionationFolder).safe(SafeMode.UNSAFE).backend(backend.getBackendString()).headerFooter(getContext().isTOCVisible()).
-
-                attributes(attrs).option("sourcemap", "true").baseDir(getContext().getCachedRootDirectory());
+        /* @formatter:off */
+        OptionsBuilder opts = OptionsBuilder.
+                options().
+                    toDir(destionationFolder).
+                    safe(SafeMode.UNSAFE).
+                    backend(backend.getBackendString()).
+                    headerFooter(getContext().isTOCVisible()).
+                    attributes(attrs).
+                    option("sourcemap", "true").
+                    baseDir(getContext().getRootDirectory());
+        
         /* @formatter:on*/
-        return opts.asMap();
+        Map<String, Object> asMap = opts.asMap();
+        return asMap;
     }
 
     protected String createAbsolutePath(Path path) {

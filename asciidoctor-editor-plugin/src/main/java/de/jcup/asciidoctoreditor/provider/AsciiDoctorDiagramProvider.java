@@ -20,12 +20,12 @@ import java.io.File;
 public class AsciiDoctorDiagramProvider extends AbstractAsciiDoctorProvider{
 
 
-	public AsciiDoctorDiagramProvider(AsciiDoctorProviderContext context) {
+	public AsciiDoctorDiagramProvider(AsciiDoctorProjectProviderContext context) {
 	    super(context);
 	}
 
 	public File getDiagramRootDirectory() {
-		return getContext().getCachedRootDirectory();
+		return getContext().getRootDirectory();
 	}
 
     @Override

@@ -15,14 +15,14 @@
  */
 package de.jcup.asciidoctoreditor;
 
-public enum TemporaryFileType{
+public enum TemporaryOutputFileType{
 	ORIGIN(""),
-	INTERNAL_PREVIEW("internal_"),
-	EXTERNAL_PREVIEW("preview_")
+	INTERNAL_PREVIEW("internal-preview_"),
+	EXTERNAL_PREVIEW("external-preview_")
 	;
 	private String prefix;
 	
-	private TemporaryFileType(String prefix){
+	private TemporaryOutputFileType(String prefix){
 		this.prefix=prefix;
 	}
 	

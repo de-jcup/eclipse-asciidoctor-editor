@@ -15,16 +15,21 @@
  */
 package de.jcup.asciidoctoreditor.asciidoc;
 
-public enum AsciiDoctorBackendType{
-    HTML5("html5"),
-    PDF("pdf");
-    
-    private String backendString;
+public enum AsciiDoctorBackendType {
+    HTML5("html5", ".html"), PDF("pdf", ".pdf");
 
-    private AsciiDoctorBackendType(String backendString) {
-        this.backendString=backendString;
+    private String backendString;
+    private String outfilesuffix;
+
+    private AsciiDoctorBackendType(String backendString, String fileEnding) {
+        this.backendString = backendString;
+        this.outfilesuffix = fileEnding;
     }
-    
+
+    public String getOutfilesuffix() {
+        return outfilesuffix;
+    }
+
     public String getBackendString() {
         return backendString;
     }

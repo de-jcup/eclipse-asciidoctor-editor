@@ -32,7 +32,7 @@ import de.jcup.eclipse.commons.SimpleStringUtils;
 
 public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvider {
 
-    private static final String ASCIIDOCTOR_SCRIPT_CONTAINS_ERRORS = "AsciiDoctorWrapper script contains errors.";
+    private static final String ASCIIDOCTOR_SCRIPT_CONTAINS_ERRORS = "AsciiDoctorProjectWrapper script contains errors.";
     private static final String ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS = "Your document has no includes or headlines";
     private static final Object[] RESULT_WHEN_EMPTY = new Object[] { ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS };
     private Object[] items;

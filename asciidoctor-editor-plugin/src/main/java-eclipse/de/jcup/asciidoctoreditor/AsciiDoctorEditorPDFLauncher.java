@@ -26,7 +26,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorProjectWrapper;
 import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
 import de.jcup.asciidoctoreditor.asp.AspProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
@@ -74,9 +74,9 @@ public class AsciiDoctorEditorPDFLauncher {
     private class PDFRunnableWithProgress implements IRunnableWithProgress {
 
         private WrapperConvertData data;
-        private AsciiDoctorWrapper wrapper;
+        private AsciiDoctorProjectWrapper wrapper;
 
-        private PDFRunnableWithProgress(AsciiDoctorWrapper wrapper, WrapperConvertData data) {
+        private PDFRunnableWithProgress(AsciiDoctorProjectWrapper wrapper, WrapperConvertData data) {
             this.data = data;
             this.wrapper = wrapper;
         }
@@ -96,7 +96,7 @@ public class AsciiDoctorEditorPDFLauncher {
 
         }
 
-        private void createAndOpen(IProgressMonitor monitor, AsciiDoctorWrapper wrapper, WrapperConvertData data) throws Exception {
+        private void createAndOpen(IProgressMonitor monitor, AsciiDoctorProjectWrapper wrapper, WrapperConvertData data) throws Exception {
             if (monitor.isCanceled()) {
                 return;
             }
@@ -140,7 +140,8 @@ public class AsciiDoctorEditorPDFLauncher {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    wrapper.convert(data, AsciiDoctorBackendType.PDF, new AspProgressMonitorAdapter(monitor));
+                    data.backendType=AsciiDoctorBackendType.PDF;
+                    wrapper.convert(data, new AspProgressMonitorAdapter(monitor));
                     done = true;
                     return Status.OK_STATUS;
                 } catch (Exception e) {

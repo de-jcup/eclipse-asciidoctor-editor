@@ -24,17 +24,15 @@ public class FileTreeContentProvider implements ITreeContentProvider {
 
     private final Object[] EMPTY_ARR = new Object[0];
 
-    private AbstractTextSearchResult result;
-    private AsciidocSearchResultPage page;
-    private AbstractTreeViewer viewer;
+    protected AbstractTextSearchResult result;
+    protected AsciidocSearchResultPage page;
+    protected AbstractTreeViewer viewer;
 
     FileTreeContentProvider(AsciidocSearchResultPage page, AbstractTreeViewer viewer) {
         this.page = page;
         this.viewer = viewer;
     }
     
-    
-
     @Override
     public Object[] getElements(Object inputElement) {
         if (inputElement instanceof AsciidocSearchResult) {

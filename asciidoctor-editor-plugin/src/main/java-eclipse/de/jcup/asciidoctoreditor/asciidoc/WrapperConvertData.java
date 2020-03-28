@@ -26,4 +26,5 @@ public class WrapperConvertData {
 	public boolean useHiddenFile;
 	public File editorFileOrNull;
     public boolean internalPreview;
+    public AsciiDoctorBackendType backendType;
 }

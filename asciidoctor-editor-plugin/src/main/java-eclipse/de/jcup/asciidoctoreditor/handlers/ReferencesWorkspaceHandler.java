@@ -30,10 +30,10 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorProjectWrapper;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.outline.ItemType;
-import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorProjectProviderContext;
 import de.jcup.asciidoctoreditor.search.FindAsciidocfileReferencesQuery;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.eclipse.commons.EclipseResourceHelper;
@@ -89,15 +89,15 @@ public class ReferencesWorkspaceHandler extends AbstractHandler {
         if (filePath == null) {
             return;
         }
-        AsciiDoctorWrapper wrapper = editor.getWrapper();
+        AsciiDoctorProjectWrapper wrapper = editor.getWrapper();
         if (wrapper==null) {
             return;
         }
-        AsciiDoctorProviderContext context = wrapper.getContext();
+        AsciiDoctorProjectProviderContext context = wrapper.getContext();
         if (context==null) {
             return;
         }
-        File baseDir = context.getCachedRootDirectory();
+        File baseDir = context.getRootDirectory();
         if (baseDir==null) {
             return;
         }

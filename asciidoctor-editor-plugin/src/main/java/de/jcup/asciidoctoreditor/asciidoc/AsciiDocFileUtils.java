@@ -17,32 +17,12 @@ package de.jcup.asciidoctoreditor.asciidoc;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.Normalizer;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import de.jcup.asciidoctoreditor.LogAdapter;
-
 public class AsciiDocFileUtils {
-
-    public static File createTempFileForConvertedContent(Path tempFolder, long editorId, String filename) throws IOException {
-        if (tempFolder == null) {
-            tempFolder = Files.createTempDirectory("__fallback__");
-        }
-        File newTempSubFolder = tempFolder.toFile();
-
-        File newTempFile = new File(newTempSubFolder, editorId + "_" + filename);
-        if (newTempFile.exists()) {
-            if (!newTempFile.delete()) {
-                throw new IOException("Unable to delete old tempfile:" + newTempFile);
-            }
-        }
-        newTempFile.deleteOnExit();
-        return newTempFile;
-    }
 
     /**
      * Any IO problem will throw an {@link IllegalStateException}
@@ -59,7 +39,45 @@ public class AsciiDocFileUtils {
         }
     }
 
-    protected static File createSelfDeletingTempSubFolder(String tempId, String parentFolderName) throws IOException {
+    public static String calculateRelativePathToFileFromBase(File asciidoctorFile, File relativePathBaseDir) {
+        String unixBasePath = FilenameUtils.normalizeNoEndSeparator(relativePathBaseDir.getAbsolutePath(), true) + "/";
+        String unixAsciiDocFilePath = null;
+        if (asciidoctorFile.isDirectory()) {
+            unixAsciiDocFilePath = FilenameUtils.normalizeNoEndSeparator(asciidoctorFile.getAbsolutePath(), true) + "/";
+        } else {
+            unixAsciiDocFilePath = FilenameUtils.normalize(asciidoctorFile.getAbsolutePath(), true);
+        }
+
+        if (unixAsciiDocFilePath.startsWith(unixBasePath)) {
+            return unixAsciiDocFilePath.substring(unixBasePath.length());
+        }
+
+        throw new NotInsideCurrentBaseDirException("pathProblems:" + unixAsciiDocFilePath + " not in " + unixBasePath);
+    }
+
+    static String createEncodingSafeFileName(String name) {
+        return Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+    }
+
+    /**
+     * Creates an encoding safe filename, means filename without characters not
+     * being standard ascii chars...
+     * 
+     * @param path
+     * @param name
+     * @return file with normalized name
+     */
+    public static File createEncodingSafeFile(Path path, String name) {
+
+        String fileEncoding = System.getProperty("file.encoding");
+        if (!("UTF-8".equalsIgnoreCase(fileEncoding))) {
+            /* e.g. cp1252 in windows... */
+            name = createEncodingSafeFileName(name);
+        }
+        return new File(path.toFile(), name);
+    }
+
+    private static File createSelfDeletingTempSubFolder(String tempId, String parentFolderName) throws IOException {
         String tempDir = System.getProperty("java.io.tmpdir");
         File newTempFolder = new File(tempDir, parentFolderName);
 
@@ -76,74 +94,6 @@ public class AsciiDocFileUtils {
         return newTempSubFolder;
     }
 
-    /**
-     * Creates an encoding safe filename, means filename without characters not being standard ascii chars...
-     * @param path
-     * @param name
-     * @return file with normalized name
-     */
-    public static File createEncodingSafeFile(Path path, String name) {
-       
-        String fileEncoding = System.getProperty("file.encoding");
-        if (!("UTF-8".equalsIgnoreCase(fileEncoding))) {
-            /* e.g. cp1252 in windows... */
-            name = createEncodingSafeFileName(name);
-        }
-        return new File(path.toFile(), name);
-    }
-
-    protected static String createEncodingSafeFileName(String name) {
-        return Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
-    }
-
-    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, long editorId, File baseDir, Path tempFolder)
-            throws IOException {
-        /* @formatter:off
-         * 
-         * Issue:https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/193
-         * Problem was: eclipse started with another file encoding set than
-         * UTF-8, so File.getName() makes problems in embedded asciidoctor instance 
-         * 
-         * see also https://stackoverflow.com/questions/10106161/encoding-of-file-names-in-java
-         * 
-         * So we create the hidden editor file as encoding safe file when not UTF-8 is set as default file encoding on system
-         * @formatter:on
-         */
-        File hiddenEditorFile = createEncodingSafeFile(tempFolder, editorId + "_hidden-editorfile_" + asciidoctorFile.getName());
-        try {
-            String relativePath = calculatePathToFileFromBase(asciidoctorFile, baseDir);
-            StringBuilder sb = new StringBuilder();
-            sb.append("// origin :").append(asciidoctorFile.getAbsolutePath()).append("\n");
-            sb.append("// editor :").append(editorId).append("\n");
-            sb.append("// basedir:").append(baseDir.getAbsolutePath()).append("\n");
-
-            sb.append("include::").append(relativePath).append("[]\n");
-
-            FileUtils.writeStringToFile(hiddenEditorFile, sb.toString(), "UTF-8", false);
-            hiddenEditorFile.deleteOnExit();
-        } catch (NotInsideCurrentBaseDirException e) {
-            /*
-             * fallback to orign file - maybe something does not work but at
-             * least content will be shown!
-             */
-            logAdapter.logWarn("File not in current base dir so copied origin as hidden file:" + asciidoctorFile.getAbsolutePath());
-            FileUtils.copyFile(asciidoctorFile, hiddenEditorFile);
-        }
-
-        return hiddenEditorFile;
-    }
-
-    static String calculatePathToFileFromBase(File asciidoctorFile, File baseDir) {
-        String unixBasePath = FilenameUtils.normalizeNoEndSeparator(baseDir.getAbsolutePath(), true) + "/";
-        String unixAsciiDocFilePath = FilenameUtils.normalize(asciidoctorFile.getAbsolutePath(), true);
-
-        if (unixAsciiDocFilePath.startsWith(unixBasePath)) {
-            return unixAsciiDocFilePath.substring(unixBasePath.length());
-        }
-
-        throw new NotInsideCurrentBaseDirException("pathProblems:" + unixAsciiDocFilePath + " not in " + unixBasePath);
-    }
-
     public static class NotInsideCurrentBaseDirException extends RuntimeException {
 
         private static final long serialVersionUID = 1L;
@@ -153,4 +103,5 @@ public class AsciiDocFileUtils {
         }
 
     }
+
 }

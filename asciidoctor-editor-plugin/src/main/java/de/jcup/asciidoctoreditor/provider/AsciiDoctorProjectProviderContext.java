@@ -25,20 +25,27 @@ import org.apache.commons.io.FilenameUtils;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 
-public class AsciiDoctorProviderContext {
+/**
+ * This context is available for all editors inside a project! So its necessary to set editor file before doing 
+ * editor specific operations...
+ * @author albert
+ *
+ */
+public class AsciiDoctorProjectProviderContext {
 
     private LogAdapter logAdapter;
     private File asciidocFile;
-    private File cachedRootDirectory;
     private Path outputFolder;
     private boolean tocVisible;
     private AsciiDoctorAdapterProvider provider;
 
     private AsciiDoctorRootDirectoryProvider rootDirectoryProvider;
-    private AsciiDoctorImageProvider imageProvider;
+    private AsciiDoctorImageCopyProvider imageCopyProvider;
     private AsciiDoctorDiagramProvider diagramProvider;
     private AsciiDoctorAttributesProvider attributesProvider;
     private AsciiDoctorOptionsProvider optionsProvider;
+    private AsciiDoctorTempFileProvider tempFileProvider;
+    private AsciiDoctorImageDirProvider imageDirProvider;
 
     File targetImagesDir;
     int tocLevels;
@@ -51,18 +58,50 @@ public class AsciiDoctorProviderContext {
     private boolean noFooter;
     private boolean internalPreview;
     private boolean localResourcesEnabled = true;
+    private Path tempFolder;
+    private File projectLocation;
+    private String projectName;
 
-    public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
+    
+    /**
+     * Asciidoctor provider context
+     * @param projectName the name of the project
+     * @param tempFolder
+     * @param provider
+     * @param logAdapter
+     */
+    public AsciiDoctorProjectProviderContext(File projectLocation, String projectName, Path tempFolder, AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
+        if (projectLocation == null) {
+            throw new IllegalArgumentException("projectLocation may never be null!");
+        }
         if (logAdapter == null) {
             throw new IllegalArgumentException("logAdapter may never be null!");
         }
         if (provider == null) {
             throw new IllegalArgumentException("provider may never be null!");
         }
+        if (tempFolder==null) {
+            throw new IllegalArgumentException("tempFolder may never be null!");
+        }
         this.logAdapter = logAdapter;
         this.provider = provider;
+        this.tempFolder=tempFolder;
+        this.projectLocation = projectLocation;
+        this.projectName=projectName;
 
         init();
+    }
+    
+    public String getProjectName() {
+        return projectName;
+    }
+    
+    public File getProjectLocation() {
+        return projectLocation;
+    }
+    
+    public Path getTempFolder() {
+        return tempFolder;
     }
 
     public Path getOutputFolder() {
@@ -73,12 +112,20 @@ public class AsciiDoctorProviderContext {
         this.tocLevels = tocLevels;
     }
 
+    public AsciiDoctorTempFileProvider getTempFileProvider() {
+        return tempFileProvider;
+    }
+    
     public AsciiDoctorRootDirectoryProvider getRootDirectoryProvider() {
         return rootDirectoryProvider;
     }
 
-    public AsciiDoctorImageProvider getImageProvider() {
-        return imageProvider;
+    public AsciiDoctorImageDirProvider getImageDirProvider() {
+        return imageDirProvider;
+    }
+    
+    public AsciiDoctorImageCopyProvider getImageCopyProvider() {
+        return imageCopyProvider;
     }
 
     public AsciiDoctorDiagramProvider getDiagramProvider() {
@@ -95,7 +142,6 @@ public class AsciiDoctorProviderContext {
 
     public void setAsciidocFile(File asciidocFile) {
         this.asciidocFile = asciidocFile;
-        this.cachedRootDirectory = rootDirectoryProvider.findRootDirectory();
     }
 
     public void setImageHandlingMode(ImageHandlingMode imageHandlingMode) {
@@ -108,16 +154,29 @@ public class AsciiDoctorProviderContext {
 
     protected void init() {
         logAdapter.resetTimeDiff();
+        
+        imageDirProvider = register(new AsciiDoctorImageDirProvider(this));
+        logAdapter.logTimeDiff("time to create imageDirProvider provider");
+        
         attributesProvider = register(new AsciiDoctorAttributesProvider(this));
         logAdapter.logTimeDiff("time to create attributes provider");
-        imageProvider = register(new AsciiDoctorImageProvider(this));
-        logAdapter.logTimeDiff("time to create images provider");
+        
+        imageCopyProvider = register(new AsciiDoctorImageCopyProvider(this));
+        logAdapter.logTimeDiff("time to create imageCopyProvider provider");
+        
         optionsProvider = register(new AsciiDoctorOptionsProvider(this));
         logAdapter.logTimeDiff("time to create options provider");
+        
         rootDirectoryProvider = register(new AsciiDoctorRootDirectoryProvider(this));
         logAdapter.logTimeDiff("time to create base dir provider");
+        
         diagramProvider = register(new AsciiDoctorDiagramProvider(this));
         logAdapter.logTimeDiff("time to create diagram provider");
+        
+        tempFileProvider = register(new AsciiDoctorTempFileProvider(this));
+        logAdapter.logTimeDiff("time to create targeet file provider");
+        
+        
     }
 
     public void setOutputFolder(Path outputFolder) {
@@ -129,13 +188,24 @@ public class AsciiDoctorProviderContext {
      * recalculated on next rendering time fo editor content
      */
     public void reset() {
-        this.cachedRootDirectory = null;
         this.outputFolder = null;
         this.asciidocFile = null;
 
         for (AbstractAsciiDoctorProvider provider : providers) {
             provider.reset();
         }
+    }
+    
+    /**
+     * The base directory represents the directory where the currently rendered document
+     * resides
+     * @return base directory or <code>null</code>
+     */
+    public File getBaseDirectoryOrNull() {
+        if (asciidocFile==null) {
+            return null;
+        }
+        return asciidocFile.getParentFile();
     }
 
     public AsciidoctorAdapter getAsciiDoctor() {
@@ -154,17 +224,8 @@ public class AsciiDoctorProviderContext {
         return tocVisible;
     }
 
-    /**
-     * If not already resolved directory provider is called to find root directory.
-     * The root directory represents the top directory where the last .adoc file is found
-     * @return directory being the rootdirectory for asciidoc parts inside this project.
-     * 
-     */
-    public File getCachedRootDirectory() {
-        if (cachedRootDirectory == null) {
-            cachedRootDirectory = rootDirectoryProvider.findRootDirectory();
-        }
-        return cachedRootDirectory;
+    public File getRootDirectory() {
+        return rootDirectoryProvider.getRootDirectory();
     }
 
     public LogAdapter getLogAdapter() {

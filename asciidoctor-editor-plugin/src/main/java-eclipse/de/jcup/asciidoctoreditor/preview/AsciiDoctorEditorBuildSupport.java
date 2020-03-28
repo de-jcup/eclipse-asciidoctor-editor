@@ -34,17 +34,18 @@ import de.jcup.asciidoctoreditor.AbstractAsciiDoctorEditorSupport;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.ContentTransformerData;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
-import de.jcup.asciidoctoreditor.TemporaryFileType;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
+import de.jcup.asciidoctoreditor.TemporaryOutputFileType;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocStringUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorProjectWrapper;
 import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
 import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
 import de.jcup.asciidoctoreditor.asp.AspProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorProjectProviderContext;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorTempFileProvider;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
@@ -178,7 +179,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         if (getEditor().isCanceled(monitor)) {
             return;
         }
-        AsciiDoctorWrapper wrapper = getEditor().getWrapper();
+        AsciiDoctorProjectWrapper wrapper = getEditor().getWrapper();
         int worked = 0;
         try {
             safeAsyncExec(() -> AsciiDoctorEditorUtil.removeScriptErrors(getEditor()));
@@ -216,8 +217,9 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             data.useHiddenFile=isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML);
             data.editorFileOrNull=editorFileOrNull;
             data.internalPreview = internalPreview;
+            data.backendType=backend;
             
-			wrapper.convert(data, backend, new AspProgressMonitorAdapter(monitor));
+			wrapper.convert(data, new AspProgressMonitorAdapter(monitor));
 
             monitor.worked(++worked);
 
@@ -341,7 +343,12 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
     }
 
     protected String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, long editorId) {
-        File generatedFile = getEditor().getWrapper().getTempFileFor(fileToConvertIntoHTML, editorId, TemporaryFileType.ORIGIN);
+        AsciiDoctorProjectWrapper wrapper = getEditor().getWrapper();
+        AsciiDoctorProjectProviderContext context = wrapper.getContext();
+        AsciiDoctorTempFileProvider provider = context.getTempFileProvider();
+        
+        File generatedFile = provider.createHTMLPreviewTempFile(fileToConvertIntoHTML, editorId, TemporaryOutputFileType.ORIGIN);
+        
         try {
             return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
         } catch (IOException e) {
@@ -361,7 +368,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         } else {
             text = asciiDoc;
         }
-        fileToConvertIntoHTML = resolveFileToConvertToHTML("no_origin_file_defined", text);
+        fileToConvertIntoHTML = resolveFileToConvertToHTML(null, text);
         return fileToConvertIntoHTML;
     }
 
@@ -396,22 +403,24 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         if (!getEditor().getContentTransformer().isTransforming(originText)) {
             return editorFile;
         }
-        return resolveFileToConvertToHTML(editorFile.getName(), originText);
+        return resolveFileToConvertToHTML(editorFile, originText);
     }
 
-    public File resolveFileToConvertToHTML(String filename, String text) throws IOException {
-        Path tempFolder = getEditor().getWrapper().getTempFolder();
-        File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, getEditorId(), filename);
+    private File resolveFileToConvertToHTML(File asciidoctorFile, String text) throws IOException {
+        AsciiDoctorProjectWrapper wrapper = getEditor().getWrapper();
+        AsciiDoctorProjectProviderContext context = wrapper.getContext();
 
+        File newTempFile =context.getTempFileProvider().createHiddenEditorTempFile(asciidoctorFile, getEditorId());;
+        
         ContentTransformerData data = new ContentTransformerData();
         data.origin=text;
-        data.filename=filename;
+        data.filename=asciidoctorFile.getName();
         
 		String transformed = getEditor().getContentTransformer().transform(data);
         try {
             return AsciiDocStringUtils.writeTextToUTF8File(transformed, newTempFile);
         } catch (IOException e) {
-            logError("Was not able to write transformed file:" + filename, e);
+            logError("Was not able to write transformed file for:" + asciidoctorFile, e);
             return null;
         }
     }

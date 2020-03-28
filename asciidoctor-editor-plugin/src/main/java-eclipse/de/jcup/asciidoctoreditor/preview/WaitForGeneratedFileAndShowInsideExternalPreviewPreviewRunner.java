@@ -18,11 +18,9 @@ package de.jcup.asciidoctoreditor.preview;
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
-import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner implements EnsureFileRunnable {
 
@@ -42,9 +40,7 @@ public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner imple
 			while (asciiDoctorEditor.isNotCanceled(monitor)
 					&& (temporaryExternalPreviewFile == null || !temporaryExternalPreviewFile.exists())) {
 				if (System.currentTimeMillis() - start > 20000) {
-					// after 20 seconds there seems to be no chance to get
-					// the generated preview file back
-					MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Asciidoctor Editor", "Generated HTML output not found - maybe it's still in generation.\n\nPlease wait and try again.");
+				    AsciiDoctorEditorUtil.logWarning("Wait for generated file for external preview timed out");
 					return;
 				}
 				Thread.sleep(300);

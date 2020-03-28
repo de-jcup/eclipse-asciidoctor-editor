@@ -23,14 +23,14 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider{
+public class AsciiDoctorImageCopyProvider extends AbstractAsciiDoctorProvider{
 	private static ImageFilesFilter IMAGE_FILTER = new ImageFilesFilter();
-	private String cachedSourceImagesPath;
+	
 
-	AsciiDoctorImageProvider(AsciiDoctorProviderContext context) {
+	AsciiDoctorImageCopyProvider(AsciiDoctorProjectProviderContext context) {
 		super(context);
 	}
-
+	
 	private void copyImagesToOutputFolder(String sourcePath, File target) {
 		getContext().getLogAdapter().resetTimeDiff();
 		File cachedImagesFile = new File(sourcePath);
@@ -51,21 +51,10 @@ public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider{
 		if (outputFolder==null){
 			throw new IllegalStateException("no output folder set!");
 		}
-		File targetImagesDir = new File(outputFolder.toFile(), "images");
-		if (!targetImagesDir.exists()) {
-			targetImagesDir.mkdirs();
-			targetImagesDir.deleteOnExit();
-		}
-		copyImagesToOutputFolder(getCachedSourceImagesPath(), targetImagesDir);
+		File targetImagesDir = getContext().getTempFolder().toFile();
+		copyImagesToOutputFolder(getContext().getRootDirectory().getAbsolutePath(), targetImagesDir);
 		getContext().targetImagesDir=targetImagesDir;
 
-	}
-	
-	public String getCachedSourceImagesPath() {
-		if (cachedSourceImagesPath == null) {
-			cachedSourceImagesPath = resolveImagesDirPath(getContext().getCachedRootDirectory());
-		}
-		return cachedSourceImagesPath;
 	}
 	
 	private static class ImageFilesFilter implements FileFilter{
@@ -106,27 +95,7 @@ public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider{
 		
 	}
 
-	protected String resolveImagesDirPath(File baseDir) {
-	    getContext().getLogAdapter().resetTimeDiff();
-		Object imagesDir = getContext().getAttributesProvider().getCachedAttributes().get("imagesdir");
-
-		String imagesDirPath = null;
-		if (imagesDir != null) {
-			imagesDirPath = imagesDir.toString();
-			if (imagesDirPath.startsWith("./")) {
-				File imagePathNew = new File(baseDir, imagesDirPath.substring(2));
-				imagesDirPath = imagePathNew.getAbsolutePath();
-			}
-		} else {
-			/* fallback when not defined - as defined at https://asciidoctor.org/docs/asciidoctor-pdf/#image-paths*/
-			imagesDirPath = baseDir.getAbsolutePath();
-		}
-		getContext().getLogAdapter().logTimeDiff("resolveImagesDirPath, baseDir:"+baseDir);
-		return imagesDirPath;
-	}
-
 	public void reset() {
-		this.cachedSourceImagesPath=null;
 	}
 
 }

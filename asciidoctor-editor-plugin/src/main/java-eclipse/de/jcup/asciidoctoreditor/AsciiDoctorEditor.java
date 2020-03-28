@@ -75,7 +75,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorProjectWrapper;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapperRegistry;
 import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
 import de.jcup.asciidoctoreditor.diagram.plantuml.AsciiDoctorPlantUMLSourceViewerConfiguration;
@@ -93,7 +93,8 @@ import de.jcup.asciidoctoreditor.preview.EnsureFileRunnable;
 import de.jcup.asciidoctoreditor.preview.ScrollSynchronizer;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner;
 import de.jcup.asciidoctoreditor.preview.WaitForGeneratedFileAndShowInsideIternalPreviewRunner;
-import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorProjectProviderContext;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorTempFileProvider;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
@@ -388,7 +389,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         return temporaryExternalPreviewFile;
     }
 
-    public AsciiDoctorWrapper getWrapper() {
+    public AsciiDoctorProjectWrapper getWrapper() {
         return AsciiDoctorWrapperRegistry.INSTANCE.getWrapper(getProject());
     }
 
@@ -484,7 +485,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
      * @return diagram path as string, or <code>null</code>
      */
     public String getDiagramPathOrNull() {
-        AsciiDoctorProviderContext context = getWrapper().getContext();
+        AsciiDoctorProjectProviderContext context = getWrapper().getContext();
         File editorFile = getEditorFileOrNull();
         if (editorFile == null) {
             return null;
@@ -498,23 +499,28 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     /**
-     * @return images path as string, or <code>null</code>
+     * @return images path (absolute) as string, or <code>null</code>
      */
-    public String getImagesPathOrNull() {
-        AsciiDoctorProviderContext context = getWrapper().getContext();
+    public String getImagesDirAbsolutePathOrNull() {
+        AsciiDoctorProjectProviderContext context = getWrapper().getContext();
         File editorFile = getEditorFileOrNull();
         if (editorFile == null) {
             return null;
         }
         context.setAsciidocFile(editorFile);
-        return context.getImageProvider().getCachedSourceImagesPath();
+        String path =  context.getImageDirProvider().getImagesDirAbsolutePathOrNull();
+        if (path==null ) {
+            /* means we have no image dir set - so fallback to current file folder */
+            path = editorFile.getParentFile().getAbsolutePath();
+        }
+        return path;
     }
 
     public void openImage(String fileName) {
         if (fileName == null) {
             return;
         }
-        String imagespath = getImagesPathOrNull();
+        String imagespath = getImagesDirAbsolutePathOrNull();
         File file = new File(imagespath, fileName);
         openFileWithEclipseDefault(file);
     }
@@ -803,9 +809,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             setErrorMessage("Asciidoctor Editor: preview not available because no editor file found");
             return;
         }
-        AsciiDoctorWrapper wrapper = getWrapper();
-        temporaryInternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, editorId, TemporaryFileType.INTERNAL_PREVIEW);
-        temporaryExternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, editorId, TemporaryFileType.EXTERNAL_PREVIEW);
+        AsciiDoctorProjectWrapper wrapper = getWrapper();
+        AsciiDoctorProjectProviderContext context = wrapper.getContext();
+        context.setAsciidocFile(editorFileOrNull);
+        AsciiDoctorTempFileProvider provider = context.getTempFileProvider();
+        
+        temporaryInternalPreviewFile = provider.createHTMLPreviewTempFile(editorFileOrNull, editorId, TemporaryOutputFileType.INTERNAL_PREVIEW);
+        temporaryExternalPreviewFile = provider.createHTMLPreviewTempFile(editorFileOrNull, editorId, TemporaryOutputFileType.EXTERNAL_PREVIEW);
 
         browserAccess.ensureBrowser(new BrowserContentInitializer() {
 

@@ -40,7 +40,7 @@ public class ImageBaseParentResolver implements BaseParentDirResolver{
     }
 
     private File getBaseDirFromEditor(File editorFile, AsciiDoctorEditor editor) {
-        String path = editor.getImagesPathOrNull();
+        String path = editor.getImagesDirAbsolutePathOrNull();
         if (path==null) {
             /* no image dir set, so fallback to current folder*/
             return editorFile.getParentFile();

@@ -159,7 +159,14 @@ public class AsciiDocStringUtils {
 	}
 
 	public static File writeTextToUTF8File(String transformed, File newTempFile) throws IOException {
-		try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newTempFile),UTF_8))) {
+		if (newTempFile==null) {
+		    return null;
+		}
+	    if (! newTempFile.exists()) {
+		    newTempFile.getParentFile().mkdirs();
+		    newTempFile.createNewFile();
+		}
+	    try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newTempFile),UTF_8))) {
 			bw.write(transformed);
 			bw.close();
 			return newTempFile;

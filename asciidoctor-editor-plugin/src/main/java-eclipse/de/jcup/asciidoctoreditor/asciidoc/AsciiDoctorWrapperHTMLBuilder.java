@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jcup.asciidoctoreditor.PluginContentInstaller;
-import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorProjectProviderContext;
 
 public class AsciiDoctorWrapperHTMLBuilder {
 private static final String BODY = "<body";
 
-    private AsciiDoctorProviderContext context;
+    private AsciiDoctorProjectProviderContext context;
 
-    public AsciiDoctorWrapperHTMLBuilder(AsciiDoctorProviderContext context) {
+    public AsciiDoctorWrapperHTMLBuilder(AsciiDoctorProjectProviderContext context) {
         this.context = context;
     }
 

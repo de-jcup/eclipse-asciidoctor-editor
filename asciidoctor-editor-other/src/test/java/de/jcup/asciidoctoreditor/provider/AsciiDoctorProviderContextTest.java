@@ -39,93 +39,90 @@ public class AsciiDoctorProviderContextTest {
 	private AsciidoctorAdapter asciidoctor;
 	private LogAdapter logAdapter;
     private AsciiDoctorAdapterProvider provider;
-
+    private Path tempDirectory;
+    private AsciiDoctorProjectProviderContext contextToTeset;
 	
 	@Before
-	public void before(){
+	public void before() throws Exception{
+	    tempDirectory = Files.createTempDirectory("junittest");;
 		asciidoctor=mock(AsciidoctorAdapter.class);
 		logAdapter = mock(LogAdapter.class);
 		provider = mock(AsciiDoctorAdapterProvider.class);
 		
 		when(provider.getAsciiDoctor(true)).thenReturn(asciidoctor);
 		when(provider.getAsciiDoctor(false)).thenReturn(asciidoctor);
+		
+		contextToTeset = new AsciiDoctorProjectProviderContext(new File("."),"projectname",tempDirectory, provider, logAdapter);
 	}
 	
 	@Test
 	public void file_is_testfile_adoc_then_pdf_target_is_testfile_pdf() {
 	    /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
         File fileToRender = new File("testfile.adoc");
-        context.setFileToRender(fileToRender);
+        contextToTeset.setFileToRender(fileToRender);
         
         /* execute */
-        assertEquals(new File("testfile.pdf"), context.getTargetPDFFileOrNull());
+        assertEquals(new File("testfile.pdf"), contextToTeset.getTargetPDFFileOrNull());
 	}
 	@Test
     public void file_is_a_without_file_ending_then_pdf_target_is_a_pdf() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
         File fileToRender = new File("a");
-        context.setFileToRender(fileToRender);
+        contextToTeset.setFileToRender(fileToRender);
         
         /* execute */
-        assertEquals(new File("a.pdf"), context.getTargetPDFFileOrNull());
+        assertEquals(new File("a.pdf"), contextToTeset.getTargetPDFFileOrNull());
     }
 	
 	@Test
     public void file_is_null_pdf_target_is_null() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
         File fileToRender =null;
-        context.setFileToRender(fileToRender);
+        contextToTeset.setFileToRender(fileToRender);
         
         /* execute */
-        assertEquals(null, context.getTargetPDFFileOrNull());
+        assertEquals(null, contextToTeset.getTargetPDFFileOrNull());
     }
 	@Test
     public void file_is_testfile_asciidoc_then_pdf_target_is_testfile_pdf() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
         File fileToRender = new File("testfile.asciidoc");
-        context.setFileToRender(fileToRender);
+        contextToTeset.setFileToRender(fileToRender);
         
         /* execute */
-        assertEquals(new File("testfile.pdf"), context.getTargetPDFFileOrNull());
+        assertEquals(new File("testfile.pdf"), contextToTeset.getTargetPDFFileOrNull());
     }
 	
 	@Test
     public void file_is_testfile_txt_then_pdf_target_is_testfile_pdf() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
         File fileToRender = new File("testfile.txt");
-        context.setFileToRender(fileToRender);
+        contextToTeset.setFileToRender(fileToRender);
         
         /* execute */
-        assertEquals(new File("testfile.pdf"), context.getTargetPDFFileOrNull());
+        assertEquals(new File("testfile.pdf"), contextToTeset.getTargetPDFFileOrNull());
     }
 	
 	@Test
     public void file_is_testfile_without_file_ending_then_pdf_target_is_testfile_pdf() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
         File fileToRender = new File("testfile");
-        context.setFileToRender(fileToRender);
+        contextToTeset.setFileToRender(fileToRender);
         
         /* execute */
-        assertEquals(new File("testfile.pdf"), context.getTargetPDFFileOrNull());
+        assertEquals(new File("testfile.pdf"), contextToTeset.getTargetPDFFileOrNull());
     }
 	
 	@Test
 	public void test_normal_creating_context_creates_internal_providers() {
-		/* execute */
-		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+		/* execute - nothing, already created by before()... */
 	
 		/* test */
-		assertNotNull(context.getAsciiDoctor());
-		assertNotNull(context.getAttributesProvider());
-		assertNotNull(context.getRootDirectoryProvider());
-		assertNotNull(context.getImageProvider());
-		assertNotNull(context.getOptionsProvider());
+		assertNotNull(contextToTeset.getAsciiDoctor());
+		assertNotNull(contextToTeset.getAttributesProvider());
+		assertNotNull(contextToTeset.getRootDirectoryProvider());
+		assertNotNull(contextToTeset.getImageCopyProvider());
+		assertNotNull(contextToTeset.getOptionsProvider());
 		
 	}
 	
@@ -177,11 +174,10 @@ public class AsciiDoctorProviderContextTest {
 
 	private Set<File> testInternalImages(boolean imageDirSet) throws IOException {
 		/* before */
-		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+		AsciiDoctorProjectProviderContext context = new AsciiDoctorProjectProviderContext(new File("."),"projectname", tempDirectory, provider, logAdapter);
 		
 		File testFile = TestscriptsUtil.assertFileInTestscripts("09_includes.adoc");
 		context.setAsciidocFile(testFile);
-		Path tempDirectory = Files.createTempDirectory("junittest");
 		context.setOutputFolder(tempDirectory);
 		
 		tempDirectory.toFile().deleteOnExit();
@@ -195,7 +191,7 @@ public class AsciiDoctorProviderContextTest {
 		when(asciidoctor.resolveAttributes(any(File.class))).thenReturn(map1).thenReturn(map2);
 	
 		/* execute*/
-		context.getImageProvider().ensureImages();
+		context.getImageCopyProvider().ensureImages();
 		
 		/* test */
 		Set<File> files = new LinkedHashSet<>();

@@ -1,0 +1,233 @@
+=== Temporary preview content
+==== About
+Asciidoctor Editor will provide a "hidden editor file" inside a temp folder.
+
+==== Why ?
+
+1. Same origin policy +
+Doing a preview with a real browser (SWT does use system browser) will often fall
+into problem that browser will not accept images being not from same origin. On the file 
+system this results in problems with image directory.
+2. Files not being UTF-8 
+
+==== Technical insights
+
+Workspace:
+
+----
+/$projectLocation/src/doc/asciidoctor/
+                        common.adoc
+                        technology01/
+                                technologie01.adoc
+                                /chapter01/
+                                    concept.adoc
+                                    technical_debt.adoc
+                                    implementation.adoc
+                                /chapter02/
+                                    usage.adoc
+                                    role_concept.adoc
+                         technology02/
+                                technologie02.adoc
+                                /chapter01/
+                                    concept.adoc
+                                    technical_debt.adoc
+                                    implementation.adoc
+                                /chapter02/
+                                    usage.adoc
+                                    role_concept.adoc             
+                        images/
+                              common/
+                                wellcome.jpg
+                                logo.png
+                              technology02/
+                                tech01.png
+                                tech01-overview.svg             
+                              technology02/
+                                tech02.png
+                                tech02-overview.svg                                    
+----
+
+What we have here are follwoing different image source scenarios
+
+- relative pathes
+- imagedir set
+- generated images (e.g. diagrams)
+
+==== What about the output?
+===== Simple temp project folder approach
+When using a temporary project folder for output the problem here is, that
+the we have following situation:
+
+----
+/tmp/asciidoctor-editor-temp/project-name-identifier/
+                /technology01.html
+----
+Doing this we would have the consequence that the temporary html would refer to absolute pathes and and also to another
+origin! So preview would not show images (depends on system browser behaviour, but most will not do ...)
+
+===== Generate to buildfolder
+When using a build folder for output we have following situation:
+
+----
+/$projectLocation/build/
+                /technology01.html
+----
+or 
+----
+/$projectLocation/build/technology01/
+                /technology01.html
+----
+
+Still same problems as before (same origin...) and another additional one: build folder would be gradle specific but maven or other build tools
+uses different output folders so users would be forced to update their projects manually.
+
+====== Create hidden editor file (1)
+We create a hidden editor file which includes the wanted parts but uses origin base directory, but renders hidden file directly.
+Outputfile to temp folder again.
+
+----
+/tmp/asciidoctor-editor-temp/project-name-identifier/
+                /hidden-editorfile_technology01.adoc
+                /technology01.html
+                
+/$projectLocation/src/doc/asciidoctor/technology01/technology01.adoc                
+----
+Advantage: (generated) hidden editor file is always UTF-8 so this can reduce problems because User did not use UTF-8 encoding
+as wanted by asciidoc.
+
+But we still have the same origin problems.
+
+====== Create hidden editor file (2) + copy images
+Same as before, but to prevent the same origin problem, we copy all images to same level:
+----
+/tmp/asciidoctor-editor-temp/project-name-identifier/
+                /hidden-editorfile_technology01.adoc
+                /technology01.html
+                copied-images/
+                    images/
+                       common/
+                         wellcome.png
+                         ...
+                
+/$projectLocation/src/doc/asciidoctor/technology01/technology01.adoc                
+----
+So this would solve the "same origin" problem.
+
+But: It's slower, because every time we needto ensure the images are copied, but at least we copy no adoc files
+Also. Relative pathes made problems
+
+====== Create hidden editor file (3a) + copy images + use same file structure as in project
+Same as before, but we mimic complete file folder structure from project and set project root as base directory!
+
+----
+/tmp/asciidoctor-editor-temp/project-name-identifier/
+                src/doc/asciidoctor/
+                     technology01/
+                         hidden-editorfile_technology01.adoc
+                         technology01.html
+                     images/
+                       common/
+                         wellcome.png
+                         ...
+                
+/$projectLocation/src/doc/asciidoctor/technology01/technology01.adoc                
+----
+
+Pro: 
+
+- same file folder structure as in project. So relative pathes work out-of-box (using in HTML prevents same origin problem)
+- mapping is simpler (not all in one folder, but on dedicated subfolders like in project) 
+- providing different image directories is simpler (everything is on its wanted place)
+- should work for relative pathes and for image directories as well! So we could remove 
+  ImageHandlingMode.RELATIVE_PATHES and ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY
+- we can simply use the project root folder as base directory and do not longer need to calculate
+  a base directory guess (see issue #303) which can fail. 
+
+Con: 
+
+- copy mechanism will search more folders and copy maybe unnecessary image content
+- hard refactoring necessary
+
+*Implementation details*
+
+- asciidoctor base directory: must be root folder of project
+- hidden file still relevant
+- temporary output and image pathes must be calculated
+
+====== Create a hidden editor file (3b) + copy only necessary images
+We could generate the html output file and just do not copy images before. After generation, the 
+output is observed and only the necessary content is copied.
+
+Pro: 
+
+- as before
+- copies only necessary stuff
+
+Con: 
+
+- handling multiple adoc files could result in nearly same effort as simply copying all stuff
+- more complex
+ 
+==== Imagesdir calculation
+
+imagesdir is tricky: It depends on the location of the adoc file where it is defined!
+
+An example:
+----
+/src/doc/common/include-common.adoc
+/src/doc/maindoc.adoc
+/src/resources/images/image1.png
+----
+
+inside `include-common.adoc` an `:imagesdir: ./../../resources/images` is defined and 
+`/src/doc/maindoc.adoc` just includes this file.
+
+Another example:
+----
+/src/doc/maindoc1.adoc
+/src/doc/maindoc2.adoc
+/src/doc/maindoc1/images/image1.png
+/src/doc/maindoc2/images/image2.png
+----
+Here both maindoc files could define different image directories!
+
+Problem: The editor must know which of the image directories must be used. A weird situation (I would normally not do this, but it could happen)
+
+*Potential solutions:*
+a) parse every file to render and check for all included parts as well - Con: included sub parts will not be correctly rendered
+b) provide a cache which is created lazily. On creation time all .adoc files are introspected and scanned for :imagesdir: attribute (Top->Down).
+   First found entry will be used for all. The location of the file where the image dir attribute is set, is used to define relative path convert to absolute path!
+c) provide a cache which is created lazily. On creation time all .adoc files are introspected and scanned for :imagesdir: attribute. where found the 
+   information will be cached inclusive location. 
+d) do it like done inside intellij plugin: provide a simple configuration file where user can define attributes
+
+I think b) would be best option and later - for special purposes d) could be implemented additionally or c) could be done later
+
+   
+
+
+
+
+
+
+==== Rendering
+===== HTML
+
+root directory: $temp-hidden-file.parent
+base directory: same as root
+
+file to render: hidden editor file, which includes others
+imagedir      : when set, caluclate absolute path by relative path of image folder + temp folder
+                when not set ignore
+destination   : temp folder path to hidden editor file parent
+
+===== PDF
+root directory: $temp-hidden-file.parent
+base directory: same as root
+
+file to render: hidden editor file, which includes others
+imagedir      : different to HTML ?!?!?!
+destination   : temp folder path to hidden editor file parent
+                
+
+

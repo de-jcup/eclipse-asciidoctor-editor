@@ -21,8 +21,6 @@ import java.io.File;
 
 import org.junit.Test;
 
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
-
 public class AsciiDocFileUtilsTest {
 
     @Test
@@ -45,10 +43,24 @@ public class AsciiDocFileUtilsTest {
        File baseDir = new File(file,"basefolder");
        
        /* execute */
-       String path = AsciiDocFileUtils.calculatePathToFileFromBase(asciiDocFile, baseDir);
+       String path = AsciiDocFileUtils.calculateRelativePathToFileFromBase(asciiDocFile, baseDir);
     
        /* test */
        assertEquals("sub1/sub2/sub3/test.adoc",path);
+    }
+    
+    @Test
+    public void file_in_same_folder_as_basefolder_so_relative_path_empty() {
+        /* prepare */
+
+        File file = new File("/home/albert/dev/workspaces/runtime-EclipseApplication/testproject6-java");
+        File baseDir = new File("/home/albert/dev/workspaces/runtime-EclipseApplication/testproject6-java/");
+        
+        /* execute */
+        String path = AsciiDocFileUtils.calculateRelativePathToFileFromBase(file, baseDir);
+        
+        /* test */
+        assertEquals("",path);
     }
 
 }

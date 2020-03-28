@@ -33,11 +33,11 @@ import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorQuickOutlineDialog;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorFileReferenceValidator;
+import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorFileReferenceValidator;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
@@ -175,7 +175,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
         }
 
         if (preferences.isImageValidationEnabled()) {
-            String imagesPath = getEditor().getImagesPathOrNull();
+            String imagesPath = getEditor().getImagesDirAbsolutePathOrNull();
             if (imagesPath != null) {
                 File imagesFolder = new File(imagesPath);
                 referenceValidator.validate(imagesFolder, model.getImages(), errors);

@@ -1,0 +1,1 @@
+// here we use no imagedir attribute

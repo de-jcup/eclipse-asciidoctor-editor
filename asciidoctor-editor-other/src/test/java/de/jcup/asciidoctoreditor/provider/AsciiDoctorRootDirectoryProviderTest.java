@@ -16,6 +16,10 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.io.File;
+import java.nio.file.Files;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,16 +27,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
-
-import static org.mockito.Mockito.*;
-
-import java.io.File;
-import java.nio.file.Files;
 
 public class AsciiDoctorRootDirectoryProviderTest {
 
-	private AsciiDoctorProviderContext context;
+	private AsciiDoctorProjectProviderContext context;
 	private AsciiDoctorRootDirectoryProvider providerToTest;
 
 	@Rule
@@ -41,7 +39,7 @@ public class AsciiDoctorRootDirectoryProviderTest {
 	
 	@Before
 	public void before(){
-		context = mock(AsciiDoctorProviderContext.class);
+		context = mock(AsciiDoctorProjectProviderContext.class);
 		logAdapter = mock(LogAdapter.class);
 		when(context.getLogAdapter()).thenReturn(logAdapter);
 		providerToTest = new AsciiDoctorRootDirectoryProvider(context);
@@ -53,7 +51,7 @@ public class AsciiDoctorRootDirectoryProviderTest {
 		expectedException.expect(IllegalStateException.class);
 		
 		/* execute */
-		providerToTest.findRootDirectory();
+		providerToTest.getRootDirectory();
 	}
 	
 	@Test
@@ -66,7 +64,7 @@ public class AsciiDoctorRootDirectoryProviderTest {
         when(context.getAsciiDocFile()).thenReturn(asciidocFile);
         
         /* execute */
-        File baseDir = providerToTest.findRootDirectory();
+        File baseDir = providerToTest.getRootDirectory();
 
         /* test */
         assertNotNull(baseDir);
@@ -83,7 +81,7 @@ public class AsciiDoctorRootDirectoryProviderTest {
         when(context.getAsciiDocFile()).thenReturn(asciidocFile);
         
         /* execute */
-        baseDir = providerToTest.findRootDirectory();
+        baseDir = providerToTest.getRootDirectory();
 
         /* test */
         assertNotNull(baseDir);
@@ -101,7 +99,7 @@ public class AsciiDoctorRootDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		File baseDir = providerToTest.findRootDirectory();
+		File baseDir = providerToTest.getRootDirectory();
 
 		/* test */
 		assertNotNull(baseDir);
@@ -118,7 +116,7 @@ public class AsciiDoctorRootDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		File baseDir = providerToTest.findRootDirectory();
+		File baseDir = providerToTest.getRootDirectory();
 
 		/* test */
 		assertNotNull(baseDir);
@@ -140,30 +138,9 @@ public class AsciiDoctorRootDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		providerToTest.findRootDirectory();
+		providerToTest.getRootDirectory();
 
 	}
-	
-	@Test
-	public void converted_content_file_locations_to_base_dir_does_not_throw_an_exception_and_basedir_is_not_root_temp_dir() throws Exception {
-		
-		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(null, System.nanoTime(),"junit_testcase_temporary_file_for_issue_97.xyz");
-		
-		/* prepare */
-		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
-		
-		/* execute */
-		File baseDir = providerToTest.findRootDirectory();
-		
-		/* test */
-		File problematic = new File(System.getProperty("java.io.tmpdir"));
-		assertNotEquals(problematic, baseDir);
-		
-		/* but ensure the base dir is a directory...*/
-		assertTrue("not a directory:"+baseDir, baseDir.isDirectory());
-	}
-
-	
 	
 	protected File ensuredTestFile(String pathname) {
 		File asciidocFile = new File(pathname);

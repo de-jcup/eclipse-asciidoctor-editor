@@ -61,7 +61,7 @@ public class AsciiDoctorQuickOutlineDialog extends AbstractFilterableTreeQuickDi
 	 *            information to show at bottom of dialog
 	 */
 	public AsciiDoctorQuickOutlineDialog(IAdaptable adaptable, Shell parent, String infoText) {
-		super(adaptable, parent, "AsciiDoctorWrapper quick outline", MIN_WIDTH, MIN_HEIGHT, infoText);
+		super(adaptable, parent, "AsciiDoctorProjectWrapper quick outline", MIN_WIDTH, MIN_HEIGHT, infoText);
 		this.editor = adaptable.getAdapter(AsciiDoctorEditor.class);
 	}
 

@@ -22,13 +22,18 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
     private Map<String, Object> cachedAttributes;
 
-    AsciiDoctorAttributesProvider(AsciiDoctorProviderContext context) {
+    AsciiDoctorAttributesProvider(AsciiDoctorProjectProviderContext context) {
         super(context);
     }
 
     protected Map<String, Object> getCachedAttributes() {
         if (cachedAttributes == null) {
-            cachedAttributes = resolveAttributes(getContext().getCachedRootDirectory());
+            cachedAttributes = resolveAttributes(getContext().getRootDirectory());
+        }
+        String imagesDirOrnull = getContext().getImageDirProvider().getImagesDirAbsolutePathOrNull();
+        if (imagesDirOrnull != null) {
+            /* an image directory is set...*/
+            cachedAttributes.put(AttributeSearchParameter.IMAGES_DIR_ATTRIBUTE.getName(), imagesDirOrnull);
         }
         return cachedAttributes;
     }
