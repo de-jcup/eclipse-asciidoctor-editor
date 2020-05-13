@@ -19,9 +19,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.console,
  de.jcup.asciidoctoreditor.libs,
  de.jcup.asciidoctoreditor.css,
- org.eclipse.search;bundle-version="3.11.400",
+ org.eclipse.search;bundle-version="3.11.200",
  org.eclipse.ltk.ui.refactoring,
- org.eclipse.ltk.core.refactoring;bundle-version="3.9.200"
+ org.eclipse.ltk.core.refactoring;bundle-version="3.9.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui,

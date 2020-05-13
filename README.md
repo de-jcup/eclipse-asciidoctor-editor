@@ -31,6 +31,7 @@ For more information
 - call `gradlew installLibraries` - this will install current asp dependencies etc. (so its not inside git)
 - call `gradlew eclipse`
 - After this is done open your eclipse and import *ALL* existing eclipse projects from `eclipse-asciidoctor-editor` into your workspace
+- Open `asciidoctor-editor.target` and click *Set as Active Target Platform*. That way the code is compiled against a fixed version of Eclipse instead of against the current Eclipse IDE.
 ### Build
 - Gradle parts are only used for automated testing
 - To build the editor plugin, please open "asciidoctor-editor-updatesite/site.xml"
