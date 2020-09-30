@@ -38,7 +38,10 @@ import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 
 public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements PlantUMLDataProvider {
 
-	@Override
+	private static final AsciiDoctorPlantUMLFileDocumentProvider ASCII_DOCTOR_PLANT_UML_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLFileDocumentProvider();
+    private static final AsciiDoctorPlantUMLTextFileDocumentProvider ASCII_DOCTOR_PLANT_UML_TEXT_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLTextFileDocumentProvider();
+
+    @Override
 	protected ContentTransformer createCustomContentTransformer() {
 		PlantUMLContentTransformer transformer = new PlantUMLContentTransformer();
 		transformer.setDataProvider(this);
@@ -90,11 +93,11 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 		return new AsciiDoctorPlantUMLSourceViewerConfiguration(this);
 	}
 
-	protected IDocumentProvider createDocumentProvider(IEditorInput input) {
+	protected IDocumentProvider resolveDocumentProvider(IEditorInput input) {
 		if (input instanceof FileStoreEditorInput) {
-			return new AsciiDoctorPlantUMLTextFileDocumentProvider();
+			return ASCII_DOCTOR_PLANT_UML_TEXT_FILE_DOCUMENT_PROVIDER;
 		} else {
-			return new AsciiDoctorPlantUMLFileDocumentProvider();
+			return ASCII_DOCTOR_PLANT_UML_FILE_DOCUMENT_PROVIDER;
 		}
 	}
 

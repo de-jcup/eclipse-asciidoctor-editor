@@ -166,6 +166,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     private ClearProjectCacheAsciiDocViewAction clearProjectAction;
 
+    private static final AsciiDoctorTextFileDocumentProvider ASCIIDOC_SHARED_TEXTFILE_DOCUMENT_PROVIDER=new AsciiDoctorTextFileDocumentProvider();
+    private static final AsciiDoctorFileDocumentProvider ASCIIDOC__SHARED_FILE_DOCUMENT_PROVIDER = new AsciiDoctorFileDocumentProvider();
+    
+
     public long getEditorId() {
         return editorId;
     }
@@ -631,11 +635,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         return null;
     }
 
-    protected IDocumentProvider createDocumentProvider(IEditorInput input) {
+    protected IDocumentProvider resolveDocumentProvider(IEditorInput input) {
         if (input instanceof FileStoreEditorInput) {
-            return new AsciiDoctorTextFileDocumentProvider();
+            return ASCIIDOC_SHARED_TEXTFILE_DOCUMENT_PROVIDER;
         } else {
-            return new AsciiDoctorFileDocumentProvider();
+            return ASCIIDOC__SHARED_FILE_DOCUMENT_PROVIDER;
         }
     }
 
@@ -658,7 +662,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     @Override
     protected void doSetInput(IEditorInput input) throws CoreException {
-        setDocumentProvider(createDocumentProvider(input));
+        setDocumentProvider(resolveDocumentProvider(input));
         super.doSetInput(input);
         IFile file = resolveFileOrNull();
         if (file == null) {

@@ -37,7 +37,10 @@ import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 
 public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 
-	@Override
+	private static final FileDocumentProvider DITAA_FILE_DOCUMENT_PROVIDER = new FileDocumentProvider();
+    private static final TextFileDocumentProvider DITAA_TEXT_FILE_DOCUMENT_PROVIDER = new TextFileDocumentProvider();
+
+    @Override
 	protected ContentTransformer createCustomContentTransformer() {
 		return new DitaaContentTransformer();
 	}
@@ -77,11 +80,11 @@ public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 
 	}
 
-	protected IDocumentProvider createDocumentProvider(IEditorInput input) {
+	protected IDocumentProvider resolveDocumentProvider(IEditorInput input) {
 		if (input instanceof FileStoreEditorInput) {
-			return new TextFileDocumentProvider();
+			return DITAA_TEXT_FILE_DOCUMENT_PROVIDER;
 		} else {
-			return new FileDocumentProvider();
+			return DITAA_FILE_DOCUMENT_PROVIDER;
 		}
 	}
 
