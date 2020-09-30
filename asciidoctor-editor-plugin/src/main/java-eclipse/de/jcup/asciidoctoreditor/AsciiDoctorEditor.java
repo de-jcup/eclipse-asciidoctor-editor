@@ -78,6 +78,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapperRegistry;
 import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
+import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
 import de.jcup.asciidoctoreditor.diagram.plantuml.AsciiDoctorPlantUMLSourceViewerConfiguration;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
@@ -547,7 +548,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             /*
              * when not enabled, we must force to render the document (not internal preview)
              */
-            buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS, false);
+            buildSupport.buildFullHTMLRebuildAsJobAndShowRebuildingInPreview(BuildAsciiDocMode.ALWAYS, false);
         }
         startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
     }
@@ -561,7 +562,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void refreshAsciiDocView() {
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.ALWAYS, internalPreview);
+        buildSupport.buildFullHTMLRebuildAsJobAndShowRebuildingInPreview(BuildAsciiDocMode.ALWAYS, internalPreview);
     }
 
     public void resetCache() {
@@ -602,7 +603,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
          * TOC building does always lead to a long time running task, at least inside
          * preview - so we show the initializing info with progressbar
          */
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
+        buildSupport.buildFullHTMLRebuildAsJobAndShowRebuildingInPreview(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
     }
 
     public void setVerticalSplit(boolean verticalSplit) {
@@ -678,14 +679,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             validate();
             return;
         }
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
+        buildSupport.buildFullHTMLRebuildAsJobAndShowRebuildingInPreview(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
     }
 
     @Override
     protected void editorSaved() {
         super.editorSaved();
 
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
+        buildSupport.buildFullHTMLRebuildAsJobAndShowRebuildingInPreview(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
     }
 
     public void removeValidationErrors() {
@@ -818,7 +819,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             }
         });
 
-        buildSupport.showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
+        buildSupport.buildFullHTMLRebuildAsJobAndShowRebuildingInPreview(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
 
         synchronizer.installInBrowser();
 
@@ -1034,6 +1035,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             }
         }
     }
+    
+    /* if necessary do some preparations before calling asciidoctor... */
+    public void beforeAsciidocConvert(WrapperConvertData data) {
+        /* per default nothing */
+    }
 
     void setTitleImageDependingOnSeverity(int severity) {
         safeAsyncExec(() -> setTitleImage(getImage("icons/" + getTitleImageName(severity), AsciiDoctorEditorActivator.PLUGIN_ID)));
@@ -1205,5 +1211,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
 
     }
+
+    
 
 }

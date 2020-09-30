@@ -70,12 +70,29 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         return true;
     }
 
-    public void showRebuildingInPreviewAndTriggerFullHTMLRebuildAsJob(BuildAsciiDocMode mode, boolean internalPreview) {
-        showRebuildingInPreviewAndTriggerFullRebuildAsJob(mode, AsciiDoctorBackendType.HTML5, false,internalPreview, revalidateAfterBuild);
+    public void buildFullHTMLRebuildAsJobAndShowRebuildingInPreview(BuildAsciiDocMode mode, boolean internalPreview) {
+        buildFullHTMLRebuildAsJobAndShowRebuildingInPreview(mode, AsciiDoctorBackendType.HTML5, false,internalPreview, revalidateAfterBuild);
     }
 
     public boolean isAutoBuildEnabledForExternalPreview() {
         return getEditor().getPreferences().isAutoBuildEnabledForExternalPreview();
+    }
+
+    public File resolveFileToConvertToHTML(String filename, String text) throws IOException {
+        Path tempFolder = getEditor().getWrapper().getTempFolder();
+        File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, getEditorId(), filename);
+    
+        ContentTransformerData data = new ContentTransformerData();
+        data.origin=text;
+        data.filename=filename;
+        
+    	String transformed = getEditor().getContentTransformer().transform(data);
+        try {
+            return AsciiDocStringUtils.writeTextToUTF8File(transformed, newTempFile);
+        } catch (IOException e) {
+            logError("Was not able to write transformed file:" + filename, e);
+            return null;
+        }
     }
 
     /**
@@ -84,7 +101,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
      * @param backend backend blockType provider
      * @param forceInitialize when <code>false</code> build is only done when not already building
      */
-    protected void showRebuildingInPreviewAndTriggerFullRebuildAsJob(BuildAsciiDocMode mode, AsciiDoctorBackendType backend, boolean forceInitialize, boolean internalPreview, BuildDoneListener buildListener) {
+    protected void buildFullHTMLRebuildAsJobAndShowRebuildingInPreview(BuildAsciiDocMode mode, AsciiDoctorBackendType backend, boolean forceInitialize, boolean internalPreview, BuildDoneListener buildListener) {
         getEditor().validate();
 
         boolean rebuildEnabled = true;
@@ -216,6 +233,8 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             data.useHiddenFile=isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML);
             data.editorFileOrNull=editorFileOrNull;
             data.internalPreview = internalPreview;
+            
+            getEditor().beforeAsciidocConvert(data);
             
 			wrapper.convert(data, backend, new AspProgressMonitorAdapter(monitor));
 
@@ -399,23 +418,6 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         return resolveFileToConvertToHTML(editorFile.getName(), originText);
     }
 
-    public File resolveFileToConvertToHTML(String filename, String text) throws IOException {
-        Path tempFolder = getEditor().getWrapper().getTempFolder();
-        File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, getEditorId(), filename);
-
-        ContentTransformerData data = new ContentTransformerData();
-        data.origin=text;
-        data.filename=filename;
-        
-		String transformed = getEditor().getContentTransformer().transform(data);
-        try {
-            return AsciiDocStringUtils.writeTextToUTF8File(transformed, newTempFile);
-        } catch (IOException e) {
-            logError("Was not able to write transformed file:" + filename, e);
-            return null;
-        }
-    }
-    
     private class RevalidateAfterBuildListener implements BuildDoneListener{
 
         @Override
