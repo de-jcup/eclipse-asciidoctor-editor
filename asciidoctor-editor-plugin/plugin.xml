@@ -78,7 +78,7 @@
 	        default="true"  
             id="asciidoctoreditor.editors.AsciiDoctorEditor">
             
-            <contentTypeBinding contentTypeId="org.eclipse.core.runtime.text"/>
+            <contentTypeBinding contentTypeId="de.jcup.asciidoctoreditor.content.asciidoc"/>
       </editor>
       <editor
       		name="Ditaa Editor (Asciidoctor)"
