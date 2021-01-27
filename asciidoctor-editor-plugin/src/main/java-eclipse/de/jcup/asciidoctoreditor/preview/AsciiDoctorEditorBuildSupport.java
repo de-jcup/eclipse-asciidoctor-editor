@@ -339,6 +339,8 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
          * those files we do always create a temporary editor file which does
          * include the origin one - reason see description in javadoc above
          */
+        // one exception: when we are rendering plantuml or dita files we do not use the hidden editor file (because there
+        // is already a custom .adoc file...
         return fileToConvertIntoHTML.equals(editorFileOrNull);
     }
 

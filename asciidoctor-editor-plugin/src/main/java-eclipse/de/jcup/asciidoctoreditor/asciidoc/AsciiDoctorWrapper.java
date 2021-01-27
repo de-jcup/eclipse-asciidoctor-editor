@@ -27,6 +27,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
 import de.jcup.asciidoctoreditor.EclipseResourceHelper;
@@ -50,13 +51,16 @@ public class AsciiDoctorWrapper {
 
     private AsciiDoctorProviderContext context;
     private Path tempFolder;
-
+    private IProject project; 
+    
     public AsciiDoctorWrapper(IProject project, LogAdapter logAdapter) {
         if (logAdapter == null) {
             throw new IllegalArgumentException("log adapter may not be null!");
         }
+        this.project = project;
         this.logAdapter = logAdapter;
         this.tempFolder = createTempPath(project);
+        
         this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorAdapterProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
         this.htmlBuilder = new AsciiDoctorWrapperHTMLBuilder(context);
 
@@ -73,8 +77,8 @@ public class AsciiDoctorWrapper {
             AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
             Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions(asciiDoctorBackendType);
 
-            AsciidoctorAdapter asciiDoctor = context.getAsciiDoctor();
-            asciiDoctor.convertFile(data.editorFileOrNull, context.getFileToRender(), defaultOptions, monitor);
+            AsciidoctorAdapter asciiDoctorAdapter = context.getAsciiDoctor();
+            asciiDoctorAdapter.convertFile(data.editorFileOrNull, context.getFileToRender(), defaultOptions, monitor);
 
             refreshParentFolderIfNecessary();
 
@@ -139,9 +143,21 @@ public class AsciiDoctorWrapper {
         context.setOutputFolder(getTempFolder());
 
         context.setAsciidocFile(data.asciiDocFile);
+        
+        File configRoot;
+        try {
+            IPath projectLocation = project.getLocation();
+            configRoot = EclipseResourceHelper.DEFAULT.toFile(projectLocation);
+        } catch (CoreException e) {
+            logAdapter.logError("Was not able to determine config root, fallback to base dir", e);
+            configRoot = context.getBaseDir();
+        }
+        
         if (data.useHiddenFile) {
-            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder()));
+            /* asciidoc files ...*/
+            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder(),configRoot));
         } else {
+            /* plantuml, ditaa files ...*/
             context.setFileToRender(data.asciiDocFile);
         }
 

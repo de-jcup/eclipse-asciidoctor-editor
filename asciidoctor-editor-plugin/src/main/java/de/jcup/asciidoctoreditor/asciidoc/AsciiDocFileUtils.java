@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.Normalizer;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -96,7 +98,7 @@ public class AsciiDocFileUtils {
         return Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
 
-    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, long editorId, File baseDir, Path tempFolder)
+    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, long editorId, File baseDir, Path tempFolder, File rootConfigFolder)
             throws IOException {
         /* @formatter:off
          * 
@@ -110,14 +112,29 @@ public class AsciiDocFileUtils {
          * @formatter:on
          */
         File hiddenEditorFile = createEncodingSafeFile(tempFolder, editorId + "_hidden-editorfile_" + asciidoctorFile.getName());
+        
+
+        AsiidocConfigFileSupport support = new AsiidocConfigFileSupport(rootConfigFolder.toPath());
+        List<AsciidoctorConfigFile> configFiles = support.collectConfigFiles(asciidoctorFile.toPath());
+        Collections.reverse(configFiles); // first one is most relevant, but we append at text, so to downside
+        
         try {
             String relativePath = calculatePathToFileFromBase(asciidoctorFile, baseDir);
             StringBuilder sb = new StringBuilder();
             sb.append("// origin :").append(asciidoctorFile.getAbsolutePath()).append("\n");
             sb.append("// editor :").append(editorId).append("\n");
-            sb.append("// basedir:").append(baseDir.getAbsolutePath()).append("\n");
-
-            sb.append("include::").append(relativePath).append("[]\n");
+            sb.append("// basedir:").append(baseDir.getAbsolutePath()).append("\n\n");
+            sb.append("// ************************:\n");
+            sb.append("// asciidoctorconfig files:\n");
+            sb.append("// ************************:\n");
+            sb.append("// rootConfigFolder: ").append(rootConfigFolder.getAbsolutePath()).append("\n");
+            /** append config file information */
+            int fc = 1;
+            for (AsciidoctorConfigFile configFile: configFiles){
+                sb.append("\n// config file:").append(fc++).append(", location=").append(configFile.getLocation()).append("\n");
+                sb.append(configFile.getContentCustomized());
+            }
+            sb.append("\ninclude::").append(relativePath).append("[]\n");
 
             FileUtils.writeStringToFile(hiddenEditorFile, sb.toString(), "UTF-8", false);
             hiddenEditorFile.deleteOnExit();

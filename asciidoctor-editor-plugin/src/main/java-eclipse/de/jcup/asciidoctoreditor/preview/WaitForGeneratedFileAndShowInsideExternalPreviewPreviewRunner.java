@@ -44,7 +44,7 @@ public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner imple
 				if (System.currentTimeMillis() - start > 20000) {
 					// after 20 seconds there seems to be no chance to get
 					// the generated preview file back
-					MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Asciidoctor Editor", "Generated HTML output not found - maybe it's still in generation.\n\nPlease wait and try again.");
+				    EclipseUtil.safeAsyncExec(()->MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Asciidoctor Editor", "Generated HTML output not found - maybe it's still in generation.\n\nPlease wait and try again."));
 					return;
 				}
 				Thread.sleep(300);
