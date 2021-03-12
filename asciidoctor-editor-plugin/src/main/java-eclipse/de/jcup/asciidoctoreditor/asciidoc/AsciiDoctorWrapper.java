@@ -252,7 +252,13 @@ public class AsciiDoctorWrapper {
         return PluginContentInstaller.INSTANCE.getAddonsFolder();
     }
 
-    public String buildHTMLWithCSS(String html, int refreshAutomaticallyInSeconds) {
+    /**
+     * Enrich given HTML with CSS and additional javascript
+     * @param html
+     * @param refreshAutomaticallyInSeconds
+     * @return
+     */
+    public String enrichHTML(String html, int refreshAutomaticallyInSeconds) {
         return htmlBuilder.buildHTMLWithCSS(html, refreshAutomaticallyInSeconds);
     }
 
