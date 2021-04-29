@@ -15,6 +15,8 @@
  */
 package de.jcup.asciidoctoreditor.provider;
 
+import java.nio.file.Path;
+
 public abstract class AbstractAsciiDoctorProvider {
 
     private AsciiDoctorProviderContext context;
@@ -28,6 +30,14 @@ public abstract class AbstractAsciiDoctorProvider {
     
     AsciiDoctorProviderContext getContext() {
         return context;
+    }
+    
+    public Path getOutputFolder() {
+        Path outputFolder = getContext().getOutputFolder();
+        if (outputFolder==null){
+            throw new IllegalStateException("output folder not defined");
+        }
+        return outputFolder;
     }
 
     protected abstract void reset() ;

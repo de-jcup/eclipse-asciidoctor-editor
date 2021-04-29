@@ -1,0 +1,5 @@
+== About
+
+This subproject is for documentation about the asciidoctor
+editor plugin for eclipse.
+

@@ -20,11 +20,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 import de.jcup.asp.client.AspClientProgressMonitor;
 
-public class AspProgressMonitorAdapter implements AspClientProgressMonitor{
+public class AspCompatibleProgressMonitorAdapter implements AspClientProgressMonitor{
     private static final IProgressMonitor NULL_PROGRESS = new NullProgressMonitor();
     private IProgressMonitor monitor;
     
-    public AspProgressMonitorAdapter(IProgressMonitor monitor) {
+    public AspCompatibleProgressMonitorAdapter(IProgressMonitor monitor) {
         if (monitor==null) {
             monitor=NULL_PROGRESS;
         }

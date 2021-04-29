@@ -15,6 +15,8 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import java.io.File;
+
 public abstract class AbstractAsciiDoctorEditorSupport {
 
     private AsciiDoctorEditor editor;
@@ -23,8 +25,20 @@ public abstract class AbstractAsciiDoctorEditorSupport {
         this.editor=editor;
     }
     
-    protected AsciiDoctorEditor getEditor() {
+    public AsciiDoctorEditor getEditor() {
         return editor;
     }
+    
+    public boolean isFileNotAvailable(File file) {
+        if (file == null) {
+            return true;
+        }
+        return !file.exists();
+    }
+
+    public long getEditorId() {
+        return getEditor().getEditorId();
+    }
+
     
 }

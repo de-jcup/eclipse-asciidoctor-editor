@@ -1,0 +1,118 @@
+== Handbook
+
+=== Asciidoc configfiles
+
+==== Adopted from intellij plugin
+The intellij plugin supports project specific configuration files 
+(see https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/asciidoctorconfig-file.html) 
+It's a very clever approach, because it's possible to fine tune IDE behaviour.
+
+
+==== Why was this adopted/necessary?
+Inside the Eclipse asciidoctor Plugin the same feature is now available. 
+It was was reused, to enable teams where IntellIJ and Eclipse is used both to have one common
+config file. But this does also solve many problems inside eclipse plugin when it comes to 
+images and their location!
+
+NOTE: For more details about the feature and the origin spec from intellij please 
+visit https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/314 
+
+
+==== File names
+
+The config files can be:
+
+ * `.asciidoctorconfig` (origin filename but does not handle ifndef etc.)
+ * `.asciidoctorconfig.adoc` This will work the same way like `.asciidoctorconfig` but supports preprocessor macros like ifndef
+
+==== Locations
+Every project folder can contain such a configuration file which is
+accepted by IDE. 
+
+==== Purpose
+Inside these files we can set attributes. The files are hierarchical and are cummulated, but
+the nearest config file wins.
+
+==== Example
+Here an example were we define some variables and also set the imagesdir, so we need no
+relative pathes etc.
+
+===== Structure
+Let's assume following situation:
+----
+
+ +testproject
+   |__docs
+       |__asciidoc/
+       |   |__folder2/
+       |   |   |_test2.adoc
+       |   |__folder3/
+       |   |   |_asciidoctorconfig.adoc
+       |   |   |_test3.adoc
+       |   |__another-image-folder/
+       |   |  |_example-B.jpg
+       |   |_test1.adoc
+       |__images/
+       |   |_example-A.jpg
+       |_.asciidoctorconfig.adoc
+   
+
+----
+
+===== Two config files
+Inside `testproject/asciidoc/.asciidoctorconfig.adoc` we have:
+
+[source,asciidoc] 
+----
+:my-var1: i am from root folder!//<1>
+:my-var2: i am from root folder! //<2>
+:imagesdir: {asciidoctorconfigdir}/images //<3>
+----
+<1> Here we set just a custom variable `my-var1`
+<2> Here we set just a custom variable `my-var2`
+<3> This defines the `imagesdir` attribute
+
+Inside `testproject/asciidoc/folder3/.asciidoctorconfig.adoc` we have:
+[source,asciidoc] 
+----
+:my-var2: i am from var2-folder3 - and overwrites root def! //<1>
+:my-var3: i am from var3-folder3 //<2>
+
+:imagesdir: {asciidoctorconfigdir}/../another-image-folder
+----
+<1> Here we overwrite custom variable `my-var2` which originally comes 
+    from `testproject/asciidoc/.asciidoctorconfig.adoc`
+<2> Here we set a new custom variable `my-var3`
+<3> This redefines the `imagesdir` attribute and overwrites
+    `testproject/asciidoc/.asciidoctorconfig.adoc` setup
+
+===== 3 Asciidoc files, all same content but different behaviour/output
+So having `test1.adoc`, `test2.adoc` and also `test3.adoc` all containing 
+
+[source,asciidoc]
+---- 
+=== Example
+var1 = {my-var1}
+var2 = {my-var2}
+var3 = {my-var3}
+image::example-A.jpg[]
+image::example-B.jpg[] 
+----
+
+This would show for `test1.adoc` and `test2.adoc`:
+----
+var1=i am from root folder!
+var2=i am from root folder!
+var3=
+----
+and the image of `example-A.jpg` will be visible but not found for `example-B.jpg`
+
+But for `test3.adoc` the output would be 
+----
+var1=i am from root folder!
+var2=i am from var2-folder3 - and overwrites root def! 
+var3=i am from var3-folder3
+----
+and the image of `example-A.jpg` will NOT be visible/found, but `example-B.jpg` would be visible
+
+

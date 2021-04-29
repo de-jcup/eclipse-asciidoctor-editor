@@ -17,13 +17,17 @@ package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
+import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorConfigFile;
+import de.jcup.asciidoctoreditor.asciidoc.AsiidocConfigFileSupport;
 
 public class AsciiDoctorProviderContext {
 
@@ -51,6 +55,8 @@ public class AsciiDoctorProviderContext {
     private boolean noFooter;
     private boolean internalPreview;
     private boolean localResourcesEnabled = true;
+    private AsiidocConfigFileSupport configFileSupport;
+    private List<AsciidoctorConfigFile> configFiles = new ArrayList<>();
 
     public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
@@ -128,10 +134,9 @@ public class AsciiDoctorProviderContext {
      * Reset context. After this method is called all cached operations will be
      * recalculated on next rendering time fo editor content
      */
-    public void reset() {
+    public void resetCaches() {
         this.baseDir = null;
         this.outputFolder = null;
-        this.asciidocFile = null;
 
         for (AbstractAsciiDoctorProvider provider : providers) {
             provider.reset();
@@ -234,6 +239,31 @@ public class AsciiDoctorProviderContext {
          * of preview
          */
         return internalPreview && localResourcesEnabled;
+    }
+
+    public void setConfigRootSupport(AsiidocConfigFileSupport support) {
+        this.configFileSupport = support;
+    }
+
+    public AsiidocConfigFileSupport getConfigFileSupport() {
+        return configFileSupport;
+    }
+
+    /**
+     * Set last first inside list the most far one (near parent), last one the nearest!
+     * @param configFiles
+     */
+    public void setConfigFiles(List<AsciidoctorConfigFile> configFiles) {
+        this.configFiles.clear();
+        this.configFiles.addAll(configFiles);
+    }
+    
+    /**
+     * 
+     * @return config files : first one inside list the most far one (near parent), last one the nearest!
+     */
+    public List<AsciidoctorConfigFile> getConfigFiles() {
+        return configFiles;
     }
 
 }
