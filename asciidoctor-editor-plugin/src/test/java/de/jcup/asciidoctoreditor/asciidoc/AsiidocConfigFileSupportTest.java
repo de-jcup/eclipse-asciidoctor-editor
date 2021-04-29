@@ -5,7 +5,9 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -150,4 +152,30 @@ public class AsiidocConfigFileSupportTest {
         assertEquals(":my-var1: project1-root\n", configFile1.getContent());
     }
 
+    @Test
+    public void calculate_when_config_map_is_empty_origin_returned() {
+        /* prepare */
+        Map<String,String> map = new LinkedHashMap<>();
+        
+        /* execute */
+        String result = supportToTest.calculate("{other1}/my1/{other2}",map); 
+        
+        /* test */
+        assertEquals("{other1}/my1/{other2}",result);
+    }
+    
+    @Test
+    public void calculate_when_config_map_contains_keys_origin_is_replaced_with_values() {
+        /* prepare */
+        Map<String,String> map = new LinkedHashMap<>();
+        map.put("other1", "x1");
+        map.put("other2", "x2");
+        
+        /* execute */
+        String result = supportToTest.calculate("{other1}/my1/{other2}",map); 
+        
+        /* test */
+        assertEquals("x1/my1/x2",result);
+    }
+    
 }

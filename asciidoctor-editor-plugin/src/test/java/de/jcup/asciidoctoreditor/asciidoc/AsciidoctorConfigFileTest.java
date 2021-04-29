@@ -3,6 +3,7 @@ package de.jcup.asciidoctoreditor.asciidoc;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +39,21 @@ public class AsciidoctorConfigFileTest {
     
     @Test
     public void config_file_content_customized_contains_configdir_variable_with_value_at_the_beginning() {
-        assertEquals(":asciidoctorconfigdir: "+file.getParentFile().getAbsolutePath()+"\ncontent1",configFileToTest.getContentCustomized());
+        /* execute */
+        String firstLine = configFileToTest.getContentCustomized().split("\n")[0];
+        
+        /* test */
+        assertEquals(":asciidoctorconfigdir: "+file.getParentFile().getAbsolutePath(),firstLine);
+    }
+    
+    @Test
+    public void config_file_content_customized__to_map_contains_configdir_variable_with_value_at_the_beginning() {
+        
+        /* execute */
+        Map<String, String> map = configFileToTest.toContentCustomizedMap();
+        
+        /* test */
+        assertEquals(file.getParentFile().getAbsolutePath(), map.get("asciidoctorconfigdir"));
     }
 
 }

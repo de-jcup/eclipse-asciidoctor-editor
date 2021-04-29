@@ -5,7 +5,10 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.jcup.asciidoctoreditor.LogHandler;
 import de.jcup.asciidoctoreditor.PrintStreamLogHandler;
@@ -23,6 +26,10 @@ public class AsiidocConfigFileSupport {
         this(null, rootFolder);
     }
 
+    public Path getRootFolder() {
+        return rootFolder;
+    }
+
     public AsiidocConfigFileSupport(LogHandler logHandler, Path rootFolder) {
         if (rootFolder == null) {
             throw new IllegalArgumentException("root folder may not be null!");
@@ -36,9 +43,16 @@ public class AsiidocConfigFileSupport {
         }
     }
 
+    /**
+     * Collects configuration files
+     * @param asciidocFile
+     * @return configuration files - first one inside list the most far one (near parent), last one the nearest!
+     */
     public List<AsciidoctorConfigFile> collectConfigFiles(Path asciidocFile) {
         ReverseFileWalker walker = new ReverseFileWalker();
         walker.walk(asciidocFile);
+        /* we must reverse order */
+        Collections.reverse(walker.filesFound);
         return walker.filesFound;
     }
 
@@ -109,6 +123,58 @@ public class AsiidocConfigFileSupport {
             return isAsciidocConfigFile(file);
         }
 
+    }
+
+    
+    private Map<String, String> buildMap(List<AsciidoctorConfigFile> configFiles) {
+        // config files: last one inside list the most far one (near parent), first one the nearest!
+        // so we must reverse order here, because otherwise farest does overwrite all others!
+        Map<String, String> result = new LinkedHashMap<String, String>();
+        for (AsciidoctorConfigFile configFile : configFiles) {
+            result.putAll(configFile.toContentCustomizedMap());
+        }
+        
+        /* now resolve/combine key values from config files as well*/
+        for (String key: result.keySet()) {
+            String value = result.get(key);
+            String newValue= calculate(value, result);
+            result.put(key, newValue);
+        }
+        
+        return result;
+    }
+
+    /**
+     * Calculates resolved map
+     * @param map
+     * @param configFiles - first one inside list the most far one (near parent), last one the nearest!
+     * @return resolved map
+     */
+    public Map<String, Object> calculateResolvedMap(Map<String, Object> map, List<AsciidoctorConfigFile> configFiles) {
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        Map<String, String> fromConfigFiles = buildMap(configFiles);
+        result.putAll(fromConfigFiles);
+        for (String mapKey : map.keySet()) {
+            Object mapValue = map.get(mapKey);
+            
+            if (!(mapValue instanceof String)) {
+                result.put(mapKey,mapValue);
+                continue;
+            }
+            String mapValueString = mapValue.toString();
+            String newValue= calculate(mapValueString, fromConfigFiles);
+            result.put(mapKey,newValue);
+        }
+        return result;
+    }
+
+    String calculate(String mapValueString, Map<String, String> fromConfigFiles) {
+        String result = mapValueString;
+        for (String configKey: fromConfigFiles.keySet()) {
+            String configValue = fromConfigFiles.get(configKey);
+            result=result.replaceAll("\\{"+configKey+"\\}", configValue);
+        }
+        return result;
     }
 
 }

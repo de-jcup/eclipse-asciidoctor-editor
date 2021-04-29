@@ -25,9 +25,9 @@ public interface AsciidoctorAdapter {
 
     void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options, AspClientProgressMonitor monitor);
     
-    default public Map<String, Object> resolveAttributes(File baseDir) {
-        Objects.requireNonNull(baseDir,"File path must be set!");
-        return AsciiDocAttributeResolver.DEFAULT.resolveAttributes(baseDir);
+    default public Map<String, Object> resolveAttributes(File fileOrDirectory) {
+        Objects.requireNonNull(fileOrDirectory,"File path must be set!");
+        return AsciiDocAttributeResolver.DEFAULT.resolveAttributes(fileOrDirectory);
         
     }
 

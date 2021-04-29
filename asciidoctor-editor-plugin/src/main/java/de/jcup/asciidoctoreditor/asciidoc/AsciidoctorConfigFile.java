@@ -1,6 +1,8 @@
 package de.jcup.asciidoctoreditor.asciidoc;
 
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class AsciidoctorConfigFile {
 
@@ -37,6 +39,25 @@ public class AsciidoctorConfigFile {
 
     public String getContentCustomized() {
         return ":asciidoctorconfigdir: " + asciidoctorconfigdir + "\n" + content;
+    }
+
+    public Map<String, String> toContentCustomizedMap() {
+        Map<String, String> map = new LinkedHashMap<>();
+        String[] lines = getContentCustomized().split("\n");
+        for (String line: lines) {
+            if (!line.startsWith(":")) {
+                continue;
+            }
+            String[] splitted = line.split(":");
+            if (splitted.length<3) {
+                continue;
+            }
+            String key=splitted[1];
+            String value=splitted[2];
+            map.put(key.trim(), value.trim());
+        }
+        
+        return map;
     }
 
 }

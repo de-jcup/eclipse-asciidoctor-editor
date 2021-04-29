@@ -18,10 +18,12 @@ package de.jcup.asciidoctoreditor.asciidoc;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.asciidoctor.Attributes;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -38,6 +40,7 @@ import de.jcup.asciidoctoreditor.TemporaryFileType;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorAttributesProvider;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 import de.jcup.asciidoctoreditor.provider.ImageHandlingMode;
@@ -72,15 +75,28 @@ public class AsciiDoctorWrapper {
 
     public void convert(WrapperConvertData data, AsciiDoctorBackendType asciiDoctorBackendType, AspClientProgressMonitor monitor) throws Exception {
         try {
+            /* @formatter:on */
             initContext(context, data);
 
-            AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
-            Map<String, Object> defaultOptions = optionsProvider.createDefaultOptions(asciiDoctorBackendType);
+            /* build attributes*/
+            AsciiDoctorAttributesProvider attributesProvider = context.getAttributesProvider();
+            Attributes attributes = attributesProvider.createAttributes();
 
+            /* build options - containing attribute parameters */
+            AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
+            Map<String, Object> options = optionsProvider.
+                        createOptionsContainingAttributes(asciiDoctorBackendType,attributes);
+
+            /*start conversion by asciidoctor */
             AsciidoctorAdapter asciiDoctorAdapter = context.getAsciiDoctor();
-            asciiDoctorAdapter.convertFile(data.editorFileOrNull, context.getFileToRender(), defaultOptions, monitor);
+            asciiDoctorAdapter.convertFile(
+                    data.editorFileOrNull, 
+                    context.getFileToRender(), 
+                    options, 
+                    monitor);
 
             refreshParentFolderIfNecessary();
+            /* @formatter:off */
 
         } catch (Exception e) {
             logAdapter.logError("Cannot convert to html:" + data.asciiDocFile, e);
@@ -144,6 +160,7 @@ public class AsciiDoctorWrapper {
 
         context.setAsciidocFile(data.asciiDocFile);
         
+        /* setup config file support */
         File configRoot;
         try {
             IPath projectLocation = project.getLocation();
@@ -153,9 +170,13 @@ public class AsciiDoctorWrapper {
             configRoot = context.getBaseDir();
         }
         
+        AsiidocConfigFileSupport support = new AsiidocConfigFileSupport(configRoot.toPath());
+        context.setConfigRootSupport(support);
+        List<AsciidoctorConfigFile> configFiles = context.getConfigFileSupport().collectConfigFiles(context.getAsciiDocFile().toPath());
+        context.setConfigFiles(configFiles);
         if (data.useHiddenFile) {
             /* asciidoc files ...*/
-            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder(),configRoot));
+            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder(),configFiles, configRoot.getAbsolutePath()));
         } else {
             /* plantuml, ditaa files ...*/
             context.setFileToRender(data.asciiDocFile);
@@ -170,16 +191,9 @@ public class AsciiDoctorWrapper {
         if (context == null) {
             return;
         }
-        context.reset();
+        context.resetCaches();
     }
     
-    public void reinitContext() {
-        resetCaches();
-        AsciiDoctorConsoleUtil.output("- cleaned caches");
-        this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorAdapterProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
-        AsciiDoctorConsoleUtil.output("- context recreated");
-    }
-
     public void deleteTempFolder() {
         Path tempFolder = getTempFolder();
         String pathAsString = tempFolder.toAbsolutePath().toString();

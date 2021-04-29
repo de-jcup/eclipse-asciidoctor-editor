@@ -42,10 +42,10 @@ public class AsciiDocAttributeResolver {
         this.logadapter = logadapter;
     }
 
-    public Map<String, Object> resolveAttributes(File baseDir) {
+    public Map<String, Object> resolveAttributes(File fileOrDirectory) {
         Map<String, Object> map = new TreeMap<>();
 
-        inspect(baseDir, map);
+        inspect(fileOrDirectory, map);
 
         return map;
     }

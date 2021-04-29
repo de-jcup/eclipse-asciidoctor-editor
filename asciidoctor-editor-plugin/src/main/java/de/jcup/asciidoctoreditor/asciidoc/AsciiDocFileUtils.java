@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.Normalizer;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -98,7 +97,7 @@ public class AsciiDocFileUtils {
         return Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
 
-    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, long editorId, File baseDir, Path tempFolder, File rootConfigFolder)
+    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, long editorId, File baseDir, Path tempFolder, List<AsciidoctorConfigFile> configFiles, String rootConfigFolder)
             throws IOException {
         /* @formatter:off
          * 
@@ -113,11 +112,6 @@ public class AsciiDocFileUtils {
          */
         File hiddenEditorFile = createEncodingSafeFile(tempFolder, editorId + "_hidden-editorfile_" + asciidoctorFile.getName());
         
-
-        AsiidocConfigFileSupport support = new AsiidocConfigFileSupport(rootConfigFolder.toPath());
-        List<AsciidoctorConfigFile> configFiles = support.collectConfigFiles(asciidoctorFile.toPath());
-        Collections.reverse(configFiles); // first one is most relevant, but we append at text, so to downside
-        
         try {
             String relativePath = calculatePathToFileFromBase(asciidoctorFile, baseDir);
             StringBuilder sb = new StringBuilder();
@@ -127,7 +121,7 @@ public class AsciiDocFileUtils {
             sb.append("// ************************:\n");
             sb.append("// asciidoctorconfig files:\n");
             sb.append("// ************************:\n");
-            sb.append("// rootConfigFolder: ").append(rootConfigFolder.getAbsolutePath()).append("\n");
+            sb.append("// rootConfigFolder: ").append(rootConfigFolder).append("\n");
             /** append config file information */
             int fc = 1;
             for (AsciidoctorConfigFile configFile: configFiles){

@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -108,7 +109,9 @@ public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider{
 
 	protected String resolveImagesDirPath(File baseDir) {
 	    getContext().getLogAdapter().resetTimeDiff();
-		Object imagesDir = getContext().getAttributesProvider().getCachedAttributes().get("imagesdir");
+		AsciiDoctorAttributesProvider attributesProvider = getContext().getAttributesProvider();
+        Map<String, Object> cachedAttributes = attributesProvider.getCachedAttributes();
+        Object imagesDir = cachedAttributes.get("imagesdir");
 
 		String imagesDirPath = null;
 		if (imagesDir != null) {
