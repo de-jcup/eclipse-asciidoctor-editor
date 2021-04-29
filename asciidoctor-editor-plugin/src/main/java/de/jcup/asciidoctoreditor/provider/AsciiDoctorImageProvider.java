@@ -47,6 +47,7 @@ public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider{
 
 	}
 
+	@Deprecated
 	public void ensureImages() {
 		Path outputFolder = getContext().getOutputFolder();
 		if (outputFolder==null){

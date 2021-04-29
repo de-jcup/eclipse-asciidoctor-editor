@@ -28,6 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
@@ -130,6 +131,7 @@ public class AsciiDoctorProviderContextTest {
 	}
 	
 	@Test
+	@Ignore //ensureImages is currently no longer used, so test obsolete. If it's clear we do not need ensureIMages any longer, we remove it and the tests as well
 	public void image_provider_ensure_images__does_create_target_folder_and_contains_not_copied_images_when_no_headline_with_imagedir_attribute() throws Exception{
 		Set<File> files = testInternalImages(false);
 		/* test */
@@ -151,6 +153,7 @@ public class AsciiDoctorProviderContextTest {
 	}
 	
 	@Test
+	@Ignore //ensureImages is currently no longer used, so test obsolete. If it's clear we do not need ensureIMages any longer, we remove it and the tests as well
 	public void image_provider_ensure_images__does_create_target_folder_and_contains_copied_images_and_subfolders_when_at_least_one_headline_has_imagedir_attribute() throws Exception{
 		Set<File> files = testInternalImages(true);
 		/* test */
