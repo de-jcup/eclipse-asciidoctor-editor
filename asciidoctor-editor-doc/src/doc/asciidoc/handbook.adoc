@@ -33,6 +33,9 @@ accepted by IDE.
 Inside these files we can set attributes. The files are hierarchical and are cummulated, but
 the nearest config file wins.
 
+==== Special attributes
+- `asciidoctorconfig` is a synthetic attribute, injected automatically by IDE. It contains the location of the nearest configuration file
+
 ==== Example
 Here an example were we define some variables and also set the imagesdir, so we need no
 relative pathes etc.
