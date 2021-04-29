@@ -101,13 +101,14 @@ public class AsiidocConfigFileSupportTest {
         assertEquals(2, files.size());
         Iterator<AsciidoctorConfigFile> iterator = files.iterator();
 
-        AsciidoctorConfigFile configFile2 = iterator.next();
-        assertEquals(p1AsciidocConfigFile2.toString(), configFile2.getLocation().toString());
-        assertEquals(":my-var1: project1-subfolder2\n", configFile2.getContent());
 
         AsciidoctorConfigFile configFile1 = iterator.next();
         assertEquals(p1AsciidocConfigFile1.toString(), configFile1.getLocation().toString());
         assertEquals(":my-var1: project1-root\n", configFile1.getContent());
+
+        AsciidoctorConfigFile configFile2 = iterator.next();
+        assertEquals(p1AsciidocConfigFile2.toString(), configFile2.getLocation().toString());
+        assertEquals(":my-var1: project1-subfolder2\n", configFile2.getContent());
     }
     
     @Test
@@ -143,13 +144,13 @@ public class AsiidocConfigFileSupportTest {
         assertEquals(2, files.size());
         Iterator<AsciidoctorConfigFile> iterator = files.iterator();
 
-        AsciidoctorConfigFile configFile2 = iterator.next();
-        assertEquals(p2AsciidocConfigFile2.toString(), configFile2.getLocation().toString());
-        assertEquals(":my-var1: project1-subfolder2\n", configFile2.getContent());
-
         AsciidoctorConfigFile configFile1 = iterator.next();
         assertEquals(p2AsciidocConfigFile1.toString(), configFile1.getLocation().toString());
         assertEquals(":my-var1: project1-root\n", configFile1.getContent());
+
+        AsciidoctorConfigFile configFile2 = iterator.next();
+        assertEquals(p2AsciidocConfigFile2.toString(), configFile2.getLocation().toString());
+        assertEquals(":my-var1: project1-subfolder2\n", configFile2.getContent());
     }
 
     @Test
