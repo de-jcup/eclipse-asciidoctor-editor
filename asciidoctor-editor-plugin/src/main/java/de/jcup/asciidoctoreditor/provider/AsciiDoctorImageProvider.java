@@ -32,36 +32,60 @@ public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider{
 		super(context);
 	}
 
-	private void copyImagesToOutputFolder(String sourcePath, File target) {
-		getContext().getLogAdapter().resetTimeDiff();
-		File cachedImagesFile = new File(sourcePath);
-		if (!cachedImagesFile.exists()) {
-			return;
-		}
-		try {
-			FileUtils.copyDirectory(cachedImagesFile, target, IMAGE_FILTER);
-		} catch (IOException e) {
-			getContext().getLogAdapter().logError("Cannot copy images", e);
-		}
-		getContext().getLogAdapter().logTimeDiff("copied images to output folder:"+sourcePath);
+//	private void copyImagesToOutputFolder(String sourcePath, File target) {
+//		getContext().getLogAdapter().resetTimeDiff();
+//		File cachedImagesFile = new File(sourcePath);
+//		if (!cachedImagesFile.exists()) {
+//			return;
+//		}
+//		try {
+//			FileUtils.copyDirectory(cachedImagesFile, target, IMAGE_FILTER);
+//		} catch (IOException e) {
+//			getContext().getLogAdapter().logError("Cannot copy images", e);
+//		}
+//		getContext().getLogAdapter().logTimeDiff("copied images to output folder:"+sourcePath);
+//
+//	}
 
-	}
+//	@Deprecated
+//	public void ensureImages() {
+//		Path outputFolder = getContext().getOutputFolder();
+//		if (outputFolder==null){
+//			throw new IllegalStateException("no output folder set!");
+//		}
+//		File targetImagesDir = new File(outputFolder.toFile(), "images");
+//		if (!targetImagesDir.exists()) {
+//			targetImagesDir.mkdirs();
+//			targetImagesDir.deleteOnExit();
+//		}
+//		copyImagesToOutputFolder(getCachedSourceImagesPath(), targetImagesDir);
+//		getContext().targetImagesDir=targetImagesDir;
+//
+//	}
+	
+    public void ensureImageByRelativePath(String relativePath) {
+        Path outputFolder = getContext().getOutputFolder();
+        if (outputFolder==null){
+            throw new IllegalStateException("no output folder set!");
+        }
+        File baseDir = getContext().getBaseDir();
+        
+        File originImage = new File(baseDir, relativePath);
+        if (! IMAGE_FILTER.accept(originImage)) {
+            return;
+        }
+        File targetImage = new File(outputFolder.toFile(), relativePath);
+        File parentFile = targetImage.getParentFile();
+        if (!parentFile.exists()) {
+            parentFile.mkdirs();
+        }
+        try {
+            FileUtils.copyFile(originImage, targetImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-	@Deprecated
-	public void ensureImages() {
-		Path outputFolder = getContext().getOutputFolder();
-		if (outputFolder==null){
-			throw new IllegalStateException("no output folder set!");
-		}
-		File targetImagesDir = new File(outputFolder.toFile(), "images");
-		if (!targetImagesDir.exists()) {
-			targetImagesDir.mkdirs();
-			targetImagesDir.deleteOnExit();
-		}
-		copyImagesToOutputFolder(getCachedSourceImagesPath(), targetImagesDir);
-		getContext().targetImagesDir=targetImagesDir;
-
-	}
+    }
 	
 	public String getCachedSourceImagesPath() {
 		if (cachedSourceImagesPath == null) {

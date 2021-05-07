@@ -5,6 +5,7 @@ import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IMarker;
@@ -13,6 +14,7 @@ import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.AsciidoctorHTMLOutputParser;
 import de.jcup.asciidoctoreditor.ContentTransformerData;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
@@ -24,6 +26,7 @@ import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
 import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
 import de.jcup.asciidoctoreditor.asp.AspCompatibleProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorImageProvider;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
@@ -42,7 +45,6 @@ import de.jcup.asciidoctoreditor.util.EclipseUtil;
  */
 class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
-    Pattern tempFolderPattern;
     BuildDoneListener buildDoneListener;
     AsciiDoctorBackendType backend;
     boolean internalPreview;
@@ -88,6 +90,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* -------------------------- */
             /* --- Transform Asciidoc --- */
             /* --- content if necessary - */
+            /* --- (e.g. plantuml files)- */
             /* ----before HTML generation */
             /* -------------------------- */
             File tempAsciiDocFileToConvertIntoHTML = createTransformedTempFileOrNull(editorFileOrNull);
@@ -98,7 +101,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             if (isCanceled(monitor)) {
                 return;
             }
-            increaeWorked(monitor);
+            increaseWorked(monitor);
 
             /* content exists as simple file */
             monitor.subTask("GENERATE");
@@ -110,7 +113,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* -------------------------- */
             convertTempAsciidocFileToHTML(monitor, asciidocWrapper, editorFileOrNull, tempAsciiDocFileToConvertIntoHTML);
 
-            increaeWorked(monitor);
+            increaseWorked(monitor);
 
             if (isCanceled(monitor)) {
                 return;
@@ -120,24 +123,43 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
             /* -------------------------- */
             /* ----- Read origin------- */
-            /* ----- Asciidoc ouptut----- */
+            /* ----- Asciidoc output----- */
             /* -------------------------- */
             File fileToRender = asciidocWrapper.getContext().getFileToRender();
             String originAsciiDocHtml = readFileCreatedByAsciiDoctor(fileToRender, editor.getEditorId());
 
-            increaeWorked(monitor);
+            increaseWorked(monitor);
 
             /* -------------------------- */
             /* -- Drop absolute Pathes -- */
             /* ---from Asciidoc output -- */
             /* -------------------------- */
+            // /* @formatter:off */
+            // transforms
+            // <img src="/tmp/asciidoctor-editor-temp/project_all-testscripts-project-1310962511/images/asciidoctor-editor-logo.png" alt="asciidoctor editor logo">
+            // to
+            // <img src="./images/asciidoctor-editor-logo.png" alt="asciidoctor editor logo">
+            /* @formatter:on */
             String asciidocHTMLWithoutAbsolutePathes = transformAbsolutePathesToRelatives(originAsciiDocHtml);
 
             if (isCanceled(monitor)) {
                 return;
             }
-            increaeWorked(monitor);
+            increaseWorked(monitor);
 
+            /* -------------------------- */
+            /* -- Inspect images and   -- */
+            /* ---ensure available in  -- */
+            /* ---output folder-- */
+            /* -------------------------- */
+            AsciidoctorHTMLOutputParser parser = new AsciidoctorHTMLOutputParser();
+            Set<String> relativeImgSrcPathes = parser.findImageSourcePathes(asciidocHTMLWithoutAbsolutePathes);
+            AsciiDoctorImageProvider imageProvider = asciidocWrapper.getContext().getImageProvider();
+            
+            for (String relativeImgSrcPath: relativeImgSrcPathes) {
+               imageProvider.ensureImageByRelativePath(relativeImgSrcPath);
+            }
+            
             /* -------------------------- */
             /* -- Create final preview -- */
             /* ---HTML file ------------- */
@@ -160,7 +182,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
     }
 
-    private void increaeWorked(IProgressMonitor monitor) {
+    private void increaseWorked(IProgressMonitor monitor) {
         monitor.worked(++worked.amount);
     }
 
@@ -182,7 +204,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         data.internalPreview = internalPreview;
         return data;
     }
-
+    /* transform if necessary - e.g. plantuml files must be converted before to adoc... */
     private File createTransformedTempFileOrNull(File editorFileOrNull) throws IOException {
         File fileToConvertIntoHTML = null;
 
@@ -248,7 +270,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
                 outputFile = editor.getTemporaryExternalPreviewFile();
             }
             AsciiDocStringUtils.writeTextToUTF8File(previewHTML, outputFile);
-            increaeWorked(monitor);
+            increaseWorked(monitor);
 
         } catch (IOException e1) {
             AsciiDoctorEditorUtil.logError("Was not able to save temporary files for preview!", e1);
@@ -304,13 +326,19 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
     }
 
     /*
-     * Calling Asciidoctor generates output with absolute pathes - we keep the
-     * originally generated asciidoc file as is (fileToConvertIntoHTML) but the
-     * preview files will be changed.
+     * Transforms given HTML and removes all pathes being absolute from HTML
      */
     private String transformAbsolutePathesToRelatives(String html) {
-        String newHTML = tempFolderPattern.matcher(html).replaceAll("");
-        return newHTML;
+        
+        AbsolutePathPatternFactory patternFactory = new AbsolutePathPatternFactory();
+        AsciiDoctorWrapper wrapper = editor.getWrapper();
+        Pattern tempFolderPattern = patternFactory.createRemoveAbsolutePathToTempFolderPattern(wrapper);
+        Pattern baseFolderPattern = patternFactory.createRemoveAbsolutePathToBaseFolderPattern(wrapper);
+
+        
+        String htmlWithoutAbsolutePathes = tempFolderPattern.matcher(html).replaceAll("");
+        htmlWithoutAbsolutePathes  = baseFolderPattern.matcher(htmlWithoutAbsolutePathes).replaceAll("");
+        return htmlWithoutAbsolutePathes;
     }
 
     private String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, long editorId) {

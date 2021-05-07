@@ -44,7 +44,7 @@ public class AsciiDoctorProviderContext {
     private AsciiDoctorAttributesProvider attributesProvider;
     private AsciiDoctorOptionsProvider optionsProvider;
 
-    File targetImagesDir;
+//    File targetImagesDir;
     int tocLevels;
     private boolean useInstalled;
     private File fileToRender;

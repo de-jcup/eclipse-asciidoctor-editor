@@ -1,0 +1,51 @@
+=== Rendering
+
+Why is this so problematic?
+
+
+==== Preview in HTML and Same origin policy
+
+The generated HTML files do contain
+absolute pathes which is not allowed 
+in all browsers. So images are not rendered
+
+To handle this, the generated HTML output
+is transformed from absolute pathes to relative
+ones
+
+==== Hidden editor files
+We use hidden editor files. 
+
+Reason for these files:
+Artificial (and fixed) base directory possible.
+
+Asciidoctor expects the rendered file
+be inside the base directory.
+
+This makes it copmlicated when it comes
+to includes and other situations
+
+So we do following:
+A hidden editor file is created, which
+includes the origin editor file.
+
+So base directory is now the hidden editor
+file parent folder. 
+ 
+
+
+==== Generated files problem
+
+Unfortunately the generated diagrams
+do appear inside original sources
+
+So it is necessary to set attribute 
+`imagesoutdir` .
+
+But the location must be the same as
+the normal images directory, because asciidoc
+just only accept one imagesdir...
+
+So this must be calculated to real
+target image directory in temp folder
+

@@ -89,7 +89,6 @@ public class MarkdownFilesToAsciidoctorConverterTest {
         String expected = TestFileAccess.getTestResourceAsString("markdown/expected/markdown1.adoc");
         /* execute */
         String converted = converterToTest.convert(origin);
-        System.out.println(converted);
         
         /* test */
         assertEquals(expected,converted);

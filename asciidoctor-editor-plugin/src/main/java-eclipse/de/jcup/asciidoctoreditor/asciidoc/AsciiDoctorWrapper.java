@@ -87,6 +87,7 @@ public class AsciiDoctorWrapper {
             Map<String, Object> options = optionsProvider.
                         createOptionsContainingAttributes(asciiDoctorBackendType,attributes);
 
+            
             /*start conversion by asciidoctor */
             AsciidoctorAdapter asciiDoctorAdapter = context.getAsciiDoctor();
             asciiDoctorAdapter.convertFile(
@@ -176,7 +177,8 @@ public class AsciiDoctorWrapper {
         context.setConfigFiles(configFiles);
         if (data.useHiddenFile) {
             /* asciidoc files ...*/
-            context.setFileToRender(AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder(),configFiles, configRoot.getAbsolutePath()));
+            File createdHiddenEditorFile = AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder(),configFiles, configRoot.getAbsolutePath());
+            context.setFileToRender(createdHiddenEditorFile);
         } else {
             /* plantuml, ditaa files ...*/
             context.setFileToRender(data.asciiDocFile);

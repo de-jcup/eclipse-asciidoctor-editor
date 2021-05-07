@@ -228,7 +228,8 @@ public class AsciiDoctorEditorPreferences {
     }
 
     public boolean isUsingPreviewImageDirectory() {
-        return getBooleanPreference(P_USE_PREVIEW_IMAGEDIRECTORY);
+        return true; // we do now always use the preview image directory see https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/314
+//        return getBooleanPreference(P_USE_PREVIEW_IMAGEDIRECTORY);
     }
 
     public int getAspServerMinPort() {

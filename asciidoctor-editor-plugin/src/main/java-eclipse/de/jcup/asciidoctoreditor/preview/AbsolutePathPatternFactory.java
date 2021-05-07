@@ -9,11 +9,20 @@ import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
 public class AbsolutePathPatternFactory {
 
     public Pattern createRemoveAbsolutePathToTempFolderPattern(AsciiDoctorWrapper wrapper) {
-        Path tempFolder = wrapper.getTempFolder();
+        Path folder = wrapper.getTempFolder();
+        return createRemoveAbsolutePathPattern(folder);
+    }
+    
+    public Pattern createRemoveAbsolutePathToBaseFolderPattern(AsciiDoctorWrapper wrapper) {
+        Path folder = wrapper.getContext().getBaseDir().toPath();
+        return createRemoveAbsolutePathPattern(folder);
+    }
+
+    private Pattern createRemoveAbsolutePathPattern(Path folder) {
         // Convert to URI as asciidoc convert file path to URI in html document.
         // So if the path contains a space or a special character it will be percent
         // encoded
-        URI absolutePathToTempFolder = tempFolder.toFile().toURI();
+        URI absolutePathToTempFolder = folder.toFile().toURI();
         String path = absolutePathToTempFolder.getRawPath();
         if (isWindowsOS() && path.startsWith("/")) {
             path = path.substring(1);

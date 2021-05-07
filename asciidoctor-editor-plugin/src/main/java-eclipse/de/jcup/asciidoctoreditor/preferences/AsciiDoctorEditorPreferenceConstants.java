@@ -29,6 +29,7 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	P_EDITOR_MATCHING_BRACKETS_COLOR("matchingBracketsColor"),
 	P_EDITOR_AUTO_CREATE_END_BRACKETSY("autoCreateEndBrackets"),
 	
+	@Deprecated// see 
 	P_USE_PREVIEW_IMAGEDIRECTORY("usePreviewImageDirectory"),
 	P_LINK_OUTLINE_WITH_EDITOR("linkOutlineWithEditor"),
 	P_LINK_EDITOR_WITH_PREVIEW("linkEditorWithPreview"),
