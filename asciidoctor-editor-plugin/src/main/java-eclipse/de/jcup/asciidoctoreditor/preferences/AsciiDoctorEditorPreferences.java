@@ -299,5 +299,9 @@ public class AsciiDoctorEditorPreferences {
         return PlantUMLOutputFormat.fromString(getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT));
     }
 
+    public boolean isAutoCreateConfigEnabled() {
+        return true;
+    }
+
 
 }

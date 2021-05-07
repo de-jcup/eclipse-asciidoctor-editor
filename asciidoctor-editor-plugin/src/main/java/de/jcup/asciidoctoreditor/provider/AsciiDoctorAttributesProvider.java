@@ -16,6 +16,7 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -55,33 +56,61 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
             if (getContext().tocLevels > 0) {
                 attrBuilder.attribute("toclevels", "" + getContext().tocLevels);
             }
+        }else {
+            attrBuilder.attribute("!toc","");
         }
         attrs = attrBuilder.get();
         String outputFolderAbsolutePath = createAbsolutePath(getOutputFolder());
         attrs.setAttribute("outdir", outputFolderAbsolutePath);
         
-        /* now we must set "imagesoutdir", otherwise generated images will alwys appear inside eclipse project */
+        /* if imagesdir is relative, convert to absolute*/
         Object imagesDir = getCachedAttributes().get("imagesdir");
         if (imagesDir instanceof String) {
-            
-            String path=null;
-            
-            String absolutePathOfImagesDirInProject = (String) imagesDir;
-            if (absolutePathOfImagesDirInProject.startsWith(absolutePathBaseDir)) {
-                path = absolutePathOfImagesDirInProject.substring(absolutePathBaseDir.length());
-                if (path.startsWith("/")) {
-                    path= path.substring(1);
+            String imagesDirString = (String) imagesDir;
+            if (imagesDirString.startsWith(".")) {
+                /* a relative path so convert to absolute one*/
+                File file = new File(absolutePathBaseDir, imagesDirString);
+                try {
+                    attrs.setAttribute("imagesdir", file.getCanonicalPath());
+                } catch (IOException e) {
+                    attrs.setAttribute("imagesdir", file.getAbsolutePath());
                 }
-            }else {
-                path = absolutePathOfImagesDirInProject; // fall back to rootfolder for the project in tmp...
             }
-            File target = new File(outputFolderAbsolutePath,path);
-            attrs.setAttribute("imagesoutdir",target.getAbsolutePath());
-            
-        }else {
-            attrs.setAttribute("imagesoutdir",outputFolderAbsolutePath);
         }
+        
+        handleImagesOutDirAttribute(attrs, absolutePathBaseDir, outputFolderAbsolutePath);
+        
         return attrs;
+    }
+
+    private void handleImagesOutDirAttribute(Attributes attrs, String absolutePathBaseDir, String outputFolderAbsolutePath) {
+//        /* now we must set "imagesoutdir", otherwise generated images will alwys appear inside eclipse project */
+//        Object imagesDir = getCachedAttributes().get("imagesdir");
+//        if (imagesDir instanceof String) {
+//            
+//            String relativePath=null;
+//            
+//            String absolutePathOfImagesDirInProject = (String) imagesDir;
+//            if (absolutePathOfImagesDirInProject.startsWith(absolutePathBaseDir)) {
+//                relativePath = absolutePathOfImagesDirInProject.substring(absolutePathBaseDir.length());
+//                if (relativePath.startsWith("/")) {
+//                    relativePath= relativePath.substring(1);
+//                }
+//            }else {
+//                /* not a subfolder - so maybe lower*/
+//                // absolutePathBaseDir=              /home/albert/develop/workspaces/runtime-EclipseApplication/test2/xyz/abc
+//                // absolutePathOfImagesDirInProject= /home/albert/develop/workspaces/runtime-EclipseApplication/test2/images33
+//                relativePath = ""; // fall back to rootfolder for the project in tmp...
+//            }
+//            File target = new File(outputFolderAbsolutePath,relativePath);
+//            attrs.setAttribute("imagesoutdir",target.getAbsolutePath());
+//            
+//        }else {
+//            attrs.setAttribute("imagesoutdir",outputFolderAbsolutePath);
+//        }
+        
+        File target = new File(outputFolderAbsolutePath,"img");
+        attrs.setAttribute("imagesoutdir", target.getAbsolutePath());
     }
 
     protected Map<String, Object> getCachedAttributes() {
@@ -94,14 +123,11 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
     protected Map<String, Object> resolveAttributes() {
         AsciiDoctorProviderContext context = getContext();
         
-//        getContext().getLogAdapter().resetTimeDiff();
         Map<String, Object> map = getContext().getAsciiDoctor().resolveAttributes(context.getAsciiDocFile());
 
         // now we have to apply the parts from config file as well:
         AsiidocConfigFileSupport support = getContext().getConfigFileSupport();
         return support.calculateResolvedMap(map, getContext().getConfigFiles());
-//        getContext().getLogAdapter().logTimeDiff("resolved attributes from base dir:" + baseDir);
-//        return map;
     }
 
     protected String createAbsolutePath(Path path) {

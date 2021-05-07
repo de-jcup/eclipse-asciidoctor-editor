@@ -3,15 +3,21 @@ package de.jcup.asciidoctoreditor.asciidoc;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.LogHandler;
 import de.jcup.asciidoctoreditor.PrintStreamLogHandler;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 // see https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/314 for details
 public class AsiidocConfigFileSupport {
@@ -21,6 +27,8 @@ public class AsiidocConfigFileSupport {
     private static final String FILENAME_ASCIIDOCTORCONFIG_ADOC = FILENAME_ASCIIDOCTORCONFIG + ".adoc";
     private LogHandler logHandler;
     private Path rootFolder;
+    
+    private boolean autoCreateConfig;
 
     public AsiidocConfigFileSupport(Path rootFolder) {
         this(null, rootFolder);
@@ -28,6 +36,15 @@ public class AsiidocConfigFileSupport {
 
     public Path getRootFolder() {
         return rootFolder;
+    }
+    
+    /**
+     * When enabled, the support will automatically create a config file at root location when
+     * no no config is found at all.
+     * @param autoCreateConfig
+     */
+    public void setAutoCreateConfig(boolean autoCreateConfig) {
+        this.autoCreateConfig = autoCreateConfig;
     }
 
     public AsiidocConfigFileSupport(LogHandler logHandler, Path rootFolder) {
@@ -44,7 +61,8 @@ public class AsiidocConfigFileSupport {
     }
 
     /**
-     * Collects configuration files
+     * Collects configuration files - when auto create is enabled, a configuraiton at root
+     * level will be created when no other config has been found.
      * @param asciidocFile
      * @return configuration files - first one inside list the most far one (near parent), last one the nearest!
      */
@@ -53,6 +71,32 @@ public class AsiidocConfigFileSupport {
         walker.walk(asciidocFile);
         /* we must reverse order */
         Collections.reverse(walker.filesFound);
+        
+        if (walker.filesFound.isEmpty()) {
+            if (autoCreateConfig) {
+                /* we shall create a config file at root level*/
+                /* @formatter:off */
+                String content="// This is a generated asciidoctor editor config file - because there was none.\n"+
+                               "// (If you do not want such a file generated, you can turn it off inside preferences)\n"+
+                               "// \n"+
+                               "// The next line would set imagesdir attribute to subfolder \"images\" where this config file is located.\n" +
+                               "// :imagesdir: {asciidoctorconfigdir}/images\n"+
+                               "// \n"+
+                               "// Documentation available at https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki/Asciidoctor-configfiles\n";
+                        ;
+                               /* @formatter:on */
+                File file = new File(rootFolder.toFile(),".asciidoctorconfig.adoc");
+                Path targetPath = file.toPath();
+                try {
+                    Files.write(targetPath, content.getBytes(Charset.forName("UTF-8")));
+                    
+                    return Arrays.asList(createAsciidocConfigFile(targetPath));
+                }catch (IOException e) {
+                    AsciiDoctorEditorUtil.logError("Was not able to auto create config file",e);
+                }
+            }
+        }
+        
         return walker.filesFound;
     }
 
@@ -109,8 +153,11 @@ public class AsiidocConfigFileSupport {
     }
 
     private AsciidoctorConfigFile createAsciidocConfigFile(Path file) throws IOException {
+        return createAsciidocConfigFile(file, file.toFile());
+    }
 
-        String content = AsciiDocStringUtils.readUTF8FileToString(file.toFile());
+    private AsciidoctorConfigFile createAsciidocConfigFile(Path file, File asFile) throws IOException {
+        String content = AsciiDocStringUtils.readUTF8FileToString(asFile);
         AsciidoctorConfigFile configFile = new AsciidoctorConfigFile(content, file);
 
         return configFile;

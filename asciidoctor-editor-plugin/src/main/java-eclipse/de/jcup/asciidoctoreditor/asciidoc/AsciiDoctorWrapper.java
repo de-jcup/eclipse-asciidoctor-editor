@@ -173,7 +173,15 @@ public class AsciiDoctorWrapper {
         
         AsiidocConfigFileSupport support = new AsiidocConfigFileSupport(configRoot.toPath());
         context.setConfigRootSupport(support);
-        List<AsciidoctorConfigFile> configFiles = context.getConfigFileSupport().collectConfigFiles(context.getAsciiDocFile().toPath());
+        
+        /* setup auto config creation - as configured */
+        boolean autoCreateConfigEnabled = AsciiDoctorEditorPreferences.getInstance().isAutoCreateConfigEnabled();
+
+        AsiidocConfigFileSupport configFileSupport = context.getConfigFileSupport();
+        configFileSupport.setAutoCreateConfig(autoCreateConfigEnabled);
+        
+        
+        List<AsciidoctorConfigFile> configFiles = configFileSupport.collectConfigFiles(context.getAsciiDocFile().toPath());
         context.setConfigFiles(configFiles);
         if (data.useHiddenFile) {
             /* asciidoc files ...*/
