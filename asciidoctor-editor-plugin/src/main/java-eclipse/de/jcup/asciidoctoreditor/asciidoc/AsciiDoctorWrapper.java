@@ -28,8 +28,13 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
 import de.jcup.asciidoctoreditor.EclipseResourceHelper;
@@ -54,8 +59,8 @@ public class AsciiDoctorWrapper {
 
     private AsciiDoctorProviderContext context;
     private Path tempFolder;
-    private IProject project; 
-    
+    private IProject project;
+
     public AsciiDoctorWrapper(IProject project, LogAdapter logAdapter) {
         if (logAdapter == null) {
             throw new IllegalArgumentException("log adapter may not be null!");
@@ -63,7 +68,7 @@ public class AsciiDoctorWrapper {
         this.project = project;
         this.logAdapter = logAdapter;
         this.tempFolder = createTempPath(project);
-        
+
         this.context = new AsciiDoctorProviderContext(EclipseAsciiDoctorAdapterProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
         this.htmlBuilder = new AsciiDoctorWrapperHTMLBuilder(context);
 
@@ -78,23 +83,17 @@ public class AsciiDoctorWrapper {
             /* @formatter:on */
             initContext(context, data);
 
-            /* build attributes*/
+            /* build attributes */
             AsciiDoctorAttributesProvider attributesProvider = context.getAttributesProvider();
             Attributes attributes = attributesProvider.createAttributes();
 
             /* build options - containing attribute parameters */
             AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
-            Map<String, Object> options = optionsProvider.
-                        createOptionsContainingAttributes(asciiDoctorBackendType,attributes);
+            Map<String, Object> options = optionsProvider.createOptionsContainingAttributes(asciiDoctorBackendType, attributes);
 
-            
-            /*start conversion by asciidoctor */
+            /* start conversion by asciidoctor */
             AsciidoctorAdapter asciiDoctorAdapter = context.getAsciiDoctor();
-            asciiDoctorAdapter.convertFile(
-                    data.editorFileOrNull, 
-                    context.getFileToRender(), 
-                    options, 
-                    monitor);
+            asciiDoctorAdapter.convertFile(data.editorFileOrNull, context.getFileToRender(), options, monitor);
 
             refreshParentFolderIfNecessary();
             /* @formatter:off */
@@ -179,6 +178,13 @@ public class AsciiDoctorWrapper {
 
         AsiidocConfigFileSupport configFileSupport = context.getConfigFileSupport();
         configFileSupport.setAutoCreateConfig(autoCreateConfigEnabled);
+        if (project!=null) {
+            configFileSupport.setAutoCreateConfigCallback(()->{
+                createRefreshAutoConfigFolderJob(project).schedule();
+            });
+        }else {
+            configFileSupport.setAutoCreateConfigCallback(null);
+        }
         
         
         List<AsciidoctorConfigFile> configFiles = configFileSupport.collectConfigFiles(context.getAsciiDocFile().toPath());
@@ -193,7 +199,36 @@ public class AsciiDoctorWrapper {
         }
 
     }
+    
+    private Job createRefreshAutoConfigFolderJob(final IProject project) {
+       return new RefreshAFterAutoCreateConfigurationFileJob(project);
+    }
+    
+    private class RefreshAFterAutoCreateConfigurationFileJob extends Job{
 
+        private IProject project;
+
+        public RefreshAFterAutoCreateConfigurationFileJob(IProject project) {
+            super("Refresh because auto configuration added");
+            this.project=project;
+        }
+
+        @Override
+        protected IStatus run(IProgressMonitor monitor) {
+            try {
+                monitor.beginTask("refresh folder because asciidoc config automatically added", 1);
+                /* refresh */
+                project.refreshLocal(IResource.DEPTH_INFINITE, null);
+                monitor.worked(1);
+
+                return Status.OK_STATUS;
+            } catch (CoreException e) {
+                return e.getStatus();
+            }
+        }
+        
+    }
+    
     /**
      * Resets cached values: baseDir, imagesDir
      */

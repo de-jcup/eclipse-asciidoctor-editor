@@ -27,6 +27,7 @@ import de.jcup.asciidoctoreditor.asciidoc.AsiidocConfigFileSupport;
 
 public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
+    public static final String IMAGE_OUTPUT_DIR_NAME = "img";
     private Map<String, Object> cachedAttributes;
 
     AsciiDoctorAttributesProvider(AsciiDoctorProviderContext context) {
@@ -84,32 +85,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
     }
 
     private void handleImagesOutDirAttribute(Attributes attrs, String absolutePathBaseDir, String outputFolderAbsolutePath) {
-//        /* now we must set "imagesoutdir", otherwise generated images will alwys appear inside eclipse project */
-//        Object imagesDir = getCachedAttributes().get("imagesdir");
-//        if (imagesDir instanceof String) {
-//            
-//            String relativePath=null;
-//            
-//            String absolutePathOfImagesDirInProject = (String) imagesDir;
-//            if (absolutePathOfImagesDirInProject.startsWith(absolutePathBaseDir)) {
-//                relativePath = absolutePathOfImagesDirInProject.substring(absolutePathBaseDir.length());
-//                if (relativePath.startsWith("/")) {
-//                    relativePath= relativePath.substring(1);
-//                }
-//            }else {
-//                /* not a subfolder - so maybe lower*/
-//                // absolutePathBaseDir=              /home/albert/develop/workspaces/runtime-EclipseApplication/test2/xyz/abc
-//                // absolutePathOfImagesDirInProject= /home/albert/develop/workspaces/runtime-EclipseApplication/test2/images33
-//                relativePath = ""; // fall back to rootfolder for the project in tmp...
-//            }
-//            File target = new File(outputFolderAbsolutePath,relativePath);
-//            attrs.setAttribute("imagesoutdir",target.getAbsolutePath());
-//            
-//        }else {
-//            attrs.setAttribute("imagesoutdir",outputFolderAbsolutePath);
-//        }
-        
-        File target = new File(outputFolderAbsolutePath,"img");
+        File target = new File(outputFolderAbsolutePath,IMAGE_OUTPUT_DIR_NAME);
         attrs.setAttribute("imagesoutdir", target.getAbsolutePath());
     }
 

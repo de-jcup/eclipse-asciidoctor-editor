@@ -75,7 +75,9 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 
 	P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH("pathToJavaBinaryForASPLaunch"), 
 	
-	P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT("outlineGroupingEnabledPerDefault"), 
+	P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT("outlineGroupingEnabledPerDefault"),
+	
+	P_AUTOCREATE_INITIAL_CONFIGFILE("autoCreateInitialAsciidocConfigFile"), 
 	
 	;
 

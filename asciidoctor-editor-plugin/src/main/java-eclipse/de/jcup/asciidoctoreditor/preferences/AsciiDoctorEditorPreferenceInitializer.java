@@ -68,6 +68,8 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_IMAGES.getId(), true);
 		store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO.getId(), true);
 		store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_PLANTUML_MACRO.getId(), true);
+		
+		store.setDefault(P_AUTOCREATE_INITIAL_CONFIGFILE.getId(), true);
 
 		/* ++++++++++++ */
 		/* + Tooltips + */

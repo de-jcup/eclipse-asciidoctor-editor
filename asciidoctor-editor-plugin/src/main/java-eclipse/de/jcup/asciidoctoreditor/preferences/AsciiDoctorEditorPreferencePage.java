@@ -46,6 +46,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.PreviewLayout;
+import de.jcup.asciidoctoreditor.asciidoc.AsiidocConfigFileSupport;
 import de.jcup.asciidoctoreditor.presentation.AccessibleBooleanFieldEditor;
 import de.jcup.asciidoctoreditor.presentation.AccessibleDirectoryFieldEditor;
 import de.jcup.asciidoctoreditor.presentation.AccessibleFileFieldEditor;
@@ -213,12 +214,13 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         addField(tocLevels);
 
         devNull = new Composite(uiComposite, SWT.NONE);
-//        BooleanFieldEditor forceImageDirEnabled = new BooleanFieldEditor(P_USE_PREVIEW_IMAGEDIRECTORY.getId(), "Use image directory in preview folder", devNull);
-//        forceImageDirEnabled.getDescriptionControl(devNull)
-//                .setToolTipText("Enable this when you are using the ':imagesdir:' attribute. \n" + "This will ensure imagesdir content and also generated diagrams are available in temp folder.\n\n"
-//                        + "When you are using NOT attribute ':imagesdir:' but relative pathes you can turn off this option.\n" + "In this case the base dir will be set as image directory.");
-//        addField(forceImageDirEnabled);
-//        devNull = new Composite(uiComposite, SWT.NONE);
+        BooleanFieldEditor autoConfigFileCreationEnabled = new BooleanFieldEditor(P_AUTOCREATE_INITIAL_CONFIGFILE.getId(), "Enable initial config file auto creation", devNull);
+        autoConfigFileCreationEnabled.getDescriptionControl(devNull)
+                .setToolTipText("When enabled, a "+AsiidocConfigFileSupport.FILENAME_ASCIIDOCTORCONFIG_ADOC+" with description inside \n"
+                        + "will be created in project root folder when no other config file exists.");
+        addField(autoConfigFileCreationEnabled);
+        devNull = new Composite(uiComposite, SWT.NONE);
+        
         BooleanFieldEditor linkEditorWithPreviewEnabled = new BooleanFieldEditor(P_LINK_EDITOR_WITH_PREVIEW.getId(), "Link editor with internal preview", devNull);
         linkEditorWithPreviewEnabled.getDescriptionControl(devNull)
                 .setToolTipText("When enabled editor caret movements are scrolled in internal preview.\n" + "This works only in some situations e.g. when cursor moves to a headline");

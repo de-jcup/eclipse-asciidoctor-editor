@@ -300,7 +300,7 @@ public class AsciiDoctorEditorPreferences {
     }
 
     public boolean isAutoCreateConfigEnabled() {
-        return true;
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_AUTOCREATE_INITIAL_CONFIGFILE);
     }
 
 

@@ -26,6 +26,7 @@ import de.jcup.asciidoctoreditor.asciidoc.Sha256StringEncoder;
 import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
 import de.jcup.asciidoctoreditor.asp.AspCompatibleProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorAttributesProvider;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
@@ -182,7 +183,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
     private String fixImageLocationPathesInsideHTML(AsciiDoctorWrapper asciidocWrapper, String asciidocHTML) throws IOException {
         AsciidoctorHTMLOutputParser parser = new AsciidoctorHTMLOutputParser();
         File tempFolder = asciidocWrapper.getTempFolder().toFile();
-        File imageOutDir = new File(tempFolder, "img");
+        File imageOutDir = new File(tempFolder, AsciiDoctorAttributesProvider.IMAGE_OUTPUT_DIR_NAME);
         Set<String> pathes = parser.findImageSourcePathes(asciidocHTML);
         for (String path : pathes) {
             File file = new File(path);
