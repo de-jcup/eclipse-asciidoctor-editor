@@ -5,11 +5,7 @@ import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -78,16 +74,6 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         }
     }
 
-    private class ConvertData {
-        String originPath;
-        File flatFile;
-        
-        @Override
-        public String toString() {
-            return "ConverterData:origin="+originPath+", to "+flatFile;
-        }
-    }
-
     private void buildHTMLPreviewFile(IProgressMonitor monitor) {
         if (isCanceled(monitor)) {
             return;
@@ -141,7 +127,9 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* ----- Asciidoc output----- */
             /* -------------------------- */
             File fileToRender = asciidocWrapper.getContext().getFileToRender();
-            String originAsciiDocHtml = readFileCreatedByAsciiDoctor(fileToRender, editor.getEditorId());
+            String originalAsciidocHTML = readFileCreatedByAsciiDoctor(fileToRender, editor.getEditorId());
+
+            String asciidocHTML = originalAsciidocHTML;
 
             increaseWorked(monitor);
 
@@ -149,86 +137,18 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* -- Read image pathes -- */
             /* ---from Asciidoc output -- */
             /* -------------------------- */
-            List<ConvertData> list = new ArrayList<>();
-
-            AsciidoctorHTMLOutputParser parser = new AsciidoctorHTMLOutputParser();
-            File tempFolder = asciidocWrapper.getTempFolder().toFile();
-            File imageOutDir = new File(tempFolder,"img");
-            Set<String> pathes = parser.findImageSourcePathes(originAsciiDocHtml);
-            Set<String> pathes2 = new LinkedHashSet<String>();
-            for (String path : pathes) {
-                File file = new File(path);
-                if (file.exists()) {
-                      /*keepas is */
-                    continue;
-                }
-                else {
-                    String p2 = file.getPath();
-                    String replacePath = null;
-                    if(p2.startsWith(".")) {
-                        // relative path
-                        file = new File(asciidocWrapper.getContext().getBaseDir(),p2);
-                        if(file.exists()) {
-                            replacePath=file.getCanonicalPath();
-                        }
-                    }
-                    if (replacePath==null) {
-                        /* lets assume this generated into imageoutdir...*/
-                        replacePath = new File(imageOutDir,file.getName()).getCanonicalPath();
-                    }
-                        
-                    
-                    originAsciiDocHtml=originAsciiDocHtml.replace(path, replacePath);
-                    pathes2.add(replacePath);
-                    
-                    
-//                    File flatFile = new File(tempFolder, AsciiDocFileUtils.createFlatFileName(file, STRING_ENCODER));
-//                    ConvertData converterData = new ConvertData();
-//                    converterData.flatFile = flatFile;
-//                    converterData.originPath = path;
-//                    list.add(converterData);
-//                    
-//                    System.out.println(converterData);
-                }
-            }
-            
-            
-
-            /* -------------------------- */
-            /* -- Drop absolute Pathes -- */
-            /* ---from Asciidoc output -- */
-            /* -------------------------- */
-            // /* @formatter:off */
-            // transforms
-            // <img src="/tmp/asciidoctor-editor-temp/project_all-testscripts-project-1310962511/images/asciidoctor-editor-logo.png" alt="asciidoctor editor logo">
-            // to
-            // <img src="./images/asciidoctor-editor-logo.png" alt="asciidoctor editor logo">
-            /* @formatter:on */
-            String asciidocHTMLWithoutAbsolutePathes = originAsciiDocHtml;//transformAbsolutePathesToRelatives(originAsciiDocHtml);
+            asciidocHTML = fixImageLocationPathesInsideHTML(asciidocWrapper, asciidocHTML);
 
             if (isCanceled(monitor)) {
                 return;
             }
             increaseWorked(monitor);
 
-//            /* -------------------------- */
-//            /* -- Inspect images and -- */
-//            /* ---ensure available in -- */
-//            /* ---output folder-- */
-//            /* -------------------------- */
-//            AsciidoctorHTMLOutputParser parser = new AsciidoctorHTMLOutputParser();
-//            Set<String> relativeImgSrcPathes = parser.findImageSourcePathes(asciidocHTMLWithoutAbsolutePathes);
-//            AsciiDoctorImageProvider imageProvider = asciidocWrapper.getContext().getImageProvider();
-//
-//            for (String relativeImgSrcPath : relativeImgSrcPathes) {
-//                imageProvider.ensureImageByRelativePath(relativeImgSrcPath);
-//            }
-
             /* -------------------------- */
             /* -- Create final preview -- */
             /* ---HTML file ------------- */
             /* -------------------------- */
-            outputFile = enrichPreviewHTMLAndWriteToDisk(monitor, asciidocWrapper, asciidocHTMLWithoutAbsolutePathes);
+            outputFile = enrichPreviewHTMLAndWriteToDisk(monitor, asciidocWrapper, asciidocHTML);
 
         } catch (Throwable e) {
             /*
@@ -244,6 +164,51 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             System.out.println("outputFile:" + outputFile);
         }
 
+    }
+
+    /**
+     * First of all relative pathes will be changed to absolute pathes here. <br>
+     * <br>
+     * After this it replaces wrong absolute pathes targeting the
+     * asciidoctor-diagram outputs with (asciidoctor relies on imagdir attribute,
+     * but asciidoctor-diagramm does use imageoutdir and asciidoctor generator for
+     * HTML generates wrong pathes targeting imagedir and not imageoutdir...
+     * 
+     * @param asciidocWrapper
+     * @param asciidocHTML
+     * @return
+     * @throws IOException
+     */
+    private String fixImageLocationPathesInsideHTML(AsciiDoctorWrapper asciidocWrapper, String asciidocHTML) throws IOException {
+        AsciidoctorHTMLOutputParser parser = new AsciidoctorHTMLOutputParser();
+        File tempFolder = asciidocWrapper.getTempFolder().toFile();
+        File imageOutDir = new File(tempFolder, "img");
+        Set<String> pathes = parser.findImageSourcePathes(asciidocHTML);
+        for (String path : pathes) {
+            File file = new File(path);
+            if (file.exists()) {
+                /* keep as is */
+                continue;
+            } else {
+                String p2 = file.getPath();
+                String replacePath = null;
+                if (p2.startsWith(".")) {
+                    // relative path
+                    file = new File(asciidocWrapper.getContext().getBaseDir(), p2);
+                    if (file.exists()) {
+                        replacePath = file.getCanonicalPath();
+                    }
+                }
+                if (replacePath == null) {
+                    /* lets assume this generated into imageoutdir... */
+                    replacePath = new File(imageOutDir, file.getName()).getCanonicalPath();
+                }
+
+                asciidocHTML = asciidocHTML.replace(path, replacePath);
+
+            }
+        }
+        return asciidocHTML;
     }
 
     private void increaseWorked(IProgressMonitor monitor) {
@@ -391,21 +356,6 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             logError("Was not able to write transformed file:" + filename, e);
             return null;
         }
-    }
-
-    /*
-     * Transforms given HTML and removes all pathes being absolute from HTML
-     */
-    private String transformAbsolutePathesToRelatives(String html) {
-
-        AbsolutePathPatternFactory patternFactory = new AbsolutePathPatternFactory();
-        AsciiDoctorWrapper wrapper = editor.getWrapper();
-        Pattern tempFolderPattern = patternFactory.createRemoveAbsolutePathToTempFolderPattern(wrapper);
-        Pattern baseFolderPattern = patternFactory.createRemoveAbsolutePathToBaseFolderPattern(wrapper);
-
-        String htmlWithoutAbsolutePathes = tempFolderPattern.matcher(html).replaceAll("");
-        htmlWithoutAbsolutePathes = baseFolderPattern.matcher(htmlWithoutAbsolutePathes).replaceAll("");
-        return htmlWithoutAbsolutePathes;
     }
 
     private String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, long editorId) {

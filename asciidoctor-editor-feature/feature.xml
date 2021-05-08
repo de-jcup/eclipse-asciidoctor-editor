@@ -2,11 +2,11 @@
 <feature
       id="de.jcup.asciidoctoreditor"
       label="Asciidoctor Editor"
-      version="2.2.3"
+      version="2.2.4"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/asciidoctor-editor">
-      AsciiDoctor Editor is a eclipse plugin to edit asciidoc files
+      AsciiDoctor Editor is an eclipse plugin to edit Asciidoc files.
 For details about the plugin please refer to
 https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki
    </description>
@@ -230,7 +230,7 @@ and limitations under the License.
    </license>
 
    <url>
-      <update label="Asciidoctor Editor update site" url="https://dl.bintray.com/de-jcup/asciidoctoreditor"/>
+      <update label="Asciidoctor Editor update site" url="https://de-jcup.github.io/update-site-eclipse-asciidoctor-editor/update-site/"/>
    </url>
 
    <plugin
