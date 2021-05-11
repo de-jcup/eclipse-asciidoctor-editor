@@ -115,11 +115,16 @@ public class InsertAdmonitionAction extends ToolbarAction implements IMenuCreato
 					valueVisibleOnToolbar=keyword;
 					initImageAndText();
 				}
-				
+                /* @formatter:off */
 				@Override
 				protected String getInsertText(InsertTextContext context) {
-					return keyword.getText()+" some nice text to show inside admonition...\n\n";
+					return "["+keyword.name()+"]\n"
+					        + "====\n"
+					        + "An admonition block may contain complex content.\n"
+					        + "\n"
+					        + "====\n";
 				}
+				/* @formatter:on */
 			};
 			return action;
 		}
