@@ -39,6 +39,7 @@ public enum AsciiDoctorDocumentIdentifiers implements AsciiDoctorDocumentIdentif
 	
 	HEADLINE,
 	
+	DELIMITERS,
 	
 	;
 

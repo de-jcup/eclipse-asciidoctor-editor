@@ -1,0 +1,19 @@
+
+.Optional Title
+****
+Sidebars are used to visually separate auxiliary bits of content
+that supplement the main text.
+
+TIP: They can contain any type of content.
+
+.Source code block in a sidebar
+[source,js]
+----
+const { expect, expectCalledWith, heredoc } = require('../test/test-utils')
+----
+****
+
+see 
+
+- https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/346
+- https://docs.asciidoctor.org/asciidoc/latest/blocks/sidebars/#ex-block

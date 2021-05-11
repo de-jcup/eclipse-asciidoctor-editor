@@ -29,6 +29,8 @@ public enum AsciiDoctorEditorSyntaxColorPreferenceConstants implements Preferenc
 	COLOR_ASCIIDOCTOR_COMMAND("colorCommands","Special AsciiDoctor commands"),
 	COLOR_KNOWN_VARIABLES("colorKnownVariables","Known variables"),
 	
+	COLOR_DELIMITERS("colorDelimiters","Delimiters"),
+	
 	;
 
 	private String id;

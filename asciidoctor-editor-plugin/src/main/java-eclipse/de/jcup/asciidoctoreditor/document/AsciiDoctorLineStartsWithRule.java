@@ -30,6 +30,15 @@ public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
 	private boolean multiLines;
 	private boolean mustHaveWhitespaceAfter;
 	
+	public AsciiDoctorLineStartsWithRule(String startsWith, IToken token) {
+        this(startsWith,false,token);
+    }
+	
+	public AsciiDoctorLineStartsWithRule(String startsWith, boolean multiLines, IToken token) {
+        this(startsWith,null,multiLines,token,false);
+    }
+    
+	
 	public AsciiDoctorLineStartsWithRule(String startsWith, String endsWith, boolean multiLines, IToken token) {
 		this(startsWith,endsWith,multiLines,token,false);
 	}

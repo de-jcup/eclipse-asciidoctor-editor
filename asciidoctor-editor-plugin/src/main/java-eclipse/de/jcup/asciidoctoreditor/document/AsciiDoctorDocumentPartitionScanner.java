@@ -46,6 +46,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		IToken includeKeyword = createToken(INCLUDE_KEYWORD);
 		IToken asciidoctorCommand = createToken(ASCIIDOCTOR_COMMAND);
 		IToken headline = createToken(HEADLINE);
+		IToken delimiters = createToken(DELIMITERS);
 
 		List<IPredicateRule> rules = new ArrayList<>();
 		
@@ -85,6 +86,14 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 
 		rules.add(new AsciiDoctorLineStartsWithRule(":", ":", false, knownVariables));
 		rules.add(new SingleLineRule("{", "}", knownVariables, (char) -1, true));
+		
+		
+		rules.add(new AsciiDoctorLineContainsOnlyRule("....", delimiters)); // delimitor ,delimited block
+		rules.add(new AsciiDoctorLineContainsOnlyRule("====", delimiters)); // delimitor , admonition block syntax
+		rules.add(new AsciiDoctorLineContainsOnlyRule("****", delimiters)); // delimitor ,delimited example
+
+		rules.add(new AsciiDoctorLineStartsWithRule(".", headline)); // title
+		rules.add(new AsciiDoctorLineStartsWithRule(" ", delimiters)); // literal paragraphs starting with a space...
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}

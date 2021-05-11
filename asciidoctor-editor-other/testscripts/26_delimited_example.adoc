@@ -1,0 +1,12 @@
+.Onomatopoeia
+====
+The book hit the floor with a *thud*.
+
+He could hear doves *cooing* in the pine trees`' branches.
+====
+
+
+see 
+
+- https://docs.asciidoctor.org/asciidoc/latest/blocks/example-blocks/#delimited
+- https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/347

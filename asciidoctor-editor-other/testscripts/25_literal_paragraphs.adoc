@@ -1,0 +1,12 @@
+=== Headline 2
+This is text
+
+    This is inside a literal paragraph and should be highlighted in editor
+
+This is normal text
+
+
+see 
+
+- https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/#ex-literal
+- https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/343

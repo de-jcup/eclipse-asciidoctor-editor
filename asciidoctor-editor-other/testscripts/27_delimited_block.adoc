@@ -1,0 +1,11 @@
+.Terminal Output 
+....
+From github.com:asciidoctor/asciidoctor
+ * branch        master   -> FETCH_HEAD
+Already up to date.
+....
+
+see 
+
+- https://docs.asciidoctor.org/asciidoc/latest/blocks/add-title/#add-a-title-to-a-delimited-block
+- https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/349
