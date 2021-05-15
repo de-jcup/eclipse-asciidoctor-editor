@@ -83,7 +83,7 @@ public class AsciiDoctorFileReferenceValidator {
                             HttpURLConnection huc = (HttpURLConnection) conn;
                             int responseCode = huc.getResponseCode();
 
-                            if (responseCode > 200 && responseCode < 299) {
+                            if (responseCode < 200 || responseCode > 299) {
                                 /* could be a problem... */
                                 problem = ".. returned HTTP code " + responseCode + " for given URL:" + filePathAsString;
                             }
