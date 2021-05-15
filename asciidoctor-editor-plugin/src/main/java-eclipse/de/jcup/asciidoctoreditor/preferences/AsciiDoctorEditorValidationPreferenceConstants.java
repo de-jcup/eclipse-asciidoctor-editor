@@ -26,7 +26,9 @@ public enum AsciiDoctorEditorValidationPreferenceConstants implements Preference
 
     VALIDATE_IMAGES("validateImagesEnabled", "Validate images"),
 
-    VALIDATE_DIAGRAMS("validateDiagramsEnabled", "Validate diagrams"),
+    VALIDATE_DIAGRAMS("validateDiagramsEnabled", "Validate diagrams"), 
+    
+    VALIDATE_URLS("validateURLsEnabled", "Validate URLs"), 
 
     ;
 

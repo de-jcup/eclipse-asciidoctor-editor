@@ -240,6 +240,11 @@ public class AsciiDoctorEditorPreferences {
         return getPreferenceStore().getInt(P_ASP_SERVER_MAX_PORT.getId());
     }
 
+    public boolean isURLValidationEnabled() {
+        return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_URLS);
+    }
+
+    
     public boolean isIncludeValidationEnabled() {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_INCLUDES);
     }

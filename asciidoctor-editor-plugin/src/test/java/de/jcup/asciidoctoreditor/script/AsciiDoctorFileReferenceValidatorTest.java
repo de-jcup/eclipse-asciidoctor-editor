@@ -33,7 +33,7 @@ public class AsciiDoctorFileReferenceValidatorTest {
 
     @Before
     public void before() {
-        validatorToTest = new AsciiDoctorFileReferenceValidator();
+        validatorToTest = new AsciiDoctorFileReferenceValidator(false);
     }
     
     @Test

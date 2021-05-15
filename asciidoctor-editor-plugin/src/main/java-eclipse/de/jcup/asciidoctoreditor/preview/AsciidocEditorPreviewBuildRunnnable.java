@@ -201,6 +201,13 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         File imageOutDir = new File(tempFolder, AsciiDoctorAttributesProvider.IMAGE_OUTPUT_DIR_NAME);
         Set<String> pathes = parser.findImageSourcePathes(asciidocHTML);
         for (String path : pathes) {
+            if (path==null) {
+                continue;
+            }
+            if (path.indexOf("://")!=-1) {
+                /* we do not replace URIs - e.g. https://example.com/...*/
+                continue;
+            }
             File file = new File(path);
             if (file.exists()) {
                 /* keep as is */

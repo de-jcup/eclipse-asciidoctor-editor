@@ -50,6 +50,10 @@ public class AsciiDoctorEditorValidationPreferencePage extends FieldEditorPrefer
         
         editor = createEditor(VALIDATE_IMAGES, parent);
         editor.getDescriptionControl(parent).setToolTipText("Will validate referenced image file exists and is not a directory");
+        
+        editor = createEditor(VALIDATE_URLS, parent);
+        editor.getDescriptionControl(parent).setToolTipText("If a reference is not file but an external location the URL connection will be tested.\n"
+                + "HTTP connection errors will be returned with dedicated status code.");
 		
 		createComboBox(VALIDATE_ERROR_LEVEL, parent);
 	}

@@ -135,6 +135,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		store.setDefault(VALIDATE_INCLUDES.getId(),true);
 		store.setDefault(VALIDATE_IMAGES.getId(),true);
 		store.setDefault(VALIDATE_DIAGRAMS.getId(),true);
+		store.setDefault(VALIDATE_URLS.getId(),true);
 		
 		store.setDefault(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(),true);
 		
