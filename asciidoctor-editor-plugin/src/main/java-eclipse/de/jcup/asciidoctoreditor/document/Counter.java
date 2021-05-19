@@ -20,6 +20,9 @@ import org.eclipse.jface.text.rules.ICharacterScanner;
 class Counter{
 	int count;
 	
+	void cleanup(ICharacterScanner scanner){
+	    cleanupAndReturn(scanner, false);
+	}
 	boolean cleanupAndReturn(ICharacterScanner scanner, boolean result){
 		if (result){
 			return true; // do not clean up - pos is as wanted

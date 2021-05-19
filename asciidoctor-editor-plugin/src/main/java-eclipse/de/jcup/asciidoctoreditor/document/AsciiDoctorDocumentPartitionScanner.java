@@ -93,7 +93,7 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new AsciiDoctorLineContainsOnlyRule("****", delimiters)); // delimitor ,delimited example
 
 		rules.add(new AsciiDoctorLineStartsWithRule(".", headline)); // title
-		rules.add(new AsciiDoctorLineStartsWithRule(" ", delimiters)); // literal paragraphs starting with a space...
+		rules.add(new AsciiDoctorLiteralParagraphRule(delimiters)); 
 
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}
@@ -116,6 +116,10 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
 		rules.add(new AsciiDoctorLineStartsWithRule(startsWith, endsWith,false, token));
 	}
 
+	public int getOffset() {
+	    return fOffset;
+	}
+	
 	private IToken createToken(AsciiDoctorDocumentIdentifier identifier) {
 		return new Token(identifier.getId());
 	}

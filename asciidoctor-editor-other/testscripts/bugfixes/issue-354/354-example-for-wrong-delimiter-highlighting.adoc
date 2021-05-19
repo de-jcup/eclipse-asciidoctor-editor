@@ -1,0 +1,106 @@
+== Example
+
+== At the beginning
+* list 1a
+* list 2a
+- other
+
+  This is a literal paragraph!
+
+.Title
+
+== With space before
+ * list 1b - NOT a literal paragraph
+ * list 2b  - NOT a literal paragraph
+  - other  - NOT a literal paragraph
+  .Title  - NOT a literal paragraph
+  
+  This is a literal paragraph!
+  
+normal text, so
+  this is also NOT a literal paragraph
+  
+ . list 2a
+ . list 2b
+ . list 3c  
+ 
+normal text
+  
+=== Space length different
+*What about different space-length?*
+
+text
+
+ 1 space
+  2 spaces - does not matter
+   3 spaces
+    4 spaces    
+    
+== literal paragraph with list entries
+  I am a literal paragraph
+  * one - not a list entry
+  * two
+    - sub
+  
+  
+== Onther headline
+  this is a literal paragraph here because headline before
+  
+.Title2
+   this is a literal paragraph here because title before
+ 
+****
+   this is a literal paragraph here
+****
+
+=== Lists
+
+
+   1. this is point one - shall not be a literal paragraph
+   2. this is point two - shall not be a literal paragraph
+   
+  .I am not a title here
+   * 1234
+
+text
+
+  .I am not a title - but ltieral
+
+=== Lists again
+ 
+
+* list again A) ...
+  inside list - NOT a literal paragraph
+
+* list again B) +
+  inside list - NOT a literal paragraph
+    
+* list again C)
+
+  this is a literal paragraph here
+ 
+* list again D)
+
+test 
+  also NOT a literal paragraph
+  also-NOT a literal paragraph
+  
+  but with new line between it is a literal paragraph
+
+== Code examples are not affected 
+[source,java]
+----
+package com.acme.example; // <1>
+
+public class HelloWorld {
+
+    public static void main(String[] args) { <2>
+
+         System.out.println("Hello World!"); // <3>
+
+    }
+}
+----
+<1> Package definition
+<2> Main method with arguments
+<3> Print string to system output
