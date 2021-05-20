@@ -54,12 +54,12 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
 
     @Override
     public IToken evaluate(ICharacterScanner scanner, boolean resume) {
-        if (! (scanner instanceof AsciiDoctorDocumentPartitionScanner)) {
+        if (!(scanner instanceof AsciiDoctorDocumentPartitionScanner)) {
             return Token.UNDEFINED;
         }
         AsciiDoctorDocumentPartitionScanner partitionScanner = (AsciiDoctorDocumentPartitionScanner) scanner;
         Counter counter = new Counter();
-        boolean startOfDocument = partitionScanner.getOffset()==0;
+        boolean startOfDocument = partitionScanner.getOffset() == 0;
         boolean newLine = startOfDocument;
         if (!startOfDocument) {
             scanner.unread();
@@ -84,35 +84,53 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
          * entry!
          */
         counter = new Counter();
+        boolean foundPotentialList = false;
+
+        /*
+         * check if we must break - e.g. when we have only leading spaces for list
+         * entries
+         */
         do {
             int c = scanner.read();
             counter.count++;
 
-            if (c == ' ') {
-                continue;
-            }
-            counter.cleanup(scanner);
+            if (foundPotentialList) {
+                if (c == ' ') {
+                    /* it is list - so cleanup scanner and return not found/undefined */
+                    counter.cleanup(scanner);
+                    return Token.UNDEFINED;
+                }
+                /* it must be something else - its not a list so exit */
+                break;
 
-            boolean isJustAListEntryWithSpacedsBefore = c == '*' || c == '.' || c == '-';
-            if (isJustAListEntryWithSpacedsBefore) {
-                return Token.UNDEFINED;
+            } else {
+
+                if (c == ' ') {
+                    /* we accept as many spaces as possible here */
+                    continue;
+                }
+                /* not a space ... */
+                foundPotentialList = (c == '*' || c == '.' || c == '-');
+                if (!foundPotentialList) {
+                    /* character is something else, so cannot be a list */
+                    break;
+                }
             }
-            break;
 
         } while (true);
 
+        String lineWithoutWhitespaces = null;
         /* okay its not a list entry - so check before */
-
-        boolean checkLineBefore = partitionScanner.getOffset()>0;
+        boolean checkLineBefore = partitionScanner.getOffset() > 0;
         if (checkLineBefore) {
 
             /* we must read the complete line before to decide if it possible here or not */
-            StringBuilder lineBefore = new StringBuilder();
+            StringBuilder lineBeforeWithoutWhitespaces = null;
             EndlessLoopPreventer preventer = new EndlessLoopPreventer(100000);
 
-            boolean firstNewLine=true;
+            boolean firstNewLine = true;
             do {
-                if (partitionScanner.getOffset()<=0) {
+                if (partitionScanner.getOffset() <= 0) {
                     break;
                 }
                 scanner.unread(); // one left A
@@ -123,13 +141,14 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
                 }
                 if (c == '\n') {
                     if (firstNewLine) {
-                        firstNewLine=false;
-                    }else {
+                        firstNewLine = false;
+                        lineBeforeWithoutWhitespaces = new StringBuilder();
+                    } else {
                         break;
                     }
-                }else {
-                    if (! Character.isWhitespace(c)) {
-                        lineBefore.insert(0, (char)c);
+                } else {
+                    if (lineBeforeWithoutWhitespaces != null && !Character.isWhitespace(c)) {
+                        lineBeforeWithoutWhitespaces.insert(0, (char) c);
                     }
                 }
                 scanner.unread(); // one left more, so one= before A
@@ -139,18 +158,20 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
 
             } while (true);
 
-            String line = lineBefore.toString();
             boolean accepted = false;
-            accepted = accepted || line.isEmpty();
-            accepted = accepted || line.startsWith("=");
-            accepted = accepted || line.startsWith(".");
-            accepted = accepted || line.startsWith("****");
+            lineWithoutWhitespaces = (lineBeforeWithoutWhitespaces == null ? "" : lineBeforeWithoutWhitespaces.toString());
+            accepted = accepted || lineWithoutWhitespaces.isEmpty();
+            accepted = accepted || lineWithoutWhitespaces.startsWith("=");
+            accepted = accepted || lineWithoutWhitespaces.startsWith(".");
+            accepted = accepted || lineWithoutWhitespaces.startsWith("****");
 
             counter.cleanup(scanner); // we move every time complete back to start
 
             if (!accepted) {
                 return Token.UNDEFINED;
             }
+        }else {
+            lineWithoutWhitespaces="";
         }
 
         /*
@@ -159,7 +180,13 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
         EndlessLoopPreventer preventer = new EndlessLoopPreventer(100000);
         StringBuilder lineBuilder = new StringBuilder();
         do {
+            if (lineWithoutWhitespaces.isEmpty() && lineBuilder.toString().trim().startsWith("1. ")) {
+                counter.cleanup(scanner);
+                return Token.UNDEFINED;
+            }
             int follow = scanner.read();
+            counter.count++;
+
             if (follow == ICharacterScanner.EOF) {
                 /* we accept this as last line being a literal paragraph */
                 return successToken;
@@ -168,14 +195,15 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
                 boolean fetchedLineBeforeIsEmpty = lineBuilder.length() == 0;
 
                 if (fetchedLineBeforeIsEmpty) {
+                    /* end of literal detected */
                     return successToken;// return directly access token
                 } else {
                     /* start new line building */
                     lineBuilder = new StringBuilder();
                 }
             } else {
-                if (!Character.isWhitespace(follow)) {
-                    lineBuilder.append(follow);
+                if (lineBuilder.length() > 0 || !Character.isWhitespace(follow)) {
+                    lineBuilder.append((char) follow);
                 }
             }
             preventer.assertNoEndlessLoop();

@@ -31,10 +31,10 @@ normal text
 
 text
 
- 1 space
-  2 spaces - does not matter
-   3 spaces
-    4 spaces    
+ 1 space - I am a literal paragraph
+  2 spaces - I am a literal paragraph
+   3 spaces - I am a literal paragraph
+    4 spaces - I am a literal paragraph
     
 == literal paragraph with list entries
   I am a literal paragraph
@@ -43,7 +43,7 @@ text
     - sub
   
   
-== Onther headline
+== Other headline
   this is a literal paragraph here because headline before
   
 .Title2
@@ -53,18 +53,28 @@ text
    this is a literal paragraph here
 ****
 
+=== Like lists, but no space between
+
+ *not list -  I am a literal paragraph
+ 
+ .not list or title -  I am a literal paragraph  
+
+ -not list -  I am a literal paragraph
+ 
 === Lists
-
-
-   1. this is point one - shall not be a literal paragraph
-   2. this is point two - shall not be a literal paragraph
+   x
+   1. this is point one - is a literal paragraph because x
+   2. this is point two - is a literal paragraph because x
+   
+   1. this is point one - NOT a literal paragraph
+   2. this is point two - NOT a literal paragraph
    
   .I am not a title here
-   * 1234
+   * 1234 - I am a literal paragraph
 
 text
 
-  .I am not a title - but ltieral
+  .I am not a title - I am a literal paragraph
 
 === Lists again
  
