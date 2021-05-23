@@ -544,12 +544,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         if (temporaryExternalPreviewFile != null && temporaryExternalPreviewFile.exists()) {
             temporaryExternalPreviewFile.delete();
         }
-        if (!isAutoBuildEnabledForExternalPreview()) {
-            /*
-             * when not enabled, we must force to render the document (not internal preview)
-             */
-            buildSupport.build(BuildAsciiDocMode.ALWAYS, false);
-        }
+        /* always build now again the file */
+        buildSupport.build(BuildAsciiDocMode.ALWAYS, false);
+        
         startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
     }
 
