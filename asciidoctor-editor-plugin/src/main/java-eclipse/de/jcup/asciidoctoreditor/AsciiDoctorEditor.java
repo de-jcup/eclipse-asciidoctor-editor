@@ -550,10 +550,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
     }
 
-    private boolean isAutoBuildEnabledForExternalPreview() {
-        return AsciiDoctorEditorPreferences.getInstance().isAutoBuildEnabledForExternalPreview();
-    }
-    
     public void createAndShowPDF() {
         AsciiDoctorEditorPDFLauncher.INSTANCE.createAndShowPDF(this);
     }
@@ -588,7 +584,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         browserAccess.setEnabled(internalPreview);
         sashForm.layout(); // after this the browser will be hidden/shown ...
                            // otherwise we got an empty space appearing
-        if (wasExternalBefore && !isAutoBuildEnabledForExternalPreview()) {
+        if (wasExternalBefore) {
             refreshAsciiDocView();
         } else {
             ensureInternalBrowserShowsURL(null);
