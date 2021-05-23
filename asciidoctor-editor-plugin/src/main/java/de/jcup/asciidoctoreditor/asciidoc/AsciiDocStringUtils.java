@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class AsciiDocStringUtils {
 
@@ -159,6 +161,18 @@ public class AsciiDocStringUtils {
 	}
 
 	public static File writeTextToUTF8File(String transformed, File newTempFile) throws IOException {
+	    if (newTempFile==null) {
+	        throw new IllegalArgumentException("file may not be null!");
+	    }
+	    if (newTempFile.isDirectory()) {
+            throw new IllegalArgumentException("file may not be a directory!");
+        }
+	    
+	    File parentFile = newTempFile.getParentFile();
+	    Path parentFilePath = parentFile.toPath();
+        
+	    Files.createDirectories(parentFilePath);
+	    
 		try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newTempFile),UTF_8))) {
 			bw.write(transformed);
 			bw.close();

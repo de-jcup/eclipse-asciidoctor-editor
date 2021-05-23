@@ -18,10 +18,28 @@ package de.jcup.asciidoctoreditor.asciidoc;
 import static de.jcup.asciidoctoreditor.asciidoc.AsciiDocStringUtils.*;
 import static org.junit.Assert.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import org.junit.Test;
 
 public class AsciiDocStringUtilsTest {
 	
+    @Test
+    public void deleted_temporary_directory_will_be_autocreated_again() throws Exception{
+        /* prepare */
+        Path tmp = Files.createTempDirectory("asciidoc-test");
+        Path filePath = tmp.resolve("sub1/sub2/sub3/testme.puml");
+        
+        Files.delete(tmp);
+        
+        assertTrue(Files.notExists(tmp));
+        
+        /* execute*/
+        AsciiDocStringUtils.writeTextToUTF8File("transforemd-textexample", filePath.toFile());
+        
+    }
+    
 	@Test
 	public void resolveDitaDiagramname_has_name() throws Exception {
 		assertEquals("diagrams/diagram_kubernetes_deployment_architecture.ditaa",resolveFilenameOfDiagramMacroOrNull("ditaa::diagrams/diagram_kubernetes_deployment_architecture.ditaa[format=png, alt=\"Diagram about kubernetes deployment architecture\"]"));
