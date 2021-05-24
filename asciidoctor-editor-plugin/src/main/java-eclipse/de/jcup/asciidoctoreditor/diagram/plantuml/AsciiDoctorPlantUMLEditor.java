@@ -77,8 +77,6 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
             warn("Failed to copy local includes to temp folder: " + e.getMessage());
         }
         
-        
-        
     }
 
     private void warn(String message) {

@@ -39,7 +39,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
 
     public AsciiDoctorEditorBuildSupport(AsciiDoctorEditor editor) {
         super(editor);
-        this.factory=new AsciidocBuildAndPreviewJobFactory(getEditor());
+        this.factory = new AsciidocBuildAndPreviewJobFactory(getEditor());
     }
 
     /**
@@ -67,7 +67,8 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         getEditor().validate();
 
         boolean rebuildEnabled = true;
-        if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !getEditor().isInternalPreview()) {
+        boolean internalPreview2 = getEditor().isInternalPreview();
+        if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !internalPreview2) {
             rebuildEnabled = AsciiDoctorEditorPreferences.getInstance().isAutoBuildEnabledForExternalPreview();
         }
         if (!rebuildEnabled) {
@@ -89,23 +90,37 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         try {
             getEditor().getOutputBuildSemaphore().acquire();
             if (initializing) {
-                File previewInitializingFile = new File(getEditor().getWrapper().getAddonsFolder(), "html/initialize/preview_initializing.html");
-                boolean previewInitializingFileFound = false;
-                try {
-                    if (previewInitializingFile.exists()) {
-                        previewInitializingFileFound = true;
-                    }
-                    String previewFileURL = previewInitializingFile.toURI().toURL().toExternalForm();
-                    getEditor().getBrowserAccess().setUrl(previewFileURL);
-                } catch (MalformedURLException e) {
-                    logError("Preview initializer html file not valid url", e);
-                }
-                if (!previewInitializingFileFound) {
-                    getEditor().getBrowserAccess().safeBrowserSetText("<html><body><h3>Initializing document</h3></body></html>");
-                }
+                showInitializingInfo(getEditor());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private static String previewFileURL = null;
+    private static final String INITIALIZE_FALLBACK_HTML = "<html><body><h3>Initializing document</h3></body></html>";
+
+    public static void showInitializingInfo(AsciiDoctorEditor editor) {
+        BrowserAccess browserAccess = editor.getBrowserAccess();
+        
+        if (previewFileURL == null) {
+            /* we only need this one time */
+            previewFileURL = "";
+
+            File previewInitializingFile = new File(editor.getWrapper().getAddonsFolder(), "html/initialize/preview_initializing.html");
+            if (previewInitializingFile.exists()) {
+                try {
+                    previewFileURL = previewInitializingFile.toURI().toURL().toExternalForm();
+                } catch (MalformedURLException e) {
+                    logError("Preview initializer html file not valid url", e);
+                }
+            }
+        }
+        
+        if (previewFileURL.equals("")) {
+            browserAccess.safeBrowserSetText(INITIALIZE_FALLBACK_HTML);
+        }else {
+            browserAccess.setUrl(previewFileURL);
         }
     }
 

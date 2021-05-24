@@ -34,6 +34,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.CoolBarManager;
@@ -72,6 +73,7 @@ import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
@@ -262,9 +264,12 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     @Override
     public void dispose() {
         super.dispose();
-        browserAccess.dispose();
+        if (browserAccess!=null) {
+            browserAccess.dispose();
+        }
 
         getWrapper().dispose();
+
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
     }
 
@@ -668,15 +673,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         } else {
             editorId = file.getFullPath().toFile().hashCode();
         }
-        if (browserAccess == null) {
-            /*
-             * happens when eclipse is starting editors opened before are initialized. The
-             * createPartControl is not already called
-             */
-            validate();
-            return;
-        }
-        buildSupport.build(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
+        
+        
     }
 
     @Override
@@ -813,18 +811,24 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
             @Override
             public void initialize(Browser browser) {
+                  UIJob job = new UIJob("Initialize Browser") {
+                    
+                    @Override
+                    public IStatus runInUIThread(IProgressMonitor monitor) {
+                        AsciiDoctorEditorBuildSupport.showInitializingInfo(AsciiDoctorEditor.this);
+                        return Status.OK_STATUS;
+                    }
+                };
+                job.schedule();
             }
         });
-
-        buildSupport.build(BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED, internalPreview);
+        PreviewLayout initialLayout = getInitialLayoutMode();
+        boolean internal = !initialLayout.isExternal();
 
         synchronizer.installInBrowser();
-
-        PreviewLayout initialLayout = getInitialLayoutMode();
-        if (initialLayout.isExternal()) {
-            setInternalPreview(false);
-        } else {
-            setInternalPreview(true);
+        
+        setInternalPreview(internal);
+        if (internal) {
             setVerticalSplit(initialLayout.isVertical());
         }
     }
