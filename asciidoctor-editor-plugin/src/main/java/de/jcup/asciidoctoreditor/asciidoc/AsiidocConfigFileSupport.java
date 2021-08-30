@@ -95,39 +95,63 @@ public class AsiidocConfigFileSupport {
         Collections.reverse(walker.filesFound);
 
         if (walker.filesFound.isEmpty()) {
-            if (autoCreateConfig) {
+            return handleAutoCreateOfMissingConfig();
+        }
+
+        return walker.filesFound;
+    }
+
+    private List<AsciidoctorConfigFile> handleAutoCreateOfMissingConfig() {
+        if (autoCreateConfig) {
+            File file = new File(rootFolder.toFile(), FILENAME_ASCIIDOCTORCONFIG_ADOC);
+            Path targetPath = file.toPath();
+
+            if (file.exists()) {
+                // this is an odd situation - which should normally not happen, but there were
+                // occasions
+                // so doing here a guard close
+                logHandler.logWarn("asciidoctor config file already exists in root folder, so skip auto create for:" + file.getAbsolutePath());
+            } else {
                 /* we shall create a config file at root level */
                 /* @formatter:off */
                 String content="// +++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"+
-                               "// +  Initial AsciiDoc editor configuration file - V1.0  +\n"+
-                               "// ++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"+
-                               "// \n"+
-                               "// Did not found any configuration files, so create this at project root level.\n" +
-                               "// If you do not like those files to be generated - you can turn it off inside Asciidoctor Editor preferences.\n" +
-                               "// \n" +
-                               "// You can define editor specific parts here.\n" +
-                               "// For example: with next line you could set imagesdir attribute to subfolder \"images\" relative to the folder where this config file is located.\n" +
-                               "// :imagesdir: {asciidoctorconfigdir}/images\n"+
-                               "// \n"+
-                               "// For more information please take a look at https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki/Asciidoctor-configfiles\n";
-                        ;
-                               /* @formatter:on */
-                File file = new File(rootFolder.toFile(), FILENAME_ASCIIDOCTORCONFIG_ADOC);
-                Path targetPath = file.toPath();
+                        "// +  Initial AsciiDoc editor configuration file - V1.0  +\n"+
+                        "// ++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"+
+                        "// \n"+
+                        "// Did not find any configuration files, so creating this at project root level.\n" +
+                        "// If you do not like those files to be generated - you can turn it off inside Asciidoctor Editor preferences.\n" +
+                        "// \n" +
+                        "// You can define editor specific parts here.\n" +
+                        "// For example: with next line you could set imagesdir attribute to subfolder \"images\" relative to the folder where this config file is located.\n" +
+                        "// :imagesdir: {asciidoctorconfigdir}/images\n"+
+                        "// \n"+
+                        "// For more information please take a look at https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki/Asciidoctor-configfiles\n";
+                ;
+                /* @formatter:on */
 
                 try {
                     Files.write(targetPath, content.getBytes(Charset.forName("UTF-8")));
                     if (autoCreateCallback != null) {
                         autoCreateCallback.run();
                     }
-                    return Arrays.asList(createAsciidocConfigFile(targetPath));
                 } catch (IOException e) {
-                    AsciiDoctorEditorUtil.logError("Was not able to auto create config file", e);
+                    AsciiDoctorEditorUtil.logError("Was not able to auto create config file at target path:" + targetPath, e);
+                    return createNotFoundResult();
                 }
             }
-        }
 
-        return walker.filesFound;
+            try {
+                return Arrays.asList(createAsciidocConfigFile(targetPath));
+            } catch (IOException e) {
+                AsciiDoctorEditorUtil.logError("Was not able to read config file from target path:" + targetPath, e);
+                return createNotFoundResult();
+            }
+        }
+        return createNotFoundResult();
+    }
+
+    private ArrayList<AsciidoctorConfigFile> createNotFoundResult() {
+        return new ArrayList<AsciidoctorConfigFile>();
     }
 
     class ReverseFileWalker {
