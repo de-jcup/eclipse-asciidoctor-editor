@@ -28,6 +28,7 @@ import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.OSUtil;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.preferences.CustomEnvironmentEntrySupport;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.asp.client.AspClientProgressMonitor;
 
@@ -47,6 +48,10 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
         }
         ProcessBuilder pb = new ProcessBuilder(commands);
         try {
+            CustomEnvironmentEntrySupport customEnvironmentEntrySupport = getCustomEnvEntrySupport();
+            if (customEnvironmentEntrySupport.areCustomEnvironmentEntriesEnabled()) {
+                pb.environment().putAll(customEnvironmentEntrySupport.fetchConfiguredEnvironmentEntriesAsMap());
+            }
             StringBuffer lineStringBuffer = null;
             Process process = pb.start();
             try (InputStream is = process.getErrorStream();) {
@@ -89,6 +94,10 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
             }
         }
 
+    }
+
+    private CustomEnvironmentEntrySupport getCustomEnvEntrySupport() {
+        return CustomEnvironmentEntrySupport.DEFAULT;
     }
 
     protected String createCommandLineString(List<String> commands) {

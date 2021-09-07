@@ -17,6 +17,7 @@ package de.jcup.asciidoctoreditor.asciidoc;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.Map;
 import java.util.Objects;
 
 import de.jcup.asciidoctoreditor.ConsoleAdapter;
@@ -44,6 +45,7 @@ public class ASPServerAdapter {
     private ExternalProcessAsciidoctorJServerLauncher launcher;
     private boolean showServerOutput;
     private boolean showCommunication;
+    private Map<String, String> customEnvironmentEntries;
 
     public ASPServerAdapter() {
     }
@@ -86,9 +88,13 @@ public class ASPServerAdapter {
         }
     }
 
+    public void setCustomEnvironmentEntries(Map<String, String> map) {
+        this.customEnvironmentEntries = map;
+    }
+
     public void setShowCommunication(boolean showCommunication) {
         this.showCommunication = showCommunication;
-        if (client!=null) {
+        if (client != null) {
             client.setShowCommunication(showCommunication);
         }
     }
@@ -108,12 +114,7 @@ public class ASPServerAdapter {
         if (launcher != null) {
             launcher.stopServer();
         }
-        this.port = getFreePortToUse(minPort, maxPort);
-
-        launcher = new ExternalProcessAsciidoctorJServerLauncher(pathToServerJar, port);
-        launcher.setPathToJavaBinary(pathToJavaBinary);
-        launcher.setShowServerOutput(showServerOutput);
-        launcher.setLogHandler(new LogHandler() {
+        LogHandler logHandler = new LogHandler() {
 
             @Override
             public void error(String message, Throwable t) {
@@ -122,7 +123,7 @@ public class ASPServerAdapter {
                 }
 
             }
-        });
+        };
         OutputHandler outputHandler = new OutputHandler() {
 
             @Override
@@ -133,12 +134,28 @@ public class ASPServerAdapter {
 
             };
         };
+        this.port = getFreePortToUse(minPort, maxPort);
+
+        launcher = new ExternalProcessAsciidoctorJServerLauncher(pathToServerJar, port);
+        launcher.setPathToJavaBinary(pathToJavaBinary);
+        launcher.setShowServerOutput(showServerOutput);
+        launcher.setLogHandler(logHandler);
         launcher.setOutputHandler(outputHandler);
+
+        if (customEnvironmentEntries != null) {
+            for (String key: customEnvironmentEntries.keySet()) {
+                launcher.setEnvironment(key, customEnvironmentEntries.get(key));
+            }
+        }
+
         try {
             String key = launcher.launch(30);
-            /* Next line is a temporary workaround until fixed in ASP itself - on windows we got \r\n so having \r inside key... we must trim to avoid the problem */
+            /*
+             * Next line is a temporary workaround until fixed in ASP itself - on windows we
+             * got \r\n so having \r inside key... we must trim to avoid the problem
+             */
             key = key.trim();
-            
+
             outputHandler.output(">> ASP Server has been started successfully");
             this.client = new AspClient(key);
             this.client.setPortNumber(port);

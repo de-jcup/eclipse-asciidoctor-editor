@@ -630,6 +630,15 @@
                id="asciidoctoreditor.preferences.keyword.tasks">
          </keywordReference>
       </page>
+       <page
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEnvironmentPreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorEnvironmentPreferencePage"
+         name="Environmemt"
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
+          <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+      </page>
       <!-- plantuml -->
       <page
          id="asciidoctoreditor.eclipse.preferences.AsciiDoctorPlantUMLEditorPreferencePage"

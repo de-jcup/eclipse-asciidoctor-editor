@@ -16,10 +16,12 @@
 package de.jcup.asciidoctoreditor;
 
 import java.io.File;
+import java.util.Map;
 
 import de.jcup.asciidoctoreditor.asciidoc.ASPServerAdapter;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.preferences.CustomEnvironmentEntrySupport;
 import de.jcup.asp.client.AspClient;
 
 public class ASPSupport {
@@ -147,6 +149,13 @@ public class ASPSupport {
         aspServerAdapter.setMaxPort(preferences.getAspServerMaxPort());
         aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);
         aspServerAdapter.setLogAdapter(AsciiDoctorEclipseLogAdapter.INSTANCE);
+        
+        Map<String,String> customEnvEntries = null;
+        if (CustomEnvironmentEntrySupport.DEFAULT.areCustomEnvironmentEntriesEnabled()) {
+            customEnvEntries = CustomEnvironmentEntrySupport.DEFAULT.fetchConfiguredEnvironmentEntriesAsMap();
+        }
+        aspServerAdapter.setCustomEnvironmentEntries(customEnvEntries);
+        
         aspServerAdapter.startServer();
 
     }
