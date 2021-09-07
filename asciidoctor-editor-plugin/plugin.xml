@@ -633,7 +633,7 @@
        <page
          id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEnvironmentPreferencePage"
          class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorEnvironmentPreferencePage"
-         name="Environmemt"
+         name="Environment"
          category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
           <keywordReference
                id="asciidoctoreditor.preferences.keyword.asciidoctor">
