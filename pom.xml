@@ -1,0 +1,106 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>eclipse.asciidoctor.editor</groupId>
+  <artifactId>releng</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>tycho-snapshots</id>
+      <url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <properties>
+    <tycho.version>2.5.0-SNAPSHOT</tycho.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+
+  <build>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-p2-director-plugin</artifactId>
+          <version>${tycho.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-maven-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <extensions>true</extensions>
+      </plugin>
+      <!--Enable the replacement of the SNAPSHOT version in the final product configuration-->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-packaging-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <id>package-feature</id>
+            <configuration>
+              <finalName>${project.artifactId}_${unqualifiedVersion}.${buildQualifier}</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+           <target>
+            <file>../asciidoctor-editor-target/asciidoctor-editor.target</file>
+         </target>
+          <resolveWithExecutionEnvironmentConstraints>false</resolveWithExecutionEnvironmentConstraints>
+
+          <environments>
+            <environment>
+              <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>win32</os>
+              <ws>win32</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>macosx</os>
+              <ws>cocoa</ws>
+              <arch>x86_64</arch>
+            </environment>
+          </environments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+
+  <modules>
+      <module>asciidoctor-editor-css</module>
+    
+      <!--
+  <module>asciidoctor-editor-doc</module>
+      <module>asciidoctor-editor-plugin</module>
+      <module>asciidoctor-converter-plugin</module>
+      <module>asciidoctor-converter-feature</module>
+      <module>asciidoctor-editor-feature</module>
+      <module>asciidoctor-editor-libs</module>
+      <module>asciidoctor-editor-other</module>
+# wxrwxr-x  2 vogella vogella  4096 Sep 17 10:34 asciidoctor-editor-gradle-dep
+drwxrwxr-x  3 vogella vogella  4096 Sep 17 10:34 asciidoctor-editor-updatesite
+drwxrwxr-x  3 vogella vogella  4096 Sep 17 10:34 asciidoctor-testproject-imagedirset
+drwxrwxr-x  3 vogella vogella  4096 Sep 17 10:34 asciidoctor-testproject-noimagedirset
+      -->
+
+  </modules>
+</project>
