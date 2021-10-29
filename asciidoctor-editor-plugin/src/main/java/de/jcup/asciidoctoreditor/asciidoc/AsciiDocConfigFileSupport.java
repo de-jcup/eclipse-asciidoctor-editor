@@ -30,9 +30,8 @@ import java.util.Map;
 
 import de.jcup.asciidoctoreditor.LogHandler;
 import de.jcup.asciidoctoreditor.PrintStreamLogHandler;
-import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
-public class AsiidocConfigFileSupport {
+public class AsciiDocConfigFileSupport {
 
     private static final FindAsciidocFilenameFilter ASCIIDOC_CONFIG_FILENAME_FILTER = new FindAsciidocFilenameFilter();
 
@@ -45,7 +44,7 @@ public class AsiidocConfigFileSupport {
 
     private Runnable autoCreateCallback;
 
-    public AsiidocConfigFileSupport(Path rootFolder) {
+    public AsciiDocConfigFileSupport(Path rootFolder) {
         this(null, rootFolder);
     }
 
@@ -67,7 +66,7 @@ public class AsiidocConfigFileSupport {
         this.autoCreateCallback = r;
     }
 
-    public AsiidocConfigFileSupport(LogHandler logHandler, Path rootFolder) {
+    public AsciiDocConfigFileSupport(LogHandler logHandler, Path rootFolder) {
         if (rootFolder == null) {
             throw new IllegalArgumentException("root folder may not be null!");
         }
@@ -135,7 +134,7 @@ public class AsiidocConfigFileSupport {
                         autoCreateCallback.run();
                     }
                 } catch (IOException e) {
-                    AsciiDoctorEditorUtil.logError("Was not able to auto create config file at target path:" + targetPath, e);
+                    logHandler.logError("Was not able to auto create config file at target path:" + targetPath, e);
                     return createNotFoundResult();
                 }
             }
@@ -143,7 +142,7 @@ public class AsiidocConfigFileSupport {
             try {
                 return Arrays.asList(createAsciidocConfigFile(targetPath));
             } catch (IOException e) {
-                AsciiDoctorEditorUtil.logError("Was not able to read config file from target path:" + targetPath, e);
+                logHandler.logError("Was not able to read config file from target path:" + targetPath, e);
                 return createNotFoundResult();
             }
         }

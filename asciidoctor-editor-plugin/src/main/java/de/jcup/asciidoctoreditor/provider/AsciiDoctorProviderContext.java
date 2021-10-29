@@ -27,7 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorConfigFile;
-import de.jcup.asciidoctoreditor.asciidoc.AsiidocConfigFileSupport;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
 
 public class AsciiDoctorProviderContext {
 
@@ -55,7 +55,7 @@ public class AsciiDoctorProviderContext {
     private boolean noFooter;
     private boolean internalPreview;
     private boolean localResourcesEnabled = true;
-    private AsiidocConfigFileSupport configFileSupport;
+    private AsciiDocConfigFileSupport configFileSupport;
     private List<AsciidoctorConfigFile> configFiles = new ArrayList<>();
 
     public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
@@ -241,11 +241,11 @@ public class AsciiDoctorProviderContext {
         return internalPreview && localResourcesEnabled;
     }
 
-    public void setConfigRootSupport(AsiidocConfigFileSupport support) {
+    public void setConfigRootSupport(AsciiDocConfigFileSupport support) {
         this.configFileSupport = support;
     }
 
-    public AsiidocConfigFileSupport getConfigFileSupport() {
+    public AsciiDocConfigFileSupport getConfigFileSupport() {
         return configFileSupport;
     }
 

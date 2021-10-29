@@ -9,8 +9,6 @@ allprojects{
 	repositories {
 		mavenLocal()
 		mavenCentral()
-		jcenter()
-
     }
 	
 	/* Custimization part - e.g. when you got special repositories
@@ -40,7 +38,7 @@ subprojects {
 	apply plugin: "maven"
 		
 	group = "de.jcup.asciidoctoreditor" 
-	version = "2.0.0"
+	version = "2.5.0"
 	def buildNr = System.getenv('ci.buildNumber')
 	// use build number in version
 	if (buildNr != null && ! buildNr.isEmpty()){
