@@ -32,7 +32,7 @@ import de.jcup.asciidoctoreditor.LogHandler;
 import de.jcup.asciidoctoreditor.PrintStreamLogHandler;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
-public class AsiidocConfigFileSupport {
+public class AsciiDocConfigFileSupport {
 
     private static final FindAsciidocFilenameFilter ASCIIDOC_CONFIG_FILENAME_FILTER = new FindAsciidocFilenameFilter();
 
@@ -45,7 +45,7 @@ public class AsiidocConfigFileSupport {
 
     private Runnable autoCreateCallback;
 
-    public AsiidocConfigFileSupport(Path rootFolder) {
+    public AsciiDocConfigFileSupport(Path rootFolder) {
         this(null, rootFolder);
     }
 
@@ -67,7 +67,7 @@ public class AsiidocConfigFileSupport {
         this.autoCreateCallback = r;
     }
 
-    public AsiidocConfigFileSupport(LogHandler logHandler, Path rootFolder) {
+    public AsciiDocConfigFileSupport(LogHandler logHandler, Path rootFolder) {
         if (rootFolder == null) {
             throw new IllegalArgumentException("root folder may not be null!");
         }
