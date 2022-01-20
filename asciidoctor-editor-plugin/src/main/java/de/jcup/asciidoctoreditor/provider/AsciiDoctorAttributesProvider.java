@@ -23,7 +23,7 @@ import java.util.Map;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.AttributesBuilder;
 
-import de.jcup.asciidoctoreditor.asciidoc.AsiidocConfigFileSupport;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
 
 public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
@@ -102,7 +102,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
         Map<String, Object> map = getContext().getAsciiDoctor().resolveAttributes(context.getAsciiDocFile());
 
         // now we have to apply the parts from config file as well:
-        AsiidocConfigFileSupport support = getContext().getConfigFileSupport();
+        AsciiDocConfigFileSupport support = getContext().getConfigFileSupport();
         return support.calculateResolvedMap(map, getContext().getConfigFiles());
     }
 

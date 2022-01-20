@@ -27,9 +27,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AsiidocConfigFileSupportTest {
+public class AsciiDocConfigFileSupportTest {
 
-    private AsiidocConfigFileSupport supportToTest;
+    private AsciiDocConfigFileSupport supportToTest;
     private Path p1Test1AdocFile;
     private Path p1Test2AdocFile;
     private Path project1Path;
@@ -65,13 +65,13 @@ public class AsiidocConfigFileSupportTest {
         p2Test3AdocFile = project2Path.resolve("subfolder2/test3.adoc");
         p2AsciidocConfigFile2 = p2Test3AdocFile.getParent().resolve(".asciidoctorconfig.adoc");
 
-        supportToTest = new AsiidocConfigFileSupport(asciidoctorconfigfilesFolder.toPath().getParent());
+        supportToTest = new AsciiDocConfigFileSupport(asciidoctorconfigfilesFolder.toPath().getParent());
     }
 
     @Test
     public void no_adoc_when_project1_folder_is_also_root_we_can_fetch_still_one_config_for_test1() {
         /* prepare */
-        supportToTest = new AsiidocConfigFileSupport(project1Path);
+        supportToTest = new AsciiDocConfigFileSupport(project1Path);
         
         /* execute */
         List<AsciidoctorConfigFile> files = supportToTest.collectConfigFiles(p1Test1AdocFile);

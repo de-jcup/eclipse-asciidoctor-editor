@@ -46,7 +46,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.PreviewLayout;
-import de.jcup.asciidoctoreditor.asciidoc.AsiidocConfigFileSupport;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
 import de.jcup.asciidoctoreditor.presentation.AccessibleBooleanFieldEditor;
 import de.jcup.asciidoctoreditor.presentation.AccessibleDirectoryFieldEditor;
 import de.jcup.asciidoctoreditor.presentation.AccessibleFileFieldEditor;
@@ -216,7 +216,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         devNull = new Composite(uiComposite, SWT.NONE);
         BooleanFieldEditor autoConfigFileCreationEnabled = new BooleanFieldEditor(P_AUTOCREATE_INITIAL_CONFIGFILE.getId(), "Enable initial config file auto creation", devNull);
         autoConfigFileCreationEnabled.getDescriptionControl(devNull)
-                .setToolTipText("When enabled, a "+AsiidocConfigFileSupport.FILENAME_ASCIIDOCTORCONFIG_ADOC+" with description inside \n"
+                .setToolTipText("When enabled, a "+AsciiDocConfigFileSupport.FILENAME_ASCIIDOCTORCONFIG_ADOC+" with description inside \n"
                         + "will be created in project root folder when no other config file exists.");
         addField(autoConfigFileCreationEnabled);
         devNull = new Composite(uiComposite, SWT.NONE);

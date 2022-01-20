@@ -170,13 +170,13 @@ public class AsciiDoctorWrapper {
             configRoot = context.getBaseDir();
         }
         
-        AsiidocConfigFileSupport support = new AsiidocConfigFileSupport(configRoot.toPath());
+        AsciiDocConfigFileSupport support = new AsciiDocConfigFileSupport(configRoot.toPath());
         context.setConfigRootSupport(support);
         
         /* setup auto config creation - as configured */
         boolean autoCreateConfigEnabled = AsciiDoctorEditorPreferences.getInstance().isAutoCreateConfigEnabled();
 
-        AsiidocConfigFileSupport configFileSupport = context.getConfigFileSupport();
+        AsciiDocConfigFileSupport configFileSupport = context.getConfigFileSupport();
         configFileSupport.setAutoCreateConfig(autoCreateConfigEnabled);
         if (project!=null) {
             configFileSupport.setAutoCreateConfigCallback(()->{

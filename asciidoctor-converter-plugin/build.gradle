@@ -1,10 +1,22 @@
+repositories {
+    // Maven central currently not working and jcenter has sundowned, so using 
+    // using jitpack repository, see https://github.com/bodiam/markdown-to-asciidoc/issues/26
+    maven { url "https://jitpack.io" }
+}
+
+
 dependencies {
     // https://mvnrepository.com/artifact/nl.jworks.markdown_to_asciidoc/markdown_to_asciidoc
-    compile group: 'nl.jworks.markdown_to_asciidoc', name: 'markdown_to_asciidoc', version: '1.1'
+    // compile group: 'nl.jworks.markdown_to_asciidoc', name: 'markdown_to_asciidoc', version: '1.1'
+    
+    // https://jitpack.io/#bodiam/markdown-to-asciidoc
+    compile 'com.github.bodiam:markdown-to-asciidoc:2.0'
+    
+    
 }
 
 /**
- * Only necessary when markdown_to_asciidoc vesion upgrade necessary!
+ * Only necessary when markdown_to_asciidoc version upgrade necessary!
  */
 task installLibraries(type: Copy) {
     
