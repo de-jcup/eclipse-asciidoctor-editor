@@ -15,13 +15,11 @@ package de.jcup.asciidoctoreditor.preferences;
  * and limitations under the License.
  *
  */
- 
 
 /**
  * Constant definitions for plug-in preferences
  */
 public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiable{
-
 	
 	P_EDITOR_MATCHING_BRACKETS_ENABLED("matchingBrackets"),
 	P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION("highlightBracketAtCaretLocation"),
@@ -41,11 +39,11 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 	
 	P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT("newEditorPreviewLayout"),
 	
-	P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS("autoRefreshExternalBrowserInSeconds"),
+	P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS("autoBuildRefreshExternalBrowserInSeconds"),
+
+	P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED("autoBuildForExternalPreviewEnabled"),
 	
 	P_EDITOR_TOC_LEVELS("tocLevels"),
-	
-	P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED("autoBuildForExternalPreviewEnabled"),
 	
 	P_USE_INSTALLED_ASCIIDOCTOR_ENABLED("useInstalledAsciidoctorEnabled"),
 	

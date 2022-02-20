@@ -81,8 +81,8 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 		/* +++++++++++ */
 		store.setDefault(P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT.getId(), PreviewLayout.VERTICAL.getId());
 		store.setDefault(P_EDITOR_TOC_LEVELS.getId(), 6);
-		store.setDefault(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), 0); // per default auto refresh is turned off
-		store.setDefault(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED.getId(), false);
+		store.setDefault(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS.getId(), 3); 
+		store.setDefault(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED.getId(), false);// per default auto refresh is turned off
 		store.setDefault(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), false);
 		store.setDefault(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS.getId(),
 				"-r asciidoctor-diagram\n--no-header-footer\n");

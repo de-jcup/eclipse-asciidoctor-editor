@@ -30,10 +30,11 @@ import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.diagram.ditaa.DitaaContentTransformer;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
-import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
-import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewVerticalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
 
 public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 
@@ -58,17 +59,21 @@ public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 	    /* necessary for refresh */
 	    rebuildAction = new RebuildAsciiDocViewAction(this);
 	    
-		IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-		viewToolBarManager.add(new ChangeLayoutAction(this));
-		viewToolBarManager.add(new RebuildAsciiDocViewAction(this));
-		viewToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
+		IToolBarManager previewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+		previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
+		previewToolBarManager.add(new ShowPreviewHorizontalInsideEditorAction(this));
+		previewToolBarManager.add(new ShowPreviewInExternalBrowserAction(this));
 
-		IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-		otherToolBarManager.add(new OpenInExternalBrowserAction(this));
-
+	    IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+	    otherToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
+		
+		IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+		buildToolBarManager.add(new RebuildAsciiDocViewAction(this));
+		
 		// Add to the cool bar manager
-		coolBarManager.add(new ToolBarContributionItem(viewToolBarManager, "asciiDocDitaaEditor.toolbar.view"));
+		coolBarManager.add(new ToolBarContributionItem(previewToolBarManager, "asciiDocDitaaEditor.toolbar.preview"));
 		coolBarManager.add(new ToolBarContributionItem(otherToolBarManager, "asciiDocDitaaEditor.toolbar.other"));
+		coolBarManager.add(new ToolBarContributionItem(buildToolBarManager, "asciiDocDitaaEditor.toolbar.build"));
 
 		if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
 			IToolBarManager debugToolBar = new ToolBarManager(coolBarManager.getStyle());

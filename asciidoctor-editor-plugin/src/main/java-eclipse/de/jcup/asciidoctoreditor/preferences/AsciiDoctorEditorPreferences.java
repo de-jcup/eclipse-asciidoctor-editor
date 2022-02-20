@@ -199,7 +199,7 @@ public class AsciiDoctorEditorPreferences {
              */
             return 0;
         }
-        return getPreferenceStore().getInt(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId());
+        return getPreferenceStore().getInt(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS.getId());
     }
 
     public PreviewLayout getInitialLayoutModeForNewEditors() {

@@ -23,10 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 
-import de.jcup.asciidoctoreditor.EclipseResourceHelper;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
@@ -265,15 +262,8 @@ public class AsciiDoctorProviderContext {
     public List<AsciidoctorConfigFile> getConfigFiles() {
         return configFiles;
     }
-
-    public void setProject(IProject project) {
-        File configRoot = null;
-        try {
-            IPath projectLocation = project.getLocation();
-            configRoot = EclipseResourceHelper.DEFAULT.toFile(projectLocation);
-        } catch (Exception e) {
-            logAdapter.logError("Was not able to determine config root, fallback to base dir", e);
-        }
+    
+    public void setConfigRoot(File configRoot) {
         if (configRoot==null) {
             configRoot = getBaseDir();
         }

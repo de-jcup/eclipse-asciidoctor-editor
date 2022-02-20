@@ -247,7 +247,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         addField(autobuildForExternalPreviewEnabled);
 
         Composite devNull2 = new Composite(externalPreviewGroup, SWT.NONE);
-        IntegerFieldEditor autorefreshSeconds = new IntegerFieldEditor(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), "Auto refresh in external preview (in seconds)", devNull2);
+        IntegerFieldEditor autorefreshSeconds = new IntegerFieldEditor(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS.getId(), "Auto refresh in external preview (in seconds)", devNull2);
         autorefreshSeconds.setValidRange(0, 30);
         autorefreshSeconds.setTextLimit(2);
         autorefreshSeconds.getLabelControl(devNull2).setToolTipText("0 will turn off auto refresh for external previews.\n\nIf auto build has been disabled, this value will be ignored!");

@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.MenuItem;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
+@Deprecated // we no longer use this action but ShowPreview* actions instead
 public class ChangeLayoutAction extends ToolbarAction implements IMenuCreator {
 
 	private static final String SWITCH_TO_VERTICAL_LAYOUT = "Vertical layout";

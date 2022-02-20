@@ -19,23 +19,24 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
-public class OpenInExternalBrowserAction extends ToolbarAction {
+public class ShowPreviewInExternalBrowserAction extends ToolbarAction {
 	
-	private static ImageDescriptor IMG_EXTERNAL_BROWSER = createToolbarImageDescriptor("external_browser.png");
+	private static ImageDescriptor IMG_EXTERNAL_BROWSER = createToolbarImageDescriptor("preview_external_browser.png");
 	
-	public OpenInExternalBrowserAction(AsciiDoctorEditor editor) {
+	public ShowPreviewInExternalBrowserAction(AsciiDoctorEditor editor) {
 		super(editor);
 		initUI();
 	}
 	
 	private void initUI() {
 		setImageDescriptor(IMG_EXTERNAL_BROWSER);
-		setToolTipText("Open asciidoctor output in external browser.");
+		setToolTipText("Asciidoctor preview in external browser.");
 		
 	}
 
 	@Override
 	public void run() {
+	    asciiDoctorEditor.setInternalPreview(false);
 		asciiDoctorEditor.openInExternalBrowser();
 	}
 }

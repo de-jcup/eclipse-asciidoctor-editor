@@ -39,7 +39,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -105,7 +104,6 @@ import de.jcup.asciidoctoreditor.script.AsciidoctorTextSelectable;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.AddLineBreakAction;
 import de.jcup.asciidoctoreditor.toolbar.BoldFormatAction;
-import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
 import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.CreatePDFAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertAdmonitionAction;
@@ -116,8 +114,10 @@ import de.jcup.asciidoctoreditor.toolbar.MonospacedFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewLinkInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
-import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewVerticalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.ToggleTOCAction;
 import de.jcup.asciidoctoreditor.ui.ColorManager;
 import de.jcup.asciidoctoreditor.ui.StatusMessageSupport;
@@ -169,9 +169,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     private ClearProjectCacheAsciiDocViewAction clearProjectAction;
 
-    private static final AsciiDoctorTextFileDocumentProvider ASCIIDOC_SHARED_TEXTFILE_DOCUMENT_PROVIDER=new AsciiDoctorTextFileDocumentProvider();
+    private static final AsciiDoctorTextFileDocumentProvider ASCIIDOC_SHARED_TEXTFILE_DOCUMENT_PROVIDER = new AsciiDoctorTextFileDocumentProvider();
     private static final AsciiDoctorFileDocumentProvider ASCIIDOC__SHARED_FILE_DOCUMENT_PROVIDER = new AsciiDoctorFileDocumentProvider();
-    
 
     public long getEditorId() {
         return editorId;
@@ -264,7 +263,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     @Override
     public void dispose() {
         super.dispose();
-        if (browserAccess!=null) {
+        if (browserAccess != null) {
             browserAccess.dispose();
         }
 
@@ -397,7 +396,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public File getTemporaryExternalPreviewFile() {
         return temporaryExternalPreviewFile;
     }
-    
+
     public AsciiDoctorWrapper getWrapper() {
         return AsciiDoctorWrapperRegistry.INSTANCE.getWrapper(getProject());
     }
@@ -551,7 +550,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
         /* always build now again the file */
         buildSupport.build(BuildAsciiDocMode.ALWAYS, false);
-        
+
         startEnsureFileThread(temporaryExternalPreviewFile, new WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(this, null));
     }
 
@@ -673,9 +672,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         } else {
             editorId = file.getFullPath().toFile().hashCode();
         }
-        getWrapper().getContext().setProject(getProject());
-        
-        
+        File configRoot = null;
+        try {
+            IProject project = getProject();
+            if (project != null) {
+                IPath projectLocation = project.getLocation();
+                configRoot = EclipseResourceHelper.DEFAULT.toFile(projectLocation);
+            }
+        } catch (Exception e) {
+            AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to determine config root, fallback to base dir", e);
+        }
+        getWrapper().getContext().setConfigRoot(configRoot);
+
     }
 
     @Override
@@ -812,8 +820,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
             @Override
             public void initialize(Browser browser) {
-                  UIJob job = new UIJob("Initialize Browser") {
-                    
+                UIJob job = new UIJob("Initialize Browser") {
+
                     @Override
                     public IStatus runInUIThread(IProgressMonitor monitor) {
                         AsciiDoctorEditorBuildSupport.showInitializingInfo(AsciiDoctorEditor.this);
@@ -827,7 +835,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         boolean internal = !initialLayout.isExternal();
 
         synchronizer.installInBrowser();
-        
+
         setInternalPreview(internal);
         if (internal) {
             setVerticalSplit(initialLayout.isVertical());
@@ -844,38 +852,44 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         addLineBreakAction = new AddLineBreakAction(this);
 
-        IToolBarManager asciiDocToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-        asciiDocToolBarManager.add(new InsertSectionTitleAction(this));
+        IToolBarManager stylingToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        stylingToolBarManager.add(new InsertSectionTitleAction(this));
 
-        asciiDocToolBarManager.add(italicFormatAction);
-        asciiDocToolBarManager.add(boldFormatAction);
-        asciiDocToolBarManager.add(monoSpacedFormatAction);
-        asciiDocToolBarManager.add(addLineBreakAction);
+        stylingToolBarManager.add(italicFormatAction);
+        stylingToolBarManager.add(boldFormatAction);
+        stylingToolBarManager.add(monoSpacedFormatAction);
+        stylingToolBarManager.add(new InsertAdmonitionAction(this));
 
-        asciiDocToolBarManager.add(new NewTableInsertAction(this));
-        asciiDocToolBarManager.add(new NewLinkInsertAction(this));
-        asciiDocToolBarManager.add(new InsertAdmonitionAction(this));
-        asciiDocToolBarManager.add(new NewCodeBlockInsertAction(this));
+        IToolBarManager insertToolberManager = new ToolBarManager(coolBarManager.getStyle());
+
+        insertToolberManager.add(new NewLinkInsertAction(this));
+        insertToolberManager.add(new NewTableInsertAction(this));
+        insertToolberManager.add(new NewCodeBlockInsertAction(this));
+        insertToolberManager.add(addLineBreakAction);
 
         IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-        viewToolBarManager.add(new ChangeLayoutAction(this));
         viewToolBarManager.add(new ToggleTOCAction(this));
-        viewToolBarManager.add(new Separator("simple"));
         viewToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
+
+        IToolBarManager previewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
+        previewToolBarManager.add(new ShowPreviewHorizontalInsideEditorAction(this));
+        previewToolBarManager.add(new ShowPreviewInExternalBrowserAction(this));
 
         IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         buildToolBarManager.add(rebuildAction);
         buildToolBarManager.add(clearProjectAction);
 
-        IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-        otherToolBarManager.add(new OpenInExternalBrowserAction(this));
-        otherToolBarManager.add(new CreatePDFAction(this));
+        IToolBarManager outputToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        outputToolBarManager.add(new CreatePDFAction(this));
 
         // Add to the cool bar manager
-        coolBarManager.add(new ToolBarContributionItem(asciiDocToolBarManager, "asciiDocEditor.toolbar.asciiDoc"));
+        coolBarManager.add(new ToolBarContributionItem(previewToolBarManager, "asciiDocEditor.toolbar.preview"));
+        coolBarManager.add(new ToolBarContributionItem(stylingToolBarManager, "asciiDocEditor.toolbar.style"));
+        coolBarManager.add(new ToolBarContributionItem(insertToolberManager, "asciiDocEditor.toolbar.insert"));
         coolBarManager.add(new ToolBarContributionItem(viewToolBarManager, "asciiDocEditor.toolbar.view"));
+        coolBarManager.add(new ToolBarContributionItem(outputToolBarManager, "asciiDocEditor.toolbar.output"));
         coolBarManager.add(new ToolBarContributionItem(buildToolBarManager, "asciiDocEditor.toolbar.build"));
-        coolBarManager.add(new ToolBarContributionItem(otherToolBarManager, "asciiDocEditor.toolbar.other"));
 
         if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
             IToolBarManager debugToolBar = new ToolBarManager(coolBarManager.getStyle());
@@ -1037,7 +1051,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             }
         }
     }
-    
+
     /* if necessary do some preparations before calling asciidoctor... */
     public void beforeAsciidocConvert(WrapperConvertData data) {
         /* per default nothing */
@@ -1213,7 +1227,5 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
 
     }
-
-    
 
 }
