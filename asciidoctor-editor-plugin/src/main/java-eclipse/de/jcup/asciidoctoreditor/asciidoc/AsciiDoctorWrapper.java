@@ -30,7 +30,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -160,19 +159,6 @@ public class AsciiDoctorWrapper {
 
         context.setAsciidocFile(data.asciiDocFile);
         
-        /* setup config file support */
-        File configRoot;
-        try {
-            IPath projectLocation = project.getLocation();
-            configRoot = EclipseResourceHelper.DEFAULT.toFile(projectLocation);
-        } catch (CoreException e) {
-            logAdapter.logError("Was not able to determine config root, fallback to base dir", e);
-            configRoot = context.getBaseDir();
-        }
-        
-        AsciiDocConfigFileSupport support = new AsciiDocConfigFileSupport(configRoot.toPath());
-        context.setConfigRootSupport(support);
-        
         /* setup auto config creation - as configured */
         boolean autoCreateConfigEnabled = AsciiDoctorEditorPreferences.getInstance().isAutoCreateConfigEnabled();
 
@@ -186,12 +172,11 @@ public class AsciiDoctorWrapper {
             configFileSupport.setAutoCreateConfigCallback(null);
         }
         
-        
         List<AsciidoctorConfigFile> configFiles = configFileSupport.collectConfigFiles(context.getAsciiDocFile().toPath());
         context.setConfigFiles(configFiles);
         if (data.useHiddenFile) {
             /* asciidoc files ...*/
-            File createdHiddenEditorFile = AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder(),configFiles, configRoot.getAbsolutePath());
+            File createdHiddenEditorFile = AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder(),configFiles, context.getConfigRoot().getAbsolutePath());
             context.setFileToRender(createdHiddenEditorFile);
         } else {
             /* plantuml, ditaa files ...*/

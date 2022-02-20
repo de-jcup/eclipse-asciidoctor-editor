@@ -43,7 +43,7 @@ public class AsciiDocConfigFileSupport {
     private boolean autoCreateConfig;
 
     private Runnable autoCreateCallback;
-
+    
     public AsciiDocConfigFileSupport(Path rootFolder) {
         this(null, rootFolder);
     }

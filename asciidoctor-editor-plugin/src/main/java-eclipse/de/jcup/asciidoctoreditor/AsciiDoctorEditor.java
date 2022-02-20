@@ -397,7 +397,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     public File getTemporaryExternalPreviewFile() {
         return temporaryExternalPreviewFile;
     }
-
+    
     public AsciiDoctorWrapper getWrapper() {
         return AsciiDoctorWrapperRegistry.INSTANCE.getWrapper(getProject());
     }
@@ -673,6 +673,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         } else {
             editorId = file.getFullPath().toFile().hashCode();
         }
+        getWrapper().getContext().setProject(getProject());
         
         
     }

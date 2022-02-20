@@ -23,11 +23,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 
+import de.jcup.asciidoctoreditor.EclipseResourceHelper;
 import de.jcup.asciidoctoreditor.LogAdapter;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorConfigFile;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
 
 public class AsciiDoctorProviderContext {
 
@@ -57,6 +60,7 @@ public class AsciiDoctorProviderContext {
     private boolean localResourcesEnabled = true;
     private AsciiDocConfigFileSupport configFileSupport;
     private List<AsciidoctorConfigFile> configFiles = new ArrayList<>();
+    private File configRoot;
 
     public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
@@ -241,10 +245,6 @@ public class AsciiDoctorProviderContext {
         return internalPreview && localResourcesEnabled;
     }
 
-    public void setConfigRootSupport(AsciiDocConfigFileSupport support) {
-        this.configFileSupport = support;
-    }
-
     public AsciiDocConfigFileSupport getConfigFileSupport() {
         return configFileSupport;
     }
@@ -264,6 +264,26 @@ public class AsciiDoctorProviderContext {
      */
     public List<AsciidoctorConfigFile> getConfigFiles() {
         return configFiles;
+    }
+
+    public void setProject(IProject project) {
+        File configRoot = null;
+        try {
+            IPath projectLocation = project.getLocation();
+            configRoot = EclipseResourceHelper.DEFAULT.toFile(projectLocation);
+        } catch (Exception e) {
+            logAdapter.logError("Was not able to determine config root, fallback to base dir", e);
+        }
+        if (configRoot==null) {
+            configRoot = getBaseDir();
+        }
+        
+        this.configRoot = configRoot;
+        this.configFileSupport = new AsciiDocConfigFileSupport(configRoot.toPath());
+    }
+    
+    public File getConfigRoot() {
+        return configRoot;
     }
 
 }
