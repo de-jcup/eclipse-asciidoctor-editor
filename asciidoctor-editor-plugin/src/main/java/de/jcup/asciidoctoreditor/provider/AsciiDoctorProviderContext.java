@@ -58,6 +58,7 @@ public class AsciiDoctorProviderContext {
     private AsciiDocConfigFileSupport configFileSupport;
     private List<AsciidoctorConfigFile> configFiles = new ArrayList<>();
     private File configRoot;
+    private int fixedDocumentOutputWidth;
 
     public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
@@ -247,33 +248,44 @@ public class AsciiDoctorProviderContext {
     }
 
     /**
-     * Set last first inside list the most far one (near parent), last one the nearest!
+     * Set last first inside list the most far one (near parent), last one the
+     * nearest!
+     * 
      * @param configFiles
      */
     public void setConfigFiles(List<AsciidoctorConfigFile> configFiles) {
         this.configFiles.clear();
         this.configFiles.addAll(configFiles);
     }
-    
+
     /**
      * 
-     * @return config files : first one inside list the most far one (near parent), last one the nearest!
+     * @return config files : first one inside list the most far one (near parent),
+     *         last one the nearest!
      */
     public List<AsciidoctorConfigFile> getConfigFiles() {
         return configFiles;
     }
-    
+
     public void setConfigRoot(File configRoot) {
-        if (configRoot==null) {
+        if (configRoot == null) {
             configRoot = getBaseDir();
         }
-        
+
         this.configRoot = configRoot;
         this.configFileSupport = new AsciiDocConfigFileSupport(configRoot.toPath());
     }
-    
+
     public File getConfigRoot() {
         return configRoot;
+    }
+
+    public int getFixedDocumentOutputWidth() {
+        return fixedDocumentOutputWidth;
+    }
+
+    public void setFixedDocumentOutputWidth(int width) {
+        this.fixedDocumentOutputWidth = width;
     }
 
 }
