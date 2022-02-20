@@ -108,6 +108,11 @@ private static final String BODY = "<body";
         prefixSb.append("</head>\n");
 
         prefixSb.append("<body ");
+        if (context.getFixedDocumentOutputWidth()!=0) {
+            prefixSb.append("style='width:");
+            prefixSb.append(context.getFixedDocumentOutputWidth());
+            prefixSb.append("px' ");
+        }
         if (context.isTOCVisible()) {
             prefixSb.append("class=\"article toc2 toc-left\">");
         } else {

@@ -22,10 +22,12 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
+import de.jcup.asciidoctoreditor.preview.ScrollSynchronizer.ScrollSyncMouseListener;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 /**
@@ -40,6 +42,7 @@ public class BrowserAccess {
     private Object monitor = new Object();
     private Composite sashForm;
     private MouseListener listener;
+    private ScrollSyncMouseListener scrollSyncListener;
 
     /*
      * FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if
@@ -129,19 +132,26 @@ public class BrowserAccess {
         });
     }
 
+    
+    
     /**
-     * Installs a mouse listener - we do only suppport ONE mouse listener at same time. Calling this method multiple times will uninstall former one!
+     * Installs a mouse wheel listener - we do only suppport ONE mouse wheel listener at same time. Calling this method multiple times will uninstall former one!
      * @param mouseListener
      */
-    public void install(MouseListener mouseListener) {
+    public void installScrollSyncListener(ScrollSyncMouseListener scrollSyncListener) {
         if (isBrowserNotAvailable()) {
             return;
         }
-        if (this.listener != null) {
-            browser.removeMouseListener(this.listener);
+        if (this.scrollSyncListener != null) {
+            browser.removeMouseListener(this.scrollSyncListener);
+            browser.removeMouseWheelListener(this.scrollSyncListener);
         }
-        this.listener = mouseListener;
-        browser.addMouseListener(listener);
+        
+        this.scrollSyncListener = scrollSyncListener;
+        
+        browser.addMouseListener(scrollSyncListener);
+        browser.addMouseWheelListener(scrollSyncListener);
+        
     }
 
     public void safeBrowserExecuteJavascript(final String javascript) {
@@ -197,6 +207,27 @@ public class BrowserAccess {
             AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to execute javascript:" + javascript, e);
         }
         return (T) result;
+    }
+
+    public int getZoomLevel() {
+        if (scrollSyncListener==null) {
+            return 100;
+        }
+        return scrollSyncListener.getZoomLevel();
+    }
+    
+    public void zoomIn(int amount) {
+        if (scrollSyncListener==null) {
+            return;
+        }
+        scrollSyncListener.zoomIn(amount);
+    }
+    
+    public void zoomOut(int amount) {
+        if (scrollSyncListener==null) {
+            return;
+        }
+        scrollSyncListener.zoomOut(amount);
     }
 
 }

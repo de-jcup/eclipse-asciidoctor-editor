@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
@@ -40,6 +41,8 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
+import de.jcup.asciidoctoreditor.toolbar.PreviewZoomInAction;
+import de.jcup.asciidoctoreditor.toolbar.PreviewZoomOutAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
@@ -111,6 +114,10 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
         previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
         previewToolBarManager.add(new ShowPreviewHorizontalInsideEditorAction(this));
         previewToolBarManager.add(new ShowPreviewInExternalBrowserAction(this));
+        
+        previewToolBarManager.add(new Separator());
+        previewToolBarManager.add(new PreviewZoomInAction(this));
+        previewToolBarManager.add(new PreviewZoomOutAction(this));
         
         IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         otherToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));

@@ -16,6 +16,7 @@
 package de.jcup.asciidoctoreditor.diagram.ditaa;
 
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.ui.IEditorInput;
@@ -31,6 +32,8 @@ import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.diagram.ditaa.DitaaContentTransformer;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
+import de.jcup.asciidoctoreditor.toolbar.PreviewZoomInAction;
+import de.jcup.asciidoctoreditor.toolbar.PreviewZoomOutAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewVerticalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
@@ -38,59 +41,63 @@ import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction
 
 public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 
-	private static final FileDocumentProvider DITAA_FILE_DOCUMENT_PROVIDER = new FileDocumentProvider();
+    private static final FileDocumentProvider DITAA_FILE_DOCUMENT_PROVIDER = new FileDocumentProvider();
     private static final TextFileDocumentProvider DITAA_TEXT_FILE_DOCUMENT_PROVIDER = new TextFileDocumentProvider();
 
     @Override
-	protected ContentTransformer createCustomContentTransformer() {
-		return new DitaaContentTransformer();
-	}
+    protected ContentTransformer createCustomContentTransformer() {
+        return new DitaaContentTransformer();
+    }
 
-	@Override
-	protected String getTitleImageName(int severity) {
-		return "ditaa-asciidoctor-editor.png";
-	}
+    @Override
+    protected String getTitleImageName(int severity) {
+        return "ditaa-asciidoctor-editor.png";
+    }
 
-	public EditorType getType() {
-		return EditorType.DITAA;
-	}
+    public EditorType getType() {
+        return EditorType.DITAA;
+    }
 
-	protected void initToolbar() {
-	    /* necessary for refresh */
-	    rebuildAction = new RebuildAsciiDocViewAction(this);
-	    
-		IToolBarManager previewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-		previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
-		previewToolBarManager.add(new ShowPreviewHorizontalInsideEditorAction(this));
-		previewToolBarManager.add(new ShowPreviewInExternalBrowserAction(this));
+    protected void initToolbar() {
+        /* necessary for refresh */
+        rebuildAction = new RebuildAsciiDocViewAction(this);
 
-	    IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-	    otherToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
-		
-		IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-		buildToolBarManager.add(new RebuildAsciiDocViewAction(this));
-		
-		// Add to the cool bar manager
-		coolBarManager.add(new ToolBarContributionItem(previewToolBarManager, "asciiDocDitaaEditor.toolbar.preview"));
-		coolBarManager.add(new ToolBarContributionItem(otherToolBarManager, "asciiDocDitaaEditor.toolbar.other"));
-		coolBarManager.add(new ToolBarContributionItem(buildToolBarManager, "asciiDocDitaaEditor.toolbar.build"));
+        IToolBarManager previewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
+        previewToolBarManager.add(new ShowPreviewHorizontalInsideEditorAction(this));
+        previewToolBarManager.add(new ShowPreviewInExternalBrowserAction(this));
 
-		if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
-			IToolBarManager debugToolBar = new ToolBarManager(coolBarManager.getStyle());
-			debugToolBar.add(new AddErrorDebugAction(this));
-			coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
-		}
+        previewToolBarManager.add(new Separator());
+        previewToolBarManager.add(new PreviewZoomInAction(this));
+        previewToolBarManager.add(new PreviewZoomOutAction(this));
 
-		coolBarManager.update(true);
+        IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        otherToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
 
-	}
+        IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        buildToolBarManager.add(new RebuildAsciiDocViewAction(this));
 
-	protected IDocumentProvider resolveDocumentProvider(IEditorInput input) {
-		if (input instanceof FileStoreEditorInput) {
-			return DITAA_TEXT_FILE_DOCUMENT_PROVIDER;
-		} else {
-			return DITAA_FILE_DOCUMENT_PROVIDER;
-		}
-	}
+        // Add to the cool bar manager
+        coolBarManager.add(new ToolBarContributionItem(previewToolBarManager, "asciiDocDitaaEditor.toolbar.preview"));
+        coolBarManager.add(new ToolBarContributionItem(otherToolBarManager, "asciiDocDitaaEditor.toolbar.other"));
+        coolBarManager.add(new ToolBarContributionItem(buildToolBarManager, "asciiDocDitaaEditor.toolbar.build"));
+
+        if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
+            IToolBarManager debugToolBar = new ToolBarManager(coolBarManager.getStyle());
+            debugToolBar.add(new AddErrorDebugAction(this));
+            coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
+        }
+
+        coolBarManager.update(true);
+
+    }
+
+    protected IDocumentProvider resolveDocumentProvider(IEditorInput input) {
+        if (input instanceof FileStoreEditorInput) {
+            return DITAA_TEXT_FILE_DOCUMENT_PROVIDER;
+        } else {
+            return DITAA_FILE_DOCUMENT_PROVIDER;
+        }
+    }
 
 }

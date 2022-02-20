@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -114,6 +115,8 @@ import de.jcup.asciidoctoreditor.toolbar.MonospacedFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewLinkInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
+import de.jcup.asciidoctoreditor.toolbar.PreviewZoomInAction;
+import de.jcup.asciidoctoreditor.toolbar.PreviewZoomOutAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
@@ -875,6 +878,11 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
         previewToolBarManager.add(new ShowPreviewHorizontalInsideEditorAction(this));
         previewToolBarManager.add(new ShowPreviewInExternalBrowserAction(this));
+        
+        previewToolBarManager.add(new Separator());
+        previewToolBarManager.add(new PreviewZoomInAction(this));
+        previewToolBarManager.add(new PreviewZoomOutAction(this));
+        
 
         IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         buildToolBarManager.add(rebuildAction);
@@ -1226,6 +1234,30 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             getOutlineSupport().getOutlinePage().onEditorCaretMoved(event.caretOffset);
         }
 
+    }
+
+    public void zoomIn(int amount) {
+        AsciiDoctorProviderContext context = getWrapper().getContext();
+        int width = context.getFixedDocumentOutputWidth();
+        width = width + 400;
+        if (width>15000) {
+            width=15000;
+        }
+        context.setFixedDocumentOutputWidth(width);
+        rebuild();
+//        getBrowserAccess().zoomIn(amount);
+    }
+    
+    public void zoomOut(int amount) {
+        AsciiDoctorProviderContext context = getWrapper().getContext();
+        int width = context.getFixedDocumentOutputWidth();
+        width = width - 400;
+        if (width<0) {
+            width=0;
+        }
+        context.setFixedDocumentOutputWidth(width);
+        rebuild();
+//        getBrowserAccess().zoomOut(amount);
     }
 
 }
