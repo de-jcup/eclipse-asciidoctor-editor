@@ -17,22 +17,20 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.core.expressions,
  org.eclipse.ui.console,
- de.jcup.asciidoctoreditor.libs,
  de.jcup.asciidoctoreditor.css,
  org.eclipse.search,
  org.eclipse.ltk.ui.refactoring,
  org.eclipse.ltk.core.refactoring,
- wrapped.de.jcup.asp.asp-server-asciidoctorj-launcher;bundle-version="1.3.1",
  eclipse-commons;bundle-version="1.0.0",
  org.apache.commons.commons-io;bundle-version="2.7.0",
  wrapped.de.jcup.asp.asp-core;bundle-version="1.3.1",
  wrapped.de.jcup.asp.asp-client-java;bundle-version="1.3.1",
- wrapped.de.jcup.asp.asp-api;bundle-version="1.3.1"
+ wrapped.de.jcup.asp.asp-api;bundle-version="1.3.1",
+ wrapped.de.jcup.asp.asp-server-asciidoctorj-launcher;bundle-version="1.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui,
  org.eclipse.ui.texteditor.spelling,
  org.eclipse.ui.texteditor.templates
-Bundle-ClassPath: .,
- lib/de-jcup-eclipse-commons.jar
+Bundle-ClassPath: .
 Automatic-Module-Name: de.jcup.asciidoctoreditor

@@ -79,6 +79,7 @@
 
   <modules>
       <module>asciidoctor-editor-css</module>
+      <module>asciidoctor-editor-plugin</module>
     
       <!--
   <module>asciidoctor-editor-doc</module>
