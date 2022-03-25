@@ -1,6 +1,7 @@
 .metadata
 .lck
 .gradle/
+target/
 .classpath
 .project
 .settings/
