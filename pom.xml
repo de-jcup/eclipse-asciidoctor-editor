@@ -87,7 +87,6 @@
       <module>asciidoctor-converter-plugin</module>
       <module>asciidoctor-converter-feature</module>
       <module>asciidoctor-editor-feature</module>
-      <module>asciidoctor-editor-libs</module>
       <module>asciidoctor-editor-other</module>
 # wxrwxr-x  2 vogella vogella  4096 Sep 17 10:34 asciidoctor-editor-gradle-dep
 drwxrwxr-x  3 vogella vogella  4096 Sep 17 10:34 asciidoctor-editor-updatesite
