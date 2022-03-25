@@ -33,7 +33,7 @@
 				<dependency>
 					<groupId>de.jcup.eclipse.commons</groupId>
 					<artifactId>eclipse-commons</artifactId>
-					<version>1.0.0</version>
+					<version>1.1.0</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>
