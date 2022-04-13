@@ -93,7 +93,10 @@ public class BrowserAccess {
     public Browser ensureBrowser(BrowserContentInitializer initializer) {
         synchronized (monitor) {
             if (browser == null) {
-                browser = new Browser(sashForm, SWT.CENTER);
+            	// Use edge renderer for SWT browser if available
+            	String edgeVersion = System.getProperty("org.eclipse.swt.browser.EdgeVersion");
+            	int browserStyle = edgeVersion != null && !edgeVersion.isEmpty() ? SWT.CENTER | SWT.EDGE : SWT.CENTER; 
+            	browser = new Browser(sashForm, browserStyle);
                 /*
                  * FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if
                  * this could be removed
