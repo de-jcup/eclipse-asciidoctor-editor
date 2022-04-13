@@ -19,6 +19,7 @@ import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.util.Set;
 
@@ -208,7 +209,9 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
                 /* we do not replace URIs - e.g. https://example.com/...*/
                 continue;
             }
-            File file = new File(path);
+            
+            // file path might contains spaces or special characters that are URL encoded
+            File file = new File(URLDecoder.decode(path, "UTF-8"));
             if (file.exists()) {
                 /* keep as is */
                 continue;
