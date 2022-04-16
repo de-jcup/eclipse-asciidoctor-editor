@@ -1,0 +1,56 @@
+== Build mechanism
+
+=== Gradle custom build + manual build with IDE
+This is the old, but still ussed, current variant. But we are working on maven build (see next chapter).
+
+==== Divided build
+Because the dependency management was not really working for eclipse, the build was divided into automated parts of "normal" java classes
+and classes who imported eclipse classes - see next sub chapter for details.
+ 
+===== Common parts 
+"Common parts" are classes /resource which have no dependency to eclipse and do only need java or "normal" libraries. 
+It is settled inside 
+`src/main/java`. Tests were settled inside `src/test/java`
+
+This was build by `gradle` build on github actions CI (continous integration build).
+
+===== Eclipse parts
+All classes which import eclipse classes, are settled inside `src/main/java-eclipse`. Eclipse related unit tests were at `src/test/java-eclipse`
+
+[IMPORTANT]
+====
+The eclipse parts were never build or tested automatically!
+====
+
+==== Libraries
+The libraries were 
+
+===== lib folder content
+- `Eclipse commons` were formerly not in maven central so directly added to git repo (ugly)
+- `ASP` were formerly not in maven central so directly added to git repo (ugly)
+- Some additional dependencis like `comomns-io`
+
+===== Install libraries by gradle
+There exists a gradle task `installLibraries` which copied libraries from `asciidoctor-gradle-dep` to 
+`asciidoctor-editor-libs` into a folder excluded by `Git`.
+
+So we were able to define library dependencies inside `build.gradle` and to install the into the plugins. 
+
+
+=== Maven Tycho build
+The new build mechanism will be done with `Maven Tycho`.
+see https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/371
+
+It will have many benefits:
+
+- no binary artifacts inside git repository (lib folder) +
+  _(This will be possible by using an eclipse target project, which now can handle maven dependencies to "normal"
+   libraries from maven-central as well!)_
+- no longer a separation of Eclipse and common parts necessary
+- release builds can be full automated
+- ci builds will test eclipse unit tests as well 
+
+[CAUTION]
+====
+Currently the `Maven` build is still under development and not 100% final. See former mentioned GitHub issue for current situation.
+====

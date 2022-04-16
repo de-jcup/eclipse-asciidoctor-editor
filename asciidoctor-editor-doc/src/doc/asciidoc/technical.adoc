@@ -1,0 +1,15 @@
+include::config.adoc[]
+
+= Develop
+This document describes architectural points of asciidcotor editor plugin and its sub components/plugins.
+
+include::shared/classes-overview.adoc[]
+
+
+include::shared/build-mechanism.adoc[]
+
+include::shared/concepts.adoc[]
+
+include::shared/git-conventions.adoc[]
+
+

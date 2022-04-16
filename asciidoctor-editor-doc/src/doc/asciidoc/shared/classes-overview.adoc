@@ -1,0 +1,21 @@
+== Classes overview
+
+=== Creating preview files
+The next diagram shows an overview of the most relevant
+classes, when it comes to creating the preview files.
+
+[NOTE]
+====
+Only relevant fields or methods are shown in a very reduced
+form.
+====
+
+As visible in the figure, the main relevant class is `AsciiDoctorWrapper.java` - it is
+used by editor class to create the preview HTML content.
+
+plantuml::shared/classes-preview-creation-overview.puml[format="svg"] 
+
+
+=== Rendering the preview
+plantuml::shared/classes-preview-rendering-overview.puml[format="svg"] 
+
