@@ -1,0 +1,71 @@
+hide empty methods
+hide empty fields
+'skinparam linetype ortho
+
+package de.jcup.asciidoctoreditor {
+    class AsciidoctorEditor {
+    
+        getBrowserAccess():BrowserAccess
+        getWarpper: AsciiDoctorWrapper
+    }
+    
+}
+
+package de.jcup.asciidoctoreditor.asciidoc {
+    class AsciiDoctorWrapper
+}
+
+package de.jcup.asciidoctoreditor.preview {
+    class AsciiDoctorEditorBuildSupport {
+        build()
+        showInitializingInfo()
+    }
+    
+    class AsciidocBuildAndPreviewJobFactory {
+        createBuildAndPreviewJob()
+    }
+    
+    class BrowserAccess{
+    }
+    
+    class AsciidocEditorPreviewBuildRunnnable{
+    }
+    
+    enum BuildAsciiDocMode{
+     ALWAYS
+     NOT_WHEN_EXTERNAL_PREVIEW_DISABLED
+    }
+    
+    enum AsciiDoctorBackendType{
+     HTML5
+     PDF
+    }
+}
+
+AsciidoctorEditor --> AsciiDoctorEditorBuildSupport: uses
+AsciidoctorEditor --> BrowserAccess: creates
+AsciidoctorEditor --> AsciiDoctorWrapper: knows
+
+
+AsciiDoctorEditorBuildSupport --> BuildAsciiDocMode
+AsciiDoctorEditorBuildSupport --> BrowserAccess: uses 
+AsciiDoctorEditorBuildSupport --> AsciiDoctorBackendType
+AsciiDoctorEditorBuildSupport --> AsciiDoctorEditorPreferences
+AsciiDoctorEditorBuildSupport --> AsciidocBuildAndPreviewJobFactory
+AsciidocBuildAndPreviewJobFactory --> AsciidocEditorPreviewBuildRunnnable: creates job which\nruns this runnable
+
+AsciidocEditorPreviewBuildRunnnable --> AsciiDoctorWrapper: uses wrapper\nto create file
+
+note bottom of AsciidocEditorPreviewBuildRunnnable
+  Inside this runnable, the complete logic
+  for rendering is done:
+  
+  1. create temporary transformed temp file 
+  2. call the wrapper to create preview file output
+  3. read original asciidoc html output ans transform where necessary
+  4. fix image location pathes
+  5. enrich preview html and create output file
+  
+  Also handles cancelation and job process.
+  
+end note
