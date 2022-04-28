@@ -26,7 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
-import de.jcup.asciidoctoreditor.UniqueAsciidoctorEditorId;
+import de.jcup.asciidoctoreditor.UniquePrefixProvider;
 
 public class AsciiDocFileUtils {
 
@@ -49,13 +49,13 @@ public class AsciiDocFileUtils {
         return createEncodingSafeFileName(encoder.encode(parentCanonicalPath)+"_"+name);
     }
     
-    public static File createTempFileForConvertedContent(Path tempFolder, UniqueAsciidoctorEditorId editorId, String filename) throws IOException {
+    public static File createTempFileForConvertedContent(Path tempFolder, UniquePrefixProvider uniquePrefixProvider, String filename) throws IOException {
         if (tempFolder == null) {
             tempFolder = Files.createTempDirectory("__fallback__");
         }
         File newTempSubFolder = tempFolder.toFile();
 
-        File newTempFile = new File(newTempSubFolder, editorId.getUniquePrefix() + "_" + filename);
+        File newTempFile = new File(newTempSubFolder, uniquePrefixProvider.getUniquePrefix() + "_" + filename);
         if (newTempFile.exists()) {
             if (!newTempFile.delete()) {
                 throw new IOException("Unable to delete old tempfile:" + newTempFile);
@@ -117,7 +117,7 @@ public class AsciiDocFileUtils {
         return Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
 
-    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, UniqueAsciidoctorEditorId editorId, File baseDir, Path tempFolder, List<AsciidoctorConfigFile> configFiles, String rootConfigFolder)
+    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, UniquePrefixProvider uniquePrefixProvider, File baseDir, Path tempFolder, List<AsciidoctorConfigFile> configFiles, String rootConfigFolder)
             throws IOException {
         /* @formatter:off
          * 
@@ -130,13 +130,13 @@ public class AsciiDocFileUtils {
          * So we create the hidden editor file as encoding safe file when not UTF-8 is set as default file encoding on system
          * @formatter:on
          */
-        File hiddenEditorFile = createEncodingSafeFile(tempFolder, editorId.getUniquePrefix() + "_hidden-editorfile_" + asciidoctorFile.getName());
+        File hiddenEditorFile = createEncodingSafeFile(tempFolder, uniquePrefixProvider.getUniquePrefix() + "_hidden-editorfile_" + asciidoctorFile.getName());
         
         try {
             String relativePath = calculatePathToFileFromBase(asciidoctorFile, baseDir);
             StringBuilder sb = new StringBuilder();
             sb.append("// origin :").append(asciidoctorFile.getAbsolutePath()).append("\n");
-            sb.append("// editor :").append(editorId.getUniquePrefix()).append("\n");
+            sb.append("// editor :").append(uniquePrefixProvider.getUniquePrefix()).append("\n");
             sb.append("// basedir:").append(baseDir.getAbsolutePath()).append("\n\n");
             sb.append("// ************************:\n");
             sb.append("// asciidoctorconfig files:\n");

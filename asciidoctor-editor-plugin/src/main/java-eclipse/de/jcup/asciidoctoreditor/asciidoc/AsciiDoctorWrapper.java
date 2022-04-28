@@ -41,7 +41,7 @@ import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.PluginContentInstaller;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
-import de.jcup.asciidoctoreditor.UniqueAsciidoctorEditorId;
+import de.jcup.asciidoctoreditor.UniquePrefixProvider;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -265,13 +265,13 @@ public class AsciiDoctorWrapper {
         return AsciiDocFileUtils.createTempFolderForId(id);
     }
 
-    public File getTempFileFor(File editorFile, UniqueAsciidoctorEditorId editorId, TemporaryFileType type) {
+    public File getTempFileFor(File editorFile, UniquePrefixProvider uniquePrefixProvider, TemporaryFileType type) {
         File parent = getTempFolder().toFile();
 
         String baseName = FilenameUtils.getBaseName(editorFile.getName());
         StringBuilder sb = new StringBuilder();
-        if (!(editorFile.getName().startsWith(editorId.getUniquePrefix()))) {
-            sb.append(editorId);
+        if (!(editorFile.getName().startsWith(uniquePrefixProvider.getUniquePrefix()))) {
+            sb.append(uniquePrefixProvider);
             sb.append("_");
         }
         sb.append(type.getPrefix());
