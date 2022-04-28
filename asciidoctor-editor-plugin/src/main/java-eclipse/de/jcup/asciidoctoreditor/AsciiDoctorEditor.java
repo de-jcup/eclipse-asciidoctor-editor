@@ -147,8 +147,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     File temporaryExternalPreviewFile;
     private File temporaryInternalPreviewFile;
 
-    private long editorId;
-    private long fallBackEditorId;
+    private UniqueAsciidoctorEditorId editorId;
     private String bgColor;
     private BoldFormatAction boldFormatAction;
     private AddLineBreakAction addLineBreakAction;
@@ -172,7 +171,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private static final AsciiDoctorTextFileDocumentProvider ASCIIDOC_SHARED_TEXTFILE_DOCUMENT_PROVIDER = new AsciiDoctorTextFileDocumentProvider();
     private static final AsciiDoctorFileDocumentProvider ASCIIDOC__SHARED_FILE_DOCUMENT_PROVIDER = new AsciiDoctorFileDocumentProvider();
 
-    public long getEditorId() {
+    public UniqueAsciidoctorEditorId getEditorId() {
+        if (editorId == null) {
+            recalculateEditorId();
+        }
         return editorId;
     }
 
@@ -197,9 +199,6 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         buildSupport = new AsciiDoctorEditorBuildSupport(this);
         linkSupport = new AsciiDoctorEditorLinkSupport(this);
         commentSupport = new AsciiDoctorEditorCommentSupport(this);
-
-        fallBackEditorId = System.nanoTime(); // nano time just as fallback - we use hashcode of path normally
-        editorId = fallBackEditorId;
 
         setSourceViewerConfiguration(createSourceViewerConfig());
 
@@ -567,7 +566,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void resetCache() {
+        recalculateEditorId(); 
         getWrapper().resetCaches();
+    }
+
+    private void recalculateEditorId() {
+
+        IFile file = resolveFileOrNull();
+        editorId= new UniqueAsciidoctorEditorId(file);
     }
 
     public void resourceChanged(IResourceChangeEvent event) {
@@ -666,12 +672,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     protected void doSetInput(IEditorInput input) throws CoreException {
         setDocumentProvider(resolveDocumentProvider(input));
         super.doSetInput(input);
-        IFile file = resolveFileOrNull();
-        if (file == null) {
-            editorId = fallBackEditorId;
-        } else {
-            editorId = file.getFullPath().toFile().hashCode();
-        }
+
+        recalculateEditorId();
+
         File configRoot = null;
         try {
             IProject project = getProject();
@@ -813,8 +816,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             return;
         }
         AsciiDoctorWrapper wrapper = getWrapper();
-        temporaryInternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, editorId, TemporaryFileType.INTERNAL_PREVIEW);
-        temporaryExternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, editorId, TemporaryFileType.EXTERNAL_PREVIEW);
+        temporaryInternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, getEditorId(), TemporaryFileType.INTERNAL_PREVIEW);
+        temporaryExternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, getEditorId(), TemporaryFileType.EXTERNAL_PREVIEW);
 
         browserAccess.ensureBrowser(new BrowserContentInitializer() {
 
