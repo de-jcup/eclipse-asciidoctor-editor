@@ -213,8 +213,9 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             // file path might contains spaces or special characters that are URL encoded
             File file = new File(URLDecoder.decode(path, "UTF-8"));
             if (file.exists()) {
-                /* keep as is */
-                continue;
+                /* replace with a valid URI format */
+            	String uri = file.toURI().toString();
+            	asciidocHTML = asciidocHTML.replace(path, uri);
             } else {
                 String p2 = file.getPath();
                 String replacePath = null;
@@ -234,6 +235,9 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
             }
         }
+        
+        asciidocHTML = asciidocHTML.replace("<!--[if IE]><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><![endif]-->", "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
+        
         return asciidocHTML;
     }
 
@@ -309,7 +313,8 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
     private File enrichPreviewHTMLAndWriteToDisk(IProgressMonitor monitor, AsciiDoctorWrapper asciidocWrapper, String asciiDocHtml) {
         String previewHTML;
         if (internalPreview) {
-            previewHTML = asciidocWrapper.enrichHTML(asciiDocHtml, 0);
+            previewHTML = asciidocWrapper
+            		.enrichHTML(asciiDocHtml, 0);
         } else {
             int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
             previewHTML = asciidocWrapper.enrichHTML(asciiDocHtml, refreshAutomaticallyInSeconds);
