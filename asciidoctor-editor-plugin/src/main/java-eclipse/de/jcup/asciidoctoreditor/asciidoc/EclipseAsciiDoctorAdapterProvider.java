@@ -15,7 +15,6 @@
  */
 package de.jcup.asciidoctoreditor.asciidoc;
 
-import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorAdapterProvider;
 
 public class EclipseAsciiDoctorAdapterProvider implements AsciiDoctorAdapterProvider{

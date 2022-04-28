@@ -33,6 +33,7 @@ import de.jcup.asciidoctoreditor.AsciidoctorHTMLOutputParser;
 import de.jcup.asciidoctoreditor.ContentTransformerData;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
+import de.jcup.asciidoctoreditor.UniquePrefixProvider;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocStringUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
@@ -389,7 +390,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         }
     }
 
-    private String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, long editorId) {
+    private String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, UniquePrefixProvider editorId) {
         File generatedFile = editor.getWrapper().getTempFileFor(fileToConvertIntoHTML, editorId, TemporaryFileType.ORIGIN);
         try {
             return AsciiDocStringUtils.readUTF8FileToString(generatedFile);

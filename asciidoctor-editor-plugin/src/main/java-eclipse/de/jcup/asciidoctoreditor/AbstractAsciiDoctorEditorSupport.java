@@ -36,7 +36,7 @@ public abstract class AbstractAsciiDoctorEditorSupport {
         return !file.exists();
     }
 
-    public long getEditorId() {
+    public UniqueAsciidoctorEditorId getEditorId() {
         return getEditor().getEditorId();
     }
 

@@ -22,8 +22,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
-
 public class AsciiDocFileUtilsTest {
 
     @Test

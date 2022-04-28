@@ -28,13 +28,12 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.ContentTransformer;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.EditorType;
-import de.jcup.asciidoctoreditor.diagram.ditaa.DitaaContentTransformer;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
-import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
-import de.jcup.asciidoctoreditor.toolbar.ShowPreviewVerticalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewVerticalInsideEditorAction;
 
 public class AsciiDoctorDitaaEditor extends AsciiDoctorEditor {
 
