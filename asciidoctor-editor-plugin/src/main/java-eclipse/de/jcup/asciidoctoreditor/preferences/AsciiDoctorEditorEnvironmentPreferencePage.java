@@ -46,7 +46,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.asciidoctoreditor.ASPSupport;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
-import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.eclipse.commons.ui.SWTFactory;
 
@@ -85,22 +84,19 @@ public class AsciiDoctorEditorEnvironmentPreferencePage extends PreferencePage i
     @Override
     public boolean performOk() {
 
-        boolean enabledStateAsBefore = customEnvironmentEntriesEnabled == getSupport().areCustomEnvironmentEntriesEnabled();
+        CustomEnvironmentEntrySupport customEnvironmentEntrySupport = getSupport();
+        boolean enabledStateAsBefore = customEnvironmentEntriesEnabled == customEnvironmentEntrySupport.areCustomEnvironmentEntriesEnabled();
         boolean sameContentAsBefore = checkSameDefinitionsAsBefore();
         if (!sameContentAsBefore || !enabledStateAsBefore) {
 
-            getSupport().setCustomEnvironmentEntriesEnabled(customEnvironmentEntriesEnabled);
-            getSupport().setCustomEnvironmentEntries(definitionWorkingCopy);
+            customEnvironmentEntrySupport.setCustomEnvironmentEntriesEnabled(customEnvironmentEntriesEnabled);
+            customEnvironmentEntrySupport.setCustomEnvironmentEntries(definitionWorkingCopy);
             
             if (! AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor()) {
                 
                 ASPSupport aspSupport = AsciiDoctorEditorActivator.getDefault().getAspSupport();
-                if (aspSupport.stop()) {
-                    AsciiDoctorConsoleUtil.showConsole();
-                    AsciiDoctorConsoleUtil.output("Stopped server because of changed preferences - will restart with new environment settings");
-                    
-                    aspSupport.configurationChanged();
-                }
+                
+                aspSupport.configurationChanged();
             }
         }
         return super.performOk();

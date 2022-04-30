@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import de.jcup.asciidoctoreditor.ConsoleAdapter;
 import de.jcup.asciidoctoreditor.LogAdapter;
+import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asp.client.AspClient;
 import de.jcup.asp.core.LaunchException;
 import de.jcup.asp.core.LogHandler;
@@ -143,7 +144,7 @@ public class ASPServerAdapter {
         launcher.setOutputHandler(outputHandler);
 
         if (customEnvironmentEntries != null) {
-            for (String key: customEnvironmentEntries.keySet()) {
+            for (String key : customEnvironmentEntries.keySet()) {
                 launcher.setEnvironment(key, customEnvironmentEntries.get(key));
             }
         }
@@ -193,9 +194,29 @@ public class ASPServerAdapter {
      */
     public boolean stopServer() {
         if (launcher != null) {
-            return launcher.stopServer();
+            boolean stopDone = launcher.stopServer();
+            if (stopDone) {
+                AsciiDoctorConsoleUtil.output(">> ASP Server stop triggered.");
+                waitForServerNoLongerAlive();
+                AsciiDoctorConsoleUtil.output(">> ASP Server stop done.");
+            }
         }
         return false;
+    }
+
+    private void waitForServerNoLongerAlive() {
+        for (int i = 0; i < 10; i++) {
+            if (!client.isServerAlive(null)) {
+                return;
+            }
+            AsciiDoctorConsoleUtil.output(">>> Wait for server no longer alive...");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+        }
     }
 
     public boolean isServerStarted() {

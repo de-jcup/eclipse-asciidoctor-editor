@@ -131,8 +131,9 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         boolean ok = super.performOk();
         // we handle the directory field special, not added as field, so setting default
         // in this way
-        AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR, pathToInstalledAsciidoctor.getStringValue());
-        AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH, pathToJavaForASPlaunch.getStringValue());
+        AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+        preferences.setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR, pathToInstalledAsciidoctor.getStringValue());
+        preferences.setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH, pathToJavaForASPlaunch.getStringValue());
         AsciiDoctorEditorActivator.getDefault().getAspSupport().configurationChanged();
         return ok;
     }

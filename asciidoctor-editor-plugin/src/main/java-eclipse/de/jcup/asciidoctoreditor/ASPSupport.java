@@ -137,7 +137,8 @@ public class ASPSupport {
         aspServerAdapter.setShowCommunication(AsciiDoctorEditorPreferences.getInstance().isShowingAspCommunicationInConsole());
         
         if (aspServerAdapter.isAlive()) {
-            return;
+            AsciiDoctorConsoleUtil.output(">> Stop running ASP server at port "+aspServerAdapter.getPort());
+            aspServerAdapter.stopServer();
         }
         File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
         File aspServer = new File(aspFolder, "asp-server-asciidoctorj-dist.jar");
