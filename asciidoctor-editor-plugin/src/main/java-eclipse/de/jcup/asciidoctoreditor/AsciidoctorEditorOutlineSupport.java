@@ -29,15 +29,17 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorContentOutlinePage;
-import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorQuickOutlineDialog;
 import de.jcup.asciidoctoreditor.outline.Item;
+import de.jcup.asciidoctoreditor.outline.ScriptItemContentOutlinePage;
+import de.jcup.asciidoctoreditor.outline.ScriptItemTreeContentProvider;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorFileReferenceValidator;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModelException;
+import de.jcup.asciidoctoreditor.script.DefaultAsciiDoctorScriptModelBuilder;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
@@ -53,7 +55,11 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
 
     public AsciidoctorEditorOutlineSupport(AsciiDoctorEditor editor) {
         super(editor);
-        this.modelBuilder = new AsciiDoctorScriptModelBuilder();
+        this.modelBuilder = createModelBuilder();
+    }
+
+    protected AsciiDoctorScriptModelBuilder createModelBuilder() {
+        return new DefaultAsciiDoctorScriptModelBuilder();
     }
 
     /**
@@ -90,7 +96,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
         }
     }
 
-    private void openSelectedItemInEditor(boolean grabFocus, Object firstElement) {
+    protected void openSelectedItemInEditor(boolean grabFocus, Object firstElement) {
         Item item = (Item) firstElement;
         int offset = item.getOffset();
         int length = item.getLength();
@@ -154,7 +160,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
         });
     }
 
-    private void validate(AsciiDoctorScriptModel model) {
+    protected void validate(AsciiDoctorScriptModel model) {
         AsciiDoctorFileReferenceValidator referenceValidator = new AsciiDoctorFileReferenceValidator(AsciiDoctorEditorPreferences.getInstance().isURLValidationEnabled());
         
         AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
@@ -201,7 +207,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
      * @return outline page, never <code>null</code>. If non exists a new one will
      *         be created
      */
-    public AsciiDoctorContentOutlinePage getOutlinePage() {
+    public ScriptItemContentOutlinePage getOutlinePage() {
         if (outlinePage == null) {
             outlinePage = new AsciiDoctorContentOutlinePage(getEditor());
         }
@@ -212,7 +218,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
         if (outlinePage == null) {
             return;
         }
-        AsciiDoctorEditorTreeContentProvider contentProvider = getOutlinePage().getContentProvider();
+        ScriptItemTreeContentProvider contentProvider = getOutlinePage().getScriptItemTreeContentProvider();
         Item item = contentProvider.tryToFindByOffset(position);
         if (item == null) {
             return;

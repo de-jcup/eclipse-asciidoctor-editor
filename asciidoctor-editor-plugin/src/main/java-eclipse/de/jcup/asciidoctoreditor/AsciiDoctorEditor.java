@@ -86,6 +86,7 @@ import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
 import de.jcup.asciidoctoreditor.hyperlink.AsciiDoctorEditorLinkSupport;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.Item;
+import de.jcup.asciidoctoreditor.outline.ScriptItemTreeContentProvider;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preview.AsciiDoctorEditorBuildSupport;
 import de.jcup.asciidoctoreditor.preview.BrowserAccess;
@@ -195,7 +196,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public AsciiDoctorEditor() {
-        outlineSupport = new AsciidoctorEditorOutlineSupport(this);
+        outlineSupport = createOutlineSupport();
         buildSupport = new AsciiDoctorEditorBuildSupport(this);
         linkSupport = new AsciiDoctorEditorLinkSupport(this);
         commentSupport = new AsciiDoctorEditorCommentSupport(this);
@@ -207,6 +208,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             contentTransformer = NotChangingContentTransformer.INSTANCE;
         }
         this.synchronizer = new ScrollSynchronizer(this);
+    }
+
+    protected AsciidoctorEditorOutlineSupport createOutlineSupport() {
+        return new AsciidoctorEditorOutlineSupport(this);
     }
 
     public BrowserAccess getBrowserAccess() {
@@ -332,7 +337,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             return (T) this;
         }
         if (ITreeContentProvider.class.equals(adapter) || AsciiDoctorEditorTreeContentProvider.class.equals(adapter)) {
-            return (T) outlineSupport.getOutlinePage().getContentProvider();
+            return (T) resolveScriptItemTreeProviderOrNull();
         }
         return super.getAdapter(adapter);
     }
@@ -360,12 +365,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public Item getItemAt(int offset) {
-        AsciiDoctorEditorTreeContentProvider contentProvider = getOutlineSupport().getOutlinePage().getContentProvider();
-        if (contentProvider == null) {
+        ScriptItemTreeContentProvider provider = resolveScriptItemTreeProviderOrNull();
+        if (provider==null) {
             return null;
         }
-        Item item = contentProvider.tryToFindByOffset(offset);
+        Item item = provider.tryToFindByOffset(offset);
         return item;
+    }
+
+    private ScriptItemTreeContentProvider resolveScriptItemTreeProviderOrNull() {
+        return getOutlineSupport().getOutlinePage().getScriptItemTreeContentProvider();
     }
 
     public Item getItemAtCarretPosition() {

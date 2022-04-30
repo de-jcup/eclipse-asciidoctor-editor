@@ -73,7 +73,7 @@ public class ReferencesWorkspaceHandler extends AbstractHandler {
         }
         /* asciidoctor editor found */
         AsciiDoctorEditor asciidocEditor = (AsciiDoctorEditor) editor;
-        Item found = asciidocEditor.getOutlineSupport().getOutlinePage().getContentProvider().tryToFindByOffset(((ITextSelection) selection).getOffset());
+        Item found = asciidocEditor.getOutlineSupport().getOutlinePage().getScriptItemTreeContentProvider().tryToFindByOffset(((ITextSelection) selection).getOffset());
         if (found == null) {
             return;
         }

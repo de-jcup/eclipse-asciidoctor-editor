@@ -412,14 +412,13 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
     /**
      * Asciidoctor starts normally from a root document and resolves pathes etc. on
-     * the fly by using the base directory. So far so good. but when resolving base
-     * directory for e.g. images, diagrams etc. and setting it but rendering a sub
-     * file this does always break the includes, because either images do not longer
-     * work or the include.<br>
+     * the fly by using the base directory. 
      * <br>
-     * To prevent this we do following trick. We always create a temporary hidden
-     * file which will include the corresponding real editor file This temporary
-     * file is always settled at base folder
+     * So far so good. but when rendering a sub file resolving base directory for e.g. images, diagrams etc. this 
+     * does always break the includes, because either images do not longer work or the include.<br>
+     * <br>
+     * To prevent this we do following trick: We always create a temporary hidden
+     * file which will include the corresponding real editor file-
      */
     private boolean isNeedingAHiddenEditorFile(File editorFileOrNull, File fileToConvertIntoHTML) {
         /*

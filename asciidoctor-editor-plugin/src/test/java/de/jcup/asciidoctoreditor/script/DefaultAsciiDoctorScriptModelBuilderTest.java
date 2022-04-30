@@ -20,13 +20,13 @@ import static de.jcup.asciidoctoreditor.script.AssertScriptModel.*;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AsciiDoctorScriptModelBuilderTest {
+public class DefaultAsciiDoctorScriptModelBuilderTest {
 
 	private AsciiDoctorScriptModelBuilder builderToTest;
 
 	@Before
 	public void before() {
-		builderToTest = new AsciiDoctorScriptModelBuilder();
+		builderToTest = new DefaultAsciiDoctorScriptModelBuilder();
 	}
 	@Test
 	public void a_headline_with_anker_before_gets_id_of_anker() throws Exception {

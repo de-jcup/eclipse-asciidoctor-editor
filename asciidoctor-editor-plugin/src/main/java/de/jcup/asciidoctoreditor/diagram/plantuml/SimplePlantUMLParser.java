@@ -19,7 +19,7 @@ public class SimplePlantUMLParser {
 
     private static final String INCLUDE = "!include ";
     private static final int INCLUDE_LENGTH = INCLUDE.length();
-    
+
     private static final String INCLUDE_URL = "!includeurl ";
     private static final int INCLUDE_URL_LENGTH = INCLUDE_URL.length();
 
@@ -27,27 +27,32 @@ public class SimplePlantUMLParser {
         PlantUMLModel model = new PlantUMLModel();
         String[] lines = text.split("\n");
         int lineNr = 1;
-        for (String line: lines) {
-            inspectLine(line, lineNr++,model);
+        int index = 0;
+        for (String line : lines) {
+            inspectLine(index, line, lineNr++, model);
+            index = index + line.length() + 1; // add the new line was well..
         }
         return model;
     }
 
-    private void inspectLine(String line, int lineNr, PlantUMLModel model) {
-
-        if (line.startsWith(INCLUDE)){
-            String includePart = line.substring(INCLUDE_LENGTH).trim();
-            addInclude(model, includePart,lineNr);
-        }else if (line.startsWith(INCLUDE_URL)) {
-            String includePart = line.substring(INCLUDE_URL_LENGTH).trim();
-            addInclude(model, includePart,lineNr);
+    private void inspectLine(int index, String line, int lineNr, PlantUMLModel model) {
+        String location = null;
+        if (line.startsWith(INCLUDE)) {
+            location = line.substring(INCLUDE_LENGTH).trim();
+        } else if (line.startsWith(INCLUDE_URL)) {
+            location = line.substring(INCLUDE_URL_LENGTH).trim();
         }
-        
+        if (location != null) {
+            addInclude(index, model, location, lineNr, line);
+        }
+
     }
 
-    private void addInclude(PlantUMLModel model, String includePart, int lineNr) {
-        PlantUMLInclude include = new PlantUMLInclude(includePart);
+    private void addInclude(int pos, PlantUMLModel model, String location, int lineNr, String line) {
+        PlantUMLInclude include = new PlantUMLInclude(location);
         include.setLineNumber(lineNr);
+        include.setPosition(pos);
+        include.setLine(line);
         model.getIncludes().add(include);
     }
 }

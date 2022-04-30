@@ -34,44 +34,41 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
-import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocStringUtils;
-import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
+import de.jcup.asciidoctoreditor.diagram.plantuml.AsciiDoctorPlantUMLEditor;
+import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLScriptModel;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
-public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements IDoubleClickListener, ScriptItemContentOutlinePage {
-    private static final ImageDescriptor IMG_DESC_GROUPED = createOutlineImageDescriptor("grouped.png");;
-    private static final ImageDescriptor IMG_DESC_NOT_GROUPED = createOutlineImageDescriptor("not_grouped.png");;
+public class AsciiDoctorPlantUMLContentOutlinePage extends ContentOutlinePage implements IDoubleClickListener, ScriptItemContentOutlinePage {
     private static final ImageDescriptor IMG_DESC_LINKED = createOutlineImageDescriptor("synced.png");
     private static final ImageDescriptor IMG_DESC_NOT_LINKED = createOutlineImageDescriptor("sync_broken.png");
     private static final ImageDescriptor IMG_DESC_EXPAND_ALL = createOutlineImageDescriptor("expandall.png");
     private static final ImageDescriptor IMG_DESC_COLLAPSE_ALL = createOutlineImageDescriptor("collapseall.png");
 
-    private AsciiDoctorEditorTreeContentProvider contentProvider;
+    private AsciiDoctorPlantUMLEditorTreeContentProvider contentProvider;
     private Object input;
-    private AsciiDoctorEditor editor;
-    private AsciiDoctorEditorOutlineLabelProvider labelProvider;
+    private AsciiDoctorPlantUMLEditor editor;
+    private AsciiDoctorPlantUMLEditorOutlineLabelProvider labelProvider;
 
     private boolean linkingWithEditorEnabled;
     private boolean ignoreNextSelectionEvents;
     private ToggleLinkingAction toggleLinkingAction;
 
-    public AsciiDoctorContentOutlinePage(AsciiDoctorEditor editor) {
+    public AsciiDoctorPlantUMLContentOutlinePage(AsciiDoctorPlantUMLEditor editor) {
         this.editor = editor;
-        this.contentProvider = new AsciiDoctorEditorTreeContentProvider();
-        this.contentProvider.setGroupingEnabled(AsciiDoctorEditorPreferences.getInstance().isGroupingInOutlineEnabledPerDefault());
+        this.contentProvider = new AsciiDoctorPlantUMLEditorTreeContentProvider();
     }
 
-    public AsciiDoctorEditorTreeContentProvider getScriptItemTreeContentProvider() {
+    public AsciiDoctorPlantUMLEditorTreeContentProvider getScriptItemTreeContentProvider() {
         return contentProvider;
     }
 
     public void createControl(Composite parent) {
         super.createControl(parent);
 
-        labelProvider = new AsciiDoctorEditorOutlineLabelProvider();
+        labelProvider = new AsciiDoctorPlantUMLEditorOutlineLabelProvider();
 
         TreeViewer viewer = getTreeViewer();
         viewer.setContentProvider(contentProvider);
@@ -92,7 +89,6 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
         toolBarManager.add(new ExpandAllAction());
         toolBarManager.add(new CollapseAllAction());
         toolBarManager.add(toggleLinkingAction);
-        toolBarManager.add(new ToggleSortAction());
 
         IMenuManager viewMenuManager = actionBars.getMenuManager();
         viewMenuManager.add(new Separator("EndFilterGroup")); //$NON-NLS-1$
@@ -175,8 +171,8 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
             return;
         }
         ignoreNextSelectionEvents = true;
-        if (contentProvider instanceof ScriptItemTreeContentProvider) {
-            ScriptItemTreeContentProvider provider = (ScriptItemTreeContentProvider) contentProvider;
+        if (contentProvider instanceof AsciiDoctorPlantUMLEditorTreeContentProvider) {
+            AsciiDoctorPlantUMLEditorTreeContentProvider provider = (AsciiDoctorPlantUMLEditorTreeContentProvider) contentProvider;
             Item item = provider.tryToFindByOffset(caretOffset);
             if (item != null) {
                 StructuredSelection selection = new StructuredSelection(item);
@@ -186,7 +182,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
         ignoreNextSelectionEvents = false;
     }
 
-    public void rebuild(AsciiDoctorScriptModel model) {
+    public void rebuild(PlantUMLScriptModel model) {
         if (model == null) {
             return;
         }
@@ -232,40 +228,6 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 
     }
 
-    class ToggleSortAction extends Action {
-
-        private ToggleSortAction() {
-            if (editor != null) {
-                linkingWithEditorEnabled = editor.getPreferences().isLinkOutlineWithEditorEnabled();
-            }
-            setDescription("link with editor");
-            initImage();
-            initText();
-        }
-
-        @Override
-        public void run() {
-            contentProvider.setGroupingEnabled(!contentProvider.isGroupingEnabled());
-
-            initText();
-            initImage();
-            
-            if (editor == null) {
-                return;
-            }
-            editor.rebuildOutlineAndValidate();
-
-        }
-
-        private void initImage() {
-            setImageDescriptor(contentProvider.isGroupingEnabled() ? getImageDescriptionForGrouped() : getImageDescriptionNotGrouped());
-        }
-
-        private void initText() {
-            setText(contentProvider.isGroupingEnabled() ? "Click to disable grouping" : "Click to enable grouping");
-        }
-
-    }
 
     class CollapseAllAction extends Action {
 
@@ -300,17 +262,17 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
     protected ImageDescriptor getImageDescriptionNotLinked() {
         return IMG_DESC_NOT_LINKED;
     }
-    
-    protected ImageDescriptor getImageDescriptionForGrouped() {
-        return IMG_DESC_GROUPED;
-    }
-
-    protected ImageDescriptor getImageDescriptionNotGrouped() {
-        return IMG_DESC_NOT_GROUPED;
-    }
 
     private static ImageDescriptor createOutlineImageDescriptor(String name) {
         return EclipseUtil.createImageDescriptor("/icons/outline/" + name, AsciiDoctorEditorActivator.PLUGIN_ID);
+    }
+
+    @Override
+    public void rebuild(AsciiDoctorScriptModel model) {
+        if (! (model instanceof PlantUMLScriptModel)) {
+            return;
+        }
+        rebuild((PlantUMLScriptModel)model);
     }
 
 }

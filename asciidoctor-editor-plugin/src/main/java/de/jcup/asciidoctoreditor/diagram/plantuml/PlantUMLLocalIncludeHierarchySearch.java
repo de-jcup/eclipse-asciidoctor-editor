@@ -28,7 +28,7 @@ public class PlantUMLLocalIncludeHierarchySearch {
 
     private SimplePlantUMLParser parser = new SimplePlantUMLParser();
     private File baseFolder = new File(".");
-
+    
     public List<File> searchLocalIncludes(String text) throws IOException {
         List<File> files = new ArrayList<>();
         searchLocalIncludes(files, text, 0);

@@ -75,7 +75,7 @@ public class AsciiDoctorQuickOutlineDialog extends AbstractFilterableTreeQuickDi
 		if (editor == null) {
 			return;
 		}
-		AsciiDoctorContentOutlinePage outlinePage = editor.getOutlineSupport().getOutlinePage();
+		ScriptItemContentOutlinePage outlinePage = editor.getOutlineSupport().getOutlinePage();
 		boolean outlineAvailable = outlinePageVisible(outlinePage);
 		if (outlineAvailable){
 			/*
@@ -89,7 +89,7 @@ public class AsciiDoctorQuickOutlineDialog extends AbstractFilterableTreeQuickDi
 		
 	}
 
-	protected boolean outlinePageVisible(AsciiDoctorContentOutlinePage outlinePage) {
+	protected boolean outlinePageVisible(ScriptItemContentOutlinePage outlinePage) {
 		Control control = outlinePage.getControl();
 		/* when control is not available - means outline view is not visible, */
 		boolean controlAvailable = control==null || control.isDisposed() || ! control.isVisible();
