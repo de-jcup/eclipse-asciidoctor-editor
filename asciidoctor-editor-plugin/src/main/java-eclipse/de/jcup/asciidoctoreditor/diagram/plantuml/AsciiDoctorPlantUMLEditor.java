@@ -33,6 +33,7 @@ import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLFileDocumentProvide
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLTextFileDocumentProvider;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
+import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
@@ -110,6 +111,7 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 
         /* necessary for refresh */
         rebuildAction = new RebuildAsciiDocViewAction(this);
+        clearProjectCacheAction = new ClearProjectCacheAsciiDocViewAction(this);
 
         IToolBarManager previewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
@@ -120,7 +122,8 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
         otherToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
         
         IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-        buildToolBarManager.add(new RebuildAsciiDocViewAction(this));
+        buildToolBarManager.add(rebuildAction);
+        buildToolBarManager.add(clearProjectCacheAction);
 
 
         // Add to the cool bar manager

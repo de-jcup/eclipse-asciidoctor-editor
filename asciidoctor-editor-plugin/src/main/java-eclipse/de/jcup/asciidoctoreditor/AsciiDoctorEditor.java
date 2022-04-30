@@ -167,7 +167,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private Composite topComposite;
     protected RebuildAsciiDocViewAction rebuildAction;
 
-    private ClearProjectCacheAsciiDocViewAction clearProjectAction;
+    protected ClearProjectCacheAsciiDocViewAction clearProjectCacheAction;
 
     private static final AsciiDoctorTextFileDocumentProvider ASCIIDOC_SHARED_TEXTFILE_DOCUMENT_PROVIDER = new AsciiDoctorTextFileDocumentProvider();
     private static final AsciiDoctorFileDocumentProvider ASCIIDOC__SHARED_FILE_DOCUMENT_PROVIDER = new AsciiDoctorFileDocumentProvider();
@@ -856,7 +856,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     protected void initToolbar() {
         rebuildAction = new RebuildAsciiDocViewAction(this);
-        clearProjectAction = new ClearProjectCacheAsciiDocViewAction(this);
+        clearProjectCacheAction = new ClearProjectCacheAsciiDocViewAction(this);
 
         italicFormatAction = new ItalicFormatAction(this);
         boldFormatAction = new BoldFormatAction(this);
@@ -890,7 +890,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         buildToolBarManager.add(rebuildAction);
-        buildToolBarManager.add(clearProjectAction);
+        buildToolBarManager.add(clearProjectCacheAction);
 
         IToolBarManager outputToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         outputToolBarManager.add(new CreatePDFAction(this));
