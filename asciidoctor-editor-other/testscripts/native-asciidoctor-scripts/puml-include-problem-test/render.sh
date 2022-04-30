@@ -15,4 +15,4 @@ echo "> Does not work: Render asciidoc document which includes a plantuml file, 
 asciidoctor -r asciidoctor-diagram ./document-with-diagram-using-includes.adoc
 
 echo "> Does not work: Render asciidoc document which includes a plantuml file, which does itself include others"
-asciidoctor -r asciidoctor-diagram ./document-with-diagram-using-includes.adoc
+asciidoctor -r asciidoctor-diagram ./document-with-diagram-using-includes-but-not-dot-slash-prefix.adoc
