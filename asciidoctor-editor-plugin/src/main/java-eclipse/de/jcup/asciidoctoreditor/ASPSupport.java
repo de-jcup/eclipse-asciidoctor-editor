@@ -28,19 +28,124 @@ public class ASPSupport {
 
     private ASPServerAdapter aspServerAdapter;
 
+    private boolean aspServerStarted;
+
     public ASPSupport() {
         aspServerAdapter = new ASPServerAdapter();
     }
 
+    /**
+     * Initial start - is called by plugin activator
+     */
+    public void start() {
+
+    }
+
+    /**
+     * Shutdown - called by plugin activator on plugin stop, or also in preferences
+     * 
+     * @return <code>true</code> when server has been stopped, <code>false</code>
+     *         when stop was not possible (e.g. when no server instance was running)
+     */
+    public boolean stop() {
+        boolean stopped = aspServerAdapter.stopServer();
+        aspServerStarted = false;
+        return stopped;
+    }
+
     public AspClient getAspClient() {
+        if (!aspServerStarted) {
+            startStopASPServerOnDemandInOwnThread();
+        }
         waitForServerAvailable(new FallbackRestartHandler());
 
         AspClient client = aspServerAdapter.getClient();
         return client;
     }
 
-    private abstract class ServerNotAvailableHandler {
-        protected abstract void handleNotAvailable();
+    /**
+     * Called by preference page
+     */
+    public void configurationChanged() {
+        startStopASPServerOnDemandInOwnThread();
+
+    }
+
+    private void internalUpdateASPServerStart() {
+        AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+
+        boolean usesInstalledAsciidoctor = preferences.isUsingInstalledAsciidoctor();
+
+        if (usesInstalledAsciidoctor) {
+            if (aspServerAdapter.isServerStarted()) {
+                /* shutdown running instance */
+                AsciiDoctorConsoleUtil.output(">> Stopping ASP server because using now installed asciidoctor");
+                aspServerAdapter.stopServer();
+            }
+            /*
+             * we are done - using installed Asciidoctor instance we have do not need to
+             * start ASP...
+             */
+            return;
+        }
+
+        /* ASP wanted */
+        aspServerAdapter.setShowServerOutput(preferences.isShowingAspServerOutputInConsole());
+        aspServerAdapter.setShowCommunication(AsciiDoctorEditorPreferences.getInstance().isShowingAspCommunicationInConsole());
+
+        if (aspServerAdapter.isAlive()) {
+            AsciiDoctorConsoleUtil.output(">> Stop running ASP server at port " + aspServerAdapter.getPort());
+            aspServerAdapter.stopServer();
+        }
+        File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
+        File aspServer = new File(aspFolder, "asp-server-asciidoctorj-dist.jar");
+
+        String pathToJavaBinary = preferences.getPathToJavaBinaryForASPLaunch();
+        aspServerAdapter.setPathToJavaBinary(pathToJavaBinary);
+        aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
+        aspServerAdapter.setMinPort(preferences.getAspServerMinPort());
+        aspServerAdapter.setMaxPort(preferences.getAspServerMaxPort());
+        aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);
+        aspServerAdapter.setLogAdapter(AsciiDoctorEclipseLogAdapter.INSTANCE);
+
+        Map<String, String> customEnvEntries = null;
+        if (CustomEnvironmentEntrySupport.DEFAULT.areCustomEnvironmentEntriesEnabled()) {
+            customEnvEntries = CustomEnvironmentEntrySupport.DEFAULT.fetchConfiguredEnvironmentEntriesAsMap();
+        }
+        aspServerAdapter.setCustomEnvironmentEntries(customEnvEntries);
+
+        aspServerAdapter.startServer();
+
+    }
+
+    private boolean isServerNotInitialized() {
+        return !aspServerAdapter.isAlive();
+    }
+
+    private void startStopASPServerOnDemandInOwnThread() {
+        aspServerStarted = true;
+
+        Thread t = new Thread(() -> internalUpdateASPServerStart(), "Update ASP server start");
+        t.start();
+    }
+
+    private void waitForServerAvailable(ServerNotAvailableHandler notAvailableHandler) {
+        int count = 0;
+        while (isServerNotInitialized()) {
+            try {
+                count++;
+                if (count % 2 == 0) { // we just show only every 2 seconds the wait, but check is done for every
+                                      // second...
+                    AsciiDoctorConsoleUtil.output("...wait for server (" + count + " seconds)");
+                }
+                Thread.sleep(1000);
+                if (count > 15) {
+                    notAvailableHandler.handleNotAvailable();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     private class FallbackRestartHandler extends ServerNotAvailableHandler {
@@ -68,97 +173,8 @@ public class ASPSupport {
         }
     }
 
-    private void waitForServerAvailable(ServerNotAvailableHandler notAvailableHandler) {
-        int count = 0;
-        while (isServerNotInitialized()) {
-            try {
-                Thread.sleep(1000);
-                count++;
-                if (count > 10) {
-                    notAvailableHandler.handleNotAvailable();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
-    private boolean isServerNotInitialized() {
-        return !aspServerAdapter.isAlive();
-    }
-
-    /**
-     * Initial start - is called by plugin activator
-     */
-    public void start() {
-        startStopASPServerOnDemandInOwnThread();
-    }
-
-    /**
-     * Called by preference page
-     */
-    public void configurationChanged() {
-        startStopASPServerOnDemandInOwnThread();
-
-    }
-
-    /**
-     * Shutdown - called by plugin activator on plugin stop, or also in preferences
-     * 
-     * @return <code>true</code> when server has been stopped, <code>false</code>
-     *         when stop was not possible (e.g. when no server instance was running)
-     */
-    public boolean stop() {
-        return aspServerAdapter.stopServer();
-    }
-
-    private void startStopASPServerOnDemandInOwnThread() {
-        Thread t = new Thread(() -> internalUpdateASPServerStart(), "Update ASP server start");
-        t.start();
-    }
-
-    private void internalUpdateASPServerStart() {
-        AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
-        
-        boolean usesInstalledAsciidoctor = preferences.isUsingInstalledAsciidoctor();
-        
-        if (usesInstalledAsciidoctor) {
-            if (aspServerAdapter.isServerStarted()) {
-                /* shutdown running instance*/
-                AsciiDoctorConsoleUtil.output(">> Stopping ASP server because using now installed asciidoctor");
-                aspServerAdapter.stopServer();
-            }
-            /* we are done - using installed Asciidoctor instance we have do not need to start ASP...*/
-            return;
-        } 
-        
-        /* ASP wanted*/
-        aspServerAdapter.setShowServerOutput(preferences.isShowingAspServerOutputInConsole());
-        aspServerAdapter.setShowCommunication(AsciiDoctorEditorPreferences.getInstance().isShowingAspCommunicationInConsole());
-        
-        if (aspServerAdapter.isAlive()) {
-            AsciiDoctorConsoleUtil.output(">> Stop running ASP server at port "+aspServerAdapter.getPort());
-            aspServerAdapter.stopServer();
-        }
-        File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
-        File aspServer = new File(aspFolder, "asp-server-asciidoctorj-dist.jar");
-
-        String pathToJavaBinary = preferences.getPathToJavaBinaryForASPLaunch();
-        aspServerAdapter.setPathToJavaBinary(pathToJavaBinary);
-        aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
-        aspServerAdapter.setMinPort(preferences.getAspServerMinPort());
-        aspServerAdapter.setMaxPort(preferences.getAspServerMaxPort());
-        aspServerAdapter.setConsoleAdapter(AsciiDoctorEclipseConsoleAdapter.INSTANCE);
-        aspServerAdapter.setLogAdapter(AsciiDoctorEclipseLogAdapter.INSTANCE);
-        
-        Map<String,String> customEnvEntries = null;
-        if (CustomEnvironmentEntrySupport.DEFAULT.areCustomEnvironmentEntriesEnabled()) {
-            customEnvEntries = CustomEnvironmentEntrySupport.DEFAULT.fetchConfiguredEnvironmentEntriesAsMap();
-        }
-        aspServerAdapter.setCustomEnvironmentEntries(customEnvEntries);
-        
-        aspServerAdapter.startServer();
-
+    private abstract class ServerNotAvailableHandler {
+        protected abstract void handleNotAvailable();
     }
 
 }

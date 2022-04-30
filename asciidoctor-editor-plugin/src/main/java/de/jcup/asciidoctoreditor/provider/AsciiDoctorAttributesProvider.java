@@ -45,9 +45,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
                 
                 sourceHighlighter("coderay").
                 customAttribute("eclipse-editor-basedir",absolutePathBaseDir).
-//                customAttribute("source-highlighter","coderay").
                 customAttribute("icons", "font").
-//                customAttribute("coderay-css", "style").
                 customAttribute("env", "eclipse").
                 customAttribute("env-eclipse",true);
          /* @formatter:on*/
