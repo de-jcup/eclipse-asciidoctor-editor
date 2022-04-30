@@ -18,8 +18,11 @@ package de.jcup.asciidoctoreditor.toolbar;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -32,6 +35,7 @@ public class NewTableDialog extends TitleAreaDialog {
 
 	private int rows;
 	private int columns;
+	private boolean addColumnHeadersSelected;
 
 	private Spinner spinnerRows;
 
@@ -56,6 +60,7 @@ public class NewTableDialog extends TitleAreaDialog {
 
 		createSpinnerColumns(container);
 		createSpinnerRows(container);
+		createAddColumnHeaderOptionsBoolean(container);
 
 		return area;
 	}
@@ -85,6 +90,26 @@ public class NewTableDialog extends TitleAreaDialog {
 		spinnerRows.setValues(3, 1, 100, 0, 1, 10);
 		spinnerRows.setLayoutData(data);
 	}
+	
+	private void createAddColumnHeaderOptionsBoolean(Composite container) {
+        Label lblAddColumnHeaders = new Label(container, SWT.NONE);
+        lblAddColumnHeaders.setText("Add columns header options");
+
+        GridData data = new GridData();
+        data.grabExcessHorizontalSpace = true;
+        data.horizontalAlignment = GridData.FILL;
+
+        Button checkBox = new Button(container,SWT.CHECK);
+        checkBox.setText("");
+        checkBox.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                Button btn = (Button) event.getSource();
+                addColumnHeadersSelected = btn.getSelection();
+            }
+        });
+    }
 
 	@Override
 	protected boolean isResizable() {
@@ -111,4 +136,8 @@ public class NewTableDialog extends TitleAreaDialog {
 	public int getColumns() {
 		return columns;
 	}
+	
+	public boolean isAddColumnHeadersSelected() {
+        return addColumnHeadersSelected;
+    }
 }
