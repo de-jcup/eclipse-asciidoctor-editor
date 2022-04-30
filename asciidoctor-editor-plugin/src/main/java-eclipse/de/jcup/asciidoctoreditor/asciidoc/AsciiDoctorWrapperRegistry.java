@@ -28,7 +28,6 @@ public class AsciiDoctorWrapperRegistry {
     private Map<IProject, AsciiDoctorWrapper> map = new HashMap<>();
 
     private AsciiDoctorWrapperRegistry(){
-        
     }
     
     public AsciiDoctorWrapper getWrapper(IProject project) {

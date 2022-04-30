@@ -1,15 +1,18 @@
 package de.jcup.asciidoctoreditor;
 
-import org.eclipse.core.resources.IFile;
+import java.io.File;
+
+import org.eclipse.core.runtime.IPath;
 
 public class UniqueAsciidoctorEditorId implements UniquePrefixProvider {
 
     private String uniquePrefix;
     private String originFileLocationPath;
 
-    public UniqueAsciidoctorEditorId(IFile file) {
-        if (file != null) {
-            originFileLocationPath = file.getFullPath().toFile().getAbsolutePath();
+    public UniqueAsciidoctorEditorId(IPath path) {
+        if (path != null) {
+            File file = path.toFile();
+            originFileLocationPath = file.getAbsolutePath();
         } else {
             originFileLocationPath = "fallback_for_missing_file_" + System.nanoTime();
         }
