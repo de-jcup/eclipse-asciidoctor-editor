@@ -16,13 +16,11 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
-import java.util.Map;
-
-import org.asciidoctor.Attributes;
-import org.asciidoctor.OptionsBuilder;
-import org.asciidoctor.SafeMode;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
+import de.jcup.asp.api.asciidoc.AsciidocOptions;
+import de.jcup.asp.api.asciidoc.AsciidocOptionsBuilder;
+import de.jcup.asp.api.asciidoc.AsciidocSafeMode;
 
 public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 
@@ -30,21 +28,24 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
         super(context);
     }
 
-    public Map<String, Object> createOptionsContainingAttributes(AsciiDoctorBackendType backend, Attributes attributes) {
+    public AsciidocOptions createOptionsContainingAttributes(AsciiDoctorBackendType backend) {
         /* @formatter:off*/
 
+        
+        AsciidocOptionsBuilder builder = AsciidocOptions.builder();
+        
         File destionationFolder = getOutputFolder().toFile();
         /* @formatter:off */
-        OptionsBuilder opts = OptionsBuilder.options().
+        builder.
                 toDir(destionationFolder).
-                safe(SafeMode.UNSAFE).
+                safe(AsciidocSafeMode.UNSAFE).
                 backend(backend.getBackendString()).
                 headerFooter(getContext().isTOCVisible()).
-                attributes(attributes).
-                option("sourcemap", "true").
+                sourcemap(true).
                 baseDir(getContext().getBaseDir());
+        
         /* @formatter:on*/
-        return opts.asMap();
+        return builder.build();
         /* @formatter:off */
     }
 

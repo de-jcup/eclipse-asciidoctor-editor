@@ -19,11 +19,13 @@ import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 
+import de.jcup.asp.api.asciidoc.AsciidocAttributes;
+import de.jcup.asp.api.asciidoc.AsciidocOptions;
 import de.jcup.asp.client.AspClientProgressMonitor;
 
 public interface AsciidoctorAdapter {
 
-    void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options, AspClientProgressMonitor monitor);
+    void convertFile(File editorFileOrNull, File asciiDocFile, AsciidocOptions options, AsciidocAttributes attributes, AspClientProgressMonitor monitor);
     
     default public Map<String, Object> resolveAttributes(File fileOrDirectory) {
         Objects.requireNonNull(fileOrDirectory,"File path must be set!");

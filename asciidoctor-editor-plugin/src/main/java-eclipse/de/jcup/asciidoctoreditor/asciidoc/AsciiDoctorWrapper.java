@@ -19,11 +19,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.asciidoctor.Attributes;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -50,6 +48,8 @@ import de.jcup.asciidoctoreditor.provider.AsciiDoctorOptionsProvider;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 import de.jcup.asciidoctoreditor.provider.ImageHandlingMode;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
+import de.jcup.asp.api.asciidoc.AsciidocAttributes;
+import de.jcup.asp.api.asciidoc.AsciidocOptions;
 import de.jcup.asp.client.AspClientProgressMonitor;
 
 public class AsciiDoctorWrapper {
@@ -85,15 +85,15 @@ public class AsciiDoctorWrapper {
 
             /* build attributes */
             AsciiDoctorAttributesProvider attributesProvider = context.getAttributesProvider();
-            Attributes attributes = attributesProvider.createAttributes();
+            AsciidocAttributes attributes = attributesProvider.createAttributes();
 
             /* build options - containing attribute parameters */
             AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
-            Map<String, Object> options = optionsProvider.createOptionsContainingAttributes(asciiDoctorBackendType, attributes);
+            AsciidocOptions options = optionsProvider.createOptionsContainingAttributes(asciiDoctorBackendType);
 
             /* start conversion by asciidoctor */
             AsciidoctorAdapter asciiDoctorAdapter = context.getAsciiDoctor();
-            asciiDoctorAdapter.convertFile(data.editorFileOrNull, context.getFileToRender(), options, monitor);
+            asciiDoctorAdapter.convertFile(data.editorFileOrNull, context.getFileToRender(), options, attributes, monitor);
 
             refreshParentFolderIfNecessary();
             /* @formatter:off */

@@ -20,10 +20,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 
-import org.asciidoctor.Attributes;
-import org.asciidoctor.AttributesBuilder;
-
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
+import de.jcup.asp.api.asciidoc.AsciidocAttributes;
+import de.jcup.asp.api.asciidoc.AsciidocAttributesBuilder;
 
 public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
@@ -34,36 +33,34 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
         super(context);
     }
 
-    public Attributes createAttributes() {
+    public AsciidocAttributes createAttributes() {
         /* @formatter:off */
-        Attributes attrs;
         String absolutePathBaseDir = getContext().getBaseDir().getAbsolutePath();
-        AttributesBuilder attrBuilder = AttributesBuilder.
-                attributes().
-                    showTitle(true).
-                    noFooter(getContext().isNoFooter()).
-                    
-                    sourceHighlighter("coderay").
-                    
-                    attribute("eclipse-editor-basedir",absolutePathBaseDir).
-                    attribute("icons", "font").
-                    attribute("source-highlighter","coderay").
-                    attribute("coderay-css", "style").
-                    attribute("env", "eclipse").
-                    attribute("env-eclipse");
+
+        AsciidocAttributesBuilder attrBuilder = AsciidocAttributes.builder();
+        
+        attrBuilder.
+                showTitle(true).
+                noFooter(getContext().isNoFooter()).
+                
+                sourceHighlighter("coderay").
+                customAttribute("eclipse-editor-basedir",absolutePathBaseDir).
+//                customAttribute("source-highlighter","coderay").
+                customAttribute("icons", "font").
+//                customAttribute("coderay-css", "style").
+                customAttribute("env", "eclipse").
+                customAttribute("env-eclipse",true);
          /* @formatter:on*/
         if (getContext().isTOCVisible()) {
-            attrBuilder.attribute("toc", "left");
+            attrBuilder.customAttribute("toc", "left");
             if (getContext().tocLevels > 0) {
-                attrBuilder.attribute("toclevels", "" + getContext().tocLevels);
+                attrBuilder.customAttribute("toclevels", "" + getContext().tocLevels);
             }
         }else {
-            attrBuilder.attribute("!toc","");
+            attrBuilder.customAttribute("!toc","");
         }
-        attrs = attrBuilder.get();
         String outputFolderAbsolutePath = createAbsolutePath(getOutputFolder());
-        attrs.setAttribute("outdir", outputFolderAbsolutePath);
-        
+        attrBuilder.customAttribute("outdir", outputFolderAbsolutePath);
         /* if imagesdir is relative, convert to absolute*/
         Object imagesDir = getCachedAttributes().get("imagesdir");
         if (imagesDir instanceof String) {
@@ -72,22 +69,20 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
                 /* a relative path so convert to absolute one*/
                 File file = new File(absolutePathBaseDir, imagesDirString);
                 try {
-                    attrs.setAttribute("imagesdir", file.getCanonicalPath());
+                    attrBuilder.imagesDir(file.getCanonicalPath());
                 } catch (IOException e) {
-                    attrs.setAttribute("imagesdir", file.getAbsolutePath());
+                    attrBuilder.imagesDir(file.getAbsolutePath());
                 }
             }
         }
         
-        handleImagesOutDirAttribute(attrs, absolutePathBaseDir, outputFolderAbsolutePath);
+        /* handle output directory */
+        File target = new File(outputFolderAbsolutePath,IMAGE_OUTPUT_DIR_NAME);
+        attrBuilder.customAttribute("imagesoutdir", target.getAbsolutePath());
         
-        return attrs;
+        return attrBuilder.build();
     }
 
-    private void handleImagesOutDirAttribute(Attributes attrs, String absolutePathBaseDir, String outputFolderAbsolutePath) {
-        File target = new File(outputFolderAbsolutePath,IMAGE_OUTPUT_DIR_NAME);
-        attrs.setAttribute("imagesoutdir", target.getAbsolutePath());
-    }
 
     protected Map<String, Object> getCachedAttributes() {
         if (cachedAttributes == null) {
