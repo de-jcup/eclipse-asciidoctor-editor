@@ -43,9 +43,9 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         return tempFolder;
     }
 
-    private File findBaseDirNotCached(File startFrom) {
+    private File findProjectBaseDirNotCached(File startFrom) {
         getContext().getLogAdapter().resetTimeDiff();
-        File file = resolveUnSaveBaseDir(startFrom);
+        File file = resolveUnSaveProjectBaseDir(startFrom);
         File tempFolder = getTempFolder();
         if (tempFolder.equals(file)) {
             /*
@@ -60,7 +60,7 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         return file;
     }
 
-    private File resolveUnSaveBaseDir(File dir) {
+    private File resolveUnSaveProjectBaseDir(File dir) {
         // very simple approach just go up until no longer any asciidoc files
         // are found
         // if no longer .adoc files assume this is the end and use directory
@@ -76,21 +76,21 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
             return dir;
         }
         if (containsADocFiles(parentFile)) {
-            return findBaseDirNotCached(parentFile);
+            return findProjectBaseDirNotCached(parentFile);
         }
         return dir;
     }
 
-    private File findCachedBaseDirOrStartSearch(File startFrom) {
+    private File findCachedProjectBaseDirOrStartSearch(File startFrom) {
         if (startFrom == null) {
             throw new IllegalStateException("No start from defined - but must be!");
         }
-        File cachedBaseDir = baseDirCache.get(startFrom);
-        if (cachedBaseDir == null) {
-            cachedBaseDir = findBaseDirNotCached(startFrom);
-            baseDirCache.put(startFrom, cachedBaseDir);
+        File cachedProjectBaseDir = baseDirCache.get(startFrom);
+        if (cachedProjectBaseDir == null) {
+            cachedProjectBaseDir = findProjectBaseDirNotCached(startFrom);
+            baseDirCache.put(startFrom, cachedProjectBaseDir);
         }
-        return cachedBaseDir;
+        return cachedProjectBaseDir;
     }
 
     private boolean containsADocFiles(File dir) {
@@ -104,12 +104,12 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         return true;
     }
 
-    public File findBaseDir() {
+    public File findProjectBaseDir() {
         File asciiDocFile = getContext().getAsciiDocFile();
         if (asciiDocFile == null) {
             throw new IllegalStateException("No asciidoc file set!");
         }
-        return findCachedBaseDirOrStartSearch(asciiDocFile.getParentFile());
+        return findCachedProjectBaseDirOrStartSearch(asciiDocFile.getParentFile());
     }
 
     public void reset() {

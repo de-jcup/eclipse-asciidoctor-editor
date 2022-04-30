@@ -35,6 +35,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
     public AsciidocAttributes createAttributes() {
         /* @formatter:off */
+        String absolutePathProjectBaseDir = getContext().getProjectBaseDir().getAbsolutePath();
         String absolutePathBaseDir = getContext().getBaseDir().getAbsolutePath();
 
         AsciidocAttributesBuilder attrBuilder = AsciidocAttributes.builder();
@@ -44,6 +45,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
                 noFooter(getContext().isNoFooter()).
                 
                 sourceHighlighter("coderay").
+                customAttribute("eclipse-editor-projectbasedir",absolutePathProjectBaseDir).
                 customAttribute("eclipse-editor-basedir",absolutePathBaseDir).
                 customAttribute("icons", "font").
                 customAttribute("env", "eclipse").
@@ -65,7 +67,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
             String imagesDirString = (String) imagesDir;
             if (imagesDirString.startsWith(".")) {
                 /* a relative path so convert to absolute one*/
-                File file = new File(absolutePathBaseDir, imagesDirString);
+                File file = new File(absolutePathProjectBaseDir, imagesDirString);
                 try {
                     attrBuilder.imagesDir(file.getCanonicalPath());
                 } catch (IOException e) {

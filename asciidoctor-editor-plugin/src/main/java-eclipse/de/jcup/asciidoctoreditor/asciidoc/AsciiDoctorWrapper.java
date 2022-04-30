@@ -89,7 +89,7 @@ public class AsciiDoctorWrapper {
 
             /* build options - containing attribute parameters */
             AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
-            AsciidocOptions options = optionsProvider.createOptionsContainingAttributes(asciiDoctorBackendType);
+            AsciidocOptions options = optionsProvider.createOptions(asciiDoctorBackendType);
 
             /* start conversion by asciidoctor */
             AsciidoctorAdapter asciiDoctorAdapter = context.getAsciiDoctor();
@@ -176,11 +176,11 @@ public class AsciiDoctorWrapper {
         List<AsciidoctorConfigFile> configFiles = configFileSupport.collectConfigFiles(context.getAsciiDocFile().toPath());
         context.setConfigFiles(configFiles);
         if (data.useHiddenFile) {
-            /* asciidoc files ...*/
+            /* asciidoc files ... we create the hidden file which references the origin one*/
             File createdHiddenEditorFile = AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder(),configFiles, context.getConfigRoot().getAbsolutePath());
             context.setFileToRender(createdHiddenEditorFile);
         } else {
-            /* plantuml, ditaa files ...*/
+            /* PlantUML, ditaa files ...*/
             context.setFileToRender(data.asciiDocFile);
         }
 

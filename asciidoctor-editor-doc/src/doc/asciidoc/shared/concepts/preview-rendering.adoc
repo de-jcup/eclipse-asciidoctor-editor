@@ -35,8 +35,8 @@ includes the origin asciidoc file from eclipse project structure.
 
 This solves also the base dir problematic (the hidden file location is the base dir)
 
-To handle long path problem the hidden editor files do have a prefix with is `editorId`
-which represents the editor instance inside eclipse.
+To handle long path problem the hidden editor files we use a prefix from `UniqueAsciidoctorEditorId`
+which contains a SHA256 of the file location.
 
 So we can use these files flat inside project, even when filenames are same
 

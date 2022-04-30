@@ -1,0 +1,11 @@
+== Simple test file
+
+`document-with-diagram-using-includes.adoc`
+
+[NOTE]
+====
+here we try to include a plantuml file which does itself include others
+====
+
+
+plantuml::diagram-which-includes-others-but-no-dot-slash-prefix.puml[title="title"]

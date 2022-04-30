@@ -109,7 +109,8 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* -------------------------- */
             /* --- Transform Asciidoc --- */
             /* --- content if necessary - */
-            /* --- (e.g. plantuml files)- */
+            /* --- (e.g. for rendering -- */
+            /* --- PlantUML files) ------ */
             /* ----before HTML generation */
             /* -------------------------- */
             File tempAsciiDocFileToConvertIntoHTML = createTransformedTempFileOrNull(editorFileOrNull);
@@ -203,20 +204,20 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         File imageOutDir = new File(tempFolder, AsciiDoctorAttributesProvider.IMAGE_OUTPUT_DIR_NAME);
         Set<String> pathes = parser.findImageSourcePathes(asciidocHTML);
         for (String path : pathes) {
-            if (path==null) {
+            if (path == null) {
                 continue;
             }
-            if (path.indexOf("://")!=-1) {
-                /* we do not replace URIs - e.g. https://example.com/...*/
+            if (path.indexOf("://") != -1) {
+                /* we do not replace URIs - e.g. https://example.com/... */
                 continue;
             }
-            
+
             // file path might contains spaces or special characters that are URL encoded
             File file = new File(URLDecoder.decode(path, "UTF-8"));
             if (file.exists()) {
                 /* replace with a valid URI format */
-            	String uri = file.toURI().toString();
-            	asciidocHTML = asciidocHTML.replace(path, uri);
+                String uri = file.toURI().toString();
+                asciidocHTML = asciidocHTML.replace(path, uri);
             } else {
                 String p2 = file.getPath();
                 String replacePath = null;
@@ -236,9 +237,9 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
             }
         }
-        
+
         asciidocHTML = asciidocHTML.replace("<!--[if IE]><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><![endif]-->", "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
-        
+
         return asciidocHTML;
     }
 
@@ -314,8 +315,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
     private File enrichPreviewHTMLAndWriteToDisk(IProgressMonitor monitor, AsciiDoctorWrapper asciidocWrapper, String asciiDocHtml) {
         String previewHTML;
         if (internalPreview) {
-            previewHTML = asciidocWrapper
-            		.enrichHTML(asciiDocHtml, 0);
+            previewHTML = asciidocWrapper.enrichHTML(asciiDocHtml, 0);
         } else {
             int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
             previewHTML = asciidocWrapper.enrichHTML(asciiDocHtml, refreshAutomaticallyInSeconds);
@@ -427,9 +427,8 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
          * we do always create a temporary editor file which does include the origin one
          * - reason see description in javadoc above
          */
-        // one exception: when we are rendering plantuml or dita files we do not use the
-        // hidden editor file (because there
-        // is already a custom .adoc file...
+        // one exception: when we are rendering PlantUML or dita files we do not use the
+        // hidden editor file (because there is already a custom .adoc file...
         return fileToConvertIntoHTML.equals(editorFileOrNull);
     }
 
