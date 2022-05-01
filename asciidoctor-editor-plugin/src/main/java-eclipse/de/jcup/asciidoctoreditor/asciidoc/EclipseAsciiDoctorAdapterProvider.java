@@ -17,23 +17,23 @@ package de.jcup.asciidoctoreditor.asciidoc;
 
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorAdapterProvider;
 
-public class EclipseAsciiDoctorAdapterProvider implements AsciiDoctorAdapterProvider{
-    
+public class EclipseAsciiDoctorAdapterProvider implements AsciiDoctorAdapterProvider {
+
     public static final EclipseAsciiDoctorAdapterProvider INSTANCE = new EclipseAsciiDoctorAdapterProvider();
-    
+
     private static AsciidoctorAdapter asciidoctorInstalled;
     private static AsciidoctorAdapter asciidoctorServerProtocollClient;
-    
-    EclipseAsciiDoctorAdapterProvider(){
+
+    EclipseAsciiDoctorAdapterProvider() {
         asciidoctorInstalled = new InstalledAsciidoctorAdapter();
-        asciidoctorServerProtocollClient= new AspAsciidoctorAdapter();
+        asciidoctorServerProtocollClient = new AspAsciidoctorAdapter();
     }
-    
+
     @Override
-    public AsciidoctorAdapter getAsciiDoctor(boolean installed){
-        if (installed){
+    public AsciidoctorAdapter getAsciiDoctor(boolean installed) {
+        if (installed) {
             return asciidoctorInstalled;
-        }else{
+        } else {
             return asciidoctorServerProtocollClient;
         }
     }

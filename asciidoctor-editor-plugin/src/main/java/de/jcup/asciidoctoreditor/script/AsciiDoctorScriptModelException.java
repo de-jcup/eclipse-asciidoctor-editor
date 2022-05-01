@@ -17,10 +17,10 @@ package de.jcup.asciidoctoreditor.script;
 
 public class AsciiDoctorScriptModelException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public AsciiDoctorScriptModelException(String string, Exception e) {
-		super(string,e);
-	}
+    public AsciiDoctorScriptModelException(String string, Exception e) {
+        super(string, e);
+    }
 
 }

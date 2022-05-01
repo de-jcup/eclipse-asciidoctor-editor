@@ -16,8 +16,8 @@
 package de.jcup.asciidoctoreditor;
 
 public interface ContentTransformer {
-	
-	public String transform(ContentTransformerData data);
 
-	public boolean isTransforming(Object data);
+    public String transform(ContentTransformerData data);
+
+    public boolean isTransforming(Object data);
 }

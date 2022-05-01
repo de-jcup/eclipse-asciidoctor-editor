@@ -19,15 +19,14 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-public class AsciiDoctorEclipseLogAdapter implements LogAdapter  {
+public class AsciiDoctorEclipseLogAdapter implements LogAdapter {
 
-	public static final LogAdapter INSTANCE = new AsciiDoctorEclipseLogAdapter();
-	
-	private AsciiDoctorEclipseLogAdapter(){
-	}
+    public static final LogAdapter INSTANCE = new AsciiDoctorEclipseLogAdapter();
 
-	
-	public void logInfo(String info) {
+    private AsciiDoctorEclipseLogAdapter() {
+    }
+
+    public void logInfo(String info) {
         getLog().log(new Status(IStatus.INFO, AsciiDoctorEditorActivator.PLUGIN_ID, info));
     }
 
@@ -45,21 +44,20 @@ public class AsciiDoctorEclipseLogAdapter implements LogAdapter  {
     }
 
     private long lastTimeLog;
-    
+
     @Override
     public void logTimeDiff(String info) {
         long current = System.currentTimeMillis();
         if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
             long time = current - lastTimeLog;
-            logInfo("elapsed " + time + " ms:"+info);
+            logInfo("elapsed " + time + " ms:" + info);
         }
-        lastTimeLog=current;
+        lastTimeLog = current;
     }
 
     @Override
     public void resetTimeDiff() {
-        lastTimeLog=System.currentTimeMillis();
+        lastTimeLog = System.currentTimeMillis();
     }
-    
-	
+
 }

@@ -25,19 +25,20 @@ import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalInfoProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 
-public class DynamicImageContentAssistSupport extends ProposalProviderContentAssistSupport{
+public class DynamicImageContentAssistSupport extends ProposalProviderContentAssistSupport {
 
     public DynamicImageContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("image::",new ImageBaseParentResolver(),new DynamicImageEnabledResolver(),new CodeAssistFileFilter(".png",".svg",".jpg",".jpeg",".gif").ignoreCase()));
+        super(provider, new AsciidocReferenceProposalSupport("image::", new ImageBaseParentResolver(), new DynamicImageEnabledResolver(),
+                new CodeAssistFileFilter(".png", ".svg", ".jpg", ".jpeg", ".gif").ignoreCase()));
     }
-    
+
     @Override
     protected ProposalInfoProvider createProposalInfoBuilder() {
         return new ProposalInfoProvider() {
-            
+
             @Override
             public Object getProposalInfo(IProgressMonitor monitor, Object target) {
-                if (! (target instanceof String)){
+                if (!(target instanceof String)) {
                     return null;
                 }
                 String word = (String) target;
@@ -51,13 +52,13 @@ public class DynamicImageContentAssistSupport extends ProposalProviderContentAss
         };
     }
 
-    private static class DynamicImageEnabledResolver implements EnableStateResolver{
+    private static class DynamicImageEnabledResolver implements EnableStateResolver {
 
         @Override
         public boolean isEnabled() {
             return AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForImagesEnabled();
         }
-        
+
     }
 
 }

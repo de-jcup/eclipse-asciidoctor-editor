@@ -18,34 +18,34 @@ package de.jcup.asciidoctoreditor.script.formatter;
 import java.util.function.Function;
 
 public enum AsciidocBlockType {
-    EMPTY_LINE(AsciidocBlockScanMethods::isNewLine,false),
+    EMPTY_LINE(AsciidocBlockScanMethods::isNewLine, false),
 
-    TABLE(AsciidocBlockScanMethods::isTableMarker,true),
+    TABLE(AsciidocBlockScanMethods::isTableMarker, true),
 
-    HEADLINE(AsciidocBlockScanMethods::isHeadlineMarker,false),
+    HEADLINE(AsciidocBlockScanMethods::isHeadlineMarker, false),
 
-    SIMPLE_COMMENT(AsciidocBlockScanMethods::isSingleLineComment,false),
+    SIMPLE_COMMENT(AsciidocBlockScanMethods::isSingleLineComment, false),
 
-    BLOCK(AsciidocBlockScanMethods::isBlockMarker,true),
+    BLOCK(AsciidocBlockScanMethods::isBlockMarker, true),
 
-    COMMAND(AsciidocBlockScanMethods::isCommandMarker,false),
+    COMMAND(AsciidocBlockScanMethods::isCommandMarker, false),
 
-    META_INFO(AsciidocBlockScanMethods::isMetaInfoMarker,false),
+    META_INFO(AsciidocBlockScanMethods::isMetaInfoMarker, false),
 
-    VARIABLE(AsciidocBlockScanMethods::isVariableMarker,false),
+    VARIABLE(AsciidocBlockScanMethods::isVariableMarker, false),
 
-    TEXT(AsciidocBlockScanMethods::isTextOnly,true),
+    TEXT(AsciidocBlockScanMethods::isTextOnly, true),
 
-    UNKNOWN(null,false),;
+    UNKNOWN(null, false),;
 
     private Function<String, Boolean> function;
     private boolean multipleLines;
 
     private AsciidocBlockType(Function<String, Boolean> function, boolean multipleLines) {
         this.function = function;
-        this.multipleLines=multipleLines;
+        this.multipleLines = multipleLines;
     }
-    
+
     public boolean isMultipleLines() {
         return multipleLines;
     }

@@ -32,6 +32,7 @@ import org.eclipse.swt.graphics.RGB;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asp.api.ServerLogSeverity;
+import static de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings.*;
 
 /**
  * Inspired from EGradleConsoleStyleListener
@@ -42,29 +43,29 @@ import de.jcup.asp.api.ServerLogSeverity;
 public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
     private final static Collection<ParseData> SHARED_PARSE_DATA = new ArrayList<>();
     static {
-		addParseDataByIndex("asciidoctor:", GRAY);
-		addParseDataByIndex("ASP:", GRAY);
+        addParseDataByIndex("asciidoctor:", GRAY);
+        addParseDataByIndex("ASP:", GRAY);
 
-		addParseDataByIndex(ServerLogSeverity.INFO, GREEN);
-		addParseDataByIndex(ServerLogSeverity.DEBUG, GREEN);
-		
-		addParseDataByIndex("WARNING:", ORANGE);
-		addParseDataByIndex(ServerLogSeverity.WARN, ORANGE);
-		
-		addParseDataByIndex(ServerLogSeverity.UNKNOWN, MAGENTA);
-		
-		addParseDataByIndex("FAILED:", BRIGHT_RED);
-		addParseDataByIndex(ServerLogSeverity.FATAL, BRIGHT_RED);
-		addParseDataByIndex(ServerLogSeverity.ERROR, BRIGHT_RED);
-		
-		addParseDataByIndex("invalid option:", BRIGHT_RED);
+        addParseDataByIndex(ServerLogSeverity.INFO, GREEN);
+        addParseDataByIndex(ServerLogSeverity.DEBUG, GREEN);
 
-		String[] endsAccepted = new String[] {".adoc",".puml",".iuml",".pu",".plantuml",".ditaa",".ad",".asc",".asciidoc"};
-		for (String endAccepted: endsAccepted) {
-		    addParseDataStartEndPattern("file:",endAccepted,null,false,true);
-		}
+        addParseDataByIndex("WARNING:", ORANGE);
+        addParseDataByIndex(ServerLogSeverity.WARN, ORANGE);
 
-	}
+        addParseDataByIndex(ServerLogSeverity.UNKNOWN, MAGENTA);
+
+        addParseDataByIndex("FAILED:", BRIGHT_RED);
+        addParseDataByIndex(ServerLogSeverity.FATAL, BRIGHT_RED);
+        addParseDataByIndex(ServerLogSeverity.ERROR, BRIGHT_RED);
+
+        addParseDataByIndex("invalid option:", BRIGHT_RED);
+
+        String[] endsAccepted = new String[] { ".adoc", DOT_PUML, DOT_IUML, DOT_PU, DOT_PLANTUML, ".ditaa", ".ad", ".asc", ".asciidoc" };
+        for (String endAccepted : endsAccepted) {
+            addParseDataStartEndPattern("file:", endAccepted, null, false, true);
+        }
+
+    }
 
     static final void addParseDataByIndex(ServerLogSeverity severity, RGB color) {
         addParseDataByIndex(severity.name() + ":", color);
@@ -90,7 +91,7 @@ public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
         data.bold = bold;
         data.useHyperLinkColor = useHyperlinkColor;
         if (data.useHyperLinkColor) {
-            data.underline=true;
+            data.underline = true;
         }
         SHARED_PARSE_DATA.add(data);
     }
@@ -158,7 +159,7 @@ public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
             fromIndex = pos + 1;
 
             if (pos != -1) {
-                addRange(ranges, event.lineOffset + pos, data.subString.length(),data);
+                addRange(ranges, event.lineOffset + pos, data.subString.length(), data);
             }
         } while (pos != -1);
     }
@@ -177,12 +178,11 @@ public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
             if (pos != -1) {
                 int endPos = currentText.indexOf(data.endString);
                 if (endPos != -1) {
-                    addRange(ranges, event.lineOffset + pos, endPos - pos+data.endString.length(), data);
+                    addRange(ranges, event.lineOffset + pos, endPos - pos + data.endString.length(), data);
                 }
             }
         } while (pos != -1);
     }
-
 
     private Color getForegroundColor(ParseData data) {
         RGB color = data.color;
@@ -193,7 +193,7 @@ public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
     }
 
     private Color getColor(RGB rgb) {
-        if (rgb==null) {
+        if (rgb == null) {
             return null;
         }
         return AsciiDoctorEditorActivator.getDefault().getColorManager().getColor(rgb);
@@ -220,12 +220,13 @@ public class AsciiDoctorConsoleStyleListener implements LineStyleListener {
 
     private void addRange(List<StyleRange> ranges, int start, int length, ParseData data) {
         Color foreGround = getForegroundColor(data);
-        Color background = getColor(data.background);;
+        Color background = getColor(data.background);
+        ;
         StyleRange range = new StyleRange(start, length, foreGround, background);
         if (data.bold) {
             range.fontStyle = SWT.BOLD;
         }
-        range.underline=data.underline;
+        range.underline = data.underline;
         ranges.add(range);
         lastRangeEnd = lastRangeEnd + range.length;
     }

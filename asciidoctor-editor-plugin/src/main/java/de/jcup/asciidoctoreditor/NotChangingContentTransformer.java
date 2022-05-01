@@ -15,23 +15,22 @@
  */
 package de.jcup.asciidoctoreditor;
 
-public class NotChangingContentTransformer extends AbstractContentTransformer{
+public class NotChangingContentTransformer extends AbstractContentTransformer {
 
+    public static NotChangingContentTransformer INSTANCE = new NotChangingContentTransformer();
 
-	public static NotChangingContentTransformer INSTANCE = new NotChangingContentTransformer();
-	
-	private NotChangingContentTransformer(){
-		
-	}
+    private NotChangingContentTransformer() {
 
-	@Override
-	protected String saveTransform(ContentTransformerData data) {
-		return data.origin;
-	}
+    }
 
-	@Override
-	public boolean isTransforming(Object data) {
-		return false;
-	}
-	
+    @Override
+    protected String saveTransform(ContentTransformerData data) {
+        return data.origin;
+    }
+
+    @Override
+    public boolean isTransforming(Object data) {
+        return false;
+    }
+
 }

@@ -86,6 +86,7 @@ import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
 import de.jcup.asciidoctoreditor.hyperlink.AsciiDoctorEditorLinkSupport;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.Item;
+import de.jcup.asciidoctoreditor.outline.ScriptItemTreeContentProvider;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preview.AsciiDoctorEditorBuildSupport;
 import de.jcup.asciidoctoreditor.preview.BrowserAccess;
@@ -166,7 +167,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private Composite topComposite;
     protected RebuildAsciiDocViewAction rebuildAction;
 
-    private ClearProjectCacheAsciiDocViewAction clearProjectAction;
+    protected ClearProjectCacheAsciiDocViewAction clearProjectCacheAction;
 
     private static final AsciiDoctorTextFileDocumentProvider ASCIIDOC_SHARED_TEXTFILE_DOCUMENT_PROVIDER = new AsciiDoctorTextFileDocumentProvider();
     private static final AsciiDoctorFileDocumentProvider ASCIIDOC__SHARED_FILE_DOCUMENT_PROVIDER = new AsciiDoctorFileDocumentProvider();
@@ -195,7 +196,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public AsciiDoctorEditor() {
-        outlineSupport = new AsciidoctorEditorOutlineSupport(this);
+        outlineSupport = createOutlineSupport();
         buildSupport = new AsciiDoctorEditorBuildSupport(this);
         linkSupport = new AsciiDoctorEditorLinkSupport(this);
         commentSupport = new AsciiDoctorEditorCommentSupport(this);
@@ -207,6 +208,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             contentTransformer = NotChangingContentTransformer.INSTANCE;
         }
         this.synchronizer = new ScrollSynchronizer(this);
+    }
+
+    protected AsciidoctorEditorOutlineSupport createOutlineSupport() {
+        return new AsciidoctorEditorOutlineSupport(this);
     }
 
     public BrowserAccess getBrowserAccess() {
@@ -332,7 +337,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             return (T) this;
         }
         if (ITreeContentProvider.class.equals(adapter) || AsciiDoctorEditorTreeContentProvider.class.equals(adapter)) {
-            return (T) outlineSupport.getOutlinePage().getContentProvider();
+            return (T) resolveScriptItemTreeProviderOrNull();
         }
         return super.getAdapter(adapter);
     }
@@ -360,12 +365,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public Item getItemAt(int offset) {
-        AsciiDoctorEditorTreeContentProvider contentProvider = getOutlineSupport().getOutlinePage().getContentProvider();
-        if (contentProvider == null) {
+        ScriptItemTreeContentProvider provider = resolveScriptItemTreeProviderOrNull();
+        if (provider == null) {
             return null;
         }
-        Item item = contentProvider.tryToFindByOffset(offset);
+        Item item = provider.tryToFindByOffset(offset);
         return item;
+    }
+
+    private ScriptItemTreeContentProvider resolveScriptItemTreeProviderOrNull() {
+        return getOutlineSupport().getOutlinePage().getScriptItemTreeContentProvider();
     }
 
     public Item getItemAtCarretPosition() {
@@ -566,14 +575,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void resetCache() {
-        recalculateEditorId(); 
+        recalculateEditorId();
         getWrapper().resetCaches();
     }
 
     private void recalculateEditorId() {
 
         IFile file = resolveFileOrNull();
-        editorId= new UniqueAsciidoctorEditorId(file);
+        IPath path = null;
+        if (file != null) {
+            path = file.getFullPath();
+        }
+        editorId = new UniqueAsciidoctorEditorId(path);
     }
 
     public void resourceChanged(IResourceChangeEvent event) {
@@ -847,7 +860,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     protected void initToolbar() {
         rebuildAction = new RebuildAsciiDocViewAction(this);
-        clearProjectAction = new ClearProjectCacheAsciiDocViewAction(this);
+        clearProjectCacheAction = new ClearProjectCacheAsciiDocViewAction(this);
 
         italicFormatAction = new ItalicFormatAction(this);
         boldFormatAction = new BoldFormatAction(this);
@@ -881,7 +894,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         buildToolBarManager.add(rebuildAction);
-        buildToolBarManager.add(clearProjectAction);
+        buildToolBarManager.add(clearProjectCacheAction);
 
         IToolBarManager outputToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         outputToolBarManager.add(new CreatePDFAction(this));

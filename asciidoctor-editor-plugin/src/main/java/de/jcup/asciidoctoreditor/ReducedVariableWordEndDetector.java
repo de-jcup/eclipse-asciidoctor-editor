@@ -17,11 +17,11 @@ package de.jcup.asciidoctoreditor;
 
 import de.jcup.eclipse.commons.WordEndDetector;
 
-public class ReducedVariableWordEndDetector implements WordEndDetector{
+public class ReducedVariableWordEndDetector implements WordEndDetector {
 
-	@Override
-	public boolean isWordEnd(char c) {
-		return Character.isWhitespace(c)|| c=='=' || c=='[';
-	}
+    @Override
+    public boolean isWordEnd(char c) {
+        return Character.isWhitespace(c) || c == '=' || c == '[';
+    }
 
 }

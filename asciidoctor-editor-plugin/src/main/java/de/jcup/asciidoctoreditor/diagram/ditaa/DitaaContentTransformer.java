@@ -18,22 +18,22 @@ package de.jcup.asciidoctoreditor.diagram.ditaa;
 import de.jcup.asciidoctoreditor.AbstractContentTransformer;
 import de.jcup.asciidoctoreditor.ContentTransformerData;
 
-public class DitaaContentTransformer extends AbstractContentTransformer{
+public class DitaaContentTransformer extends AbstractContentTransformer {
 
-	@Override
-	protected String saveTransform(ContentTransformerData data) {
-		StringBuilder sb = new StringBuilder();
-		if (data.origin!=null){
-			sb.append("[ditaa]\n----\n");
-			sb.append(data.origin);
-			sb.append("\n----\n");
-		}
-		return sb.toString();
-	}
+    @Override
+    protected String saveTransform(ContentTransformerData data) {
+        StringBuilder sb = new StringBuilder();
+        if (data.origin != null) {
+            sb.append("[ditaa]\n----\n");
+            sb.append(data.origin);
+            sb.append("\n----\n");
+        }
+        return sb.toString();
+    }
 
-	@Override
-	public boolean isTransforming(Object data) {
-		return true;
-	}
+    @Override
+    public boolean isTransforming(Object data) {
+        return true;
+    }
 
 }

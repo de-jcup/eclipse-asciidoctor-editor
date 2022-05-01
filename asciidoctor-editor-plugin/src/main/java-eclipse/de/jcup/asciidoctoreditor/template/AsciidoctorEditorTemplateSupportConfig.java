@@ -38,6 +38,5 @@ public class AsciidoctorEditorTemplateSupportConfig implements TemplateSupportCo
     public String getTemplateImagePath(Template template) {
         return null;
     }
-    
 
 }

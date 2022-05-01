@@ -1,0 +1,2 @@
+// For more deailts look at https://github.com/de-jcup/eclipse-asciidoctor-editor/wiki/Asciidoctor-configfiles
+:base_dir: {asciidoctorconfigdir}

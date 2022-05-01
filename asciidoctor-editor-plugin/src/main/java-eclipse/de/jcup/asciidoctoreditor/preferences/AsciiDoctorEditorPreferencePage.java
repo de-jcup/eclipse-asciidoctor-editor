@@ -127,7 +127,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         } catch (NumberFormatException e) {
             /* ignore done by field editors */
         }
-        
+
         boolean ok = super.performOk();
         // we handle the directory field special, not added as field, so setting default
         // in this way
@@ -216,20 +216,19 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         devNull = new Composite(uiComposite, SWT.NONE);
         BooleanFieldEditor autoConfigFileCreationEnabled = new BooleanFieldEditor(P_AUTOCREATE_INITIAL_CONFIGFILE.getId(), "Enable initial config file auto creation", devNull);
-        autoConfigFileCreationEnabled.getDescriptionControl(devNull)
-                .setToolTipText("When enabled, a "+AsciiDocConfigFileSupport.FILENAME_ASCIIDOCTORCONFIG_ADOC+" with description inside \n"
-                        + "will be created in project root folder when no other config file exists.");
+        autoConfigFileCreationEnabled.getDescriptionControl(devNull).setToolTipText("When enabled, a " + AsciiDocConfigFileSupport.FILENAME_ASCIIDOCTORCONFIG_ADOC + " with description inside \n"
+                + "will be created in project root folder when no other config file exists.");
         addField(autoConfigFileCreationEnabled);
         devNull = new Composite(uiComposite, SWT.NONE);
-        
+
         BooleanFieldEditor linkEditorWithPreviewEnabled = new BooleanFieldEditor(P_LINK_EDITOR_WITH_PREVIEW.getId(), "Link editor with internal preview", devNull);
         linkEditorWithPreviewEnabled.getDescriptionControl(devNull)
                 .setToolTipText("When enabled editor caret movements are scrolled in internal preview.\n" + "This works only in some situations e.g. when cursor moves to a headline");
         addField(linkEditorWithPreviewEnabled);
-        
-        BooleanFieldEditor groupOutlineEnabledPerDefault= new BooleanFieldEditor(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(), "Show outline grouped per default", devNull);
-        groupOutlineEnabledPerDefault.getDescriptionControl(devNull)
-        .setToolTipText("This changes default behaviour of editor outline: When enabled outline items are grouped on new opened editor outlines per default.\n\nWhen grouping is turned off the items in outline are ordered by their offset inside document.");
+
+        BooleanFieldEditor groupOutlineEnabledPerDefault = new BooleanFieldEditor(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(), "Show outline grouped per default", devNull);
+        groupOutlineEnabledPerDefault.getDescriptionControl(devNull).setToolTipText(
+                "This changes default behaviour of editor outline: When enabled outline items are grouped on new opened editor outlines per default.\n\nWhen grouping is turned off the items in outline are ordered by their offset inside document.");
         addField(groupOutlineEnabledPerDefault);
     }
 
@@ -256,20 +255,20 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         createDependency(autobuildForExternalPreviewEnabled.getChangeControl(devNull1), autorefreshSeconds.getTextControl(devNull2));
     }
+
     @Override
     protected void checkState() {
         super.checkState();
         // we handle the file field special, not added as field, so validating
         // value in this way
-        if (pathToInstalledAsciidoctor !=null && !pathToInstalledAsciidoctor.checkState()) {
+        if (pathToInstalledAsciidoctor != null && !pathToInstalledAsciidoctor.checkState()) {
             setValid(false);
         }
-        
-        if (pathToJavaForASPlaunch !=null && !pathToJavaForASPlaunch.checkState()) {
+
+        if (pathToJavaForASPlaunch != null && !pathToJavaForASPlaunch.checkState()) {
             setValid(false);
         }
     }
-    
 
     protected void createAsciidoctorGroup(Composite group) {
 

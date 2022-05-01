@@ -30,39 +30,39 @@ import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class AsciiDoctorEditorValidationPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	public AsciiDoctorEditorValidationPreferencePage() {
-		setPreferenceStore(AsciiDoctorEditorUtil.getPreferences().getPreferenceStore());
-	}
+    public AsciiDoctorEditorValidationPreferencePage() {
+        setPreferenceStore(AsciiDoctorEditorUtil.getPreferences().getPreferenceStore());
+    }
 
-	@Override
-	public void init(IWorkbench workbench) {
+    @Override
+    public void init(IWorkbench workbench) {
 
-	}
+    }
 
-	@Override
-	protected void createFieldEditors() {
-		Composite parent = getFieldEditorParent();
-		BooleanFieldEditor editor = createEditor(VALIDATE_INCLUDES, parent);
-		editor.getDescriptionControl(parent).setToolTipText("Will validate included file exists and is not a directory");
+    @Override
+    protected void createFieldEditors() {
+        Composite parent = getFieldEditorParent();
+        BooleanFieldEditor editor = createEditor(VALIDATE_INCLUDES, parent);
+        editor.getDescriptionControl(parent).setToolTipText("Will validate included file exists and is not a directory");
 
-		editor = createEditor(VALIDATE_DIAGRAMS, parent);
+        editor = createEditor(VALIDATE_DIAGRAMS, parent);
         editor.getDescriptionControl(parent).setToolTipText("Will validate referenced diagram file exists and is not a directory");
-        
+
         editor = createEditor(VALIDATE_IMAGES, parent);
         editor.getDescriptionControl(parent).setToolTipText("Will validate referenced image file exists and is not a directory");
-        
+
         editor = createEditor(VALIDATE_URLS, parent);
-        editor.getDescriptionControl(parent).setToolTipText("If a reference is not file but an external location the URL connection will be tested.\n"
-                + "HTTP connection errors will be returned with dedicated status code.");
-		
-		createComboBox(VALIDATE_ERROR_LEVEL, parent);
-	}
+        editor.getDescriptionControl(parent)
+                .setToolTipText("If a reference is not file but an external location the URL connection will be tested.\n" + "HTTP connection errors will be returned with dedicated status code.");
 
-	private void createComboBox(AsciiDoctorEditorValidationPreferenceConstants constant, Composite parent) {
-		String name = constant.getId();
-		String labelText = constant.getLabelText();
+        createComboBox(VALIDATE_ERROR_LEVEL, parent);
+    }
 
-		/* @formatter:off */
+    private void createComboBox(AsciiDoctorEditorValidationPreferenceConstants constant, Composite parent) {
+        String name = constant.getId();
+        String labelText = constant.getLabelText();
+
+        /* @formatter:off */
 		String[][] entryNamesAndValues = 
 				new String[][] { 
 					getLabelAndValue(AsciiDoctorEditorValidationErrorLevel.ERROR),
@@ -70,21 +70,21 @@ public class AsciiDoctorEditorValidationPreferencePage extends FieldEditorPrefer
 					getLabelAndValue(AsciiDoctorEditorValidationErrorLevel.INFO)
 		};
 		/* @formatter:on */
-		
-		Composite composite = new Composite(parent, SWT.NONE);
-		
-		ComboFieldEditor comboFieldEditor = new ComboFieldEditor(name, labelText, entryNamesAndValues, composite);
-		addField(comboFieldEditor);
-	}
 
-	private String[] getLabelAndValue(AsciiDoctorEditorValidationErrorLevel errorLevel) {
-		return new String[] { errorLevel.name(), errorLevel.getId() };
-	}
+        Composite composite = new Composite(parent, SWT.NONE);
 
-	private BooleanFieldEditor createEditor(AsciiDoctorEditorValidationPreferenceConstants constant, Composite parent) {
-		BooleanFieldEditor editor = new BooleanFieldEditor(constant.getId(), constant.getLabelText(), parent);
-		addField(editor);
-		return editor;
-	}
+        ComboFieldEditor comboFieldEditor = new ComboFieldEditor(name, labelText, entryNamesAndValues, composite);
+        addField(comboFieldEditor);
+    }
+
+    private String[] getLabelAndValue(AsciiDoctorEditorValidationErrorLevel errorLevel) {
+        return new String[] { errorLevel.name(), errorLevel.getId() };
+    }
+
+    private BooleanFieldEditor createEditor(AsciiDoctorEditorValidationPreferenceConstants constant, Composite parent) {
+        BooleanFieldEditor editor = new BooleanFieldEditor(constant.getId(), constant.getLabelText(), parent);
+        addField(editor);
+        return editor;
+    }
 
 }

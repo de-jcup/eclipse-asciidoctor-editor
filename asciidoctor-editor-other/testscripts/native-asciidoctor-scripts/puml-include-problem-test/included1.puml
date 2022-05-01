@@ -1,0 +1,4 @@
+@startuml
+PlantUML -> Include1: This is from included file "include1.puml"
+
+@enduml

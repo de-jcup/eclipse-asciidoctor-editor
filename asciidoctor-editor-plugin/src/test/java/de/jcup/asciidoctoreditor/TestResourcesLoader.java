@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,45 +22,46 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class TestResourcesLoader {
-	private static File testResourceRootFolder = new File("./asciidoctor-editor-plugin/src/test/resources");
-	static{
-		if (!testResourceRootFolder.exists()){
-			// workaround for difference between eclipse test and gradle execution (being in root folder...)
-			testResourceRootFolder = new File("./../asciidoctor-editor-plugin/src/test/resources");
-		}
-	}
-	
-	public static String loadTestFile(String pathFromResources) throws IOException{
-		assertTestRespirceFolderExists();
-		
-		File file = assertTestFile(pathFromResources);
-		StringBuilder sb = new StringBuilder();
-		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))){
-			String line = null;
-			while ((line=br.readLine())!=null){
-				sb.append(line);
-				sb.append("\n");
-			}
-		}
-		return sb.toString();
-	}
-
-    public static File assertTestFile(String relativePathInTestResources) {
-        try{
-            File file = testResourceRootFolder.getCanonicalFile().toPath().resolve(relativePathInTestResources).toFile();
-            file = file.getAbsoluteFile();
-            if (!file.exists()){
-                throw new IllegalArgumentException("Test case corrupt! Test resource file does not exist:"+file);
-            }
-            return file;
-        }catch(IOException e) {
-            throw new IllegalArgumentException("Test case corrupt! Test resource file does not exist:"+relativePathInTestResources,e);
+    private static File testResourceRootFolder = new File("./asciidoctor-editor-plugin/src/test/resources");
+    static {
+        if (!testResourceRootFolder.exists()) {
+            // workaround for difference between eclipse test and gradle execution (being in
+            // root folder...)
+            testResourceRootFolder = new File("./../asciidoctor-editor-plugin/src/test/resources");
         }
     }
 
-	private static void assertTestRespirceFolderExists() {
-		if (!testResourceRootFolder.exists()){
-			throw new IllegalArgumentException("Test setup corrupt! Root folder of test resources not found:"+testResourceRootFolder);
-		}
-	}
+    public static String loadTestFile(String pathFromResources) throws IOException {
+        assertTestRespirceFolderExists();
+
+        File file = assertTestFile(pathFromResources);
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))) {
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    public static File assertTestFile(String relativePathInTestResources) {
+        try {
+            File file = testResourceRootFolder.getCanonicalFile().toPath().resolve(relativePathInTestResources).toFile();
+            file = file.getAbsoluteFile();
+            if (!file.exists()) {
+                throw new IllegalArgumentException("Test case corrupt! Test resource file does not exist:" + file);
+            }
+            return file;
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Test case corrupt! Test resource file does not exist:" + relativePathInTestResources, e);
+        }
+    }
+
+    private static void assertTestRespirceFolderExists() {
+        if (!testResourceRootFolder.exists()) {
+            throw new IllegalArgumentException("Test setup corrupt! Root folder of test resources not found:" + testResourceRootFolder);
+        }
+    }
 }

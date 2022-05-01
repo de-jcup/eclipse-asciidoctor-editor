@@ -17,198 +17,198 @@ package de.jcup.asciidoctoreditor.script.parser;
 
 public class ParseToken {
 
-	private static final String EQUAL_OPERAND = "=";
-	String text;
-	int start;
-	int end;
+    private static final String EQUAL_OPERAND = "=";
+    String text;
+    int start;
+    int end;
 
-	ParseToken() {
+    ParseToken() {
 
-	}
+    }
 
-	ParseToken(String text) {
-		this(text, 0, 0);
-	}
+    ParseToken(String text) {
+        this(text, 0, 0);
+    }
 
-	ParseToken(String text, int start, int end) {
-		if (text == null) {
-			text = "";
-		}
-		this.text = text;
-		this.start = start;
-		this.end = end;
-	}
+    ParseToken(String text, int start, int end) {
+        if (text == null) {
+            text = "";
+        }
+        this.text = text;
+        this.start = start;
+        this.end = end;
+    }
 
+    public String getText() {
+        return text;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public int getStart() {
+        return start;
+    }
 
-	public int getStart() {
-		return start;
-	}
+    public int getEnd() {
+        return end;
+    }
 
-	public int getEnd() {
-		return end;
-	}
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(createTypeDescription());
+        sb.append(":'");
+        sb.append(text);
+        sb.append('\'');
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(createTypeDescription());
-		sb.append(":'");
-		sb.append(text);
-		sb.append('\'');
-		
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 
-	public String createTypeDescription() {
-		StringBuilder sb = new StringBuilder();
-		
-		if (isComment()){
-			sb.append("PLANTUML_NOTE");
-		}
-		if (isVariable()){
-			sb.append("VARIABLE");
-		}
-		if (isString()){
-			sb.append("STRING");
-		}
-		if (isIf()){
-			sb.append("IF");
-		}
-		if (isFi()){
-			sb.append("FI");
-		}
-		if (isCase()){
-			sb.append("CASE");
-		}
-		if (isEsac()){
-			sb.append("ESAC");
-		}
-		if (isDo()){
-			sb.append("DO");
-		}
-		if (isDone()){
-			sb.append("DONE");
-		}
-		if (isCloseBlock()){
-			sb.append("BLOCK-CLOSE");
-		}
-		if (isOpenBlock()){
-			sb.append("BLOCK-OPEN");
-		}
-		if (sb.length()==0){
-			sb.append("EXPRESSION");
-		}
-		return sb.toString();
-	}
+    public String createTypeDescription() {
+        StringBuilder sb = new StringBuilder();
 
-	private boolean isVariable() {
-		return getSafeText().startsWith("$");
-	}
+        if (isComment()) {
+            sb.append("PLANTUML_NOTE");
+        }
+        if (isVariable()) {
+            sb.append("VARIABLE");
+        }
+        if (isString()) {
+            sb.append("STRING");
+        }
+        if (isIf()) {
+            sb.append("IF");
+        }
+        if (isFi()) {
+            sb.append("FI");
+        }
+        if (isCase()) {
+            sb.append("CASE");
+        }
+        if (isEsac()) {
+            sb.append("ESAC");
+        }
+        if (isDo()) {
+            sb.append("DO");
+        }
+        if (isDone()) {
+            sb.append("DONE");
+        }
+        if (isCloseBlock()) {
+            sb.append("BLOCK-CLOSE");
+        }
+        if (isOpenBlock()) {
+            sb.append("BLOCK-OPEN");
+        }
+        if (sb.length() == 0) {
+            sb.append("EXPRESSION");
+        }
+        return sb.toString();
+    }
 
-	public boolean isComment() {
-		return getSafeText().startsWith("#");
-	}
+    private boolean isVariable() {
+        return getSafeText().startsWith("$");
+    }
 
-	public boolean isSingleString() {
-		return getSafeText().startsWith("'");
-	}
+    public boolean isComment() {
+        return getSafeText().startsWith("#");
+    }
 
-	public boolean isDoubleString() {
-		return getSafeText().startsWith("\"");
-	}
+    public boolean isSingleString() {
+        return getSafeText().startsWith("'");
+    }
 
-	public boolean isDoubleTickedString() {
-		return getSafeText().startsWith("`");
-	}
+    public boolean isDoubleString() {
+        return getSafeText().startsWith("\"");
+    }
 
-	private String getSafeText() {
-		return text==null ? "":text;
-	}
+    public boolean isDoubleTickedString() {
+        return getSafeText().startsWith("`");
+    }
 
-	public boolean isString() {
-		boolean isString = isSingleString() || isDoubleString() || isDoubleTickedString();
-		return isString;
-	}
+    private String getSafeText() {
+        return text == null ? "" : text;
+    }
 
-	public boolean isFunctionKeyword() {
-		return "function".equals(text);
-	}
+    public boolean isString() {
+        boolean isString = isSingleString() || isDoubleString() || isDoubleTickedString();
+        return isString;
+    }
 
-	/**
-	 * @return <code>true</code> when token ends with function brackets and contains no illegal states (e.g. string, comment)
-	 * and also no illegal characters in name
-	 */ 
-	public boolean isFunction() {
-		boolean isFunctionName = endsWithFunctionBrackets();
-		isFunctionName = isFunctionName && isLegalFunctionName();
-		isFunctionName = isFunctionName && !isComment();
-		isFunctionName = isFunctionName && text.length() > 2;
-		isFunctionName = isFunctionName && !isString();
-		
-		return  isFunctionName;
-	}
+    public boolean isFunctionKeyword() {
+        return "function".equals(text);
+    }
 
-	public boolean isLegalFunctionName() {
-		return ! getSafeText().contains(EQUAL_OPERAND);
-	}
+    /**
+     * @return <code>true</code> when token ends with function brackets and contains
+     *         no illegal states (e.g. string, comment) and also no illegal
+     *         characters in name
+     */
+    public boolean isFunction() {
+        boolean isFunctionName = endsWithFunctionBrackets();
+        isFunctionName = isFunctionName && isLegalFunctionName();
+        isFunctionName = isFunctionName && !isComment();
+        isFunctionName = isFunctionName && text.length() > 2;
+        isFunctionName = isFunctionName && !isString();
 
-	public boolean endsWithFunctionBrackets() {
-		return getSafeText().endsWith("()");
-	}
+        return isFunctionName;
+    }
 
-	public boolean hasLength(int length) {
-		return getSafeText().length() == length;
-	}
+    public boolean isLegalFunctionName() {
+        return !getSafeText().contains(EQUAL_OPERAND);
+    }
 
-	public String getTextAsFunctionName() {
-		// String name = token.text;
-		if (getSafeText().endsWith("()")) {
-			return text.substring(0, text.length() - 2);
-		}
-		return text;
-	}
+    public boolean endsWithFunctionBrackets() {
+        return getSafeText().endsWith("()");
+    }
 
-	public boolean isOpenBlock() {
-		return getSafeText().length() == 1 && text.endsWith("{");
-	}
+    public boolean hasLength(int length) {
+        return getSafeText().length() == length;
+    }
 
-	public boolean isCloseBlock() {
-		return getSafeText().length() == 1 && text.endsWith("}");
-	}
+    public String getTextAsFunctionName() {
+        // String name = token.text;
+        if (getSafeText().endsWith("()")) {
+            return text.substring(0, text.length() - 2);
+        }
+        return text;
+    }
 
-	public boolean isDo() {
-		return getSafeText().equals("do");
-	}
+    public boolean isOpenBlock() {
+        return getSafeText().length() == 1 && text.endsWith("{");
+    }
 
-	public boolean isDone() {
-		return getSafeText().equals("done");
-	}
+    public boolean isCloseBlock() {
+        return getSafeText().length() == 1 && text.endsWith("}");
+    }
 
-	public boolean isIf() {
-		return getSafeText().equals("if");
-	}
+    public boolean isDo() {
+        return getSafeText().equals("do");
+    }
 
-	public boolean isFi() {
-		return getSafeText().equals("fi");
-	}
+    public boolean isDone() {
+        return getSafeText().equals("done");
+    }
 
-	public boolean isHereDoc() {
-		return ! isHereString() && getSafeText().startsWith("<<");
-	}
+    public boolean isIf() {
+        return getSafeText().equals("if");
+    }
 
-	public boolean isHereString() {
-		return getSafeText().startsWith("<<<");
-	}
+    public boolean isFi() {
+        return getSafeText().equals("fi");
+    }
 
-	public boolean isCase() {
-		return getSafeText().equals("case");
-	}
-	
-	public boolean isEsac() {
-		return getSafeText().equals("esac");
-	}
+    public boolean isHereDoc() {
+        return !isHereString() && getSafeText().startsWith("<<");
+    }
+
+    public boolean isHereString() {
+        return getSafeText().startsWith("<<<");
+    }
+
+    public boolean isCase() {
+        return getSafeText().equals("case");
+    }
+
+    public boolean isEsac() {
+        return getSafeText().equals("esac");
+    }
 }

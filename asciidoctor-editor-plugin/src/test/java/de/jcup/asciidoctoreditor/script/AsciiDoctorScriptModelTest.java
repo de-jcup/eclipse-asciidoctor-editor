@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.script;
+package de.jcup.asciidoctoreditor.script;
 
 import static org.junit.Assert.*;
 
@@ -21,26 +21,26 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AsciiDoctorScriptModelTest {
-	private AsciiDoctorScriptModel modelToTest;
+    private AsciiDoctorScriptModel modelToTest;
 
-	@Before
-	public void before() {
-		modelToTest = new AsciiDoctorScriptModel();
-	}
+    @Before
+    public void before() {
+        modelToTest = new AsciiDoctorScriptModel();
+    }
 
-	@Test
-	public void has_errors_returns_true_when_one_error_is_added() {
-		/* execute */
-		modelToTest.getErrors().add(new AsciiDoctorMarker(100, 120, "buh"));
-		
-		/* test */
-		assertTrue(modelToTest.hasErrors());
-	}
-	
-	@Test
-	public void has_errors_returns_false_when_no_error_is_added() {
-		/* test */
-		assertFalse(modelToTest.hasErrors());
-	}
-	
+    @Test
+    public void has_errors_returns_true_when_one_error_is_added() {
+        /* execute */
+        modelToTest.getErrors().add(new AsciiDoctorMarker(100, 120, "buh"));
+
+        /* test */
+        assertTrue(modelToTest.hasErrors());
+    }
+
+    @Test
+    public void has_errors_returns_false_when_no_error_is_added() {
+        /* test */
+        assertFalse(modelToTest.hasErrors());
+    }
+
 }

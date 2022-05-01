@@ -1,0 +1,12 @@
+@startuml
+title I am "diagram-which-includes-others.puml"
+
+AsciiDoc -> PlantUML: show this
+
+PlantUML -> Others: Other parts included
+
+!include ./included1.puml
+!include ./subfolder/included2.puml
+
+@enduml
+

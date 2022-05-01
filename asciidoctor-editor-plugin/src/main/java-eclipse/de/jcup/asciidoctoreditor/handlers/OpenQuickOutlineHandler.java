@@ -13,19 +13,18 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.handlers;
+package de.jcup.asciidoctoreditor.handlers;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class OpenQuickOutlineHandler extends AbstractAsciiDoctorEditorHandler {
 
-	public static final String COMMAND_ID = "asciidoctoreditor.editor.commands.quickoutline";
+    public static final String COMMAND_ID = "asciidoctoreditor.editor.commands.quickoutline";
 
-	@Override
-	protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
-		asciidoctorEditor.getOutlineSupport().openQuickOutline();
-		
-	}
-	
+    @Override
+    protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
+        asciidoctorEditor.getOutlineSupport().openQuickOutline();
+
+    }
 
 }

@@ -24,64 +24,66 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorFileReference;
 
 public class AssertReferences {
 
-	private List<AsciiDoctorFileReference> includes;
+    private List<AsciiDoctorFileReference> includes;
 
-	public AssertReferences(List<AsciiDoctorFileReference> headlines) {
-		this.includes = headlines;
-	}
-	public AssertReferences hasReferences(int size) {
-		assertEquals("Amount of includes differs",size, includes.size());
-		return this;
-	}
-	public AssertReference hasReference(String target) {
-		assertNotNull(target);
-		Iterator<AsciiDoctorFileReference> it = includes.iterator();
-		while (it.hasNext()) {
+    public AssertReferences(List<AsciiDoctorFileReference> headlines) {
+        this.includes = headlines;
+    }
 
-			AsciiDoctorFileReference headlineFound = it.next();
-			if (target.equals(headlineFound.getTarget())) {
-				return new AssertReference(headlineFound);
-			}
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.append("No reference found with target:\n -").append(target);
-		sb.append("\nBut found:\n");
-		it = includes.iterator();
+    public AssertReferences hasReferences(int size) {
+        assertEquals("Amount of includes differs", size, includes.size());
+        return this;
+    }
+
+    public AssertReference hasReference(String target) {
+        assertNotNull(target);
+        Iterator<AsciiDoctorFileReference> it = includes.iterator();
+        while (it.hasNext()) {
+
+            AsciiDoctorFileReference headlineFound = it.next();
+            if (target.equals(headlineFound.getTarget())) {
+                return new AssertReference(headlineFound);
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("No reference found with target:\n -").append(target);
+        sb.append("\nBut found:\n");
+        it = includes.iterator();
         while (it.hasNext()) {
             sb.append(" -");
             sb.append(it.next().getTarget());
             sb.append("\n");
         }
-		fail(sb.toString());
-		return null;
-	}
+        fail(sb.toString());
+        return null;
+    }
 
-	public static AssertReferences assertReferences(List<AsciiDoctorFileReference> headlines) {
-		assertNotNull(headlines);
-		return new AssertReferences(headlines);
-	}
+    public static AssertReferences assertReferences(List<AsciiDoctorFileReference> headlines) {
+        assertNotNull(headlines);
+        return new AssertReferences(headlines);
+    }
 
-	public class AssertReference {
-		private AsciiDoctorFileReference reference;
+    public class AssertReference {
+        private AsciiDoctorFileReference reference;
 
-		private AssertReference(AsciiDoctorFileReference reference) {
-			assertNotNull(reference);
-			this.reference = reference;
-		}
+        private AssertReference(AsciiDoctorFileReference reference) {
+            assertNotNull(reference);
+            this.reference = reference;
+        }
 
-		public AssertReference withPosition(int position) {
-			assertEquals(reference.getLabel()+":Position not as expected!", position, this.reference.getPosition());
-			return this;
-		}
+        public AssertReference withPosition(int position) {
+            assertEquals(reference.getLabel() + ":Position not as expected!", position, this.reference.getPosition());
+            return this;
+        }
 
-		public AssertReference withEnd(int end) {
-			assertEquals(reference.getLabel()+":End not as expected!", end, this.reference.getEnd());
-			return this;
-		}
+        public AssertReference withEnd(int end) {
+            assertEquals(reference.getLabel() + ":End not as expected!", end, this.reference.getEnd());
+            return this;
+        }
 
-		public AssertReferences and() {
-			return AssertReferences.this;
-		}
-	}
+        public AssertReferences and() {
+            return AssertReferences.this;
+        }
+    }
 
 }

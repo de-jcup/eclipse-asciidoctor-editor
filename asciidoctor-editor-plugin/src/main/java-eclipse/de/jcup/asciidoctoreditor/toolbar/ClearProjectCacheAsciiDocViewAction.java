@@ -34,9 +34,10 @@ public class ClearProjectCacheAsciiDocViewAction extends ToolbarAction {
     public void run() {
         AsciiDoctorWrapper wrapper = asciiDoctorEditor.getWrapper();
         AsciiDoctorConsoleUtil.showConsole();
-        AsciiDoctorConsoleUtil.output("\nClear complete cache for project:"+asciiDoctorEditor.getProjectName());
+        AsciiDoctorConsoleUtil.output("\nClear complete cache for project:" + asciiDoctorEditor.getProjectName());
         wrapper.deleteTempFolder();
-        wrapper.resetCaches();;
+        wrapper.resetCaches();
+        ;
     }
 
     private void initUI() {

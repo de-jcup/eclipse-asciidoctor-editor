@@ -29,105 +29,105 @@ import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorSectionTitleKeyWor
 
 public class InsertSectionTitleAction extends ToolbarAction implements IMenuCreator {
 
-	private Menu menu;
-	private HeadlineViewSupport headlineViewSupport = new HeadlineViewSupport();
-	private AsciiDoctorSectionTitleKeyWords valueVisibleOnToolbar;
+    private Menu menu;
+    private HeadlineViewSupport headlineViewSupport = new HeadlineViewSupport();
+    private AsciiDoctorSectionTitleKeyWords valueVisibleOnToolbar;
 
-	public InsertSectionTitleAction(AsciiDoctorEditor asciiDoctorEditor) {
-		super(asciiDoctorEditor);
-		valueVisibleOnToolbar = AsciiDoctorSectionTitleKeyWords.H1;
-		initUI();
-	}
+    public InsertSectionTitleAction(AsciiDoctorEditor asciiDoctorEditor) {
+        super(asciiDoctorEditor);
+        valueVisibleOnToolbar = AsciiDoctorSectionTitleKeyWords.H1;
+        initUI();
+    }
 
-	@Override
-	public void run() {
-		headlineViewSupport.buildAction(valueVisibleOnToolbar).run();
-	}
+    @Override
+    public void run() {
+        headlineViewSupport.buildAction(valueVisibleOnToolbar).run();
+    }
 
-	private void initUI() {
-		setMenuCreator(this);
-		initImageAndText();
-	}
+    private void initUI() {
+        setMenuCreator(this);
+        initImageAndText();
+    }
 
-	private void initImageAndText() {
-		setImageDescriptor(headlineViewSupport.getDescriptor(valueVisibleOnToolbar));
-		setText(headlineViewSupport.getText(valueVisibleOnToolbar));
-	}
+    private void initImageAndText() {
+        setImageDescriptor(headlineViewSupport.getDescriptor(valueVisibleOnToolbar));
+        setText(headlineViewSupport.getText(valueVisibleOnToolbar));
+    }
 
-	public void dispose() {
-		if (menu != null) {
-			menu.dispose();
-			menu = null;
-		}
-	}
+    public void dispose() {
+        if (menu != null) {
+            menu.dispose();
+            menu = null;
+        }
+    }
 
-	public Menu getMenu(Menu parent) {
-		return null;
-	}
+    public Menu getMenu(Menu parent) {
+        return null;
+    }
 
-	public Menu getMenu(Control parent) {
-		if (menu != null) {
-			menu.dispose();
-		}
-		menu = new Menu(parent);
-		for (AsciiDoctorSectionTitleKeyWords keyword: AsciiDoctorSectionTitleKeyWords.values()){
-			addActionToMenu(menu, headlineViewSupport.buildAction(keyword));
-		}
-		return menu;
-	}
+    public Menu getMenu(Control parent) {
+        if (menu != null) {
+            menu.dispose();
+        }
+        menu = new Menu(parent);
+        for (AsciiDoctorSectionTitleKeyWords keyword : AsciiDoctorSectionTitleKeyWords.values()) {
+            addActionToMenu(menu, headlineViewSupport.buildAction(keyword));
+        }
+        return menu;
+    }
 
-	protected void addActionToMenu(Menu parent, Action action) {
-		ActionContributionItem item = new ActionContributionItem(action);
-		item.fill(parent, -1);
-	}
+    protected void addActionToMenu(Menu parent, Action action) {
+        ActionContributionItem item = new ActionContributionItem(action);
+        item.fill(parent, -1);
+    }
 
-	/**
-	 * Common helper class to handle section level parts
-	 * @author Albert Tregnaghi
-	 *
-	 */
-	private class HeadlineViewSupport {
-	
-		private EnumMap<AsciiDoctorSectionTitleKeyWords, ImageDescriptor> imgMap = new EnumMap<>(
-				AsciiDoctorSectionTitleKeyWords.class);
-	
-		public HeadlineViewSupport() {
-			for (AsciiDoctorSectionTitleKeyWords keyword : AsciiDoctorSectionTitleKeyWords.values()) {
-				String path = "section_" + keyword.name().toLowerCase() + ".png";
-				imgMap.put(keyword, createToolbarImageDescriptor(path));
-			}
-		}
-	
-		public ImageDescriptor getDescriptor(AsciiDoctorSectionTitleKeyWords keyword) {
-			return imgMap.get(keyword);
-		}
-	
-		public String getText(AsciiDoctorSectionTitleKeyWords keyword) {
-			return keyword.getLabel();
-		}
-	
-		public Action buildAction(AsciiDoctorSectionTitleKeyWords keyword) {
-			Action action = new FormatTextAction(asciiDoctorEditor, getText(keyword), getDescriptor(keyword)) {
-	
-				@Override
-				public void run() {
-					super.run();
-					valueVisibleOnToolbar=keyword;
-					initImageAndText();
-				}
+    /**
+     * Common helper class to handle section level parts
+     * 
+     * @author Albert Tregnaghi
+     *
+     */
+    private class HeadlineViewSupport {
 
-				@Override
-				protected String formatPrefix() {
-					return keyword.getText()+" ";
-				}
+        private EnumMap<AsciiDoctorSectionTitleKeyWords, ImageDescriptor> imgMap = new EnumMap<>(AsciiDoctorSectionTitleKeyWords.class);
 
-				@Override
-				protected String formatPostfix() {
-					return "\n";
-				}
-			};
-			return action;
-		}
-	}
+        public HeadlineViewSupport() {
+            for (AsciiDoctorSectionTitleKeyWords keyword : AsciiDoctorSectionTitleKeyWords.values()) {
+                String path = "section_" + keyword.name().toLowerCase() + ".png";
+                imgMap.put(keyword, createToolbarImageDescriptor(path));
+            }
+        }
+
+        public ImageDescriptor getDescriptor(AsciiDoctorSectionTitleKeyWords keyword) {
+            return imgMap.get(keyword);
+        }
+
+        public String getText(AsciiDoctorSectionTitleKeyWords keyword) {
+            return keyword.getLabel();
+        }
+
+        public Action buildAction(AsciiDoctorSectionTitleKeyWords keyword) {
+            Action action = new FormatTextAction(asciiDoctorEditor, getText(keyword), getDescriptor(keyword)) {
+
+                @Override
+                public void run() {
+                    super.run();
+                    valueVisibleOnToolbar = keyword;
+                    initImageAndText();
+                }
+
+                @Override
+                protected String formatPrefix() {
+                    return keyword.getText() + " ";
+                }
+
+                @Override
+                protected String formatPostfix() {
+                    return "\n";
+                }
+            };
+            return action;
+        }
+    }
 
 }

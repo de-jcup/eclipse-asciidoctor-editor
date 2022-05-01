@@ -63,11 +63,10 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     public ColorManager getColorManager() {
         return colorManager;
     }
-    
+
     public ASPSupport getAspSupport() {
         return aspSupport;
     }
-   
 
     public void start(BundleContext context) throws Exception {
         super.start(context);
@@ -75,10 +74,8 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
         plugin = this;
 
         taskSupportProvider.getTodoTaskSupport().install();
-        
+
     }
-    
-    
 
     public void stop(BundleContext context) throws Exception {
         plugin = null;

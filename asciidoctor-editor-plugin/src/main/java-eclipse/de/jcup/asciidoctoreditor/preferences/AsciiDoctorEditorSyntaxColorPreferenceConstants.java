@@ -18,35 +18,30 @@ package de.jcup.asciidoctoreditor.preferences;
 /**
  * Constant definitions for plug-in preferences
  */
-public enum AsciiDoctorEditorSyntaxColorPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled{
-	COLOR_ASCIIDOCTOR_HEADLINES("colorHeadlines", "Headlines"),
-	COLOR_NORMAL_TEXT("colorNormalText","Normal text"),
-	COLOR_TEXT_BLOCKS("colorTextBlocks", "Text blocks"),
-	COLOR_TEXT_BOLD("colorTextBold","Bold text"),
-	COLOR_TEXT_ITALIC("colorTextItalic","Italic"),
-	COLOR_COMMENT("colorComments", "Comments"),
+public enum AsciiDoctorEditorSyntaxColorPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled {
+    COLOR_ASCIIDOCTOR_HEADLINES("colorHeadlines", "Headlines"), COLOR_NORMAL_TEXT("colorNormalText", "Normal text"), COLOR_TEXT_BLOCKS("colorTextBlocks", "Text blocks"),
+    COLOR_TEXT_BOLD("colorTextBold", "Bold text"), COLOR_TEXT_ITALIC("colorTextItalic", "Italic"), COLOR_COMMENT("colorComments", "Comments"),
 //	COLOR_INCLUDE_KEYWORD("colorIncludeKeywords","Includes"),
-	COLOR_ASCIIDOCTOR_COMMAND("colorCommands","Special AsciiDoctor commands"),
-	COLOR_KNOWN_VARIABLES("colorKnownVariables","Known variables"),
-	
-	COLOR_DELIMITERS("colorDelimiters","Delimiters"),
-	
-	;
+    COLOR_ASCIIDOCTOR_COMMAND("colorCommands", "Special AsciiDoctor commands"), COLOR_KNOWN_VARIABLES("colorKnownVariables", "Known variables"),
 
-	private String id;
-	private String labelText;
+    COLOR_DELIMITERS("colorDelimiters", "Delimiters"),
 
-	private AsciiDoctorEditorSyntaxColorPreferenceConstants(String id, String labelText) {
-		this.id = id;
-		this.labelText=labelText;
-	}
+    ;
 
-	public String getLabelText() {
-		return labelText;
-	}
-	
-	public String getId() {
-		return id;
-	}
+    private String id;
+    private String labelText;
+
+    private AsciiDoctorEditorSyntaxColorPreferenceConstants(String id, String labelText) {
+        this.id = id;
+        this.labelText = labelText;
+    }
+
+    public String getLabelText() {
+        return labelText;
+    }
+
+    public String getId() {
+        return id;
+    }
 
 }

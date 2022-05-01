@@ -19,22 +19,22 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
-public class BoldFormatAction extends FormatTextAction{
-	
-	private static ImageDescriptor IMG_DESCRIPTOR_BOLD = createToolbarImageDescriptor("format_bold.png");
+public class BoldFormatAction extends FormatTextAction {
 
-	public BoldFormatAction(AsciiDoctorEditor editor) {
-		super(editor, "Bold (Ctrl + b)", IMG_DESCRIPTOR_BOLD);
-	}
+    private static ImageDescriptor IMG_DESCRIPTOR_BOLD = createToolbarImageDescriptor("format_bold.png");
 
-	@Override
-	protected String formatPrefix() {
-		return "*";
-	}
+    public BoldFormatAction(AsciiDoctorEditor editor) {
+        super(editor, "Bold (Ctrl + b)", IMG_DESCRIPTOR_BOLD);
+    }
 
-	@Override
-	protected String formatPostfix() {
-		return "*";
-	}
+    @Override
+    protected String formatPrefix() {
+        return "*";
+    }
+
+    @Override
+    protected String formatPostfix() {
+        return "*";
+    }
 
 }

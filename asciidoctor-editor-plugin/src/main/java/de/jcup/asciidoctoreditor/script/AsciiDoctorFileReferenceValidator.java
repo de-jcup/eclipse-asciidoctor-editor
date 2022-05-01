@@ -31,9 +31,9 @@ public class AsciiDoctorFileReferenceValidator {
     private boolean urlTestingEnabled;
 
     public AsciiDoctorFileReferenceValidator(boolean urlTestingEnabled) {
-        this.urlTestingEnabled=urlTestingEnabled;
+        this.urlTestingEnabled = urlTestingEnabled;
     }
-    
+
     /**
      * Validates given references, will add error markers when not valid. Validation
      * means that the absolute file is calculated and checked for existence.

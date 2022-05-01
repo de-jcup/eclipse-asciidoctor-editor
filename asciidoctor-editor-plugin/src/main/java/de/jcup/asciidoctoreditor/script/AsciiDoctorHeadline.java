@@ -13,103 +13,104 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.script;
+package de.jcup.asciidoctoreditor.script;
 
 import java.util.regex.Pattern;
 
-public class AsciiDoctorHeadline implements AsciidoctorTextSelectable  {
+public class AsciiDoctorHeadline implements AsciidoctorTextSelectable {
 
-	private static final String REGEXP_STRING = "\\W";
-	private static final Pattern REGEXP= Pattern.compile(REGEXP_STRING, Pattern.UNICODE_CHARACTER_CLASS);
-	
-	String name;
-	int position;
-	int lengthToNameEnd;
-	int end;
-	int deep;
-	private String calculatedId;
-	private String id;
-	
-	public AsciiDoctorHeadline(int deep, String name, int position, int end, int lengthTonNameEnd){
-		this.deep=deep;
-		this.name=name;
-		
-		this.position=position;
-		this.end=end;
-		this.lengthToNameEnd=lengthTonNameEnd;
-		this.calculatedId=calculateId(name);
-	}
-	
-	void setId(String id) {
-		this.id = id;
-	}
-	
-	boolean isIdSet(){
-		return id!=null;
-	}
-	public String getCalculatedId() {
-		return calculatedId;
-	}
-	
-	static String calculateId(String name) {
-		if (name==null){
-			return "";
-		}
-		String id = REGEXP.matcher(name).replaceAll("_");
-		id= "_"+id.toLowerCase();
-		/* remove ending _ */
-		while(id.length()>1 && id.endsWith("_")){
-			id=id.substring(0,id.length()-1);
-		}
-		/* remove double _ */
-		while(id.indexOf("__")!=-1){
-			id=id.replaceAll("__", "_");
-		}
-		return id;
-		
-	}
+    private static final String REGEXP_STRING = "\\W";
+    private static final Pattern REGEXP = Pattern.compile(REGEXP_STRING, Pattern.UNICODE_CHARACTER_CLASS);
 
-	public int getLengthToNameEnd() {
-		return lengthToNameEnd;
-	}
-	
-	@Override
-	public int getSelectionStart() {
-	    return getPosition();
-	}
-	
-	@Override
-	public int getSelectionLength() {
-	    return getLengthToNameEnd();
-	}
-	
-	public int getDeep() {
-		return deep;
-	}
-	
-	public String getName() {
-		return name;
-	}
+    String name;
+    int position;
+    int lengthToNameEnd;
+    int end;
+    int deep;
+    private String calculatedId;
+    private String id;
 
-	@Override
-	public int getPosition() {
-		return position;
-	}
-	
-	public int getEnd() {
-		return end;
-	}
-	
-	public String getId(){
-		if (id==null){
-			return calculatedId;
-		}
-		return id;
-	}
-	
-	@Override
-	public String toString() {
-		return "h"+deep+":"+name+"[pos:"+position+",end:"+end+",lengthToNameEnd:"+lengthToNameEnd+"]";
-	}
+    public AsciiDoctorHeadline(int deep, String name, int position, int end, int lengthTonNameEnd) {
+        this.deep = deep;
+        this.name = name;
+
+        this.position = position;
+        this.end = end;
+        this.lengthToNameEnd = lengthTonNameEnd;
+        this.calculatedId = calculateId(name);
+    }
+
+    void setId(String id) {
+        this.id = id;
+    }
+
+    boolean isIdSet() {
+        return id != null;
+    }
+
+    public String getCalculatedId() {
+        return calculatedId;
+    }
+
+    static String calculateId(String name) {
+        if (name == null) {
+            return "";
+        }
+        String id = REGEXP.matcher(name).replaceAll("_");
+        id = "_" + id.toLowerCase();
+        /* remove ending _ */
+        while (id.length() > 1 && id.endsWith("_")) {
+            id = id.substring(0, id.length() - 1);
+        }
+        /* remove double _ */
+        while (id.indexOf("__") != -1) {
+            id = id.replaceAll("__", "_");
+        }
+        return id;
+
+    }
+
+    public int getLengthToNameEnd() {
+        return lengthToNameEnd;
+    }
+
+    @Override
+    public int getSelectionStart() {
+        return getPosition();
+    }
+
+    @Override
+    public int getSelectionLength() {
+        return getLengthToNameEnd();
+    }
+
+    public int getDeep() {
+        return deep;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public int getPosition() {
+        return position;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+
+    public String getId() {
+        if (id == null) {
+            return calculatedId;
+        }
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "h" + deep + ":" + name + "[pos:" + position + ",end:" + end + ",lengthToNameEnd:" + lengthToNameEnd + "]";
+    }
 
 }

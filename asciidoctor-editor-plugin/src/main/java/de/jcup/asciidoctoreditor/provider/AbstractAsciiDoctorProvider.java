@@ -21,24 +21,24 @@ public abstract class AbstractAsciiDoctorProvider {
 
     private AsciiDoctorProviderContext context;
 
-    AbstractAsciiDoctorProvider(AsciiDoctorProviderContext context){
-        if (context==null ){
+    AbstractAsciiDoctorProvider(AsciiDoctorProviderContext context) {
+        if (context == null) {
             throw new IllegalArgumentException("context may never be null!");
         }
-        this.context=context;
+        this.context = context;
     }
-    
+
     AsciiDoctorProviderContext getContext() {
         return context;
     }
-    
+
     public Path getOutputFolder() {
         Path outputFolder = getContext().getOutputFolder();
-        if (outputFolder==null){
+        if (outputFolder == null) {
             throw new IllegalStateException("output folder not defined");
         }
         return outputFolder;
     }
 
-    protected abstract void reset() ;
+    protected abstract void reset();
 }

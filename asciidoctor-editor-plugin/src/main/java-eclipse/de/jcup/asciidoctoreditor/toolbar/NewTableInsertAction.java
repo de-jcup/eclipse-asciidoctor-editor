@@ -64,7 +64,7 @@ public class NewTableInsertAction extends InsertTextAction {
             for (int i = 0; i < data.columns; i++) {
                 int size = 1;
                 if (i == 0) {
-                    // for the example the first column is bigger than the others 
+                    // for the example the first column is bigger than the others
                     size = 5;
                 }
                 sb.append(size);

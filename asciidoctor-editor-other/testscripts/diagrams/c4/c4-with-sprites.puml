@@ -1,0 +1,43 @@
+@startuml
+
+'see https://github.com/plantuml-stdlib/C4-PlantUML
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "User")
+Person(user1, "User 1")
+Person(user2, "User 2")
+Person(user3, "User 3")
+
+System(system, "System")
+
+' normal sprites are too big 
+Rel_L(user, user2, "informs", "courier", "normal sprites are too big", $sprite="person2")
+
+' scaled sprites are ok
+Rel_R(user, user3, "informs", "courier", "scaled sprites are OK", $sprite="person2,scale=0.5")
+
+' combine sprite and scale to a new sprite
+!$combinedSprite="person2,scale=0.5"
+Rel_R(user, user3, "informs", "courier", "combined sprites are OK", $sprite=$combinedSprite)
+
+' special smaller sprites can be used (orders is the triangle)
+sprite $triangle {
+    00000000000
+    00000F00000
+    0000FBF0000
+    0000FBF0000
+    000F999F000
+    000F999F000
+    00F66666F00
+    00F66666F00
+    0F3333333F0
+    0F3333333F0
+    0FFFFFFFFF0
+    00000000000
+}
+Rel_R(user1, system, "orders", "http", "small sprites, like the small triangle", $sprite="triangle")
+
+' if sprite starts with &, sprite defines a OpenIconic, details see https://useiconic.com/open/
+Rel_D(user, user1, "requests", "async message", "if sprite starts with &, it defines a OpenIconic like &envelope-closed", $sprite = "&envelope-closed")
+@enduml

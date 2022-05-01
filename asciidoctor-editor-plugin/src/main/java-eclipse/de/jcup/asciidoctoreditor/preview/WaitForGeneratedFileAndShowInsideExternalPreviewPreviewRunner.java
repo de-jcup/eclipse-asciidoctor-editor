@@ -26,35 +26,35 @@ import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner implements EnsureFileRunnable {
 
-	private final AsciiDoctorEditor asciiDoctorEditor;
-	private IProgressMonitor monitor;
+    private final AsciiDoctorEditor asciiDoctorEditor;
+    private IProgressMonitor monitor;
 
-	public WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(AsciiDoctorEditor asciiDoctorEditor, IProgressMonitor monitor) {
-		this.asciiDoctorEditor = asciiDoctorEditor;
-		this.monitor = monitor;
-	}
+    public WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner(AsciiDoctorEditor asciiDoctorEditor, IProgressMonitor monitor) {
+        this.asciiDoctorEditor = asciiDoctorEditor;
+        this.monitor = monitor;
+    }
 
-	@Override
-	public void run() {
-		long start = System.currentTimeMillis();
-		try {
-			File temporaryExternalPreviewFile = asciiDoctorEditor.getTemporaryExternalPreviewFile();
-			while (asciiDoctorEditor.isNotCanceled(monitor)
-					&& (temporaryExternalPreviewFile == null || !temporaryExternalPreviewFile.exists())) {
-				if (System.currentTimeMillis() - start > 20000) {
-					// after 20 seconds there seems to be no chance to get
-					// the generated preview file back
-				    EclipseUtil.safeAsyncExec(()->MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Asciidoctor Editor", "Generated HTML output not found - maybe it's still in generation.\n\nPlease wait and try again."));
-					return;
-				}
-				Thread.sleep(300);
-			}
-			AsciiDoctorEditorUtil.openFileInExternalBrowser(temporaryExternalPreviewFile);
+    @Override
+    public void run() {
+        long start = System.currentTimeMillis();
+        try {
+            File temporaryExternalPreviewFile = asciiDoctorEditor.getTemporaryExternalPreviewFile();
+            while (asciiDoctorEditor.isNotCanceled(monitor) && (temporaryExternalPreviewFile == null || !temporaryExternalPreviewFile.exists())) {
+                if (System.currentTimeMillis() - start > 20000) {
+                    // after 20 seconds there seems to be no chance to get
+                    // the generated preview file back
+                    EclipseUtil.safeAsyncExec(() -> MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Asciidoctor Editor",
+                            "Generated HTML output not found - maybe it's still in generation.\n\nPlease wait and try again."));
+                    return;
+                }
+                Thread.sleep(300);
+            }
+            AsciiDoctorEditorUtil.openFileInExternalBrowser(temporaryExternalPreviewFile);
 
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		} 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-	}
-	
+    }
+
 }

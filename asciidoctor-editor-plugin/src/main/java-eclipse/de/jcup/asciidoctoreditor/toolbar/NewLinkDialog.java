@@ -31,121 +31,122 @@ import org.eclipse.swt.widgets.Text;
 
 public class NewLinkDialog extends TitleAreaDialog {
 
-	private Text txtLinkText;
+    private Text txtLinkText;
 
-	private Text txtTarget;
+    private Text txtTarget;
 
-	private String target;
-	private String linkText;
+    private String target;
+    private String linkText;
 
-	private Button btnLinkExternal;
+    private Button btnLinkExternal;
 
-	private Button btnLinkInternalCrossReference;
+    private Button btnLinkInternalCrossReference;
 
-	private LinkType linkType;
+    private LinkType linkType;
 
-	public NewLinkDialog(Shell parentShell) {
-		super(parentShell);
-	}
+    public NewLinkDialog(Shell parentShell) {
+        super(parentShell);
+    }
 
-	@Override
-	public void create() {
-		super.create();
-		setTitle("Insert a new link into document");
-		setMessage("Select your wanted link data and press OK", IMessageProvider.INFORMATION);
-	}
+    @Override
+    public void create() {
+        super.create();
+        setTitle("Insert a new link into document");
+        setMessage("Select your wanted link data and press OK", IMessageProvider.INFORMATION);
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite area = (Composite) super.createDialogArea(parent);
-		Composite container = new Composite(area, SWT.NONE);
-		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		GridLayout layout = new GridLayout(2, false);
-		container.setLayout(layout);
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite area = (Composite) super.createDialogArea(parent);
+        Composite container = new Composite(area, SWT.NONE);
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        GridLayout layout = new GridLayout(2, false);
+        container.setLayout(layout);
 
-		createTypeSelection(container);
-		createLabelTextfields(container);
-		createTargetTextFields(container);
+        createTypeSelection(container);
+        createLabelTextfields(container);
+        createTargetTextFields(container);
 
-		return area;
-	}
+        return area;
+    }
 
-	private void createTypeSelection(Composite container) {
-		GridData data = new GridData();
-		data.grabExcessHorizontalSpace = true;
-		data.horizontalAlignment = GridData.FILL;
-		data.horizontalSpan=2;
-		
-		Group linkTypeGroup = new Group(container, SWT.NONE);
-		linkTypeGroup.setText("Link blockType:");
-		linkTypeGroup.setLayout(new RowLayout(SWT.VERTICAL));
-		linkTypeGroup.setLayoutData(data);
-		
-		btnLinkExternal = new Button(linkTypeGroup, SWT.RADIO);
-		btnLinkExternal.setText("External");
-		btnLinkExternal.setSelection(false);
+    private void createTypeSelection(Composite container) {
+        GridData data = new GridData();
+        data.grabExcessHorizontalSpace = true;
+        data.horizontalAlignment = GridData.FILL;
+        data.horizontalSpan = 2;
 
-		btnLinkInternalCrossReference = new Button(linkTypeGroup, SWT.RADIO);
-		btnLinkInternalCrossReference.setText("Internal cross reference");
-		btnLinkInternalCrossReference.setToolTipText("Internal cross reference, enter 'abc-xyz' when you want to refer '[[abc-xyz]]' inside your document)");
-		
-		btnLinkInternalCrossReference.setSelection(true);
-	}
+        Group linkTypeGroup = new Group(container, SWT.NONE);
+        linkTypeGroup.setText("Link blockType:");
+        linkTypeGroup.setLayout(new RowLayout(SWT.VERTICAL));
+        linkTypeGroup.setLayoutData(data);
 
-	private void createLabelTextfields(Composite container) {
-		Label lblLinkTextLabel = new Label(container, SWT.NONE);
-		lblLinkTextLabel.setText("Link text");
+        btnLinkExternal = new Button(linkTypeGroup, SWT.RADIO);
+        btnLinkExternal.setText("External");
+        btnLinkExternal.setSelection(false);
 
-		GridData data = new GridData();
-		data.grabExcessHorizontalSpace = true;
-		data.horizontalAlignment = GridData.FILL;
+        btnLinkInternalCrossReference = new Button(linkTypeGroup, SWT.RADIO);
+        btnLinkInternalCrossReference.setText("Internal cross reference");
+        btnLinkInternalCrossReference.setToolTipText("Internal cross reference, enter 'abc-xyz' when you want to refer '[[abc-xyz]]' inside your document)");
 
-		txtLinkText = new Text(container, SWT.BORDER);
-		txtLinkText.setLayoutData(data);
-	}
+        btnLinkInternalCrossReference.setSelection(true);
+    }
 
-	private void createTargetTextFields(Composite container) {
-		Label lblTarget = new Label(container, SWT.NONE);
-		lblTarget.setText("Link target");
-		GridData data = new GridData();
-		data.grabExcessHorizontalSpace = true;
-		data.horizontalAlignment = GridData.FILL;
+    private void createLabelTextfields(Composite container) {
+        Label lblLinkTextLabel = new Label(container, SWT.NONE);
+        lblLinkTextLabel.setText("Link text");
 
-		txtTarget = new Text(container, SWT.BORDER);
-		txtTarget.setLayoutData(data);
-	}
+        GridData data = new GridData();
+        data.grabExcessHorizontalSpace = true;
+        data.horizontalAlignment = GridData.FILL;
 
-	@Override
-	protected boolean isResizable() {
-		return true;
-	}
+        txtLinkText = new Text(container, SWT.BORDER);
+        txtLinkText.setLayoutData(data);
+    }
 
-	// save content of the Text fields because they get disposed
-	// as soon as the Dialog closes
-	private void saveInput() {
-		target = txtTarget.getText();
-		linkText = txtLinkText.getText();
-		if (btnLinkExternal.getSelection()){
-			linkType = LinkType.EXTERNAL;
-		}else if (btnLinkInternalCrossReference.getSelection()){
-			linkType = LinkType.INTERNAL_CROSS_REFERENCE;
-		}
-	}
+    private void createTargetTextFields(Composite container) {
+        Label lblTarget = new Label(container, SWT.NONE);
+        lblTarget.setText("Link target");
+        GridData data = new GridData();
+        data.grabExcessHorizontalSpace = true;
+        data.horizontalAlignment = GridData.FILL;
 
-	@Override
-	protected void okPressed() {
-		saveInput();
-		super.okPressed();
-	}
+        txtTarget = new Text(container, SWT.BORDER);
+        txtTarget.setLayoutData(data);
+    }
 
-	public String getTarget() {
-		return target;
-	}
+    @Override
+    protected boolean isResizable() {
+        return true;
+    }
 
-	public String getLinkText() {
-		return linkText;
-	}
-	public LinkType getLinkType() {
-		return linkType;
-	}
+    // save content of the Text fields because they get disposed
+    // as soon as the Dialog closes
+    private void saveInput() {
+        target = txtTarget.getText();
+        linkText = txtLinkText.getText();
+        if (btnLinkExternal.getSelection()) {
+            linkType = LinkType.EXTERNAL;
+        } else if (btnLinkInternalCrossReference.getSelection()) {
+            linkType = LinkType.INTERNAL_CROSS_REFERENCE;
+        }
+    }
+
+    @Override
+    protected void okPressed() {
+        saveInput();
+        super.okPressed();
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public String getLinkText() {
+        return linkText;
+    }
+
+    public LinkType getLinkType() {
+        return linkType;
+    }
 }

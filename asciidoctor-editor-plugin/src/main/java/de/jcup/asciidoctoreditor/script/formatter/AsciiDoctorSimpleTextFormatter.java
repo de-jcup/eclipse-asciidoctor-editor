@@ -15,12 +15,13 @@
  */
 package de.jcup.asciidoctoreditor.script.formatter;
 
-
 /**
  * Formats given text to max column size<br>
- * There seems to be a parser written in java for asciidoctor in next future. So stop implementing this. 
- * TODO de-jcup,2019-08-30: Remove impl and test when parser available
+ * There seems to be a parser written in java for asciidoctor in next future. So
+ * stop implementing this. TODO de-jcup,2019-08-30: Remove impl and test when
+ * parser available
  * https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/255
+ * 
  * @author de-jcup
  */
 public class AsciiDoctorSimpleTextFormatter {

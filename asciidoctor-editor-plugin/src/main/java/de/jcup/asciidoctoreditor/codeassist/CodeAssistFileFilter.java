@@ -18,28 +18,28 @@ package de.jcup.asciidoctoreditor.codeassist;
 import java.io.File;
 import java.util.LinkedHashSet;
 
-public class CodeAssistFileFilter{
-    
+public class CodeAssistFileFilter {
+
     private LinkedHashSet<String> accepted;
     private boolean ignoreCase;
 
-    public CodeAssistFileFilter(String ...acceptedFileEndings) {
+    public CodeAssistFileFilter(String... acceptedFileEndings) {
         accepted = new LinkedHashSet<String>();
-        for (String acceptedFileEnding:acceptedFileEndings) {
-            if (acceptedFileEnding==null) {
+        for (String acceptedFileEnding : acceptedFileEndings) {
+            if (acceptedFileEnding == null) {
                 continue;
             }
             accepted.add(acceptedFileEnding);
         }
     }
-    
+
     public CodeAssistFileFilter ignoreCase() {
-        LinkedHashSet<String> acceptedNew= new LinkedHashSet<String>();
-        this.ignoreCase=true;
-        for (String acceptedCase: accepted) {
+        LinkedHashSet<String> acceptedNew = new LinkedHashSet<String>();
+        this.ignoreCase = true;
+        for (String acceptedCase : accepted) {
             acceptedNew.add(acceptedCase.toLowerCase());
         }
-        accepted=acceptedNew;
+        accepted = acceptedNew;
         return this;
     }
 
@@ -52,17 +52,17 @@ public class CodeAssistFileFilter{
 
     private boolean acceptFile(File file) {
         if (accepted.isEmpty()) {
-            /* nothing defined , so always true, we keep everything*/
+            /* nothing defined , so always true, we keep everything */
             return true;
         }
         String name = file.getName();
         int lastIndex = name.lastIndexOf('.');
-        if (lastIndex==-1) {
+        if (lastIndex == -1) {
             return false;
         }
         String fileEnding = name.substring(lastIndex);
         if (ignoreCase) {
-            fileEnding=fileEnding.toLowerCase();
+            fileEnding = fileEnding.toLowerCase();
         }
         return accepted.contains(fileEnding);
     }

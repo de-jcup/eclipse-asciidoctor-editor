@@ -25,19 +25,19 @@ import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalInfoProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 
-public class DynamicIncludeContentAssistSupport extends ProposalProviderContentAssistSupport{
+public class DynamicIncludeContentAssistSupport extends ProposalProviderContentAssistSupport {
 
     public DynamicIncludeContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("include::",new EditorFileParentAsBaseParentResolver(),new DynamicIncludesEnabledResolver(),new CodeAssistFileFilter()));
+        super(provider, new AsciidocReferenceProposalSupport("include::", new EditorFileParentAsBaseParentResolver(), new DynamicIncludesEnabledResolver(), new CodeAssistFileFilter()));
     }
-    
+
     @Override
     protected ProposalInfoProvider createProposalInfoBuilder() {
         return new ProposalInfoProvider() {
-            
+
             @Override
             public Object getProposalInfo(IProgressMonitor monitor, Object target) {
-                if (! (target instanceof String)){
+                if (!(target instanceof String)) {
                     return null;
                 }
                 String word = (String) target;
@@ -50,14 +50,14 @@ public class DynamicIncludeContentAssistSupport extends ProposalProviderContentA
             }
         };
     }
-    
-    private static class DynamicIncludesEnabledResolver implements EnableStateResolver{
+
+    private static class DynamicIncludesEnabledResolver implements EnableStateResolver {
 
         @Override
         public boolean isEnabled() {
             return AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForIncludesEnabled();
         }
-        
+
     }
 
 }

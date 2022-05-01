@@ -13,30 +13,30 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.toolbar;
+package de.jcup.asciidoctoreditor.toolbar;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class ShowPreviewHorizontalInsideEditorAction extends ToolbarAction {
-    private static final String LAYOUT_TOOLTIP= "Horizontal layout";
-	private static final ImageDescriptor IMG_LAYOUT = createToolbarImageDescriptor("layout_horizontal.png");
-	
-	public ShowPreviewHorizontalInsideEditorAction(AsciiDoctorEditor editor) {
-		super(editor);
-		initUI();
-	}
-	
-	private void initUI() {
-		setImageDescriptor(IMG_LAYOUT);
-		setToolTipText(LAYOUT_TOOLTIP);
-		
-	}
+    private static final String LAYOUT_TOOLTIP = "Horizontal layout";
+    private static final ImageDescriptor IMG_LAYOUT = createToolbarImageDescriptor("layout_horizontal.png");
 
-	@Override
-	public void run() {
-	    asciiDoctorEditor.setVerticalSplit(false);
+    public ShowPreviewHorizontalInsideEditorAction(AsciiDoctorEditor editor) {
+        super(editor);
+        initUI();
+    }
+
+    private void initUI() {
+        setImageDescriptor(IMG_LAYOUT);
+        setToolTipText(LAYOUT_TOOLTIP);
+
+    }
+
+    @Override
+    public void run() {
+        asciiDoctorEditor.setVerticalSplit(false);
         asciiDoctorEditor.setInternalPreview(true);
-	}
+    }
 }

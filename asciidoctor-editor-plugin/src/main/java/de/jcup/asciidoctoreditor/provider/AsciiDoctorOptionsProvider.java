@@ -28,9 +28,8 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
         super(context);
     }
 
-    public AsciidocOptions createOptionsContainingAttributes(AsciiDoctorBackendType backend) {
+    public AsciidocOptions createOptions(AsciiDoctorBackendType backend) {
         /* @formatter:off*/
-
         
         AsciidocOptionsBuilder builder = AsciidocOptions.builder();
         
@@ -42,7 +41,7 @@ public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
                 backend(backend.getBackendString()).
                 headerFooter(getContext().isTOCVisible()).
                 sourcemap(true).
-                baseDir(getContext().getBaseDir());
+                baseDir(getContext().getBaseDir()); // the context contains either calculated project base dir or a base directory from a asciidoctorconfig file.
         
         /* @formatter:on*/
         return builder.build();

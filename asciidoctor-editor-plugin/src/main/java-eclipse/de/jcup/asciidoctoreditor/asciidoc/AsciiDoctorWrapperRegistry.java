@@ -24,13 +24,12 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
 
 public class AsciiDoctorWrapperRegistry {
     public static AsciiDoctorWrapperRegistry INSTANCE = new AsciiDoctorWrapperRegistry();
-    
+
     private Map<IProject, AsciiDoctorWrapper> map = new HashMap<>();
 
-    private AsciiDoctorWrapperRegistry(){
-        
+    private AsciiDoctorWrapperRegistry() {
     }
-    
+
     public AsciiDoctorWrapper getWrapper(IProject project) {
         return map.computeIfAbsent(project, x -> createWrapper(x));
     }

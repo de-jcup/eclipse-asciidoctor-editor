@@ -25,16 +25,15 @@ import de.jcup.asciidoctoreditor.AbstractAsciiDoctorEditorSupport;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorSourceViewerConfiguration;
 
-public class AsciiDoctorEditorLinkSupport extends AbstractAsciiDoctorEditorSupport{
-    
+public class AsciiDoctorEditorLinkSupport extends AbstractAsciiDoctorEditorSupport {
 
-    public AsciiDoctorEditorLinkSupport(AsciiDoctorEditor editor){
+    public AsciiDoctorEditorLinkSupport(AsciiDoctorEditor editor) {
         super(editor);
     }
 
     /**
-     * Tries to resolve current cursor location as hyperlink and open it. When
-     * more then one possibilities are found, only first one is used
+     * Tries to resolve current cursor location as hyperlink and open it. When more
+     * then one possibilities are found, only first one is used
      */
     public void openHyperlinkAtCurrentCursorPosition() {
         SourceViewerConfiguration conf = getSourceViewerConfiguration();
@@ -74,7 +73,7 @@ public class AsciiDoctorEditorLinkSupport extends AbstractAsciiDoctorEditorSuppo
             }
         }
     }
-    
+
     private ISourceViewer getSourceViewer() {
         return getEditor().getAsciiDoctorSourceViewer();
     }
@@ -83,5 +82,4 @@ public class AsciiDoctorEditorLinkSupport extends AbstractAsciiDoctorEditorSuppo
         return getEditor().getAsciiDoctorSourceViewerConfiguration();
     }
 
-    
 }

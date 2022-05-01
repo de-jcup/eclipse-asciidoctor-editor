@@ -21,28 +21,28 @@ import org.junit.Test;
 
 public class AsciiDoctorEditorValidationErrorLevelTest {
 
-	@Test
-	public void test_from_info_is_info() {
-		assertEquals(AsciiDoctorEditorValidationErrorLevel.INFO, AsciiDoctorEditorValidationErrorLevel.fromId("info"));
-	}
-	
-	@Test
-	public void test_from_warn_is_warn() {
-		assertEquals(AsciiDoctorEditorValidationErrorLevel.WARNING, AsciiDoctorEditorValidationErrorLevel.fromId("warning"));
-	}
-	
-	@Test
-	public void test_from_error_is_error() {
-		assertEquals(AsciiDoctorEditorValidationErrorLevel.ERROR, AsciiDoctorEditorValidationErrorLevel.fromId("error"));
-	}
-	
-	@Test
-	public void test_from_null_is_error() {
-		assertEquals(AsciiDoctorEditorValidationErrorLevel.ERROR, AsciiDoctorEditorValidationErrorLevel.fromId(null));
-	}
-	
-	@Test
-	public void test_from_illegal_value_is_error() {
-		assertEquals(AsciiDoctorEditorValidationErrorLevel.ERROR, AsciiDoctorEditorValidationErrorLevel.fromId("illegal-value"));
-	}
+    @Test
+    public void test_from_info_is_info() {
+        assertEquals(AsciiDoctorEditorValidationErrorLevel.INFO, AsciiDoctorEditorValidationErrorLevel.fromId("info"));
+    }
+
+    @Test
+    public void test_from_warn_is_warn() {
+        assertEquals(AsciiDoctorEditorValidationErrorLevel.WARNING, AsciiDoctorEditorValidationErrorLevel.fromId("warning"));
+    }
+
+    @Test
+    public void test_from_error_is_error() {
+        assertEquals(AsciiDoctorEditorValidationErrorLevel.ERROR, AsciiDoctorEditorValidationErrorLevel.fromId("error"));
+    }
+
+    @Test
+    public void test_from_null_is_error() {
+        assertEquals(AsciiDoctorEditorValidationErrorLevel.ERROR, AsciiDoctorEditorValidationErrorLevel.fromId(null));
+    }
+
+    @Test
+    public void test_from_illegal_value_is_error() {
+        assertEquals(AsciiDoctorEditorValidationErrorLevel.ERROR, AsciiDoctorEditorValidationErrorLevel.fromId("illegal-value"));
+    }
 }

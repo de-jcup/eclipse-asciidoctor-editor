@@ -33,14 +33,14 @@ public class AsciidoctorHTMLOutputParser {
     private static final Pattern pattern = Pattern.compile("<\\s*img\\s*src\\s*=\\s*\\\"([^\\\"]*)\\\"");
 
     /**
-     * Finds all text content inside "<img src=".*"; - 
+     * Finds all text content inside "<img src=".*"; -
      * 
      * @param html
      * @return
      */
     public Set<String> findImageSourcePathes(String html) {
         Set<String> pathes = new LinkedHashSet<>();
-        if (html==null) {
+        if (html == null) {
             return pathes;
         }
         Matcher matcher = pattern.matcher(html);

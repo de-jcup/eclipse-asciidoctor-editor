@@ -30,10 +30,10 @@ import de.jcup.asciidoctoreditor.UniquePrefixProvider;
 
 public class AsciiDocFileUtils {
 
-    
-    
     /**
-     * Creates a flat filename, which contains of ${messageDigestAbsolutePath}_{fileNameWithEnding}
+     * Creates a flat filename, which contains of
+     * ${messageDigestAbsolutePath}_{fileNameWithEnding}
+     * 
      * @param file
      * @param encoder
      * @return flat filename
@@ -44,11 +44,11 @@ public class AsciiDocFileUtils {
         try {
             parentCanonicalPath = file.getParentFile().getCanonicalPath();
         } catch (IOException e) {
-            parentCanonicalPath = "not_canonical_"+System.currentTimeMillis();
+            parentCanonicalPath = "not_canonical_" + System.currentTimeMillis();
         }
-        return createEncodingSafeFileName(encoder.encode(parentCanonicalPath)+"_"+name);
+        return createEncodingSafeFileName(encoder.encode(parentCanonicalPath) + "_" + name);
     }
-    
+
     public static File createTempFileForConvertedContent(Path tempFolder, UniquePrefixProvider uniquePrefixProvider, String filename) throws IOException {
         if (tempFolder == null) {
             tempFolder = Files.createTempDirectory("__fallback__");
@@ -71,9 +71,9 @@ public class AsciiDocFileUtils {
      * @param projectId
      * @return path, never <code>null</code>
      */
-    public static Path createTempFolderForId(String projectId) {
+    public static Path createTempFolderForId(String projectId, UniquePrefixProvider provider) {
         try {
-            File newTempSubFolder = createSelfDeletingTempSubFolder(projectId, "asciidoctor-editor-temp");
+            File newTempSubFolder = createSelfDeletingTempSubFolder(projectId + "/" + provider.getUniquePrefix(), "asciidoctor-editor-temp");
             return newTempSubFolder.toPath();
         } catch (IOException e) {
             throw new IllegalStateException("Not able to create temp folder for editor", e);
@@ -98,13 +98,15 @@ public class AsciiDocFileUtils {
     }
 
     /**
-     * Creates an encoding safe filename, means filename without characters not being standard ascii chars...
+     * Creates an encoding safe filename, means filename without characters not
+     * being standard ascii chars...
+     * 
      * @param path
      * @param name
      * @return file with normalized name
      */
     public static File createEncodingSafeFile(Path path, String name) {
-       
+
         String fileEncoding = System.getProperty("file.encoding");
         if (!("UTF-8".equalsIgnoreCase(fileEncoding))) {
             /* e.g. cp1252 in windows... */
@@ -117,8 +119,8 @@ public class AsciiDocFileUtils {
         return Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
 
-    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, UniquePrefixProvider uniquePrefixProvider, File baseDir, Path tempFolder, List<AsciidoctorConfigFile> configFiles, String rootConfigFolder)
-            throws IOException {
+    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, UniquePrefixProvider uniquePrefixProvider, File baseDir, Path tempFolder,
+            List<AsciidoctorConfigFile> configFiles, String rootConfigFolder) throws IOException {
         /* @formatter:off
          * 
          * Issue:https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/193
@@ -131,7 +133,7 @@ public class AsciiDocFileUtils {
          * @formatter:on
          */
         File hiddenEditorFile = createEncodingSafeFile(tempFolder, uniquePrefixProvider.getUniquePrefix() + "_hidden-editorfile_" + asciidoctorFile.getName());
-        
+
         try {
             String relativePath = calculatePathToFileFromBase(asciidoctorFile, baseDir);
             StringBuilder sb = new StringBuilder();
@@ -144,7 +146,7 @@ public class AsciiDocFileUtils {
             sb.append("// rootConfigFolder: ").append(rootConfigFolder).append("\n");
             /** append config file information */
             int fc = 1;
-            for (AsciidoctorConfigFile configFile: configFiles){
+            for (AsciidoctorConfigFile configFile : configFiles) {
                 sb.append("\n// config file:").append(fc++).append(", location=").append(configFile.getLocation()).append("\n");
                 sb.append(configFile.getContentCustomized());
             }
@@ -154,8 +156,8 @@ public class AsciiDocFileUtils {
             hiddenEditorFile.deleteOnExit();
         } catch (NotInsideCurrentBaseDirException e) {
             /*
-             * fallback to orign file - maybe something does not work but at
-             * least content will be shown!
+             * fallback to orign file - maybe something does not work but at least content
+             * will be shown!
              */
             logAdapter.logWarn("File not in current base dir so copied origin as hidden file:" + asciidoctorFile.getAbsolutePath());
             FileUtils.copyFile(asciidoctorFile, hiddenEditorFile);

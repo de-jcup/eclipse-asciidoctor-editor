@@ -18,36 +18,29 @@ package de.jcup.asciidoctoreditor.preferences;
 /**
  * Constant definitions for plug-in preferences
  */
-public enum AsciiDoctorPlantUMLEditorSyntaxColorPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled{
-	COLOR_PLANTUML_KEYWORD("colorPlantUMLKeyword", "Keywords"),
-	COLOR_PLANTUML_NORMAL_TEXT("colorPlantUMLNormalText","Normal text"),
-	COLOR_PLANTUML_PREPROCESSOR("colorPlantUMLPreprocessor", "Preprocessor"),
-	COLOR_PLANTUML_DOUBLESTRING("colorPlantUMLDoubleString", "Strings"),
-	COLOR_PLANTUML_COLOR("colorPlantUMLColor","Colors"),
-	COLOR_PLANTUML_NOTE("colorPlantUMLNote", "Notes"),
-	COLOR_PLANTUML_COMMENT("colorPlantUMLComment", "Comments"),
-	COLOR_PLANTUML_TYPE("colorPlantUMLType","Types"),
-	COLOR_PLANTUML_SKINPARAMETER("colorPlantUMLSkinparameter","Skin parameters"),
-	COLOR_PLANTUML_DIVIDER("colorPlantUMLDivider","Dividers"),
-	COLOR_PLANTUML_ARROW("colorPlantUMLArrow","Arrows"),
-	COLOR_PLANTUML_LABEL("colorPlantUMLLabel","Labels"),
-	
-	;
+public enum AsciiDoctorPlantUMLEditorSyntaxColorPreferenceConstants implements PreferenceIdentifiable, PreferenceLabeled {
+    COLOR_PLANTUML_KEYWORD("colorPlantUMLKeyword", "Keywords"), COLOR_PLANTUML_NORMAL_TEXT("colorPlantUMLNormalText", "Normal text"),
+    COLOR_PLANTUML_PREPROCESSOR("colorPlantUMLPreprocessor", "Preprocessor"), COLOR_PLANTUML_DOUBLESTRING("colorPlantUMLDoubleString", "Strings"), COLOR_PLANTUML_COLOR("colorPlantUMLColor", "Colors"),
+    COLOR_PLANTUML_NOTE("colorPlantUMLNote", "Notes"), COLOR_PLANTUML_COMMENT("colorPlantUMLComment", "Comments"), COLOR_PLANTUML_TYPE("colorPlantUMLType", "Types"),
+    COLOR_PLANTUML_SKINPARAMETER("colorPlantUMLSkinparameter", "Skin parameters"), COLOR_PLANTUML_DIVIDER("colorPlantUMLDivider", "Dividers"), COLOR_PLANTUML_ARROW("colorPlantUMLArrow", "Arrows"),
+    COLOR_PLANTUML_LABEL("colorPlantUMLLabel", "Labels"),
 
-	private String id;
-	private String labelText;
+    ;
 
-	private AsciiDoctorPlantUMLEditorSyntaxColorPreferenceConstants(String id, String labelText) {
-		this.id = id;
-		this.labelText=labelText;
-	}
+    private String id;
+    private String labelText;
 
-	public String getLabelText() {
-		return labelText;
-	}
-	
-	public String getId() {
-		return id;
-	}
+    private AsciiDoctorPlantUMLEditorSyntaxColorPreferenceConstants(String id, String labelText) {
+        this.id = id;
+        this.labelText = labelText;
+    }
+
+    public String getLabelText() {
+        return labelText;
+    }
+
+    public String getId() {
+        return id;
+    }
 
 }

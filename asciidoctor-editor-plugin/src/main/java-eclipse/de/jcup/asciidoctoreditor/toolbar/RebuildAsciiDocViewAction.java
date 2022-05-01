@@ -21,39 +21,39 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class RebuildAsciiDocViewAction extends ToolbarAction {
 
-	private static ImageDescriptor IMG_REFRESH = createToolbarImageDescriptor("refresh.png");
+    private static ImageDescriptor IMG_REFRESH = createToolbarImageDescriptor("refresh.png");
 
-	public RebuildAsciiDocViewAction(AsciiDoctorEditor editor) {
-		super(editor);
-		initUI();
-	}
+    public RebuildAsciiDocViewAction(AsciiDoctorEditor editor) {
+        super(editor);
+        initUI();
+    }
 
-	@Override
-	public void run() {
-		asciiDoctorEditor.resetCache();
-		asciiDoctorEditor.refreshAsciiDocView();
-		initUI();
-		
-	}
+    @Override
+    public void run() {
+        asciiDoctorEditor.resetCache();
+        asciiDoctorEditor.refreshAsciiDocView();
+        initUI();
 
-	private void initUI() {
-		initImage();
-		initText();
-	}
+    }
 
-	private void initImage() {
-		setImageDescriptor(IMG_REFRESH);
-	}
+    private void initUI() {
+        initImage();
+        initText();
+    }
 
-	private void initText() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Rebuild Asciidoc preview content (F5)\n\n");
-		sb.append("When to use? \n");
-		sb.append(" 1. When included files or resources have been changed outside the editor\n");
-		sb.append(" 2. You are using external browser instead of of internal view and you \n");
-		sb.append("    want to update the external view in browser - but be aware: you still have to\n");
-		sb.append("    refresh your external browser view too");
-		setText(sb.toString());
-	}
+    private void initImage() {
+        setImageDescriptor(IMG_REFRESH);
+    }
+
+    private void initText() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Rebuild Asciidoc preview content (F5)\n\n");
+        sb.append("When to use? \n");
+        sb.append(" 1. When included files or resources have been changed outside the editor\n");
+        sb.append(" 2. You are using external browser instead of of internal view and you \n");
+        sb.append("    want to update the external view in browser - but be aware: you still have to\n");
+        sb.append("    refresh your external browser view too");
+        setText(sb.toString());
+    }
 
 }

@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.handlers;
+package de.jcup.asciidoctoreditor.handlers;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -24,26 +24,25 @@ import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public abstract class AbstractAsciiDoctorEditorHandler extends AbstractHandler {
 
-	public AbstractAsciiDoctorEditorHandler() {
-		super();
-	}
+    public AbstractAsciiDoctorEditorHandler() {
+        super();
+    }
 
-	/**
-	 * Execute something by using gradle editor instance
-	 * @param asciidoctorEditor - never <code>null</code>
-	 */
-	protected abstract void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor);
+    /**
+     * Execute something by using gradle editor instance
+     * 
+     * @param asciidoctorEditor - never <code>null</code>
+     */
+    protected abstract void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor);
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		AsciiDoctorEditor editor = AsciiDoctorEditorUtil.findActiveAsciidoctorEditorOrNull();
-		if (editor==null) {
-		    return null;
-		}
-		executeOnAsciiDoctorEditor(editor);
-		return null;
-	}
-
-    
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        AsciiDoctorEditor editor = AsciiDoctorEditorUtil.findActiveAsciidoctorEditorOrNull();
+        if (editor == null) {
+            return null;
+        }
+        executeOnAsciiDoctorEditor(editor);
+        return null;
+    }
 
 }

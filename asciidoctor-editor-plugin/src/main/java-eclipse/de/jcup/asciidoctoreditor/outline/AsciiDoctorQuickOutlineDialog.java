@@ -41,90 +41,88 @@ import de.jcup.asciidoctoreditor.ui.AbstractTreeViewerFilter;
  */
 public class AsciiDoctorQuickOutlineDialog extends AbstractFilterableTreeQuickDialog<Item> {
 
-	private static final int MIN_WIDTH = 400;
-	private static final int MIN_HEIGHT = 300;
+    private static final int MIN_WIDTH = 400;
+    private static final int MIN_HEIGHT = 300;
 
-	private AsciiDoctorEditor editor;
+    private AsciiDoctorEditor editor;
 
-	/**
-	 * Creates a quick outline dialog
-	 * 
-	 * @param adaptable
-	 *            an adapter which should be able to provide a tree content
-	 *            provider and gradle editor. If gradle editor is not set a
-	 *            selected item will only close the dialog but do not select
-	 *            editor parts..
-	 * @param parent
-	 *            shell to use is null the outline will have no content! If the
-	 *            gradle editor is null location setting etc. will not work.
-	 * @param infoText
-	 *            information to show at bottom of dialog
-	 */
-	public AsciiDoctorQuickOutlineDialog(IAdaptable adaptable, Shell parent, String infoText) {
-		super(adaptable, parent, "AsciiDoctorWrapper quick outline", MIN_WIDTH, MIN_HEIGHT, infoText);
-		this.editor = adaptable.getAdapter(AsciiDoctorEditor.class);
-	}
+    /**
+     * Creates a quick outline dialog
+     * 
+     * @param adaptable an adapter which should be able to provide a tree content
+     *                  provider and gradle editor. If gradle editor is not set a
+     *                  selected item will only close the dialog but do not select
+     *                  editor parts..
+     * @param parent    shell to use is null the outline will have no content! If
+     *                  the gradle editor is null location setting etc. will not
+     *                  work.
+     * @param infoText  information to show at bottom of dialog
+     */
+    public AsciiDoctorQuickOutlineDialog(IAdaptable adaptable, Shell parent, String infoText) {
+        super(adaptable, parent, "AsciiDoctorWrapper quick outline", MIN_WIDTH, MIN_HEIGHT, infoText);
+        this.editor = adaptable.getAdapter(AsciiDoctorEditor.class);
+    }
 
-	@Override
-	protected ITreeContentProvider createTreeContentProvider(IAdaptable adaptable) {
-		return adaptable.getAdapter(ITreeContentProvider.class);
-	}
+    @Override
+    protected ITreeContentProvider createTreeContentProvider(IAdaptable adaptable) {
+        return adaptable.getAdapter(ITreeContentProvider.class);
+    }
 
-	@Override
-	protected void openSelectionImpl(ISelection selection, String filterText) {
-		if (editor == null) {
-			return;
-		}
-		AsciiDoctorContentOutlinePage outlinePage = editor.getOutlineSupport().getOutlinePage();
-		boolean outlineAvailable = outlinePageVisible(outlinePage);
-		if (outlineAvailable){
-			/*
-			 * select part in editor - grab focus not necessary, because this will
-			 * close quick outline dialog as well, so editor will get focus back
-			 */
-			editor.getOutlineSupport().openSelectedTreeItemInEditor(selection, false);
-		}else{
-			outlinePage.setSelection(selection);
-		}
-		
-	}
+    @Override
+    protected void openSelectionImpl(ISelection selection, String filterText) {
+        if (editor == null) {
+            return;
+        }
+        ScriptItemContentOutlinePage outlinePage = editor.getOutlineSupport().getOutlinePage();
+        boolean outlineAvailable = outlinePageVisible(outlinePage);
+        if (outlineAvailable) {
+            /*
+             * select part in editor - grab focus not necessary, because this will close
+             * quick outline dialog as well, so editor will get focus back
+             */
+            editor.getOutlineSupport().openSelectedTreeItemInEditor(selection, false);
+        } else {
+            outlinePage.setSelection(selection);
+        }
 
-	protected boolean outlinePageVisible(AsciiDoctorContentOutlinePage outlinePage) {
-		Control control = outlinePage.getControl();
-		/* when control is not available - means outline view is not visible, */
-		boolean controlAvailable = control==null || control.isDisposed() || ! control.isVisible();
-		return controlAvailable;
-	}
+    }
 
-	@Override
-	protected AbstractUIPlugin getUIPlugin() {
-		AsciiDoctorEditorActivator editorActivator = AsciiDoctorEditorActivator.getDefault();
-		return editorActivator;
-	}
+    protected boolean outlinePageVisible(ScriptItemContentOutlinePage outlinePage) {
+        Control control = outlinePage.getControl();
+        /* when control is not available - means outline view is not visible, */
+        boolean controlAvailable = control == null || control.isDisposed() || !control.isVisible();
+        return controlAvailable;
+    }
 
-	@Override
-	protected Item getInitialSelectedItem() {
-		if (editor == null) {
-			return null;
-		}
-		Item item = editor.getItemAtCarretPosition();
-		return item;
-	}
+    @Override
+    protected AbstractUIPlugin getUIPlugin() {
+        AsciiDoctorEditorActivator editorActivator = AsciiDoctorEditorActivator.getDefault();
+        return editorActivator;
+    }
 
-	@Override
-	protected FilterPatternMatcher<Item> createItemMatcher() {
-		return new ItemTextMatcher();
-	}
+    @Override
+    protected Item getInitialSelectedItem() {
+        if (editor == null) {
+            return null;
+        }
+        Item item = editor.getItemAtCarretPosition();
+        return item;
+    }
 
-	@Override
-	protected IBaseLabelProvider createLabelProvider() {
-		AsciiDoctorEditorOutlineLabelProvider labelProvider = new AsciiDoctorEditorOutlineLabelProvider();
-		return new DelegatingStyledCellLabelProvider(labelProvider);
-	}
+    @Override
+    protected FilterPatternMatcher<Item> createItemMatcher() {
+        return new ItemTextMatcher();
+    }
 
-	@Override
-	protected AbstractTreeViewerFilter<Item> createFilter() {
-		return new ItemTextViewerFilter();
-	}
+    @Override
+    protected IBaseLabelProvider createLabelProvider() {
+        AsciiDoctorEditorOutlineLabelProvider labelProvider = new AsciiDoctorEditorOutlineLabelProvider();
+        return new DelegatingStyledCellLabelProvider(labelProvider);
+    }
+
+    @Override
+    protected AbstractTreeViewerFilter<Item> createFilter() {
+        return new ItemTextViewerFilter();
+    }
 
 }

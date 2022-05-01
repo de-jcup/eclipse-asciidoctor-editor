@@ -15,7 +15,6 @@
  */
 package de.jcup.asciidoctoreditor.codeassist;
 
-
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants.*;
 
 import java.util.ArrayList;
@@ -38,36 +37,36 @@ import de.jcup.eclipse.commons.codeassist.SimpleWordCodeCompletion;
 import de.jcup.eclipse.commons.codeassist.SimpleWordListBuilder;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
-public class AsciidocKeywordContentAssistSupport extends ProposalProviderContentAssistSupport{
-    
+public class AsciidocKeywordContentAssistSupport extends ProposalProviderContentAssistSupport {
+
     private static final SimpleWordListBuilder WORD_LIST_BUILDER = new SimpleWordListBuilder();
     private static final NoWordListBuilder NO_WORD_BUILDER = new NoWordListBuilder();
 
     private AsciidocKeywordLabelProvider labelProvider = new AsciidocKeywordLabelProvider();
     private SimpleWordCodeCompletion simpleWordCompletion;
-    
+
     public AsciidocKeywordContentAssistSupport(PluginContextProvider provider) {
         super(provider, new SimpleWordCodeCompletion());
-        this.simpleWordCompletion=(SimpleWordCodeCompletion) completion;
+        this.simpleWordCompletion = (SimpleWordCodeCompletion) completion;
     }
-    
+
     @Override
     protected ProposalInfoProvider createProposalInfoBuilder() {
         return new ProposalInfoProvider() {
-            
+
             @Override
             public Object getProposalInfo(IProgressMonitor monitor, Object target) {
-                if (! (target instanceof String)){
+                if (!(target instanceof String)) {
                     return null;
                 }
                 String word = (String) target;
-                for (DocumentKeyWord keyword: DocumentKeyWords.getAllExcedptIncludes()) {
-                    
-                    if (word.equalsIgnoreCase(keyword.getText())){
+                for (DocumentKeyWord keyword : DocumentKeyWords.getAllExcedptIncludes()) {
+
+                    if (word.equalsIgnoreCase(keyword.getText())) {
                         return keyword.getTooltip();
                     }
                 }
-                
+
                 return null;
             }
 
@@ -77,7 +76,7 @@ public class AsciidocKeywordContentAssistSupport extends ProposalProviderContent
             }
         };
     }
-    
+
     @Override
     protected void prepareCompletion(ProposalProviderSupport completion) {
 
@@ -102,49 +101,49 @@ public class AsciidocKeywordContentAssistSupport extends ProposalProviderContent
     }
 
     protected void addKeyWord(DocumentKeyWord keyword) {
-        if (keyword==AsciiDoctorIncludeKeywords.INCLUDE){
-            /* is done by snippet*/
+        if (keyword == AsciiDoctorIncludeKeywords.INCLUDE) {
+            /* is done by snippet */
             return;
         }
         String text = keyword.getText();
-        if (keyword instanceof StartLineAndHavingDoubleColonsDocumentKeyword){
-            if (keyword instanceof AsciiDoctorIncludeKeywords){
-                text+="fileName";
-                if (keyword==AsciiDoctorIncludeKeywords.PLANTUML){
-                    /* we add different examples*/
-                    simpleWordCompletion.add(text+".plantuml[format=svg, title=\"title\"]");
-                    simpleWordCompletion.add(text+".plantuml[]");
-                    simpleWordCompletion.add(text+".puml[]");
-                    simpleWordCompletion.add(text+".iuml[]");
-                    simpleWordCompletion.add(text+".pu[]");
+        if (keyword instanceof StartLineAndHavingDoubleColonsDocumentKeyword) {
+            if (keyword instanceof AsciiDoctorIncludeKeywords) {
+                text += "fileName";
+                if (keyword == AsciiDoctorIncludeKeywords.PLANTUML) {
+                    /* we add different examples */
+                    simpleWordCompletion.add(text + ".plantuml[format=svg, title=\"title\"]");
+                    simpleWordCompletion.add(text + ".plantuml[]");
+                    simpleWordCompletion.add(text + ".puml[]");
+                    simpleWordCompletion.add(text + ".iuml[]");
+                    simpleWordCompletion.add(text + ".pu[]");
                     return;
-                }else if (keyword==AsciiDoctorIncludeKeywords.DITAA){
-                    /* we add different examples*/
-                    simpleWordCompletion.add(text+".ditaa[]");
-                    simpleWordCompletion.add(text+".ditaa[format=png, title=\"title\"]");
+                } else if (keyword == AsciiDoctorIncludeKeywords.DITAA) {
+                    /* we add different examples */
+                    simpleWordCompletion.add(text + ".ditaa[]");
+                    simpleWordCompletion.add(text + ".ditaa[format=png, title=\"title\"]");
                     return;
-                } 
-                
-            }else if (keyword==AsciiDoctorCommandKeyWords.IFDEF || keyword==AsciiDoctorCommandKeyWords.IFNDEF){
-                text+="attributeName";
-            }else if (keyword==AsciiDoctorCommandKeyWords.IMAGE){
+                }
+
+            } else if (keyword == AsciiDoctorCommandKeyWords.IFDEF || keyword == AsciiDoctorCommandKeyWords.IFNDEF) {
+                text += "attributeName";
+            } else if (keyword == AsciiDoctorCommandKeyWords.IMAGE) {
 //              == PNG Image
 //              image::asciidoctor-editor-logo.png[title="AsciiDoctor Editor Logo" opts="inline"]
 //              == SVG image
 //              image::if_7_Pen_write_writer_2991007.svg[title="A SVG pen for writers...." opts="interactive,inline", 200,200]
-                /* we add different examples*/
-                text+="imageName";
-                simpleWordCompletion.add(text+".png[]");
-                simpleWordCompletion.add(text+".png[title=\"title\" opts=\"inline\"]");
-                simpleWordCompletion.add(text+".svg[title=\"title\" title=\"title\" opts=\"interactive,inline\" width=\"200\" height=\"200\"]");
-                simpleWordCompletion.add(text+".svg[title=\"title\" opts=\"interactive,inline\"]");
+                /* we add different examples */
+                text += "imageName";
+                simpleWordCompletion.add(text + ".png[]");
+                simpleWordCompletion.add(text + ".png[title=\"title\" opts=\"inline\"]");
+                simpleWordCompletion.add(text + ".svg[title=\"title\" title=\"title\" opts=\"interactive,inline\" width=\"200\" height=\"200\"]");
+                simpleWordCompletion.add(text + ".svg[title=\"title\" opts=\"interactive,inline\"]");
                 return;
             }
-            text+="[]";
+            text += "[]";
         }
         simpleWordCompletion.add(text);
     }
-    
+
     private static class NoWordListBuilder implements WordListBuilder {
 
         private NoWordListBuilder() {
@@ -159,7 +158,5 @@ public class AsciidocKeywordContentAssistSupport extends ProposalProviderContent
         }
 
     }
-    
-    
-    
+
 }

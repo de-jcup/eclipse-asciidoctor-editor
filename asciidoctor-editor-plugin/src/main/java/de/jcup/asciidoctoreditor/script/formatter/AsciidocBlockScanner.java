@@ -32,7 +32,7 @@ public class AsciidocBlockScanner {
                 current.append("\n");
             }
             if (type.isMultipleLines()) {
-                if (asciidocFormatBlock== null || asciidocFormatBlock.blockType == null) {
+                if (asciidocFormatBlock == null || asciidocFormatBlock.blockType == null) {
                     /* means not inside a block */
                     closeOldBlockAndStartBlock(type);
                     return;
@@ -94,17 +94,17 @@ public class AsciidocBlockScanner {
 
     public List<AsciidocFormatBlock> scan(String source) {
         Context context = new Context();
-        
+
         StringBuilder sb = new StringBuilder();
-        for (char c: source.toCharArray()) {
-            if (c=='\n') {
+        for (char c : source.toCharArray()) {
+            if (c == '\n') {
                 context.addLine(sb.toString(), true);
-                sb=new StringBuilder();
+                sb = new StringBuilder();
                 continue;
             }
             sb.append(c);
         }
-        if (sb.length()>0 ) {
+        if (sb.length() > 0) {
             context.addLine(sb.toString(), false);
         }
         context.closeBlock();

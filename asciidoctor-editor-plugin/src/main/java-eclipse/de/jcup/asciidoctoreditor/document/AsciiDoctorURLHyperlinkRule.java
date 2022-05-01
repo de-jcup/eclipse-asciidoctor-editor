@@ -22,84 +22,84 @@ import org.eclipse.jface.text.rules.Token;
 
 public class AsciiDoctorURLHyperlinkRule implements IPredicateRule {
 
-	private IToken successToken;
-	private char[] startsWith;
+    private IToken successToken;
+    private char[] startsWith;
 
-	public AsciiDoctorURLHyperlinkRule(IToken token) {
-		this.successToken = token;
-		startsWith="http".toCharArray();
-	}
+    public AsciiDoctorURLHyperlinkRule(IToken token) {
+        this.successToken = token;
+        startsWith = "http".toCharArray();
+    }
 
-	@Override
-	public IToken evaluate(ICharacterScanner scanner) {
-		return evaluate(scanner, false);
-	}
+    @Override
+    public IToken evaluate(ICharacterScanner scanner) {
+        return evaluate(scanner, false);
+    }
 
-	@Override
-	public IToken getSuccessToken() {
-		return successToken;
-	}
+    @Override
+    public IToken getSuccessToken() {
+        return successToken;
+    }
 
-	@Override
-	public IToken evaluate(ICharacterScanner scanner, boolean resume) {
-		int count = 0;
-		for (int i = 0; i < startsWith.length; i++) {
-			int c = scanner.read();
-			count++;
-			if (startsWith[i] != c) {
-				return resetScannerAndReturnUndefined(scanner, count);
-			}
-		}
-		/* found start word */
-		
-		/* check https://*/
-		int x = scanner.read();
-		count++;
-		if ('s'==x){
-			x= scanner.read();
-			count ++;
-		}
-		if (x!=':'){
-			return resetScannerAndReturnUndefined(scanner, count);
-		}
-		x= scanner.read();
-		count ++;
-		if (x!='/'){
-			return resetScannerAndReturnUndefined(scanner, count);
-		}
-		x= scanner.read();
-		count ++;
-		if (x!='/'){
-			return resetScannerAndReturnUndefined(scanner, count);
-		}
-		
-		int c = -1;
-		while (true) {
-			c = scanner.read();
-			count++;
-			if (c == ICharacterScanner.EOF  || c=='\n' || Character.isWhitespace(c)|| c=='[') {
-				/* end of file */
-				scanner.unread();
-				return getSuccessToken();
-			}
-		}
-	}
+    @Override
+    public IToken evaluate(ICharacterScanner scanner, boolean resume) {
+        int count = 0;
+        for (int i = 0; i < startsWith.length; i++) {
+            int c = scanner.read();
+            count++;
+            if (startsWith[i] != c) {
+                return resetScannerAndReturnUndefined(scanner, count);
+            }
+        }
+        /* found start word */
 
-	private IToken resetScannerAndReturnUndefined(ICharacterScanner scanner, int count) {
-		while (count > 0) {
-			scanner.unread();
-			count--;
-		}
-		return Token.UNDEFINED;
-	}
+        /* check https:// */
+        int x = scanner.read();
+        count++;
+        if ('s' == x) {
+            x = scanner.read();
+            count++;
+        }
+        if (x != ':') {
+            return resetScannerAndReturnUndefined(scanner, count);
+        }
+        x = scanner.read();
+        count++;
+        if (x != '/') {
+            return resetScannerAndReturnUndefined(scanner, count);
+        }
+        x = scanner.read();
+        count++;
+        if (x != '/') {
+            return resetScannerAndReturnUndefined(scanner, count);
+        }
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append(":starsWith='");
-		sb.append(startsWith);
-		return sb.toString();
-	}
+        int c = -1;
+        while (true) {
+            c = scanner.read();
+            count++;
+            if (c == ICharacterScanner.EOF || c == '\n' || Character.isWhitespace(c) || c == '[') {
+                /* end of file */
+                scanner.unread();
+                return getSuccessToken();
+            }
+        }
+    }
+
+    private IToken resetScannerAndReturnUndefined(ICharacterScanner scanner, int count) {
+        while (count > 0) {
+            scanner.unread();
+            count--;
+        }
+        return Token.UNDEFINED;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(":starsWith='");
+        sb.append(startsWith);
+        return sb.toString();
+    }
 
 }

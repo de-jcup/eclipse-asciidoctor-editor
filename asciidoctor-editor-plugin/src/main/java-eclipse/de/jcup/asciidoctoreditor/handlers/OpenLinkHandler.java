@@ -19,11 +19,11 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class OpenLinkHandler extends AbstractAsciiDoctorEditorHandler {
 
-	public static final String COMMAND_ID = "asciidoctoreditor.editor.commands.openlink";
+    public static final String COMMAND_ID = "asciidoctoreditor.editor.commands.openlink";
 
-	@Override
-	protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
-		asciidoctorEditor.getLinkSupport().openHyperlinkAtCurrentCursorPosition();
-	}
+    @Override
+    protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
+        asciidoctorEditor.getLinkSupport().openHyperlinkAtCurrentCursorPosition();
+    }
 
 }

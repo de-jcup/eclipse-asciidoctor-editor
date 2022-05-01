@@ -1,0 +1,11 @@
+== Simple test file
+
+`document-with-diagram-no-includes-itself.adoc`
+
+[NOTE]
+====
+here we try to include a plantuml file which does itself include others
+====
+
+
+plantuml::diagram-without-other-includes.puml[title="title"]

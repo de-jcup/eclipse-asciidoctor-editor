@@ -33,11 +33,11 @@ public class AsciiDoctorConsoleFileHyperlink implements IHyperlink {
 
     @Override
     public void linkActivated() {
-        if (file==null) {
+        if (file == null) {
             return;
         }
         if (!file.exists()) {
-            MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Link problem", "The file "+file.getAbsolutePath()+" does not exist!");
+            MessageDialog.openWarning(EclipseUtil.getActiveWorkbenchShell(), "Link problem", "The file " + file.getAbsolutePath() + " does not exist!");
             return;
         }
         try {

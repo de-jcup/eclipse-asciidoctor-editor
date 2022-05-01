@@ -20,20 +20,34 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
+import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorConfigFile;
+import de.jcup.asp.api.asciidoc.AsciidocOption;
 
 public class AsciiDoctorProviderContext {
 
     private LogAdapter logAdapter;
     private File asciidocFile;
+    /**
+     * Base dir used for asciidoctor rendering - is either the project base dir, or
+     * a configured directory by a asciidoctorconfig file using "base_dir" option
+     * attribute
+     */
     private File baseDir;
+
+    /**
+     * The project base directory. it is calculated/estimated by the editor plugin
+     */
+    private File projectBaseDir;
+
     private Path outputFolder;
     private boolean tocVisible;
     private AsciiDoctorAdapterProvider provider;
@@ -101,8 +115,23 @@ public class AsciiDoctorProviderContext {
     }
 
     public void setAsciidocFile(File asciidocFile) {
+        if (this.asciidocFile == asciidocFile) {
+            return;
+        }
         this.asciidocFile = asciidocFile;
-        this.baseDir = baseDirProvider.findBaseDir();
+        this.projectBaseDir = baseDirProvider.findProjectBaseDir();
+        getAttributesProvider().reset();
+        Map<String, Object> attributes = getAttributesProvider().getCachedAttributes();
+        Object baseDirFromAttributesObj = attributes.get(AsciidocOption.BASEDIR.getKey());
+        if (baseDirFromAttributesObj instanceof String) {
+            String baseDirFromAttributes = baseDirFromAttributesObj.toString();
+            this.baseDir = new File(baseDirFromAttributes);
+            if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
+                System.out.println("Using base dir from attributes:" + baseDirFromAttributes);
+            }
+        } else {
+            this.baseDir = projectBaseDir;
+        }
     }
 
     public void setImageHandlingMode(ImageHandlingMode imageHandlingMode) {
@@ -136,7 +165,9 @@ public class AsciiDoctorProviderContext {
      * recalculated on next rendering time fo editor content
      */
     public void resetCaches() {
+        this.asciidocFile = null;
         this.baseDir = null;
+        this.projectBaseDir = null;
         this.outputFolder = null;
 
         for (AbstractAsciiDoctorProvider provider : providers) {
@@ -160,9 +191,16 @@ public class AsciiDoctorProviderContext {
         return tocVisible;
     }
 
+    public File getProjectBaseDir() {
+        if (projectBaseDir == null) {
+            projectBaseDir = baseDirProvider.findProjectBaseDir();
+        }
+        return projectBaseDir;
+    }
+
     public File getBaseDir() {
         if (baseDir == null) {
-            baseDir = baseDirProvider.findBaseDir();
+            baseDir = baseDirProvider.findProjectBaseDir();
         }
         return baseDir;
     }
@@ -247,31 +285,34 @@ public class AsciiDoctorProviderContext {
     }
 
     /**
-     * Set last first inside list the most far one (near parent), last one the nearest!
+     * Set last first inside list the most far one (near parent), last one the
+     * nearest!
+     * 
      * @param configFiles
      */
     public void setConfigFiles(List<AsciidoctorConfigFile> configFiles) {
         this.configFiles.clear();
         this.configFiles.addAll(configFiles);
     }
-    
+
     /**
      * 
-     * @return config files : first one inside list the most far one (near parent), last one the nearest!
+     * @return config files : first one inside list the most far one (near parent),
+     *         last one the nearest!
      */
     public List<AsciidoctorConfigFile> getConfigFiles() {
         return configFiles;
     }
-    
+
     public void setConfigRoot(File configRoot) {
-        if (configRoot==null) {
+        if (configRoot == null) {
             configRoot = getBaseDir();
         }
-        
+
         this.configRoot = configRoot;
         this.configFileSupport = new AsciiDocConfigFileSupport(configRoot.toPath());
     }
-    
+
     public File getConfigRoot() {
         return configRoot;
     }

@@ -54,7 +54,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		expectedException.expect(IllegalStateException.class);
 		
 		/* execute */
-		providerToTest.findBaseDir();
+		providerToTest.findProjectBaseDir();
 	}
 	
 	@Test
@@ -67,7 +67,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
         when(context.getAsciiDocFile()).thenReturn(asciidocFile);
         
         /* execute */
-        File baseDir = providerToTest.findBaseDir();
+        File baseDir = providerToTest.findProjectBaseDir();
 
         /* test */
         assertNotNull(baseDir);
@@ -84,7 +84,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
         when(context.getAsciiDocFile()).thenReturn(asciidocFile);
         
         /* execute */
-        baseDir = providerToTest.findBaseDir();
+        baseDir = providerToTest.findProjectBaseDir();
 
         /* test */
         assertNotNull(baseDir);
@@ -102,7 +102,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		File baseDir = providerToTest.findBaseDir();
+		File baseDir = providerToTest.findProjectBaseDir();
 
 		/* test */
 		assertNotNull(baseDir);
@@ -119,7 +119,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		File baseDir = providerToTest.findBaseDir();
+		File baseDir = providerToTest.findProjectBaseDir();
 
 		/* test */
 		assertNotNull(baseDir);
@@ -141,7 +141,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		providerToTest.findBaseDir();
+		providerToTest.findProjectBaseDir();
 
 	}
 	
@@ -157,7 +157,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
 		
 		/* execute */
-		File baseDir = providerToTest.findBaseDir();
+		File baseDir = providerToTest.findProjectBaseDir();
 		
 		/* test */
 		File problematic = new File(System.getProperty("java.io.tmpdir"));

@@ -20,31 +20,31 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class JumpToTopOfAsciiDocViewAction extends ToolbarAction {
-	
-	private static ImageDescriptor IMG_REFRESH = createToolbarImageDescriptor("jump_to_top.png");
 
-		public JumpToTopOfAsciiDocViewAction(AsciiDoctorEditor editor) {
-			super(editor);
-			initUI();
-		}
+    private static ImageDescriptor IMG_REFRESH = createToolbarImageDescriptor("jump_to_top.png");
 
-		@Override
-		public void run() {
-			asciiDoctorEditor.navgigateToTopOfView();
-			
-		}
+    public JumpToTopOfAsciiDocViewAction(AsciiDoctorEditor editor) {
+        super(editor);
+        initUI();
+    }
 
-		private void initUI() {
-			initImage();
-			initText();
-		}
+    @Override
+    public void run() {
+        asciiDoctorEditor.navgigateToTopOfView();
 
-		private void initImage() {
-			setImageDescriptor(IMG_REFRESH);
-		}
+    }
 
-		private void initText() {
-			setText("Jump to top of ascii view");
-		}
+    private void initUI() {
+        initImage();
+        initText();
+    }
 
-	}
+    private void initImage() {
+        setImageDescriptor(IMG_REFRESH);
+    }
+
+    private void initText() {
+        setText("Jump to top of ascii view");
+    }
+
+}

@@ -13,16 +13,16 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.document;
+package de.jcup.asciidoctoreditor.document;
 
 public class AsciiDoctorPlantUMLPartionerFactory {
 
-	public static AsciiDoctorPartitioner create(){
-		String[] legalContentTypes = AsciiDoctorPlantUMLDocumentIdentifiers.allIdsToStringArray();
+    public static AsciiDoctorPartitioner create() {
+        String[] legalContentTypes = AsciiDoctorPlantUMLDocumentIdentifiers.allIdsToStringArray();
 
-		AsciiDoctorPlantUMLDocumentPartitionScanner scanner = new AsciiDoctorPlantUMLDocumentPartitionScanner();
-		AsciiDoctorPartitioner partitioner = new AsciiDoctorPartitioner(scanner, legalContentTypes);
-		
-		return partitioner;
-	}
+        AsciiDoctorPlantUMLDocumentPartitionScanner scanner = new AsciiDoctorPlantUMLDocumentPartitionScanner();
+        AsciiDoctorPartitioner partitioner = new AsciiDoctorPartitioner(scanner, legalContentTypes);
+
+        return partitioner;
+    }
 }

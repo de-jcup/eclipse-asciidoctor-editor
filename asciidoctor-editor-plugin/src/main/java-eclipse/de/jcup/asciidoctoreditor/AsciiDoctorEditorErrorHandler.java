@@ -13,24 +13,24 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor;
 
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
-public class AsciiDoctorEditorErrorHandler{
+public class AsciiDoctorEditorErrorHandler {
 
-	public static AsciiDoctorEditorErrorHandler INSTANCE = new AsciiDoctorEditorErrorHandler();
-	
-	AsciiDoctorEditorErrorHandler(){
-		
-	}
-	
-	public void handleError(String message, Throwable t) {
-		AsciiDoctorEditorUtil.logError(message, t);
-	}
+    public static AsciiDoctorEditorErrorHandler INSTANCE = new AsciiDoctorEditorErrorHandler();
 
-	public void handleError(String message) {
-		AsciiDoctorEditorUtil.logError(message, null);		
-	}
+    AsciiDoctorEditorErrorHandler() {
+
+    }
+
+    public void handleError(String message, Throwable t) {
+        AsciiDoctorEditorUtil.logError(message, t);
+    }
+
+    public void handleError(String message) {
+        AsciiDoctorEditorUtil.logError(message, null);
+    }
 
 }

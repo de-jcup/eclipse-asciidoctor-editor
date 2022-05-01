@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.outline;
+package de.jcup.asciidoctoreditor.outline;
 
 import static de.jcup.asciidoctoreditor.ui.AsciidoctorIconConstants.*;
 
@@ -33,101 +33,98 @@ import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class AsciiDoctorEditorOutlineLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IColorProvider {
 
-	private Styler outlineItemTypeStyler = new Styler() {
+    private Styler outlineItemTypeStyler = new Styler() {
 
-		@Override
-		public void applyStyles(TextStyle textStyle) {
-			textStyle.foreground = getColorManager().getColor(AsciiDoctorEditorColorConstants.OUTLINE_ITEM__TYPE);
-		}
-	};
+        @Override
+        public void applyStyles(TextStyle textStyle) {
+            textStyle.foreground = getColorManager().getColor(AsciiDoctorEditorColorConstants.OUTLINE_ITEM__TYPE);
+        }
+    };
 
-	@Override
-	public Color getBackground(Object element) {
-		return null;
-	}
-
-	@Override
-	public Color getForeground(Object element) {
-		return null;
-	}
-
-	@Override
-	public Image getImage(Object element) {
-		if (element == null){
-			return null;
-		}
-		if (element instanceof Item) {
-			Item item = (Item) element;
-
-			ItemType type = item.getItemType();
-			
-			
-			if (type == null) {
-				return null;
-			}
-
-			switch (type) {
-			case HEADLINE:
-				return getImage(PATH_OUTLINE_ICON_HEADLINE);
-			case INLINE_ANCHOR:
-				return getImage(PATH_OUTLINE_ICON_INLINE_ANCHOR);
-			case INCLUDE:
-				return getImage(PATH_OUTLINE_ICON_INCLUDE);
-			case META_ERROR:
-				return getImage(PATH_OUTLINE_ICON_ERROR);
-			case META_INFO:
-				return getImage(PATH_OUTLINE_ICON_INFO);
-			default:
-				return null;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public StyledString getStyledText(Object element) {
-		StyledString styled = new StyledString();
-		if (element == null) {
-			styled.append("null");
-		}
-		if (element instanceof Item) {
-			Item item = (Item) element;
-
-			ItemType itemType = item.getItemType();
-			if (itemType==ItemType.HEADLINE){
-				
-				StyledString typeString = new StyledString(item.getPrefix(), outlineItemTypeStyler);
-				styled.append(typeString);
-			}else if (itemType==ItemType.META_DEBUG){
-				StyledString typeString = new StyledString(item.getOffset()+": ", outlineItemTypeStyler);
-				styled.append(typeString);
-			}else if (itemType==ItemType.INLINE_ANCHOR){
-				/* no special handling */
-			}
-			String name = item.getName();
-			if (name != null) {
-				styled.append(name );//+" { ... }");
-			}
-
-		} else {
-			return styled.append(element.toString());
-		}
-
-		return styled;
-	}
-
-
-	public ColorManager getColorManager() {
-		AsciiDoctorEditorActivator editorActivator = AsciiDoctorEditorActivator.getDefault();
-		if (editorActivator == null) {
-			return ColorManager.getStandalone();
-		}
-		return editorActivator.getColorManager();
-	}
-	
-	public static final Image getImage(String path) {
-        return EclipseUtil.getImage(path, AsciiDoctorEditorActivator.PLUGIN_ID);
+    @Override
+    public Color getBackground(Object element) {
+        return null;
     }
 
+    @Override
+    public Color getForeground(Object element) {
+        return null;
+    }
+
+    @Override
+    public Image getImage(Object element) {
+        if (element == null) {
+            return null;
+        }
+        if (element instanceof Item) {
+            Item item = (Item) element;
+
+            ItemType type = item.getItemType();
+
+            if (type == null) {
+                return null;
+            }
+
+            switch (type) {
+            case HEADLINE:
+                return getImage(PATH_OUTLINE_ICON_HEADLINE);
+            case INLINE_ANCHOR:
+                return getImage(PATH_OUTLINE_ICON_INLINE_ANCHOR);
+            case INCLUDE:
+                return getImage(PATH_OUTLINE_ICON_INCLUDE);
+            case META_ERROR:
+                return getImage(PATH_OUTLINE_ICON_ERROR);
+            case META_INFO:
+                return getImage(PATH_OUTLINE_ICON_INFO);
+            default:
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public StyledString getStyledText(Object element) {
+        StyledString styled = new StyledString();
+        if (element == null) {
+            styled.append("null");
+        }
+        if (element instanceof Item) {
+            Item item = (Item) element;
+
+            ItemType itemType = item.getItemType();
+            if (itemType == ItemType.HEADLINE) {
+
+                StyledString typeString = new StyledString(item.getPrefix(), outlineItemTypeStyler);
+                styled.append(typeString);
+            } else if (itemType == ItemType.META_DEBUG) {
+                StyledString typeString = new StyledString(item.getOffset() + ": ", outlineItemTypeStyler);
+                styled.append(typeString);
+            } else if (itemType == ItemType.INLINE_ANCHOR) {
+                /* no special handling */
+            }
+            String name = item.getName();
+            if (name != null) {
+                styled.append(name);// +" { ... }");
+            }
+
+        } else {
+            return styled.append(element.toString());
+        }
+
+        return styled;
+    }
+
+    public ColorManager getColorManager() {
+        AsciiDoctorEditorActivator editorActivator = AsciiDoctorEditorActivator.getDefault();
+        if (editorActivator == null) {
+            return ColorManager.getStandalone();
+        }
+        return editorActivator.getColorManager();
+    }
+
+    public static final Image getImage(String path) {
+        return EclipseUtil.getImage(path, AsciiDoctorEditorActivator.PLUGIN_ID);
+    }
 
 }

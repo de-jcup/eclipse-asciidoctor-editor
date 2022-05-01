@@ -13,9 +13,9 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.preferences;
+package de.jcup.asciidoctoreditor.preferences;
 
 public interface PreferenceLabeled {
 
-	public String getLabelText();
+    public String getLabelText();
 }

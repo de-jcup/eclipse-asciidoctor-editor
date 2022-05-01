@@ -32,8 +32,6 @@ public class FileTreeContentProvider implements ITreeContentProvider {
         this.page = page;
         this.viewer = viewer;
     }
-    
-    
 
     @Override
     public Object[] getElements(Object inputElement) {

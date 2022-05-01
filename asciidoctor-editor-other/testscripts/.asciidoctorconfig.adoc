@@ -1,1 +1,2 @@
 :imagesdir: {asciidoctorconfigdir}/images
+:from_config: I am from `.asciidoctorconfig.adoc` 

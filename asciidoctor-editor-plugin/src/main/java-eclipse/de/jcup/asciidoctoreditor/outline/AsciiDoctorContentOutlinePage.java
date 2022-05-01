@@ -41,7 +41,7 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
-public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements IDoubleClickListener {
+public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements IDoubleClickListener, ScriptItemContentOutlinePage {
     private static final ImageDescriptor IMG_DESC_GROUPED = createOutlineImageDescriptor("grouped.png");;
     private static final ImageDescriptor IMG_DESC_NOT_GROUPED = createOutlineImageDescriptor("not_grouped.png");;
     private static final ImageDescriptor IMG_DESC_LINKED = createOutlineImageDescriptor("synced.png");
@@ -64,7 +64,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
         this.contentProvider.setGroupingEnabled(AsciiDoctorEditorPreferences.getInstance().isGroupingInOutlineEnabledPerDefault());
     }
 
-    public AsciiDoctorEditorTreeContentProvider getContentProvider() {
+    public AsciiDoctorEditorTreeContentProvider getScriptItemTreeContentProvider() {
         return contentProvider;
     }
 
@@ -175,8 +175,8 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
             return;
         }
         ignoreNextSelectionEvents = true;
-        if (contentProvider instanceof AsciiDoctorEditorTreeContentProvider) {
-            AsciiDoctorEditorTreeContentProvider provider = (AsciiDoctorEditorTreeContentProvider) contentProvider;
+        if (contentProvider instanceof ScriptItemTreeContentProvider) {
+            ScriptItemTreeContentProvider provider = (ScriptItemTreeContentProvider) contentProvider;
             Item item = provider.tryToFindByOffset(caretOffset);
             if (item != null) {
                 StructuredSelection selection = new StructuredSelection(item);
@@ -249,7 +249,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 
             initText();
             initImage();
-            
+
             if (editor == null) {
                 return;
             }
@@ -300,7 +300,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
     protected ImageDescriptor getImageDescriptionNotLinked() {
         return IMG_DESC_NOT_LINKED;
     }
-    
+
     protected ImageDescriptor getImageDescriptionForGrouped() {
         return IMG_DESC_GROUPED;
     }

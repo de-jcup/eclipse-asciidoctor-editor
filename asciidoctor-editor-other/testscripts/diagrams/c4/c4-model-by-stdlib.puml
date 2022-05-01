@@ -1,0 +1,16 @@
+@startuml
+
+'see https://github.com/plantuml-stdlib/C4-PlantUML
+
+!include <C4/C4_Container>
+
+Person(personAlias, "Person Label", "Optional Person Description")
+Container(containerAlias, "Container Label", "Technology", "Optional Container Description")
+System(systemAlias, "System Label", "Optional System Description")
+
+System_Ext(extSystemAlias, "System_Ext Label", "Optional System_Ext Description")
+
+Rel(personAlias, containerAlias, "Rel Label", "Optional Rel Technology")
+
+Rel_U(systemAlias, extSystemAlias, "Rel_U Label", "Optional Rel_U Technology")
+@enduml

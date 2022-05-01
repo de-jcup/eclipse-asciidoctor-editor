@@ -13,10 +13,8 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.script.parser;
+package de.jcup.asciidoctoreditor.script.parser;
 
 public enum VariableState {
-	NO_ARRAY,
-	ARRAY_OPENED,
-	ARRAY_CLOSED,
+    NO_ARRAY, ARRAY_OPENED, ARRAY_CLOSED,
 }

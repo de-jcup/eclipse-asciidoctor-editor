@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -39,6 +40,7 @@ import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.PluginContentInstaller;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
+import de.jcup.asciidoctoreditor.UniqueAsciidoctorEditorId;
 import de.jcup.asciidoctoreditor.UniquePrefixProvider;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
@@ -89,7 +91,7 @@ public class AsciiDoctorWrapper {
 
             /* build options - containing attribute parameters */
             AsciiDoctorOptionsProvider optionsProvider = context.getOptionsProvider();
-            AsciidocOptions options = optionsProvider.createOptionsContainingAttributes(asciiDoctorBackendType);
+            AsciidocOptions options = optionsProvider.createOptions(asciiDoctorBackendType);
 
             /* start conversion by asciidoctor */
             AsciidoctorAdapter asciiDoctorAdapter = context.getAsciiDoctor();
@@ -176,11 +178,11 @@ public class AsciiDoctorWrapper {
         List<AsciidoctorConfigFile> configFiles = configFileSupport.collectConfigFiles(context.getAsciiDocFile().toPath());
         context.setConfigFiles(configFiles);
         if (data.useHiddenFile) {
-            /* asciidoc files ...*/
+            /* asciidoc files ... we create the hidden file which references the origin one*/
             File createdHiddenEditorFile = AsciiDocFileUtils.createHiddenEditorFile(logAdapter, data.asciiDocFile, data.editorId, context.getBaseDir(), getTempFolder(),configFiles, context.getConfigRoot().getAbsolutePath());
             context.setFileToRender(createdHiddenEditorFile);
         } else {
-            /* plantuml, ditaa files ...*/
+            /* PlantUML, ditaa files ...*/
             context.setFileToRender(data.asciiDocFile);
         }
 
@@ -252,17 +254,20 @@ public class AsciiDoctorWrapper {
     }
 
     private Path createTempPath(IProject project) {
-        String id = "fallback";
+        String projectName = "fallback-projectname";
+        IPath path = null;
         if (project != null) {
             IProjectDescription description;
+            path= project.getFullPath();
             try {
                 description = project.getDescription();
-                id = description.getName() + project.hashCode();
+                projectName = description.getName();
             } catch (CoreException e) {
-                id = "" + project.hashCode();
+                projectName = "" + project.getName();
             }
         }
-        return AsciiDocFileUtils.createTempFolderForId(id);
+        UniqueAsciidoctorEditorId uniqueId = new UniqueAsciidoctorEditorId(path);
+        return AsciiDocFileUtils.createTempFolderForId(projectName,uniqueId);
     }
 
     public File getTempFileFor(File editorFile, UniquePrefixProvider uniquePrefixProvider, TemporaryFileType type) {

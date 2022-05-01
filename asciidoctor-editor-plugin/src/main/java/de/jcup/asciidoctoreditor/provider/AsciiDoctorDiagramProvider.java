@@ -17,16 +17,15 @@ package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
 
-public class AsciiDoctorDiagramProvider extends AbstractAsciiDoctorProvider{
+public class AsciiDoctorDiagramProvider extends AbstractAsciiDoctorProvider {
 
+    public AsciiDoctorDiagramProvider(AsciiDoctorProviderContext context) {
+        super(context);
+    }
 
-	public AsciiDoctorDiagramProvider(AsciiDoctorProviderContext context) {
-	    super(context);
-	}
-
-	public File getDiagramRootDirectory() {
-		return getContext().getBaseDir();
-	}
+    public File getDiagramRootDirectory() {
+        return getContext().getBaseDir();
+    }
 
     @Override
     protected void reset() {

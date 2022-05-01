@@ -102,7 +102,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
 
     public static void showInitializingInfo(AsciiDoctorEditor editor) {
         BrowserAccess browserAccess = editor.getBrowserAccess();
-        
+
         if (previewFileURL == null) {
             /* we only need this one time */
             previewFileURL = "";
@@ -116,10 +116,10 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                 }
             }
         }
-        
+
         if (previewFileURL.equals("")) {
             browserAccess.safeBrowserSetText(INITIALIZE_FALLBACK_HTML);
-        }else {
+        } else {
             browserAccess.setUrl(previewFileURL);
         }
     }

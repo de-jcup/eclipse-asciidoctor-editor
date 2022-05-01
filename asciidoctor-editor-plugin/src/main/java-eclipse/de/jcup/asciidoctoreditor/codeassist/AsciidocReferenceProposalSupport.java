@@ -34,48 +34,48 @@ public class AsciidocReferenceProposalSupport extends AbstractWordCodeCompletiti
 
     private AsciidocReferenceProposalCalculator calculator;
     private EnableStateResolver enableStateResolver;
-    
-    public AsciidocReferenceProposalSupport(String prefix, BaseParentDirResolver baseDirResolver, EnableStateResolver enableStateResolver, CodeAssistFileFilter fileFilter){
+
+    public AsciidocReferenceProposalSupport(String prefix, BaseParentDirResolver baseDirResolver, EnableStateResolver enableStateResolver, CodeAssistFileFilter fileFilter) {
         Objects.requireNonNull(prefix);
         Objects.requireNonNull(baseDirResolver);
         Objects.requireNonNull(enableStateResolver);
         Objects.requireNonNull(fileFilter);
-        
-        this.enableStateResolver=enableStateResolver;
-        calculator = new AsciidocReferenceProposalCalculator(prefix, baseDirResolver,fileFilter);
+
+        this.enableStateResolver = enableStateResolver;
+        calculator = new AsciidocReferenceProposalCalculator(prefix, baseDirResolver, fileFilter);
     }
-    
+
     @Override
     public Set<ProposalProvider> calculate(String text, int index) {
         IEditorPart activeEditor = EclipseUtil.getActiveEditor();
-        if (! (activeEditor instanceof AsciiDoctorEditor) || enableStateResolver.isDisabled()) {
+        if (!(activeEditor instanceof AsciiDoctorEditor) || enableStateResolver.isDisabled()) {
             return Collections.emptySet();
         }
         AsciiDoctorEditor editor = (AsciiDoctorEditor) activeEditor;
         File file = editor.getEditorFileOrNull();
-        if (file==null) {
+        if (file == null) {
             return Collections.emptySet();
         }
         Set<ProposalProvider> set = new LinkedHashSet<ProposalProvider>();
-        Set<AsciidocReferenceProposalData> asciidocReferenceProposalData = calculator.calculate(file,text,index);
-        for (AsciidocReferenceProposalData d: asciidocReferenceProposalData) {
+        Set<AsciidocReferenceProposalData> asciidocReferenceProposalData = calculator.calculate(file, text, index);
+        for (AsciidocReferenceProposalData d : asciidocReferenceProposalData) {
             set.add(new AsciidocIncludeProposalProvider(d));
         }
         return set;
-        
+
     }
 
     @Override
     public void reset() {
 
     }
-    
-    public class AsciidocIncludeProposalProvider implements ProposalProvider{
-        
+
+    public class AsciidocIncludeProposalProvider implements ProposalProvider {
+
         private AsciidocReferenceProposalData asciidocReferenceProposalData;
 
-        private AsciidocIncludeProposalProvider(AsciidocReferenceProposalData asciidocReferenceProposalData){
-            this.asciidocReferenceProposalData=asciidocReferenceProposalData;
+        private AsciidocIncludeProposalProvider(AsciidocReferenceProposalData asciidocReferenceProposalData) {
+            this.asciidocReferenceProposalData = asciidocReferenceProposalData;
         }
 
         @Override
@@ -90,9 +90,9 @@ public class AsciidocReferenceProposalSupport extends AbstractWordCodeCompletiti
 
         @Override
         public String getLabel() {
-           return asciidocReferenceProposalData.getLabel();
+            return asciidocReferenceProposalData.getLabel();
         }
-        
+
     }
 
 }

@@ -15,26 +15,23 @@ package de.jcup.asciidoctoreditor.preferences;
  * and limitations under the License.
  *
  */
- 
 
 /**
  * Constant definitions for plug-in preferences
  */
-public enum AsciiDoctorPlantUMLEditorPreferenceConstants implements PreferenceIdentifiable{
+public enum AsciiDoctorPlantUMLEditorPreferenceConstants implements PreferenceIdentifiable {
 
-	
-	P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT("pumlStoreDiagramsInProject"),
-	
-	P_PLANTUML_EDITOR_OUTPUT_FORMAT("pumlOutputFormat"),
-	;
+    P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT("pumlStoreDiagramsInProject"),
 
-	private String id;
+    P_PLANTUML_EDITOR_OUTPUT_FORMAT("pumlOutputFormat"),;
 
-	private AsciiDoctorPlantUMLEditorPreferenceConstants(String id) {
-		this.id = id;
-	}
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private AsciiDoctorPlantUMLEditorPreferenceConstants(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

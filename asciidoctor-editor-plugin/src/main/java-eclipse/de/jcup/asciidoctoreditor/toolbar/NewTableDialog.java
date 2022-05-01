@@ -31,67 +31,67 @@ import org.eclipse.swt.widgets.Spinner;
 
 public class NewTableDialog extends TitleAreaDialog {
 
-	private Spinner spinnerColumns;
+    private Spinner spinnerColumns;
 
-	private int rows;
-	private int columns;
-	private boolean addColumnHeadersSelected;
+    private int rows;
+    private int columns;
+    private boolean addColumnHeadersSelected;
 
-	private Spinner spinnerRows;
+    private Spinner spinnerRows;
 
-	public NewTableDialog(Shell parentShell) {
-		super(parentShell);
-	}
+    public NewTableDialog(Shell parentShell) {
+        super(parentShell);
+    }
 
-	@Override
-	public void create() {
-		super.create();
-		setTitle("Insert a new table into document");
-		setMessage("Select your wanted table data and press OK", IMessageProvider.INFORMATION);
-	}
+    @Override
+    public void create() {
+        super.create();
+        setTitle("Insert a new table into document");
+        setMessage("Select your wanted table data and press OK", IMessageProvider.INFORMATION);
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite area = (Composite) super.createDialogArea(parent);
-		Composite container = new Composite(area, SWT.NONE);
-		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		GridLayout layout = new GridLayout(2, false);
-		container.setLayout(layout);
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite area = (Composite) super.createDialogArea(parent);
+        Composite container = new Composite(area, SWT.NONE);
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        GridLayout layout = new GridLayout(2, false);
+        container.setLayout(layout);
 
-		createSpinnerColumns(container);
-		createSpinnerRows(container);
-		createAddColumnHeaderOptionsBoolean(container);
+        createSpinnerColumns(container);
+        createSpinnerRows(container);
+        createAddColumnHeaderOptionsBoolean(container);
 
-		return area;
-	}
+        return area;
+    }
 
-	private void createSpinnerColumns(Composite container) {
-		Label lblSpinnerCols = new Label(container, SWT.NONE);
-		lblSpinnerCols.setText("Columns");
+    private void createSpinnerColumns(Composite container) {
+        Label lblSpinnerCols = new Label(container, SWT.NONE);
+        lblSpinnerCols.setText("Columns");
 
-		GridData data = new GridData();
-		data.grabExcessHorizontalSpace = true;
-		data.horizontalAlignment = GridData.FILL;
+        GridData data = new GridData();
+        data.grabExcessHorizontalSpace = true;
+        data.horizontalAlignment = GridData.FILL;
 
-		spinnerColumns = new Spinner(container, SWT.BORDER);
-		spinnerColumns.setValues(3, 1, 30, 0, 1, 10);
-		spinnerColumns.setLayoutData(data);
-	}
+        spinnerColumns = new Spinner(container, SWT.BORDER);
+        spinnerColumns.setValues(3, 1, 30, 0, 1, 10);
+        spinnerColumns.setLayoutData(data);
+    }
 
-	private void createSpinnerRows(Composite container) {
-		Label lblSpinnerRows = new Label(container, SWT.NONE);
-		lblSpinnerRows.setText("Rows");
+    private void createSpinnerRows(Composite container) {
+        Label lblSpinnerRows = new Label(container, SWT.NONE);
+        lblSpinnerRows.setText("Rows");
 
-		GridData data = new GridData();
-		data.grabExcessHorizontalSpace = true;
-		data.horizontalAlignment = GridData.FILL;
+        GridData data = new GridData();
+        data.grabExcessHorizontalSpace = true;
+        data.horizontalAlignment = GridData.FILL;
 
-		spinnerRows = new Spinner(container, SWT.BORDER);
-		spinnerRows.setValues(3, 1, 100, 0, 1, 10);
-		spinnerRows.setLayoutData(data);
-	}
-	
-	private void createAddColumnHeaderOptionsBoolean(Composite container) {
+        spinnerRows = new Spinner(container, SWT.BORDER);
+        spinnerRows.setValues(3, 1, 100, 0, 1, 10);
+        spinnerRows.setLayoutData(data);
+    }
+
+    private void createAddColumnHeaderOptionsBoolean(Composite container) {
         Label lblAddColumnHeaders = new Label(container, SWT.NONE);
         lblAddColumnHeaders.setText("Add columns header options");
 
@@ -99,7 +99,7 @@ public class NewTableDialog extends TitleAreaDialog {
         data.grabExcessHorizontalSpace = true;
         data.horizontalAlignment = GridData.FILL;
 
-        Button checkBox = new Button(container,SWT.CHECK);
+        Button checkBox = new Button(container, SWT.CHECK);
         checkBox.setText("");
         checkBox.addSelectionListener(new SelectionAdapter() {
 
@@ -111,33 +111,34 @@ public class NewTableDialog extends TitleAreaDialog {
         });
     }
 
-	@Override
-	protected boolean isResizable() {
-		return true;
-	}
+    @Override
+    protected boolean isResizable() {
+        return true;
+    }
 
-	// save content of the Text fields because they get disposed
-	// as soon as the Dialog closes
-	private void saveInput() {
-		rows = spinnerRows.getSelection();
-		columns = spinnerColumns.getSelection();
+    // save content of the Text fields because they get disposed
+    // as soon as the Dialog closes
+    private void saveInput() {
+        rows = spinnerRows.getSelection();
+        columns = spinnerColumns.getSelection();
 
-	}
+    }
 
-	@Override
-	protected void okPressed() {
-		saveInput();
-		super.okPressed();
-	}
+    @Override
+    protected void okPressed() {
+        saveInput();
+        super.okPressed();
+    }
 
-	public int getRows() {
-		return rows;
-	}
-	public int getColumns() {
-		return columns;
-	}
-	
-	public boolean isAddColumnHeadersSelected() {
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public boolean isAddColumnHeadersSelected() {
         return addColumnHeadersSelected;
     }
 }

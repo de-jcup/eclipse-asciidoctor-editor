@@ -13,13 +13,13 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor;
 
 @AdaptedFromEGradle
-public interface FilterPatternMatcher<T> extends Matcher<T>{
+public interface FilterPatternMatcher<T> extends Matcher<T> {
 
-	void setFilterText(String filterText);
+    void setFilterText(String filterText);
 
-	boolean hasFilterPattern();
+    boolean hasFilterPattern();
 
 }

@@ -31,45 +31,45 @@ import org.eclipse.ui.part.FileEditorInput;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
-public class OpenWithAsciiDoctorEditor extends AbstractHandler{
+public class OpenWithAsciiDoctorEditor extends AbstractHandler {
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IFile file = getSelectedFile();
-		if (file==null){
-			return null;
-		}
-		IWorkbenchPage page = EclipseUtil.getActivePage();
-		if (page==null){
-			return null;
-		}
-		try {
-			page.openEditor(new FileEditorInput(file), AsciiDoctorEditor.EDITOR_ID);
-		} catch (PartInitException e) {
-			throw new ExecutionException("Was not able to open asciidoctor editor for file:"+file.getName(),e);
-		}
-		return null;
-	}
-	
-	protected IFile getSelectedFile() {
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		if (window == null) {
-			return null;
-		}
-		
-		ISelection selection = window.getSelectionService().getSelection();
-		if (! (selection instanceof IStructuredSelection)){
-			return null;
-		}
-		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-		
-		Object firstElement = structuredSelection.getFirstElement();
-		if (!(firstElement instanceof IAdaptable)) {
-			return null;
-		}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        IFile file = getSelectedFile();
+        if (file == null) {
+            return null;
+        }
+        IWorkbenchPage page = EclipseUtil.getActivePage();
+        if (page == null) {
+            return null;
+        }
+        try {
+            page.openEditor(new FileEditorInput(file), AsciiDoctorEditor.EDITOR_ID);
+        } catch (PartInitException e) {
+            throw new ExecutionException("Was not able to open asciidoctor editor for file:" + file.getName(), e);
+        }
+        return null;
+    }
 
-		IFile file = (IFile) ((IAdaptable) firstElement).getAdapter(IFile.class);
-		return file;
-	}
-	
+    protected IFile getSelectedFile() {
+        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (window == null) {
+            return null;
+        }
+
+        ISelection selection = window.getSelectionService().getSelection();
+        if (!(selection instanceof IStructuredSelection)) {
+            return null;
+        }
+        IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+
+        Object firstElement = structuredSelection.getFirstElement();
+        if (!(firstElement instanceof IAdaptable)) {
+            return null;
+        }
+
+        IFile file = (IFile) ((IAdaptable) firstElement).getAdapter(IFile.class);
+        return file;
+    }
+
 }

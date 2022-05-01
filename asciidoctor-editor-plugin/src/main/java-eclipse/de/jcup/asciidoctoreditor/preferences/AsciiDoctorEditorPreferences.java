@@ -172,9 +172,18 @@ public class AsciiDoctorEditorPreferences {
         PreferenceConverter.setDefault(getPreferenceStore(), identifiable.getId(), color);
     }
 
-    /* ----------------------------------------------------------------------------------------- */
-    /* - ....................... Dedicated getter/setter ..................................... - */
-    /* ----------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ------------
+     */
+    /*
+     * - ....................... Dedicated getter/setter
+     * ..................................... -
+     */
+    /*
+     * -----------------------------------------------------------------------------
+     * ------------
+     */
     public boolean isLinkOutlineWithEditorEnabled() {
         return getBooleanPreference(P_LINK_OUTLINE_WITH_EDITOR);
     }
@@ -228,7 +237,8 @@ public class AsciiDoctorEditorPreferences {
     }
 
     public boolean isUsingPreviewImageDirectory() {
-        return true; // we do now always use the preview image directory see https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/314
+        return true; // we do now always use the preview image directory see
+                     // https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/314
 //        return getBooleanPreference(P_USE_PREVIEW_IMAGEDIRECTORY);
     }
 
@@ -244,7 +254,6 @@ public class AsciiDoctorEditorPreferences {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_URLS);
     }
 
-    
     public boolean isIncludeValidationEnabled() {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_INCLUDES);
     }
@@ -264,7 +273,7 @@ public class AsciiDoctorEditorPreferences {
     public boolean isShowingAspServerOutputInConsole() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE);
     }
-    
+
     public boolean isShowingAspCommunicationInConsole() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_COMMUNICATION_SHOWN_IN_CONSOLE);
     }
@@ -299,7 +308,7 @@ public class AsciiDoctorEditorPreferences {
     public boolean isStoringPlantUmlFiles() {
         return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
     }
-    
+
     public PlantUMLOutputFormat getPlantUMLOutputFormat() {
         return PlantUMLOutputFormat.fromString(getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT));
     }
@@ -307,6 +316,5 @@ public class AsciiDoctorEditorPreferences {
     public boolean isAutoCreateConfigEnabled() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_AUTOCREATE_INITIAL_CONFIGFILE);
     }
-
 
 }
