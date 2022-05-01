@@ -23,27 +23,30 @@ public class AsciidocReferenceExistingTextCalculator {
 
     /**
      * Creates calculator
-     * @param prefix - prefix to use for determination (e.g. "include::" for includes
+     * 
+     * @param prefix - prefix to use for determination (e.g. "include::" for
+     *               includes
      */
     public AsciidocReferenceExistingTextCalculator(String prefix) {
         Objects.requireNonNull(prefix);
-        this.prefix=prefix;
+        this.prefix = prefix;
     }
-    
+
     /**
      * Resolves full include text
+     * 
      * @param fullSource
      * @param posBeforeCtrlSpace - is index+1...
      * @return full reference text or <code>null</code> when not available
      */
     public String resolveReferenceTextOrNull(String fullSource, int posBeforeCtrlSpace) {
-        int index = posBeforeCtrlSpace-1;
-        if (fullSource.length()<=index) {
-            index = fullSource.length()-1;
+        int index = posBeforeCtrlSpace - 1;
+        if (fullSource.length() <= index) {
+            index = fullSource.length() - 1;
         }
         StringBuilder sb = new StringBuilder();
-        while (index>=0) {
-            char c= fullSource.charAt(index--);
+        while (index >= 0) {
+            char c = fullSource.charAt(index--);
             if (Character.isWhitespace(c)) {
                 break;
             }
@@ -54,9 +57,9 @@ public class AsciidocReferenceExistingTextCalculator {
             return inspected;
         }
         return null;
-        
+
     }
-    
+
     public String getPrefix() {
         return prefix;
     }

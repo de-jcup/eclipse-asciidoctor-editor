@@ -24,89 +24,90 @@ public class AsciiDoctorFileReferenceTest {
     public void image_abc_without_brackets_is_found__so_even_when_invalid() {
         /* execute */
         AsciiDoctorFileReference reference = new AsciiDoctorFileReference("image::abc.png", 1, 2, 3);
-        
+
         /* test */
         assertEquals("image::abc.png", reference.getFullExpression());
         assertEquals("image::abc.png", reference.getTarget());
         assertEquals("abc.png", reference.getFilePath());
         assertEquals("image::", reference.getTargetPrefix());
-        assertEquals(1,reference.getPosition());
-        assertEquals(2,reference.getEnd());
-        assertEquals(3,reference.getLengthToNameEnd()); 
+        assertEquals(1, reference.getPosition());
+        assertEquals(2, reference.getEnd());
+        assertEquals(3, reference.getLengthToNameEnd());
     }
+
     @Test
     public void image_abc_SPACE_with_spaces_png__is_resulting_in_filePath_abc_SPACE_with_spaces_png() {
         /* execute */
         AsciiDoctorFileReference reference = new AsciiDoctorFileReference("image::abc with spaces.png[]", 1, 2, 3);
-        
+
         /* test */
         assertEquals("image::abc with spaces.png[]", reference.getFullExpression());
         assertEquals("image::abc with spaces.png", reference.getTarget());
         assertEquals("abc with spaces.png", reference.getFilePath());
         assertEquals("image::", reference.getTargetPrefix());
-        assertEquals(1,reference.getPosition());
-        assertEquals(2,reference.getEnd());
-        assertEquals(3,reference.getLengthToNameEnd()); 
+        assertEquals(1, reference.getPosition());
+        assertEquals(2, reference.getEnd());
+        assertEquals(3, reference.getLengthToNameEnd());
     }
-    
+
     @Test
     public void include_abd_adoc__is_resolved() {
         /* execute */
         AsciiDoctorFileReference reference = new AsciiDoctorFileReference("include::abc.adoc[]", 1, 2, 3);
-        
+
         /* test */
         assertEquals("include::abc.adoc[]", reference.getFullExpression());
         assertEquals("include::abc.adoc", reference.getTarget());
         assertEquals("abc.adoc", reference.getFilePath());
         assertEquals("include::", reference.getTargetPrefix());
-        assertEquals(1,reference.getPosition());
-        assertEquals(2,reference.getEnd());
-        assertEquals(3,reference.getLengthToNameEnd()); 
+        assertEquals(1, reference.getPosition());
+        assertEquals(2, reference.getEnd());
+        assertEquals(3, reference.getLengthToNameEnd());
     }
-    
+
     @Test
     public void plantuml_abd_puml__is_resolved() {
         /* execute */
         AsciiDoctorFileReference reference = new AsciiDoctorFileReference("plantuml::abc.puml[]", 1, 2, 3);
-        
+
         /* test */
         assertEquals("plantuml::abc.puml[]", reference.getFullExpression());
         assertEquals("plantuml::abc.puml", reference.getTarget());
         assertEquals("abc.puml", reference.getFilePath());
         assertEquals("plantuml::", reference.getTargetPrefix());
-        assertEquals(1,reference.getPosition());
-        assertEquals(2,reference.getEnd());
-        assertEquals(3,reference.getLengthToNameEnd()); 
+        assertEquals(1, reference.getPosition());
+        assertEquals(2, reference.getEnd());
+        assertEquals(3, reference.getLengthToNameEnd());
     }
-    
+
     @Test
     public void ditaa_abd_ditaa__is_resolved() {
         /* execute */
         AsciiDoctorFileReference reference = new AsciiDoctorFileReference("ditaa::abc.ditaa[]", 1, 2, 3);
-        
+
         /* test */
         assertEquals("ditaa::abc.ditaa[]", reference.getFullExpression());
         assertEquals("ditaa::abc.ditaa", reference.getTarget());
         assertEquals("abc.ditaa", reference.getFilePath());
         assertEquals("ditaa::", reference.getTargetPrefix());
-        assertEquals(1,reference.getPosition());
-        assertEquals(2,reference.getEnd());
-        assertEquals(3,reference.getLengthToNameEnd()); 
+        assertEquals(1, reference.getPosition());
+        assertEquals(2, reference.getEnd());
+        assertEquals(3, reference.getLengthToNameEnd());
     }
-    
+
     @Test
     public void image_abc_svg__is_resolved() {
         /* execute */
         AsciiDoctorFileReference reference = new AsciiDoctorFileReference("image::abc.svg[]", 1, 2, 3);
-        
+
         /* test */
         assertEquals("image::abc.svg[]", reference.getFullExpression());
         assertEquals("image::abc.svg", reference.getTarget());
         assertEquals("abc.svg", reference.getFilePath());
         assertEquals("image::", reference.getTargetPrefix());
-        assertEquals(1,reference.getPosition());
-        assertEquals(2,reference.getEnd());
-        assertEquals(3,reference.getLengthToNameEnd()); 
+        assertEquals(1, reference.getPosition());
+        assertEquals(2, reference.getEnd());
+        assertEquals(3, reference.getLengthToNameEnd());
     }
 
 }

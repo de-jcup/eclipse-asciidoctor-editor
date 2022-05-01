@@ -228,7 +228,6 @@ public class AsciiDoctorPlantUMLContentOutlinePage extends ContentOutlinePage im
 
     }
 
-
     class CollapseAllAction extends Action {
 
         private CollapseAllAction() {
@@ -269,10 +268,10 @@ public class AsciiDoctorPlantUMLContentOutlinePage extends ContentOutlinePage im
 
     @Override
     public void rebuild(AsciiDoctorScriptModel model) {
-        if (! (model instanceof PlantUMLScriptModel)) {
+        if (!(model instanceof PlantUMLScriptModel)) {
             return;
         }
-        rebuild((PlantUMLScriptModel)model);
+        rebuild((PlantUMLScriptModel) model);
     }
 
 }

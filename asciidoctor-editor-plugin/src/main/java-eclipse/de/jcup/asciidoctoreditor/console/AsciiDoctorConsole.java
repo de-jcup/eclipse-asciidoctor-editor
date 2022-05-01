@@ -20,16 +20,17 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class AsciiDoctorConsole extends MessageConsole {
-	public AsciiDoctorConsole(ImageDescriptor imageDescriptor) {
-		this("Asciidoctor",imageDescriptor);
-	}
-	public AsciiDoctorConsole(String name, ImageDescriptor imageDescriptor) {
-		super(name, imageDescriptor);
-	}
+    public AsciiDoctorConsole(ImageDescriptor imageDescriptor) {
+        this("Asciidoctor", imageDescriptor);
+    }
 
-	@Override
-	public MessageConsoleStream newMessageStream() {
-		return super.newMessageStream();
-	}
+    public AsciiDoctorConsole(String name, ImageDescriptor imageDescriptor) {
+        super(name, imageDescriptor);
+    }
+
+    @Override
+    public MessageConsoleStream newMessageStream() {
+        return super.newMessageStream();
+    }
 
 }

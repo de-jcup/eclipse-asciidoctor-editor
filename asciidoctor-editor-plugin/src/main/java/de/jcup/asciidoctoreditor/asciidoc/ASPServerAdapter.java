@@ -22,7 +22,6 @@ import java.util.Objects;
 
 import de.jcup.asciidoctoreditor.ConsoleAdapter;
 import de.jcup.asciidoctoreditor.LogAdapter;
-import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asp.client.AspClient;
 import de.jcup.asp.core.LaunchException;
 import de.jcup.asp.core.LogHandler;
@@ -129,10 +128,7 @@ public class ASPServerAdapter {
 
             @Override
             public void output(String message) {
-                if (consoleAdapter != null) {
-                    consoleAdapter.output(message);
-                }
-
+                consoleOutput(message);
             };
         };
         this.port = getFreePortToUse(minPort, maxPort);
@@ -195,12 +191,20 @@ public class ASPServerAdapter {
         if (launcher != null) {
             boolean stopDone = launcher.stopServer();
             if (stopDone) {
-                AsciiDoctorConsoleUtil.output(">> ASP Server stop triggered.");
+                consoleOutput(">> ASP Server stop triggered.");
                 waitForServerNoLongerAlive();
-                AsciiDoctorConsoleUtil.output(">> ASP Server stop done.");
+                consoleOutput(">> ASP Server stop done.");
             }
         }
         return false;
+    }
+
+    private void consoleOutput(String message) {
+        if (consoleAdapter == null) {
+            return;
+        }
+        consoleAdapter.output(message);
+
     }
 
     private void waitForServerNoLongerAlive() {
@@ -208,7 +212,7 @@ public class ASPServerAdapter {
             if (!client.isServerAlive(null)) {
                 return;
             }
-            AsciiDoctorConsoleUtil.output(">>> Wait for server no longer alive...");
+            consoleOutput(">>> Wait for server no longer alive...");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

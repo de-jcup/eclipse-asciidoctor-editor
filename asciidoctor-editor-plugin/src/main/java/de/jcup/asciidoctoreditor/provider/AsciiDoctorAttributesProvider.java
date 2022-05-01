@@ -56,17 +56,17 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
             if (getContext().tocLevels > 0) {
                 attrBuilder.customAttribute("toclevels", "" + getContext().tocLevels);
             }
-        }else {
-            attrBuilder.customAttribute("!toc","");
+        } else {
+            attrBuilder.customAttribute("!toc", "");
         }
         String outputFolderAbsolutePath = createAbsolutePath(getOutputFolder());
         attrBuilder.customAttribute("outdir", outputFolderAbsolutePath);
-        /* if imagesdir is relative, convert to absolute*/
+        /* if imagesdir is relative, convert to absolute */
         Object imagesDir = getCachedAttributes().get("imagesdir");
         if (imagesDir instanceof String) {
             String imagesDirString = (String) imagesDir;
             if (imagesDirString.startsWith(".")) {
-                /* a relative path so convert to absolute one*/
+                /* a relative path so convert to absolute one */
                 File file = new File(absolutePathProjectBaseDir, imagesDirString);
                 try {
                     attrBuilder.imagesDir(file.getCanonicalPath());
@@ -75,14 +75,13 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
                 }
             }
         }
-        
+
         /* handle output directory */
-        File target = new File(outputFolderAbsolutePath,IMAGE_OUTPUT_DIR_NAME);
+        File target = new File(outputFolderAbsolutePath, IMAGE_OUTPUT_DIR_NAME);
         attrBuilder.customAttribute("imagesoutdir", target.getAbsolutePath());
-        
+
         return attrBuilder.build();
     }
-
 
     protected Map<String, Object> getCachedAttributes() {
         if (cachedAttributes == null) {
@@ -93,7 +92,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
     protected Map<String, Object> resolveAttributes() {
         AsciiDoctorProviderContext context = getContext();
-        
+
         Map<String, Object> map = getContext().getAsciiDoctor().resolveAttributes(context.getAsciiDocFile());
 
         // now we have to apply the parts from config file as well:

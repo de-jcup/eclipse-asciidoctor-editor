@@ -24,60 +24,62 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
 
 public class AssertInlineAnchors {
 
-	private List<AsciiDoctorInlineAnchor> includes;
+    private List<AsciiDoctorInlineAnchor> includes;
 
-	public AssertInlineAnchors(List<AsciiDoctorInlineAnchor> headlines) {
-		this.includes = headlines;
-	}
-	public AssertInlineAnchors hasInlineAnchors(int size) {
-		assertEquals("Amount of includes differs",size, includes.size());
-		return this;
-	}
-	public AssertInlineAnchor hasInlineAnchor(String target) {
-		assertNotNull(target);
-		Iterator<AsciiDoctorInlineAnchor> it = includes.iterator();
-		while (it.hasNext()) {
+    public AssertInlineAnchors(List<AsciiDoctorInlineAnchor> headlines) {
+        this.includes = headlines;
+    }
 
-			AsciiDoctorInlineAnchor headlineFound = it.next();
-			if (target.equals(headlineFound.getLabel())) {
-				return new AssertInlineAnchor(headlineFound);
-			}
-		}
-		fail("no inlineAnchor found with label:" + target);
-		return null;
-	}
+    public AssertInlineAnchors hasInlineAnchors(int size) {
+        assertEquals("Amount of includes differs", size, includes.size());
+        return this;
+    }
 
-	public static AssertInlineAnchors assertInlineAnchors(List<AsciiDoctorInlineAnchor> headlines) {
-		assertNotNull(headlines);
-		return new AssertInlineAnchors(headlines);
-	}
+    public AssertInlineAnchor hasInlineAnchor(String target) {
+        assertNotNull(target);
+        Iterator<AsciiDoctorInlineAnchor> it = includes.iterator();
+        while (it.hasNext()) {
 
-	public class AssertInlineAnchor {
-		private AsciiDoctorInlineAnchor inlineAnchor;
+            AsciiDoctorInlineAnchor headlineFound = it.next();
+            if (target.equals(headlineFound.getLabel())) {
+                return new AssertInlineAnchor(headlineFound);
+            }
+        }
+        fail("no inlineAnchor found with label:" + target);
+        return null;
+    }
 
-		private AssertInlineAnchor(AsciiDoctorInlineAnchor headline) {
-			assertNotNull(headline);
-			this.inlineAnchor = headline;
-		}
+    public static AssertInlineAnchors assertInlineAnchors(List<AsciiDoctorInlineAnchor> headlines) {
+        assertNotNull(headlines);
+        return new AssertInlineAnchors(headlines);
+    }
 
-		public AssertInlineAnchor withPosition(int position) {
-			assertEquals(inlineAnchor.getLabel()+":Position not as expected!", position, this.inlineAnchor.getPosition());
-			return this;
-		}
+    public class AssertInlineAnchor {
+        private AsciiDoctorInlineAnchor inlineAnchor;
 
-		public AssertInlineAnchor withEnd(int end) {
-			assertEquals(inlineAnchor.getLabel()+":End not as expected!", end, this.inlineAnchor.getEnd());
-			return this;
-		}
+        private AssertInlineAnchor(AsciiDoctorInlineAnchor headline) {
+            assertNotNull(headline);
+            this.inlineAnchor = headline;
+        }
 
-		public AssertInlineAnchors and() {
-			return AssertInlineAnchors.this;
-		}
+        public AssertInlineAnchor withPosition(int position) {
+            assertEquals(inlineAnchor.getLabel() + ":Position not as expected!", position, this.inlineAnchor.getPosition());
+            return this;
+        }
 
-		public AssertInlineAnchor withId(String id) {
-			assertEquals(inlineAnchor.getLabel()+":ID not as expected!", id, this.inlineAnchor.getId());
-			return this;
-		}
-	}
+        public AssertInlineAnchor withEnd(int end) {
+            assertEquals(inlineAnchor.getLabel() + ":End not as expected!", end, this.inlineAnchor.getEnd());
+            return this;
+        }
+
+        public AssertInlineAnchors and() {
+            return AssertInlineAnchors.this;
+        }
+
+        public AssertInlineAnchor withId(String id) {
+            assertEquals(inlineAnchor.getLabel() + ":ID not as expected!", id, this.inlineAnchor.getId());
+            return this;
+        }
+    }
 
 }

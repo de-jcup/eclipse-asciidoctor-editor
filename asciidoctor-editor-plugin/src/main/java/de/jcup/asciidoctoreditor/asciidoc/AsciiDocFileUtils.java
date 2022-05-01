@@ -73,7 +73,7 @@ public class AsciiDocFileUtils {
      */
     public static Path createTempFolderForId(String projectId, UniquePrefixProvider provider) {
         try {
-            File newTempSubFolder = createSelfDeletingTempSubFolder(projectId+"/"+provider.getUniquePrefix(), "asciidoctor-editor-temp");
+            File newTempSubFolder = createSelfDeletingTempSubFolder(projectId + "/" + provider.getUniquePrefix(), "asciidoctor-editor-temp");
             return newTempSubFolder.toPath();
         } catch (IOException e) {
             throw new IllegalStateException("Not able to create temp folder for editor", e);

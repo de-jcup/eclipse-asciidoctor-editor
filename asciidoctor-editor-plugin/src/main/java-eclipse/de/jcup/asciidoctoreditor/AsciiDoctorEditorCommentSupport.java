@@ -22,13 +22,12 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 
-public class AsciiDoctorEditorCommentSupport extends AbstractAsciiDoctorEditorSupport{
-
+public class AsciiDoctorEditorCommentSupport extends AbstractAsciiDoctorEditorSupport {
 
     public AsciiDoctorEditorCommentSupport(AsciiDoctorEditor editor) {
         super(editor);
     }
-    
+
     /**
      * Toggles comment of current selected lines
      */

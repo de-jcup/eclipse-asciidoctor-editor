@@ -51,226 +51,220 @@ import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Bundle;
 
 public class EclipseResourceHelper {
-	public static EclipseResourceHelper DEFAULT = new EclipseResourceHelper();
-	private static String FILE_FILTER_ID = "org.eclipse.ui.ide.patternFilterMatcher";
+    public static EclipseResourceHelper DEFAULT = new EclipseResourceHelper();
+    private static String FILE_FILTER_ID = "org.eclipse.ui.ide.patternFilterMatcher";
 
-	private final IProgressMonitor NULL_MONITOR = new NullProgressMonitor();
+    private final IProgressMonitor NULL_MONITOR = new NullProgressMonitor();
 
-	public void addFileFilter(IProject newProject, String pattern, IProgressMonitor monitor) throws CoreException {
-		FileInfoMatcherDescription matcherDescription = new FileInfoMatcherDescription(FILE_FILTER_ID, pattern);
-		/*
-		 * ignore the generated files - .project and .gitignore at navigator
-		 * etc.
-		 */
-		newProject.createFilter(IResourceFilterDescription.EXCLUDE_ALL | IResourceFilterDescription.FILES,
-				matcherDescription, IResource.BACKGROUND_REFRESH, monitor);
-	}
+    public void addFileFilter(IProject newProject, String pattern, IProgressMonitor monitor) throws CoreException {
+        FileInfoMatcherDescription matcherDescription = new FileInfoMatcherDescription(FILE_FILTER_ID, pattern);
+        /*
+         * ignore the generated files - .project and .gitignore at navigator etc.
+         */
+        newProject.createFilter(IResourceFilterDescription.EXCLUDE_ALL | IResourceFilterDescription.FILES, matcherDescription, IResource.BACKGROUND_REFRESH, monitor);
+    }
 
-	public IFile createFile(IFolder folder, String name, String contents) throws CoreException {
-		return createFile(folder.getFile(name), name, contents);
-	}
+    public IFile createFile(IFolder folder, String name, String contents) throws CoreException {
+        return createFile(folder.getFile(name), name, contents);
+    }
 
-	public IFile createFile(IProject project, String name, String contents) throws CoreException {
-		return createFile(project.getFile(name), name, contents);
-	}
+    public IFile createFile(IProject project, String name, String contents) throws CoreException {
+        return createFile(project.getFile(name), name, contents);
+    }
 
-	public IFolder createFolder(IPath path) throws CoreException {
-		return createFolder(path, null);
-	}
+    public IFolder createFolder(IPath path) throws CoreException {
+        return createFolder(path, null);
+    }
 
-	public IFolder createFolder(String portableFolderPath) throws CoreException {
-		return createFolder(portableFolderPath, null);
-	}
+    public IFolder createFolder(String portableFolderPath) throws CoreException {
+        return createFolder(portableFolderPath, null);
+    }
 
-	public IFolder createFolder(String portableFolderPath, IProgressMonitor monitor) throws CoreException {
-		Path fullPath = new Path(portableFolderPath);
-		return createFolder(fullPath, monitor);
-	}
+    public IFolder createFolder(String portableFolderPath, IProgressMonitor monitor) throws CoreException {
+        Path fullPath = new Path(portableFolderPath);
+        return createFolder(fullPath, monitor);
+    }
 
-	public IFolder createFolder(IPath path, IProgressMonitor monitor) throws CoreException {
-		if (monitor == null) {
-			monitor = NULL_MONITOR;
-		}
-		ContainerCreator creator = new ContainerCreator(ResourcesPlugin.getWorkspace(), path);
-		IContainer container = creator.createContainer(monitor);
-		if (container instanceof IFolder) {
-			return (IFolder) container;
-		}
-		return null;
-	}
+    public IFolder createFolder(IPath path, IProgressMonitor monitor) throws CoreException {
+        if (monitor == null) {
+            monitor = NULL_MONITOR;
+        }
+        ContainerCreator creator = new ContainerCreator(ResourcesPlugin.getWorkspace(), path);
+        IContainer container = creator.createContainer(monitor);
+        if (container instanceof IFolder) {
+            return (IFolder) container;
+        }
+        return null;
+    }
 
-	public IFile createLinkedFile(IContainer container, IPath linkPath, File linkedFileTarget) throws CoreException {
-		IFile iFile = container.getFile(linkPath);
-		iFile.createLink(new Path(linkedFileTarget.getAbsolutePath()), IResource.ALLOW_MISSING_LOCAL, NULL_MONITOR);
-		return iFile;
-	}
+    public IFile createLinkedFile(IContainer container, IPath linkPath, File linkedFileTarget) throws CoreException {
+        IFile iFile = container.getFile(linkPath);
+        iFile.createLink(new Path(linkedFileTarget.getAbsolutePath()), IResource.ALLOW_MISSING_LOCAL, NULL_MONITOR);
+        return iFile;
+    }
 
-	public IFile createLinkedFile(IContainer container, IPath linkPath, Plugin plugin, IPath linkedFileTargetPath)
-			throws CoreException {
-		File file = getFileInPlugin(plugin, linkedFileTargetPath);
-		IFile iFile = container.getFile(linkPath);
-		iFile.createLink(new Path(file.getAbsolutePath()), IResource.ALLOW_MISSING_LOCAL, NULL_MONITOR);
-		return iFile;
-	}
+    public IFile createLinkedFile(IContainer container, IPath linkPath, Plugin plugin, IPath linkedFileTargetPath) throws CoreException {
+        File file = getFileInPlugin(plugin, linkedFileTargetPath);
+        IFile iFile = container.getFile(linkPath);
+        iFile.createLink(new Path(file.getAbsolutePath()), IResource.ALLOW_MISSING_LOCAL, NULL_MONITOR);
+        return iFile;
+    }
 
-	public IFolder createLinkedFolder(IContainer container, IPath linkPath, File linkedFolderTarget)
-			throws CoreException {
-		IFolder folder = container.getFolder(linkPath);
-		folder.createLink(new Path(linkedFolderTarget.getAbsolutePath()), IResource.ALLOW_MISSING_LOCAL, NULL_MONITOR);
-		return folder;
-	}
+    public IFolder createLinkedFolder(IContainer container, IPath linkPath, File linkedFolderTarget) throws CoreException {
+        IFolder folder = container.getFolder(linkPath);
+        folder.createLink(new Path(linkedFolderTarget.getAbsolutePath()), IResource.ALLOW_MISSING_LOCAL, NULL_MONITOR);
+        return folder;
+    }
 
-	public IFolder createLinkedFolder(IContainer container, IPath linkPath, Plugin plugin, IPath linkedFolderTargetPath)
-			throws CoreException {
-		File file = getFileInPlugin(plugin, linkedFolderTargetPath);
-		IFolder iFolder = container.getFolder(linkPath);
-		iFolder.createLink(new Path(file.getAbsolutePath()), IResource.ALLOW_MISSING_LOCAL, NULL_MONITOR);
-		return iFolder;
-	}
+    public IFolder createLinkedFolder(IContainer container, IPath linkPath, Plugin plugin, IPath linkedFolderTargetPath) throws CoreException {
+        File file = getFileInPlugin(plugin, linkedFolderTargetPath);
+        IFolder iFolder = container.getFolder(linkPath);
+        iFolder.createLink(new Path(file.getAbsolutePath()), IResource.ALLOW_MISSING_LOCAL, NULL_MONITOR);
+        return iFolder;
+    }
 
-	public IProject createLinkedProject(String projectName, Plugin plugin, IPath linkPath) throws CoreException {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IProject project = workspace.getRoot().getProject(projectName);
+    public IProject createLinkedProject(String projectName, Plugin plugin, IPath linkPath) throws CoreException {
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IProject project = workspace.getRoot().getProject(projectName);
 
-		IProjectDescription desc = workspace.newProjectDescription(projectName);
-		File file = getFileInPlugin(plugin, linkPath);
-		IPath projectLocation = new Path(file.getAbsolutePath());
-		if (Platform.getLocation().equals(projectLocation))
-			projectLocation = null;
-		desc.setLocation(projectLocation);
+        IProjectDescription desc = workspace.newProjectDescription(projectName);
+        File file = getFileInPlugin(plugin, linkPath);
+        IPath projectLocation = new Path(file.getAbsolutePath());
+        if (Platform.getLocation().equals(projectLocation))
+            projectLocation = null;
+        desc.setLocation(projectLocation);
 
-		project.create(desc, NULL_MONITOR);
-		if (!project.isOpen())
-			project.open(NULL_MONITOR);
+        project.create(desc, NULL_MONITOR);
+        if (!project.isOpen())
+            project.open(NULL_MONITOR);
 
-		return project;
-	}
+        return project;
+    }
 
-	public File createTempFileInPlugin(Plugin plugin, IPath path) {
-		IPath stateLocation = plugin.getStateLocation();
-		stateLocation = stateLocation.append(path);
-		return stateLocation.toFile();
-	}
+    public File createTempFileInPlugin(Plugin plugin, IPath path) {
+        IPath stateLocation = plugin.getStateLocation();
+        stateLocation = stateLocation.append(path);
+        return stateLocation.toFile();
+    }
 
-	public File getFileInPlugin(Plugin plugin, IPath path) throws CoreException {
-		try {
-			URL installURL = plugin.getBundle().getEntry(path.toString());
-			URL localURL = FileLocator.toFileURL(installURL);
-			return new File(localURL.getFile());
-		} catch (IOException e) {
-			throw new CoreException(new Status(IStatus.ERROR, AsciiDoctorEditorActivator.PLUGIN_ID,
-					"cannot get file in plugin from path:" + path, e));
-		}
-	}
+    public File getFileInPlugin(Plugin plugin, IPath path) throws CoreException {
+        try {
+            URL installURL = plugin.getBundle().getEntry(path.toString());
+            URL localURL = FileLocator.toFileURL(installURL);
+            return new File(localURL.getFile());
+        } catch (IOException e) {
+            throw new CoreException(new Status(IStatus.ERROR, AsciiDoctorEditorActivator.PLUGIN_ID, "cannot get file in plugin from path:" + path, e));
+        }
+    }
 
-	/**
-	 * Returns the file or <code>null</code>
-	 * 
-	 * @param path
-	 * @return file or <code>null</code>
-	 * @throws CoreException
-	 */
-	public File toFile(IPath path) throws CoreException {
-		if (path == null) {
-			return null;
-		}
-		IFileStore fileStore = FileBuffers.getFileStoreAtLocation(path);
+    /**
+     * Returns the file or <code>null</code>
+     * 
+     * @param path
+     * @return file or <code>null</code>
+     * @throws CoreException
+     */
+    public File toFile(IPath path) throws CoreException {
+        if (path == null) {
+            return null;
+        }
+        IFileStore fileStore = FileBuffers.getFileStoreAtLocation(path);
 
-		File file = null;
-		file = fileStore.toLocalFile(EFS.NONE, NULL_MONITOR);
-		return file;
-	}
+        File file = null;
+        file = fileStore.toLocalFile(EFS.NONE, NULL_MONITOR);
+        return file;
+    }
 
-	public File toFile(IResource resource) throws CoreException {
-		if (resource == null) {
-			return toFile((IPath) null);
-		}
-		return toFile(resource.getLocation());
-	}
+    public File toFile(IResource resource) throws CoreException {
+        if (resource == null) {
+            return toFile((IPath) null);
+        }
+        return toFile(resource.getLocation());
+    }
 
-	public File getFileInPlugin(String path) throws IOException {
-		return getFileInPlugin(path,AsciiDoctorEditorActivator.PLUGIN_ID);
-	}
-	public File getFileInPlugin(String path, String pluginId) throws IOException {
-		Bundle bundle = Platform.getBundle(pluginId);
-		URL url = bundle.getEntry(path);
-		if (url == null) {
-			/* PDE workaround */
-			String path2 = "bin/" + path;
-			url = bundle.getEntry(path2);
-			if (url == null) {
-				return null;
-			}
+    public File getFileInPlugin(String path) throws IOException {
+        return getFileInPlugin(path, AsciiDoctorEditorActivator.PLUGIN_ID);
+    }
 
-		}
-		URL resolvedFileURL = FileLocator.toFileURL(url);
-		if (resolvedFileURL == null) {
-			throw new FileNotFoundException("Cannot convert URL to file:" + resolvedFileURL);
-		}
+    public File getFileInPlugin(String path, String pluginId) throws IOException {
+        Bundle bundle = Platform.getBundle(pluginId);
+        URL url = bundle.getEntry(path);
+        if (url == null) {
+            /* PDE workaround */
+            String path2 = "bin/" + path;
+            url = bundle.getEntry(path2);
+            if (url == null) {
+                return null;
+            }
 
-		// We need to use the 3-arg constructor of URI in order to properly
-		// escape file system chars
-		URI resolvedURI;
-		try {
-			resolvedURI = new URI(resolvedFileURL.getProtocol(), resolvedFileURL.getPath(), null);
-			File file = new File(resolvedURI);
-			if (!file.exists()) {
-				throw new FileNotFoundException("Cannot convert URL to file:" + resolvedFileURL);
-			}
-			return file;
-		} catch (URISyntaxException e) {
-			throw new IOException("Cannot find file at resolvedFileURL:" + resolvedFileURL, e);
-		}
-	}
+        }
+        URL resolvedFileURL = FileLocator.toFileURL(url);
+        if (resolvedFileURL == null) {
+            throw new FileNotFoundException("Cannot convert URL to file:" + resolvedFileURL);
+        }
 
-	public IFile toIFile(File file) {
-		IFileStore fileStore =
-				              EFS.getLocalFileSystem().getStore(file.toURI());
-		
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IFile[] fileResults = workspace.getRoot().findFilesForLocationURI(fileStore.toURI());
-		if (fileResults==null || fileResults.length==0){
-			return null;
-		}
-		return fileResults[0];
-	}
-	
-	public IFile toIFile(IPath path) {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IFile fileResult = workspace.getRoot().getFile(path);
-		return fileResult;
-	}
+        // We need to use the 3-arg constructor of URI in order to properly
+        // escape file system chars
+        URI resolvedURI;
+        try {
+            resolvedURI = new URI(resolvedFileURL.getProtocol(), resolvedFileURL.getPath(), null);
+            File file = new File(resolvedURI);
+            if (!file.exists()) {
+                throw new FileNotFoundException("Cannot convert URL to file:" + resolvedFileURL);
+            }
+            return file;
+        } catch (URISyntaxException e) {
+            throw new IOException("Cannot find file at resolvedFileURL:" + resolvedFileURL, e);
+        }
+    }
 
-	public IFile toIFile(String pathString) {
-		IPath path = Path.fromOSString(pathString);
-		return toIFile(path);
-	}
+    public IFile toIFile(File file) {
+        IFileStore fileStore = EFS.getLocalFileSystem().getStore(file.toURI());
 
-	public IPath toPath(File tempFolder) {
-		if (tempFolder == null) {
-			throw new IllegalArgumentException("'tempFolder' may not be null");
-		}
-		IPath path = Path.fromOSString(tempFolder.getAbsolutePath());
-		return path;
-	}
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IFile[] fileResults = workspace.getRoot().findFilesForLocationURI(fileStore.toURI());
+        if (fileResults == null || fileResults.length == 0) {
+            return null;
+        }
+        return fileResults[0];
+    }
 
-	private IFile createFile(IFile file, String name, String contents) throws CoreException {
-		if (contents == null)
-			contents = "";
-		InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
-		file.create(inputStream, true, NULL_MONITOR);
-		return file;
-	}
+    public IFile toIFile(IPath path) {
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IFile fileResult = workspace.getRoot().getFile(path);
+        return fileResult;
+    }
 
-	void deleteRecursive(File file) {
-		if (file.isDirectory()) {
-			for (File child : file.listFiles()) {
-				deleteRecursive(child);
-			}
-			file.delete();
-		} else {
-			file.delete();
-		}
-	}
+    public IFile toIFile(String pathString) {
+        IPath path = Path.fromOSString(pathString);
+        return toIFile(path);
+    }
+
+    public IPath toPath(File tempFolder) {
+        if (tempFolder == null) {
+            throw new IllegalArgumentException("'tempFolder' may not be null");
+        }
+        IPath path = Path.fromOSString(tempFolder.getAbsolutePath());
+        return path;
+    }
+
+    private IFile createFile(IFile file, String name, String contents) throws CoreException {
+        if (contents == null)
+            contents = "";
+        InputStream inputStream = new ByteArrayInputStream(contents.getBytes());
+        file.create(inputStream, true, NULL_MONITOR);
+        return file;
+    }
+
+    void deleteRecursive(File file) {
+        if (file.isDirectory()) {
+            for (File child : file.listFiles()) {
+                deleteRecursive(child);
+            }
+            file.delete();
+        } else {
+            file.delete();
+        }
+    }
 
 }

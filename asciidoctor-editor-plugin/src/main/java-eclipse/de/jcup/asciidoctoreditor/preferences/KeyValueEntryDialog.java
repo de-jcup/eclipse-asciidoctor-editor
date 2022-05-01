@@ -24,7 +24,7 @@ class KeyValueEntryDialog extends TitleAreaDialog {
         this.title = title;
         this.message = message;
         if (keyValue == null) {
-            keyValue = new KeyValue("","");
+            keyValue = new KeyValue("", "");
         }
         this.keyValue = keyValue;
     }

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileFilter;
+import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings;
 
 public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvider {
     private static FileFilter ADOC_FILE_FILTER = new AsciiDocFileFilter(false);
@@ -106,6 +107,15 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
 
     public File findProjectBaseDir() {
         File asciiDocFile = getContext().getAsciiDocFile();
+        File editorFileOrNull = getContext().getEditorFileOrNull();
+
+        /*
+         * in case of plantuml we use the parent folder as base directory. Avoids
+         * problems with includes!
+         */
+        if (PlantUMLFileEndings.isPlantUmlFile(editorFileOrNull)) {
+            return editorFileOrNull.getParentFile();
+        }
         if (asciiDocFile == null) {
             throw new IllegalStateException("No asciidoc file set!");
         }

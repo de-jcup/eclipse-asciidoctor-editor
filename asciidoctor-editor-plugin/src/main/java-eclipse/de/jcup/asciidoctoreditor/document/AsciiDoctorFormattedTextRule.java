@@ -23,12 +23,13 @@ import org.eclipse.jface.text.rules.Token;
 /**
  * Special rule to provide
  * https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#formatted-text
- * The rule will found $abcd$ where $ is the markup and abcd is the content
- * - but only when $ is followed by something not being a white space. For
- * example: *bold text*, _italic text_ will be found, * not bold will not
- * be found
+ * The rule will found $abcd$ where $ is the markup and abcd is the content -
+ * but only when $ is followed by something not being a white space. For
+ * example: *bold text*, _italic text_ will be found, * not bold will not be
+ * found
  * 
  * Examples:
+ * 
  * <pre>
  * $abc$     -> found
  * x $abc$   -> found 
@@ -42,38 +43,35 @@ import org.eclipse.jface.text.rules.Token;
  * @author Albert Tregnaghi
  *
  */
-public class AsciiDoctorFormattedTextRule implements IPredicateRule{
+public class AsciiDoctorFormattedTextRule implements IPredicateRule {
 
-	private IToken token;
-	
-	private FormattedTextFinder finder;
+    private IToken token;
 
-	public AsciiDoctorFormattedTextRule(String start, String end, IToken token){
-		this.token=token;
-		finder=new FormattedTextFinder(start,end);
-	}
-	
-	@Override
-	public IToken evaluate(ICharacterScanner scanner) {
-		return evaluate(scanner, false);
-	}
-	
-	@Override
-	public IToken evaluate(ICharacterScanner scanner, boolean resume) {
-		EclipseToPlainJavaCharacterScannerAdapter adapter = new EclipseToPlainJavaCharacterScannerAdapter(scanner);
-		boolean found= finder.isFound(adapter);
-		if (found){
-			return getSuccessToken();
-		}
-		return Token.UNDEFINED;
-	}
-	
+    private FormattedTextFinder finder;
 
-	@Override
-	public IToken getSuccessToken() {
-		return token;
-	}
+    public AsciiDoctorFormattedTextRule(String start, String end, IToken token) {
+        this.token = token;
+        finder = new FormattedTextFinder(start, end);
+    }
 
-	
+    @Override
+    public IToken evaluate(ICharacterScanner scanner) {
+        return evaluate(scanner, false);
+    }
+
+    @Override
+    public IToken evaluate(ICharacterScanner scanner, boolean resume) {
+        EclipseToPlainJavaCharacterScannerAdapter adapter = new EclipseToPlainJavaCharacterScannerAdapter(scanner);
+        boolean found = finder.isFound(adapter);
+        if (found) {
+            return getSuccessToken();
+        }
+        return Token.UNDEFINED;
+    }
+
+    @Override
+    public IToken getSuccessToken() {
+        return token;
+    }
 
 }

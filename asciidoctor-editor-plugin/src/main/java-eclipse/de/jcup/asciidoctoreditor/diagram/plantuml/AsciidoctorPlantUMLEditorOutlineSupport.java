@@ -52,5 +52,5 @@ public class AsciidoctorPlantUMLEditorOutlineSupport extends AsciidoctorEditorOu
     public AsciiDoctorPlantUMLEditor getEditor() {
         return (AsciiDoctorPlantUMLEditor) super.getEditor();
     }
-    
+
 }

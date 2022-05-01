@@ -24,46 +24,47 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 public class ColorManager {
-	private static ColorManager standalone;
-	private Map<RGB, Color> fColorTable = new HashMap<>(10);
+    private static ColorManager standalone;
+    private Map<RGB, Color> fColorTable = new HashMap<>(10);
 
-	public ColorManager() {
+    public ColorManager() {
 
-	}
+    }
 
-	/**
-	 * @return color manager for standalone SWT programs, never <code>null</code>. 
-	 * @throws IllegalStateException when no standalone color manager set but used
-	 */
-	public static ColorManager getStandalone() {
-		if (standalone==null){
-			throw new IllegalStateException("no standalone color manager set.");
-		}
-		return standalone;
-	}
+    /**
+     * @return color manager for standalone SWT programs, never <code>null</code>.
+     * @throws IllegalStateException when no standalone color manager set but used
+     */
+    public static ColorManager getStandalone() {
+        if (standalone == null) {
+            throw new IllegalStateException("no standalone color manager set.");
+        }
+        return standalone;
+    }
 
-	/**
-	 * Set color manager for standalone SWT programs
-	 * @param standalone
-	 */
-	public static void setStandalone(ColorManager standalone) { // NO_UCD (test only)
-		ColorManager.standalone = standalone;
-	}
+    /**
+     * Set color manager for standalone SWT programs
+     * 
+     * @param standalone
+     */
+    public static void setStandalone(ColorManager standalone) { // NO_UCD (test only)
+        ColorManager.standalone = standalone;
+    }
 
-	public void dispose() {
-		Iterator<Color> e = fColorTable.values().iterator();
-		while (e.hasNext()) {
-			e.next().dispose();
-		}
-	}
+    public void dispose() {
+        Iterator<Color> e = fColorTable.values().iterator();
+        while (e.hasNext()) {
+            e.next().dispose();
+        }
+    }
 
-	public Color getColor(RGB rgb) {
-		Color color = fColorTable.get(rgb);
-		if (color == null) {
-			color = new Color(Display.getCurrent(), rgb);
-			fColorTable.put(rgb, color);
-		}
-		return color;
-	}
+    public Color getColor(RGB rgb) {
+        Color color = fColorTable.get(rgb);
+        if (color == null) {
+            color = new Color(Display.getCurrent(), rgb);
+            fColorTable.put(rgb, color);
+        }
+        return color;
+    }
 
 }

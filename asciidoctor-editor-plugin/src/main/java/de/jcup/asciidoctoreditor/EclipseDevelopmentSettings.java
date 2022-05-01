@@ -20,8 +20,8 @@ import static java.lang.System.*;
 
 public interface EclipseDevelopmentSettings {
 
-	public static final boolean DEBUG_LOGGING_ENABLED = parseBoolean(getProperty("asciidoctor.editor.debug.logging"));
-	
-	public static final boolean DEBUG_TOOLBAR_ENABLED = parseBoolean(getProperty("asciidoctor.editor.debug.toolbar"));
+    public static final boolean DEBUG_LOGGING_ENABLED = parseBoolean(getProperty("asciidoctor.editor.debug.logging"));
+
+    public static final boolean DEBUG_TOOLBAR_ENABLED = parseBoolean(getProperty("asciidoctor.editor.debug.toolbar"));
 
 }

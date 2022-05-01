@@ -18,7 +18,7 @@ package de.jcup.asciidoctoreditor.template;
 import org.eclipse.jface.text.templates.GlobalTemplateVariables;
 import org.eclipse.jface.text.templates.TemplateContextType;
 
-public class AsciidoctorEditorTemplateContextType extends TemplateContextType{
+public class AsciidoctorEditorTemplateContextType extends TemplateContextType {
 
     public AsciidoctorEditorTemplateContextType() {
         addResolver(new GlobalTemplateVariables.Cursor());

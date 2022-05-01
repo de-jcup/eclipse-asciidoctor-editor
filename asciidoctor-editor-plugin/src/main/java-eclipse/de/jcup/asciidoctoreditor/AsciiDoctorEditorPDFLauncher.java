@@ -34,15 +34,15 @@ import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 /**
  * Starts a progress dialog which is blocking on ui but can be canceld by user.
- * (reason for blocking: while pdf conversion is running (and this can take a while))
- * working on the document can lead to problems.
- * <br><br>
+ * (reason for blocking: while pdf conversion is running (and this can take a
+ * while)) working on the document can lead to problems. <br>
+ * <br>
  * The conversion itself is done inside a Job - why? Because asciidoc call
- * cannot be canceled, when its running it runs until done or failed...
- * <br><br>
- * But to give user possibility to cancel and keep on working we provide at 
- * least to cancel blocking dialog. When underlying job is still running
- * the user is able to work
+ * cannot be canceled, when its running it runs until done or failed... <br>
+ * <br>
+ * But to give user possibility to cancel and keep on working we provide at
+ * least to cancel blocking dialog. When underlying job is still running the
+ * user is able to work
  * 
  * @author albert
  *
@@ -70,7 +70,7 @@ public class AsciiDoctorEditorPDFLauncher {
             AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to create/show PDF", e);
         }
     }
-    
+
     private class PDFRunnableWithProgress implements IRunnableWithProgress {
 
         private WrapperConvertData data;
@@ -119,16 +119,16 @@ public class AsciiDoctorEditorPDFLauncher {
             monitor.subTask("Open in external browser");
 
             File file = wrapper.getContext().getTargetPDFFileOrNull();
-            
-            if (file==null || !file.exists()) {
+
+            if (file == null || !file.exists()) {
                 monitor.setCanceled(true);
-                AsciiDoctorEditorUtil.logError("Was not able to open pdf - file does not exist:"+file,null);
+                AsciiDoctorEditorUtil.logError("Was not able to open pdf - file does not exist:" + file, null);
                 return;
             }
             AsciiDoctorEditorUtil.openFileInExternalBrowser(file);
 
         }
-        
+
         private class PDFConvertJob extends Job {
             private boolean done;
             private Exception failed;

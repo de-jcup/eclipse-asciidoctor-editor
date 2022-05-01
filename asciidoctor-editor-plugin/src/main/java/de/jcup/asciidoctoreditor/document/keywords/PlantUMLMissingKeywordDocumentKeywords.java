@@ -18,51 +18,44 @@ package de.jcup.asciidoctoreditor.document.keywords;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 /**
-* 
-* PlantUMLMissingKeywordDocumentKeywords is NOT generated!
-* Some keywords are not supported by "plantuml.jar -language" output. So these missing parts are settled here.
-*
-*/
+ * 
+ * PlantUMLMissingKeywordDocumentKeywords is NOT generated! Some keywords are
+ * not supported by "plantuml.jar -language" output. So these missing parts are
+ * settled here.
+ *
+ */
 public enum PlantUMLMissingKeywordDocumentKeywords implements DocumentKeyWord {
-	
-          IMPLEMENTS("implements"),
-          EXTENDS("extends"),
-          ANNOTATION("annotation"),
-          TITLE("title"),
-          AUTOACTIVATE("autoactivate"),
-          
-          START_MINDMAP("@startmindmap"),
-          END_MINDMAP("@endmindmap"),
 
-          END_HEADER("endheader"),
-          END_LEGEND("endlegend"),
-	;
+    IMPLEMENTS("implements"), EXTENDS("extends"), ANNOTATION("annotation"), TITLE("title"), AUTOACTIVATE("autoactivate"),
 
-	private String text;
+    START_MINDMAP("@startmindmap"), END_MINDMAP("@endmindmap"),
 
-	private PlantUMLMissingKeywordDocumentKeywords(String text) {
-		this.text = text;
-	}
+    END_HEADER("endheader"), END_LEGEND("endlegend"),;
 
-	@Override
-	public String getText() {
-		return text;
-	}
+    private String text;
 
-	@Override
-	public boolean isBreakingOnEof() {
-		return true;
-	}
+    private PlantUMLMissingKeywordDocumentKeywords(String text) {
+        this.text = text;
+    }
 
+    @Override
+    public String getText() {
+        return text;
+    }
 
-	@Override
-	public String getTooltip() {
-		return "This is a keyword representing a 'keyword' in plantuml. Please refer to online documentation for more information";
-	}
+    @Override
+    public boolean isBreakingOnEof() {
+        return true;
+    }
 
-	@Override
-	public String getLinkToDocumentation() {
-		return "http://plantuml.com";
-	}
+    @Override
+    public String getTooltip() {
+        return "This is a keyword representing a 'keyword' in plantuml. Please refer to online documentation for more information";
+    }
+
+    @Override
+    public String getLinkToDocumentation() {
+        return "http://plantuml.com";
+    }
 
 }

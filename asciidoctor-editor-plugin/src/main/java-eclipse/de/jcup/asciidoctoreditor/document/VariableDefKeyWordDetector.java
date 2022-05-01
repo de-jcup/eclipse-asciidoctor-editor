@@ -13,27 +13,28 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.document;
+package de.jcup.asciidoctoreditor.document;
+
 import org.eclipse.jface.text.rules.IWordDetector;
 
-public class VariableDefKeyWordDetector implements IWordDetector{
-	
-	@Override
-	public boolean isWordStart(char c) {
-		if (! Character.isLetter(c)){
-			return false;
-		}
-		return true;
-	}
+public class VariableDefKeyWordDetector implements IWordDetector {
 
-	@Override
-	public boolean isWordPart(char c) {
-		if (c=='='){
-			return true;
-		}
-		if (! Character.isLetter(c)){
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean isWordStart(char c) {
+        if (!Character.isLetter(c)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isWordPart(char c) {
+        if (c == '=') {
+            return true;
+        }
+        if (!Character.isLetter(c)) {
+            return false;
+        }
+        return true;
+    }
 }

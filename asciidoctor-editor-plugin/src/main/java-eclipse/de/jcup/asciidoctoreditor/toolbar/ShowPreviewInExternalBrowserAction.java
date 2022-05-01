@@ -13,30 +13,30 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.toolbar;
+package de.jcup.asciidoctoreditor.toolbar;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class ShowPreviewInExternalBrowserAction extends ToolbarAction {
-	
-	private static ImageDescriptor IMG_EXTERNAL_BROWSER = createToolbarImageDescriptor("preview_external_browser.png");
-	
-	public ShowPreviewInExternalBrowserAction(AsciiDoctorEditor editor) {
-		super(editor);
-		initUI();
-	}
-	
-	private void initUI() {
-		setImageDescriptor(IMG_EXTERNAL_BROWSER);
-		setToolTipText("Asciidoctor preview in external browser.");
-		
-	}
 
-	@Override
-	public void run() {
-	    asciiDoctorEditor.setInternalPreview(false);
-		asciiDoctorEditor.openInExternalBrowser();
-	}
+    private static ImageDescriptor IMG_EXTERNAL_BROWSER = createToolbarImageDescriptor("preview_external_browser.png");
+
+    public ShowPreviewInExternalBrowserAction(AsciiDoctorEditor editor) {
+        super(editor);
+        initUI();
+    }
+
+    private void initUI() {
+        setImageDescriptor(IMG_EXTERNAL_BROWSER);
+        setToolTipText("Asciidoctor preview in external browser.");
+
+    }
+
+    @Override
+    public void run() {
+        asciiDoctorEditor.setInternalPreview(false);
+        asciiDoctorEditor.openInExternalBrowser();
+    }
 }

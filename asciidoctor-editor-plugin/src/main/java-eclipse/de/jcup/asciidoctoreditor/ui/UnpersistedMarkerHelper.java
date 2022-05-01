@@ -35,59 +35,59 @@ import de.jcup.asciidoctoreditor.AdaptedFromEGradle;
 @AdaptedFromEGradle
 public class UnpersistedMarkerHelper extends AbstractMarkerHelper {
 
-	private List<IMarker> markerRegistry;
+    private List<IMarker> markerRegistry;
 
-	public UnpersistedMarkerHelper(String markerType) {
-		this.markerType = markerType;
-		markerRegistry = new ArrayList<>();
-	}
+    public UnpersistedMarkerHelper(String markerType) {
+        this.markerType = markerType;
+        markerRegistry = new ArrayList<>();
+    }
 
-	@Override
-	protected void handleMarkerAdded(IMarker marker) {
-		if (marker == null) {
-			return;
-		}
-		markerRegistry.add(marker);
-	}
+    @Override
+    protected void handleMarkerAdded(IMarker marker) {
+        if (marker == null) {
+            return;
+        }
+        markerRegistry.add(marker);
+    }
 
-	/**
-	 * Removes all created error markers
-	 * 
-	 * @throws CoreException
-	 */
-	public void removeAllRegisteredMarkers() throws CoreException {
-		List<IMarker> workingCopy = new ArrayList<>(markerRegistry);
-		for (IMarker marker : workingCopy) {
-			String type = null;
-			boolean markerExists = marker.exists();
-					
-			if (markerExists){
-				try {
-					type = marker.getType();
-				} catch (CoreException e) {
-					markerExists=false;
-				}
-				
-				if (IMarker.TASK.equals(type)) {
-					/* tasks are not deleted */
-					continue;
-				}
-			}
-			markerRegistry.remove(marker);
-			if (!markerExists) {
-				/*
-				 * means marker.getType() failed, because marker does not exist
-				 * any more. This can happen when a marker is removed manually on ui.
-				 */
-				continue;
-			}
-			marker.delete();
+    /**
+     * Removes all created error markers
+     * 
+     * @throws CoreException
+     */
+    public void removeAllRegisteredMarkers() throws CoreException {
+        List<IMarker> workingCopy = new ArrayList<>(markerRegistry);
+        for (IMarker marker : workingCopy) {
+            String type = null;
+            boolean markerExists = marker.exists();
 
-		}
-	}
+            if (markerExists) {
+                try {
+                    type = marker.getType();
+                } catch (CoreException e) {
+                    markerExists = false;
+                }
 
-	public boolean hasRegisteredMarkers() {
-		return !markerRegistry.isEmpty();
-	}
+                if (IMarker.TASK.equals(type)) {
+                    /* tasks are not deleted */
+                    continue;
+                }
+            }
+            markerRegistry.remove(marker);
+            if (!markerExists) {
+                /*
+                 * means marker.getType() failed, because marker does not exist any more. This
+                 * can happen when a marker is removed manually on ui.
+                 */
+                continue;
+            }
+            marker.delete();
+
+        }
+    }
+
+    public boolean hasRegisteredMarkers() {
+        return !markerRegistry.isEmpty();
+    }
 
 }

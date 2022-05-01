@@ -25,39 +25,37 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 
 public class AsciiDoctorEditorHeadlineHyperlink implements IHyperlink {
 
-	private IRegion region;
-	private AsciiDoctorHeadline function;
-	private AsciiDoctorEditor editor;
-	
+    private IRegion region;
+    private AsciiDoctorHeadline function;
+    private AsciiDoctorEditor editor;
 
-	public AsciiDoctorEditorHeadlineHyperlink(IRegion region, AsciiDoctorHeadline function, AsciiDoctorEditor editor) {
-		isNotNull(region, "Gradle hyperlink region may not be null!");
-		isNotNull(function, "function may not be null!");
-		isNotNull(editor, "editor may not be null!");
-		this.region = region;
-		this.function = function;
-		this.editor=editor;
-	}
+    public AsciiDoctorEditorHeadlineHyperlink(IRegion region, AsciiDoctorHeadline function, AsciiDoctorEditor editor) {
+        isNotNull(region, "Gradle hyperlink region may not be null!");
+        isNotNull(function, "function may not be null!");
+        isNotNull(editor, "editor may not be null!");
+        this.region = region;
+        this.function = function;
+        this.editor = editor;
+    }
 
-	@Override
-	public IRegion getHyperlinkRegion() {
-		return region;
-	}
+    @Override
+    public IRegion getHyperlinkRegion() {
+        return region;
+    }
 
-	@Override
-	public String getTypeLabel() {
-		return "Open function";
-	}
+    @Override
+    public String getTypeLabel() {
+        return "Open function";
+    }
 
-	@Override
-	public String getHyperlinkText() {
-		return "Opens declaration of "+function.getName();
-	}
+    @Override
+    public String getHyperlinkText() {
+        return "Opens declaration of " + function.getName();
+    }
 
-
-	@Override
-	public void open() {
-		editor.selectAndReveal(function.getPosition(), function.getLengthToNameEnd());
-	}
+    @Override
+    public void open() {
+        editor.selectAndReveal(function.getPosition(), function.getLengthToNameEnd());
+    }
 
 }

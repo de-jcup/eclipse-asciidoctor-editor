@@ -287,7 +287,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 
                 }
             }
-            /* not existing or offset differernt, so reset always to null */
+            /* not existing or offset different, so reset always to null */
             cachedLastFoundItemByOffset = null;
 
             List<Item> list = new ArrayList<>();

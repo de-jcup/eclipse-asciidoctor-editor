@@ -20,49 +20,47 @@ import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 
 public enum AsciiDoctorSpecialAttributesKeyWords implements DocumentKeyWord {
 
+    IMAGESDIR("https://asciidoctor.org/docs/user-manual/#setting-the-location-of-images"),
 
-	IMAGESDIR("https://asciidoctor.org/docs/user-manual/#setting-the-location-of-images"),
-	
-	ICONS("https://asciidoctor.org/docs/user-manual/#icons"),
-	
-	TOC("https://asciidoctor.org/docs/user-manual/#user-toc")
-	;
+    ICONS("https://asciidoctor.org/docs/user-manual/#icons"),
 
-	private String text;
-	
-	private AsciiDoctorSpecialAttributesKeyWords(String linkToOnlineDocumentation) {
-		this.text = ":" + name().toLowerCase()+":";
-		tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
-		if (tooltip == null || tooltip.isEmpty()) {
-			tooltip = "An internal asciidoctor attribute. See online documentation for mor information.";
-		}
-		this.linkToDocumentation = linkToOnlineDocumentation;
-		if (this.linkToDocumentation==null){
-			this.linkToDocumentation="https://asciidoctor.org/docs/user-manual";
-		}
-	}
+    TOC("https://asciidoctor.org/docs/user-manual/#user-toc");
 
-	@Override
-	public String getText() {
-		return text;
-	}
+    private String text;
 
-	@Override
-	public boolean isBreakingOnEof() {
-		return false;
-	}
+    private AsciiDoctorSpecialAttributesKeyWords(String linkToOnlineDocumentation) {
+        this.text = ":" + name().toLowerCase() + ":";
+        tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
+        if (tooltip == null || tooltip.isEmpty()) {
+            tooltip = "An internal asciidoctor attribute. See online documentation for mor information.";
+        }
+        this.linkToDocumentation = linkToOnlineDocumentation;
+        if (this.linkToDocumentation == null) {
+            this.linkToDocumentation = "https://asciidoctor.org/docs/user-manual";
+        }
+    }
 
-	private String tooltip;
-	private String linkToDocumentation;
+    @Override
+    public String getText() {
+        return text;
+    }
 
-	@Override
-	public String getTooltip() {
-		return tooltip;
-	}
+    @Override
+    public boolean isBreakingOnEof() {
+        return false;
+    }
 
-	@Override
-	public String getLinkToDocumentation() {
-		return linkToDocumentation;
-	}
+    private String tooltip;
+    private String linkToDocumentation;
+
+    @Override
+    public String getTooltip() {
+        return tooltip;
+    }
+
+    @Override
+    public String getLinkToDocumentation() {
+        return linkToDocumentation;
+    }
 
 }

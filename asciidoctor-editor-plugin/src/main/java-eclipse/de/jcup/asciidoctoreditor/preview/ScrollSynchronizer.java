@@ -25,6 +25,7 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.outline.ItemType;
 import de.jcup.asciidoctoreditor.script.AsciidoctorTextSelectable;
+
 /**
  * A synchronizer for scrolling between editor and internal preview
  * 
@@ -33,106 +34,105 @@ import de.jcup.asciidoctoreditor.script.AsciidoctorTextSelectable;
  */
 public class ScrollSynchronizer {
 
-	private AsciiDoctorEditor editor;
+    private AsciiDoctorEditor editor;
     private ScrollSyncMouseListener scrollSyncListener;
     private boolean ignoreNextTreeSelectionChangeEvent;
 
-	public ScrollSynchronizer(AsciiDoctorEditor editor) {
-		this.editor = editor;
-		this.scrollSyncListener= new ScrollSyncMouseListener();
-	}
-	
-	public void installInBrowser() {
-	    editor.getBrowserAccess().install(scrollSyncListener);
+    public ScrollSynchronizer(AsciiDoctorEditor editor) {
+        this.editor = editor;
+        this.scrollSyncListener = new ScrollSyncMouseListener();
     }
-	
-	class ScrollSyncMouseListener extends MouseAdapter{
-	    @Override
+
+    public void installInBrowser() {
+        editor.getBrowserAccess().install(scrollSyncListener);
+    }
+
+    class ScrollSyncMouseListener extends MouseAdapter {
+        @Override
         public void mouseUp(MouseEvent e) {
-            String javascript = "var element=document.elementFromPoint(" + e.x + "," + e.y + ");" +
-                    "if (element!=null){ return element.getAttribute('id')} else {return null};";
+            String javascript = "var element=document.elementFromPoint(" + e.x + "," + e.y + ");" + "if (element!=null){ return element.getAttribute('id')} else {return null};";
             String elementId = editor.getBrowserAccess().safeBrowserEvaluateJavascript(javascript);
-            
+
             onMouseClickInBrowser(elementId);
         }
-	}
+    }
 
-	private void onMouseClickInBrowser(String elementId) {
-	    if (!editor.getPreferences().isLinkEditorWithPreviewEnabled()){
+    private void onMouseClickInBrowser(String elementId) {
+        if (!editor.getPreferences().isLinkEditorWithPreviewEnabled()) {
             return;
         }
-	    if (elementId==null) {
-	        return;
-	    }
-	    AsciidoctorTextSelectable selectable = editor.findAsciiDoctorPositionByElementId(elementId);
-	    if (selectable==null) {
-	        return;
-	    }
-	    int offset = selectable.getSelectionStart();
-	    if (offset<0) {
-	        return;
-	    }
-	    editor.setFocus();
-	    editor.selectAndReveal(offset, selectable.getSelectionLength());
-	    ignoreNextTreeSelectionChangeEvent=true; // avoid reselect by tree editor
-	    editor.getOutlineSupport().selectItemPointingTo(selectable.getPosition());// will fire tree selection change
-	    
-	}
-	
-	public void onEditorCaretMoved(int caretOffset) {
-		if (!editor.getPreferences().isLinkEditorWithPreviewEnabled()){
-			return;
-		}
-		if (!editor.isInternalPreview()) {
-			return;
-		}
-		Item item = editor.getItemAt(caretOffset);
-		if (item == null) {
-			return;
-		}
-		if (DEBUG_LOGGING_ENABLED) {
-			INSTANCE.logInfo("Editor caret moved to item:"+item);
-		}
-		handleScrollToHeadlineIfPossible(item);
-		handleScrollToAnchorIfPossible(item);
-	}
+        if (elementId == null) {
+            return;
+        }
+        AsciidoctorTextSelectable selectable = editor.findAsciiDoctorPositionByElementId(elementId);
+        if (selectable == null) {
+            return;
+        }
+        int offset = selectable.getSelectionStart();
+        if (offset < 0) {
+            return;
+        }
+        editor.setFocus();
+        editor.selectAndReveal(offset, selectable.getSelectionLength());
+        ignoreNextTreeSelectionChangeEvent = true; // avoid reselect by tree editor
+        editor.getOutlineSupport().selectItemPointingTo(selectable.getPosition());// will fire tree selection change
 
-	private void handleScrollToHeadlineIfPossible(Item item) {
-		ItemType itemType = item.getItemType();
-		if (!ItemType.HEADLINE.equals(itemType)){
-			return;
-		}
-		jumpToElementWithItemId(item);
-	}
-	
-	private void handleScrollToAnchorIfPossible(Item item) {
-		ItemType itemType = item.getItemType();
-		if (!ItemType.INLINE_ANCHOR.equals(itemType)){
-			return;
-		}
-		jumpToElementWithItemId(item);
-	}
+    }
 
-	protected void jumpToElementWithItemId(Item item) {
-	    if (ignoreNextTreeSelectionChangeEvent) {
-	        ignoreNextTreeSelectionChangeEvent=false;
-	        return;
-	    }
-		String anchorId = item.getId();
-		if (DEBUG_LOGGING_ENABLED) {
-			INSTANCE.logInfo("Item has anchor id:"+anchorId);
-		}
-		if (anchorId == null) {
-			/* means first title */
-			editor.getBrowserAccess().navgigateToTopOfView();
-			return;
-		}
-		
-		String javascript = "doScrollTo('"+anchorId+"')";
-		if (DEBUG_LOGGING_ENABLED) {
-			INSTANCE.logInfo("Call browser access with javascript:"+javascript);
-		}
-		editor.getBrowserAccess().safeBrowserExecuteJavascript(javascript);
-	}
+    public void onEditorCaretMoved(int caretOffset) {
+        if (!editor.getPreferences().isLinkEditorWithPreviewEnabled()) {
+            return;
+        }
+        if (!editor.isInternalPreview()) {
+            return;
+        }
+        Item item = editor.getItemAt(caretOffset);
+        if (item == null) {
+            return;
+        }
+        if (DEBUG_LOGGING_ENABLED) {
+            INSTANCE.logInfo("Editor caret moved to item:" + item);
+        }
+        handleScrollToHeadlineIfPossible(item);
+        handleScrollToAnchorIfPossible(item);
+    }
+
+    private void handleScrollToHeadlineIfPossible(Item item) {
+        ItemType itemType = item.getItemType();
+        if (!ItemType.HEADLINE.equals(itemType)) {
+            return;
+        }
+        jumpToElementWithItemId(item);
+    }
+
+    private void handleScrollToAnchorIfPossible(Item item) {
+        ItemType itemType = item.getItemType();
+        if (!ItemType.INLINE_ANCHOR.equals(itemType)) {
+            return;
+        }
+        jumpToElementWithItemId(item);
+    }
+
+    protected void jumpToElementWithItemId(Item item) {
+        if (ignoreNextTreeSelectionChangeEvent) {
+            ignoreNextTreeSelectionChangeEvent = false;
+            return;
+        }
+        String anchorId = item.getId();
+        if (DEBUG_LOGGING_ENABLED) {
+            INSTANCE.logInfo("Item has anchor id:" + anchorId);
+        }
+        if (anchorId == null) {
+            /* means first title */
+            editor.getBrowserAccess().navgigateToTopOfView();
+            return;
+        }
+
+        String javascript = "doScrollTo('" + anchorId + "')";
+        if (DEBUG_LOGGING_ENABLED) {
+            INSTANCE.logInfo("Call browser access with javascript:" + javascript);
+        }
+        editor.getBrowserAccess().safeBrowserExecuteJavascript(javascript);
+    }
 
 }

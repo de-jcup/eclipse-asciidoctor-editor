@@ -36,13 +36,13 @@ public class AsciidocKeywordLabelProvider extends LabelProvider {
         }
         String word = (String) element;
         String path = null;
-        for (DocumentKeyWord keyword: DocumentKeyWords.getAll()) {
-            if (word.equalsIgnoreCase(keyword.getText())){
+        for (DocumentKeyWord keyword : DocumentKeyWords.getAll()) {
+            if (word.equalsIgnoreCase(keyword.getText())) {
 //                path = PATH_ICON_ASCIIDOCTOR_EDITOR;
                 return PlatformUI.getWorkbench().getSharedImages().getImage(SharedImages.IMG_OBJS_BKMRK_TSK);
             }
         }
-        if (path==null) {
+        if (path == null) {
             String x = ((String) element).toLowerCase();
             if (x.startsWith("=")) {
                 path = PATH_OUTLINE_ICON_HEADLINE;

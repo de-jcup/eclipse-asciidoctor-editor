@@ -90,6 +90,7 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
     private ReducedBrowserInformationControlCreator creator;
     private String bgColor;
     private String fgColor;
+
     /**
      * Creates configuration by given adaptable
      * 
@@ -138,9 +139,9 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
     public IQuickAssistAssistant getQuickAssistAssistant(ISourceViewer sourceViewer) {
         return super.getQuickAssistAssistant(sourceViewer);
     }
-    
+
     public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
-        if (creator==null) {
+        if (creator == null) {
             creator = new ReducedBrowserInformationControlCreator();
         }
         if (bgColor == null || fgColor == null) {
@@ -160,11 +161,11 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
 
         }
         PlainTextToHTMLProvider htmlProvider = creator.getFallbackHtmlProvider();
-        if (htmlProvider==null) {
+        if (htmlProvider == null) {
             return creator;
         }
         CSSProvider cssProvider = htmlProvider.getCSSProvider();
-        if (cssProvider!=null) {
+        if (cssProvider != null) {
             cssProvider.setForegroundColor(fgColor);
             cssProvider.setBackgroundColor(bgColor);
         }

@@ -29,6 +29,7 @@ public class AsciiDocDocumentAttributeScannerTest {
     public void before() {
         toTest = new AsciiDocDocumentAttributeScanner();
     }
+
     @Test
     public void test_null() {
         /* prepare */
@@ -38,7 +39,7 @@ public class AsciiDocDocumentAttributeScannerTest {
         /* test */
         assertTrue(result.isEmpty());
     }
-    
+
     @Test
     public void test_colon_alone() {
         /* prepare */
@@ -48,7 +49,7 @@ public class AsciiDocDocumentAttributeScannerTest {
         /* test */
         assertTrue(result.isEmpty());
     }
-    
+
     @Test
     public void test_two_colon_empty() {
         /* prepare */
@@ -58,7 +59,7 @@ public class AsciiDocDocumentAttributeScannerTest {
         /* test */
         assertTrue(result.isEmpty());
     }
-    
+
     @Test
     public void test_abc_but_empty() {
         /* prepare */
@@ -67,36 +68,33 @@ public class AsciiDocDocumentAttributeScannerTest {
 
         /* test */
         assertTrue(result.containsKey("abc"));
-        assertEquals("",result.get("abc"));
+        assertEquals("", result.get("abc"));
     }
-    
+
     @Test
     public void test_abc_value() {
         /* prepare */
         /* execute */
         Map<String, Object> result = toTest.scan(":abc: value");
-        
+
         /* test */
         assertTrue(result.containsKey("abc"));
-        assertEquals("value",result.get("abc"));
+        assertEquals("value", result.get("abc"));
     }
-    
+
     @Test
     public void test_abc_value1_new_line_def_value2() {
         /* prepare */
         /* execute */
         Map<String, Object> result = toTest.scan(":abc: value1\n:def:value2");
-        
+
         /* test */
         assertTrue(result.containsKey("abc"));
-        assertEquals("value1",result.get("abc"));
+        assertEquals("value1", result.get("abc"));
         assertTrue(result.containsKey("def"));
-        assertEquals("value2",result.get("def"));
-        
-        assertEquals(2,result.size());
+        assertEquals("value2", result.get("def"));
+
+        assertEquals(2, result.size());
     }
-    
-    
-    
 
 }

@@ -40,7 +40,7 @@ public class AsciidocReferenceExistingTextCalculatorTest {
         /* test */
         assertEquals("include::", result);
     }
-    
+
     @Test
     public void include_subfolder1() {
         /* prepare */
@@ -53,7 +53,7 @@ public class AsciidocReferenceExistingTextCalculatorTest {
         /* test */
         assertEquals("include::subfolder1/", result);
     }
-    
+
     @Test
     public void include_subfolder2_subfolder_3() {
         /* prepare */
@@ -66,13 +66,13 @@ public class AsciidocReferenceExistingTextCalculatorTest {
         /* test */
         assertEquals("include::subfolder2/subfolder3", result);
     }
-    
+
     @Test
     public void include_subfolder2_subfolder_3_but_index_behind2() {
         /* prepare */
         String text = "include::subfolder2";
         int index = text.length();
-        text+="/subfolder3";
+        text += "/subfolder3";
 
         /* execute */
         String result = toTest.resolveReferenceTextOrNull(text, index);
@@ -80,13 +80,13 @@ public class AsciidocReferenceExistingTextCalculatorTest {
         /* test */
         assertEquals("include::subfolder2", result);
     }
-    
+
     @Test
     public void include_subfolder2_subfolder_3_but_index_behind2_slash() {
         /* prepare */
         String text = "include::subfolder2/";
         int index = text.length();
-        text+="subfolder3";
+        text += "subfolder3";
 
         /* execute */
         String result = toTest.resolveReferenceTextOrNull(text, index);
@@ -94,7 +94,7 @@ public class AsciidocReferenceExistingTextCalculatorTest {
         /* test */
         assertEquals("include::subfolder2/", result);
     }
-    
+
     @Test
     public void include_file1() {
         /* prepare */
@@ -107,12 +107,12 @@ public class AsciidocReferenceExistingTextCalculatorTest {
         /* test */
         assertEquals("include::file1", result);
     }
-    
+
     @Test
     public void include_file1_pos_before_one() {
         /* prepare */
         String text = "include::file1";
-        int index = text.length()-1;
+        int index = text.length() - 1;
 
         /* execute */
         String result = toTest.resolveReferenceTextOrNull(text, index);
@@ -120,7 +120,7 @@ public class AsciidocReferenceExistingTextCalculatorTest {
         /* test */
         assertEquals("include::file", result);
     }
-    
+
     @Test
     public void text_before_then_include_file1() {
         /* prepare */

@@ -91,11 +91,11 @@ public class AsciiDoctorEditorEnvironmentPreferencePage extends PreferencePage i
 
             customEnvironmentEntrySupport.setCustomEnvironmentEntriesEnabled(customEnvironmentEntriesEnabled);
             customEnvironmentEntrySupport.setCustomEnvironmentEntries(definitionWorkingCopy);
-            
-            if (! AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor()) {
-                
+
+            if (!AsciiDoctorEditorPreferences.getInstance().isUsingInstalledAsciidoctor()) {
+
                 ASPSupport aspSupport = AsciiDoctorEditorActivator.getDefault().getAspSupport();
-                
+
                 aspSupport.configurationChanged();
             }
         }

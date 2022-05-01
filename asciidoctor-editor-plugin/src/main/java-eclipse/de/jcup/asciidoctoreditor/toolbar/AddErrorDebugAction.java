@@ -26,30 +26,29 @@ import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class AddErrorDebugAction extends ToolbarAction implements DebugAction {
 
-	public AddErrorDebugAction(AsciiDoctorEditor editor) {
-		super(editor);
-		initUI();
-	}
+    public AddErrorDebugAction(AsciiDoctorEditor editor) {
+        super(editor);
+        initUI();
+    }
 
-	@Override
-	public void run() {
-		AsciiDoctorMarker error = new AsciiDoctorMarker(-1, -1, "the message at "+System.currentTimeMillis()+" millis");
-		AsciiDoctorEditorUtil.addAsciiDoctorMarker(asciiDoctorEditor, -1, error, IMarker.SEVERITY_ERROR);
-	}
+    @Override
+    public void run() {
+        AsciiDoctorMarker error = new AsciiDoctorMarker(-1, -1, "the message at " + System.currentTimeMillis() + " millis");
+        AsciiDoctorEditorUtil.addAsciiDoctorMarker(asciiDoctorEditor, -1, error, IMarker.SEVERITY_ERROR);
+    }
 
-	private void initUI() {
-		initImage();
-		initText();
-	}
+    private void initUI() {
+        initImage();
+        initText();
+    }
 
-	private void initImage() {
-		ImageDescriptor sharedImage = PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_ERROR_TSK);
-		setImageDescriptor(sharedImage);
-	}
+    private void initImage() {
+        ImageDescriptor sharedImage = PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_ERROR_TSK);
+        setImageDescriptor(sharedImage);
+    }
 
-	private void initText() {
-		setText("Add an error");
-	}
+    private void initText() {
+        setText("Add an error");
+    }
 
 }

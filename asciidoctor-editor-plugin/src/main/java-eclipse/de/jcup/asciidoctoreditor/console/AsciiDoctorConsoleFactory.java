@@ -17,11 +17,11 @@ package de.jcup.asciidoctoreditor.console;
 
 import org.eclipse.ui.console.IConsoleFactory;
 
-public class AsciiDoctorConsoleFactory implements IConsoleFactory{
+public class AsciiDoctorConsoleFactory implements IConsoleFactory {
 
-	@Override
-	public void openConsole() {
-		AsciiDoctorConsoleUtil.showConsole();
-	}
+    @Override
+    public void openConsole() {
+        AsciiDoctorConsoleUtil.showConsole();
+    }
 
 }

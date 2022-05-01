@@ -34,116 +34,114 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 
 public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlinkDetector {
 
-	private IAdaptable adaptable;
+    private IAdaptable adaptable;
 
-	public AsciiDoctorEditorLinkTextHyperlinkDetector(IAdaptable editor) {
-		this.adaptable = editor;
-	}
-	
-	@Override
-	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-		if (adaptable == null) {
-			return null;
-		}
-		AsciiDoctorEditor editor = adaptable.getAdapter(AsciiDoctorEditor.class);
-		if (editor == null) {
-			return null;
-		}
-		return resolveHyperlinks(textViewer, region, editor);
-	}
+    public AsciiDoctorEditorLinkTextHyperlinkDetector(IAdaptable editor) {
+        this.adaptable = editor;
+    }
 
-	public IHyperlink[] resolveHyperlinks(ITextViewer textViewer, IRegion region, AsciiDoctorEditor editor) {
-		IDocument document = textViewer.getDocument();
-		int offset = region.getOffset();
+    @Override
+    public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
+        if (adaptable == null) {
+            return null;
+        }
+        AsciiDoctorEditor editor = adaptable.getAdapter(AsciiDoctorEditor.class);
+        if (editor == null) {
+            return null;
+        }
+        return resolveHyperlinks(textViewer, region, editor);
+    }
 
-		IRegion lineInfo;
-		String line;
-		try {
-			lineInfo = document.getLineInformationOfOffset(offset);
-			line = document.get(lineInfo.getOffset(), lineInfo.getLength());
-		} catch (BadLocationException ex) {
-			return null;
-		}
+    public IHyperlink[] resolveHyperlinks(ITextViewer textViewer, IRegion region, AsciiDoctorEditor editor) {
+        IDocument document = textViewer.getDocument();
+        int offset = region.getOffset();
 
-		int offsetInLine = offset - lineInfo.getOffset();
+        IRegion lineInfo;
+        String line;
+        try {
+            lineInfo = document.getLineInformationOfOffset(offset);
+            line = document.get(lineInfo.getOffset(), lineInfo.getLength());
+        } catch (BadLocationException ex) {
+            return null;
+        }
 
-		LinkTextData linkTextData = AsciiDocStringUtils.resolveTextFromStartToBracketsEnd(line, offset, offsetInLine);
+        int offsetInLine = offset - lineInfo.getOffset();
 
-		List<IHyperlink> hyperlinks = new ArrayList<>();
-		append(hyperlinks, resolveLinkToInclude(linkTextData, editor));
-		append(hyperlinks, resolveLinkToImage(linkTextData, editor));
-		append(hyperlinks, resolveLinkToHeadline(linkTextData, editor));
-		append(hyperlinks, resolveLinkToDiagram(linkTextData, editor));
+        LinkTextData linkTextData = AsciiDocStringUtils.resolveTextFromStartToBracketsEnd(line, offset, offsetInLine);
 
-		if (hyperlinks.isEmpty()) {
-			return null;
-		}
-		return hyperlinks.toArray(new IHyperlink[hyperlinks.size()]);
-	}
+        List<IHyperlink> hyperlinks = new ArrayList<>();
+        append(hyperlinks, resolveLinkToInclude(linkTextData, editor));
+        append(hyperlinks, resolveLinkToImage(linkTextData, editor));
+        append(hyperlinks, resolveLinkToHeadline(linkTextData, editor));
+        append(hyperlinks, resolveLinkToDiagram(linkTextData, editor));
 
-	private Region createTargetRegion(LinkTextData linkTextData) {
-		Region targetRegion = new Region(linkTextData.offsetLeft, linkTextData.text.length());
-		return targetRegion;
-	}
+        if (hyperlinks.isEmpty()) {
+            return null;
+        }
+        return hyperlinks.toArray(new IHyperlink[hyperlinks.size()]);
+    }
 
-	private void append(List<IHyperlink> hyperlinks, IHyperlink[] hyperlinkArray) {
-		if (hyperlinkArray == null) {
-			return;
-		}
-		for (IHyperlink hyperlink : hyperlinkArray) {
-			if (hyperlink == null) {
-				continue;
-			}
-			hyperlinks.add(hyperlink);
-		}
+    private Region createTargetRegion(LinkTextData linkTextData) {
+        Region targetRegion = new Region(linkTextData.offsetLeft, linkTextData.text.length());
+        return targetRegion;
+    }
 
-	}
+    private void append(List<IHyperlink> hyperlinks, IHyperlink[] hyperlinkArray) {
+        if (hyperlinkArray == null) {
+            return;
+        }
+        for (IHyperlink hyperlink : hyperlinkArray) {
+            if (hyperlink == null) {
+                continue;
+            }
+            hyperlinks.add(hyperlink);
+        }
 
-	private IHyperlink[] resolveLinkToImage(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+    }
 
-		String imageName = AsciiDocStringUtils.resolveFilenameOfImageOrNull(linkTextData.text);
-		if (imageName != null) {
-			Region targetRegion = createTargetRegion(linkTextData);
-			return new IHyperlink[] { new AsciiDoctorEditorOpenImageHyperlink(targetRegion, imageName, editor) };
+    private IHyperlink[] resolveLinkToImage(LinkTextData linkTextData, AsciiDoctorEditor editor) {
 
-		}
-		return null;
-	}
+        String imageName = AsciiDocStringUtils.resolveFilenameOfImageOrNull(linkTextData.text);
+        if (imageName != null) {
+            Region targetRegion = createTargetRegion(linkTextData);
+            return new IHyperlink[] { new AsciiDoctorEditorOpenImageHyperlink(targetRegion, imageName, editor) };
 
-	private IHyperlink[] resolveLinkToHeadline(LinkTextData linkTextData, AsciiDoctorEditor editor) {
-		String foundText = linkTextData.text;
-		AsciiDoctorHeadline headline = editor.findAsciiDoctorHeadlineByName(foundText);
-		if (headline != null) {
-			Region targetRegion = createTargetRegion(linkTextData);
-			return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, headline, editor) };
-		}
-		return null;
-	}
+        }
+        return null;
+    }
 
-	protected IHyperlink[] resolveLinkToInclude(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+    private IHyperlink[] resolveLinkToHeadline(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+        String foundText = linkTextData.text;
+        AsciiDoctorHeadline headline = editor.findAsciiDoctorHeadlineByName(foundText);
+        if (headline != null) {
+            Region targetRegion = createTargetRegion(linkTextData);
+            return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, headline, editor) };
+        }
+        return null;
+    }
 
-		String foundText = linkTextData.text;
-		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrNull(foundText);
-		if (includeFileName != null) {
-			Region targetRegion = createTargetRegion(linkTextData);
-			return new IHyperlink[] {
-					new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, editor) };
-		}
-		
-		return null;
-	}
-	
-	protected IHyperlink[] resolveLinkToDiagram(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+    protected IHyperlink[] resolveLinkToInclude(LinkTextData linkTextData, AsciiDoctorEditor editor) {
 
-		String foundText = linkTextData.text;
-		String diagramFileName = AsciiDocStringUtils.resolveFilenameOfDiagramMacroOrNull(foundText);
-		if (diagramFileName != null) {
-			Region targetRegion = createTargetRegion(linkTextData);
-			return new IHyperlink[] {
-					new AsciiDoctorEditorOpenDiagramHyperlink(targetRegion, diagramFileName, editor) };
-		}
-		
-		return null;
-	}
+        String foundText = linkTextData.text;
+        String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrNull(foundText);
+        if (includeFileName != null) {
+            Region targetRegion = createTargetRegion(linkTextData);
+            return new IHyperlink[] { new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, editor) };
+        }
+
+        return null;
+    }
+
+    protected IHyperlink[] resolveLinkToDiagram(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+
+        String foundText = linkTextData.text;
+        String diagramFileName = AsciiDocStringUtils.resolveFilenameOfDiagramMacroOrNull(foundText);
+        if (diagramFileName != null) {
+            Region targetRegion = createTargetRegion(linkTextData);
+            return new IHyperlink[] { new AsciiDoctorEditorOpenDiagramHyperlink(targetRegion, diagramFileName, editor) };
+        }
+
+        return null;
+    }
 
 }

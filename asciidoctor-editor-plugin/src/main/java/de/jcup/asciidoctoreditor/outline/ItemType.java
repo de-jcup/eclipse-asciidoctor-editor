@@ -13,19 +13,19 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.outline;
+package de.jcup.asciidoctoreditor.outline;
 
 public enum ItemType {
-	
-	HEADLINE,
-	
-	INCLUDE,
-	
-	INLINE_ANCHOR,
-	
-	META_INFO, 
-	
-	META_ERROR,
-	
-	META_DEBUG
+
+    HEADLINE,
+
+    INCLUDE,
+
+    INLINE_ANCHOR,
+
+    META_INFO,
+
+    META_ERROR,
+
+    META_DEBUG
 }

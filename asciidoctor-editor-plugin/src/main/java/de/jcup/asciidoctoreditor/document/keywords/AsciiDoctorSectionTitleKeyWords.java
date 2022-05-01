@@ -20,59 +20,59 @@ import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 
 public enum AsciiDoctorSectionTitleKeyWords implements DocumentKeyWord {
 
-	H0("=", "Document Title", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"),
+    H0("=", "Document Title", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"),
 
-	H1("==", "Level 1 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"),
+    H1("==", "Level 1 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"),
 
-	H2("===", "Level 2 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"),
+    H2("===", "Level 2 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"),
 
-	H3("====", "Level 3 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"), 
-	
-	H4("=====",	"Level 4 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"), 
-	
-	H5("======", "Level 5 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles");
+    H3("====", "Level 3 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"),
 
-	private String text;
-	private String label;
+    H4("=====", "Level 4 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles"),
 
-	private AsciiDoctorSectionTitleKeyWords(String text, String label, String linkToOnlineDocumentation) {
-		this.text = text;
-		this.label = label;
-		tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
-		if (tooltip == null || tooltip.isEmpty()) {
-			tooltip = "An internal asciidoctor attribute. See online documentation for mor information.";
-		}
-		this.linkToDocumentation = linkToOnlineDocumentation;
-		if (this.linkToDocumentation == null) {
-			this.linkToDocumentation = "https://asciidoctor.org/docs/user-manual";
-		}
-	}
+    H5("======", "Level 5 Section", "https://asciidoctor.org/docs/asciidoc-writers-guide/#section-titles");
 
-	@Override
-	public String getText() {
-		return text;
-	}
+    private String text;
+    private String label;
 
-	@Override
-	public boolean isBreakingOnEof() {
-		return false;
-	}
+    private AsciiDoctorSectionTitleKeyWords(String text, String label, String linkToOnlineDocumentation) {
+        this.text = text;
+        this.label = label;
+        tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
+        if (tooltip == null || tooltip.isEmpty()) {
+            tooltip = "An internal asciidoctor attribute. See online documentation for mor information.";
+        }
+        this.linkToDocumentation = linkToOnlineDocumentation;
+        if (this.linkToDocumentation == null) {
+            this.linkToDocumentation = "https://asciidoctor.org/docs/user-manual";
+        }
+    }
 
-	private String tooltip;
-	private String linkToDocumentation;
+    @Override
+    public String getText() {
+        return text;
+    }
 
-	@Override
-	public String getTooltip() {
-		return tooltip;
-	}
+    @Override
+    public boolean isBreakingOnEof() {
+        return false;
+    }
 
-	@Override
-	public String getLinkToDocumentation() {
-		return linkToDocumentation;
-	}
+    private String tooltip;
+    private String linkToDocumentation;
 
-	public String getLabel() {
-		return label;
-	}
+    @Override
+    public String getTooltip() {
+        return tooltip;
+    }
+
+    @Override
+    public String getLinkToDocumentation() {
+        return linkToDocumentation;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 
 }

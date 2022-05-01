@@ -18,6 +18,7 @@ package de.jcup.asciidoctoreditor.codeassist;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.graphics.Image;
 
+import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorOutlineLabelProvider;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.ui.AsciidoctorIconConstants;
@@ -28,8 +29,8 @@ import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 public class DynamicPlantumlContentAssistSupport extends ProposalProviderContentAssistSupport {
 
     public DynamicPlantumlContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("plantuml::", new DiagramBaseParentResolver(), new DynamicPlantumlEnabledResolver(),
-                new CodeAssistFileFilter(".puml", ".plantuml", ".pu", ".iuml")));
+        super(provider,
+                new AsciidocReferenceProposalSupport("plantuml::", new DiagramBaseParentResolver(), new DynamicPlantumlEnabledResolver(), new CodeAssistFileFilter(PlantUMLFileEndings.asArray())));
     }
 
     @Override

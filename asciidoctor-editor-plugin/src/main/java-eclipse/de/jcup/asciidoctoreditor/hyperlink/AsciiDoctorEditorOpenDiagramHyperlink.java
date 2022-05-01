@@ -24,39 +24,37 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class AsciiDoctorEditorOpenDiagramHyperlink implements IHyperlink {
 
-	private IRegion region;
-	private AsciiDoctorEditor editor;
-	private String fileName;
-	
+    private IRegion region;
+    private AsciiDoctorEditor editor;
+    private String fileName;
 
-	public AsciiDoctorEditorOpenDiagramHyperlink(IRegion region, String fileName, AsciiDoctorEditor editor) {
-		isNotNull(region, "Hyperlink region may not be null!");
-		isNotNull(fileName, "fileName may not be null!");
-		isNotNull(editor, "editor may not be null!");
-		this.region = region;
-		this.fileName = fileName;
-		this.editor=editor;
-	}
+    public AsciiDoctorEditorOpenDiagramHyperlink(IRegion region, String fileName, AsciiDoctorEditor editor) {
+        isNotNull(region, "Hyperlink region may not be null!");
+        isNotNull(fileName, "fileName may not be null!");
+        isNotNull(editor, "editor may not be null!");
+        this.region = region;
+        this.fileName = fileName;
+        this.editor = editor;
+    }
 
-	@Override
-	public IRegion getHyperlinkRegion() {
-		return region;
-	}
+    @Override
+    public IRegion getHyperlinkRegion() {
+        return region;
+    }
 
-	@Override
-	public String getTypeLabel() {
-		return "Open included diagram";
-	}
+    @Override
+    public String getTypeLabel() {
+        return "Open included diagram";
+    }
 
-	@Override
-	public String getHyperlinkText() {
-		return "Opens diagram:"+fileName;
-	}
+    @Override
+    public String getHyperlinkText() {
+        return "Opens diagram:" + fileName;
+    }
 
-
-	@Override
-	public void open() {
-		editor.openDiagram(fileName);
-	}
+    @Override
+    public void open() {
+        editor.openDiagram(fileName);
+    }
 
 }

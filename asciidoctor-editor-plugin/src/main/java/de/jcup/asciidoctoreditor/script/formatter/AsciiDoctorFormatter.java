@@ -28,7 +28,7 @@ public class AsciiDoctorFormatter {
         List<AsciidocFormatBlock> blocks = blockScanner.scan(origin);
         StringBuilder sb = new StringBuilder();
         for (AsciidocFormatBlock block : blocks) {
-            handleBlock(block,config);
+            handleBlock(block, config);
             sb.append(block.source);
         }
         return sb.toString();
@@ -36,7 +36,7 @@ public class AsciiDoctorFormatter {
 
     private void handleBlock(AsciidocFormatBlock block, AsciiDoctorFormatterConfig config) {
         if (block.blockType == AsciidocBlockType.TEXT) {
-            block.source=new StringBuilder().append(simpleTextFormatter.format(block.source.toString(), config));
+            block.source = new StringBuilder().append(simpleTextFormatter.format(block.source.toString(), config));
         }
     }
 

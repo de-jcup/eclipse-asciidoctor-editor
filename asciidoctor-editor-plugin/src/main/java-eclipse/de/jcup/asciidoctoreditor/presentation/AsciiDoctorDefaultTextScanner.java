@@ -21,14 +21,13 @@ import org.eclipse.jface.text.rules.WhitespaceRule;
 
 import de.jcup.asciidoctoreditor.ui.ColorManager;
 
-
 public class AsciiDoctorDefaultTextScanner extends RuleBasedScanner {
 
-	public AsciiDoctorDefaultTextScanner(ColorManager manager) {
-		IRule[] rules = new IRule[1];
-		rules[0] = new WhitespaceRule(new AsciiDoctorWhitespaceDetector());
+    public AsciiDoctorDefaultTextScanner(ColorManager manager) {
+        IRule[] rules = new IRule[1];
+        rules[0] = new WhitespaceRule(new AsciiDoctorWhitespaceDetector());
 
-		setRules(rules);
-	}
-	
+        setRules(rules);
+    }
+
 }

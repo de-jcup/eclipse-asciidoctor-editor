@@ -37,15 +37,17 @@ public class AsciiDoctorProviderContext {
     private LogAdapter logAdapter;
     private File asciidocFile;
     /**
-     * Base dir used for asciidoctor rendering - is either the project base dir, or a configured directory by a asciidoctorconfig file using "base_dir" option attribute
+     * Base dir used for asciidoctor rendering - is either the project base dir, or
+     * a configured directory by a asciidoctorconfig file using "base_dir" option
+     * attribute
      */
     private File baseDir;
-    
+
     /**
      * The project base directory. it is calculated/estimated by the editor plugin
      */
     private File projectBaseDir;
-    
+
     private Path outputFolder;
     private boolean tocVisible;
     private AsciiDoctorAdapterProvider provider;
@@ -113,7 +115,7 @@ public class AsciiDoctorProviderContext {
     }
 
     public void setAsciidocFile(File asciidocFile) {
-        if (this.asciidocFile==asciidocFile) {
+        if (this.asciidocFile == asciidocFile) {
             return;
         }
         this.asciidocFile = asciidocFile;
@@ -163,7 +165,7 @@ public class AsciiDoctorProviderContext {
      * recalculated on next rendering time fo editor content
      */
     public void resetCaches() {
-        this.asciidocFile=null;
+        this.asciidocFile = null;
         this.baseDir = null;
         this.projectBaseDir = null;
         this.outputFolder = null;

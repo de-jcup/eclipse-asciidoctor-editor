@@ -26,11 +26,11 @@ import de.jcup.asp.client.AspClientProgressMonitor;
 public interface AsciidoctorAdapter {
 
     void convertFile(File editorFileOrNull, File asciiDocFile, AsciidocOptions options, AsciidocAttributes attributes, AspClientProgressMonitor monitor);
-    
+
     default public Map<String, Object> resolveAttributes(File fileOrDirectory) {
-        Objects.requireNonNull(fileOrDirectory,"File path must be set!");
+        Objects.requireNonNull(fileOrDirectory, "File path must be set!");
         return AsciiDocAttributeResolver.DEFAULT.resolveAttributes(fileOrDirectory);
-        
+
     }
 
 }

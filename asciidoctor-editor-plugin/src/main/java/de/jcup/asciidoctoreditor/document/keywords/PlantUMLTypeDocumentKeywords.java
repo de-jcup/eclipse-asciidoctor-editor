@@ -18,69 +18,41 @@ package de.jcup.asciidoctoreditor.document.keywords;
 import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 /**
-* 
-* PlantUMLTypeDocumentKeywords is a generated java class. Please look into PlantUMLKeywordsGenerator.java
-*
-*/
+ * 
+ * PlantUMLTypeDocumentKeywords is a generated java class. Please look into
+ * PlantUMLKeywordsGenerator.java
+ *
+ */
 public enum PlantUMLTypeDocumentKeywords implements DocumentKeyWord {
 
-	
-          ABSTRACT("abstract"),
-          ACTOR("actor"),
-          AGENT("agent"),
-          ARCHIMATE("archimate"),
-          ARTIFACT("artifact"),
-          BOUNDARY("boundary"),
-          CARD("card"),
-          CLASS("class"),
-          CLOUD("cloud"),
-          COMPONENT("component"),
-          CONTROL("control"),
-          DATABASE("database"),
-          DIAMOND("diamond"),
-          ENTITY("entity"),
-          ENUM("enum"),
-          FILE("file"),
-          FOLDER("folder"),
-          FRAME("frame"),
-          INTERFACE("interface"),
-          NODE("node"),
-          OBJECT("object"),
-          PACKAGE("package"),
-          PARTICIPANT("participant"),
-          QUEUE("queue"),
-          RECTANGLE("rectangle"),
-          STACK("stack"),
-          STATE("state"),
-          STORAGE("storage"),
-          USECASE("usecase"),
-	;
+    ABSTRACT("abstract"), ACTOR("actor"), AGENT("agent"), ARCHIMATE("archimate"), ARTIFACT("artifact"), BOUNDARY("boundary"), CARD("card"), CLASS("class"), CLOUD("cloud"), COMPONENT("component"),
+    CONTROL("control"), DATABASE("database"), DIAMOND("diamond"), ENTITY("entity"), ENUM("enum"), FILE("file"), FOLDER("folder"), FRAME("frame"), INTERFACE("interface"), NODE("node"),
+    OBJECT("object"), PACKAGE("package"), PARTICIPANT("participant"), QUEUE("queue"), RECTANGLE("rectangle"), STACK("stack"), STATE("state"), STORAGE("storage"), USECASE("usecase"),;
 
-	private String text;
+    private String text;
 
-	private PlantUMLTypeDocumentKeywords(String text) {
-		this.text = text;
-	}
+    private PlantUMLTypeDocumentKeywords(String text) {
+        this.text = text;
+    }
 
-	@Override
-	public String getText() {
-		return text;
-	}
+    @Override
+    public String getText() {
+        return text;
+    }
 
-	@Override
-	public boolean isBreakingOnEof() {
-		return true;
-	}
+    @Override
+    public boolean isBreakingOnEof() {
+        return true;
+    }
 
+    @Override
+    public String getTooltip() {
+        return "This is a keyword representing a 'blockType' in plantuml. Please refer to online documentation for more information";
+    }
 
-	@Override
-	public String getTooltip() {
-		return "This is a keyword representing a 'blockType' in plantuml. Please refer to online documentation for more information";
-	}
-
-	@Override
-	public String getLinkToDocumentation() {
-		return "http://plantuml.com";
-	}
+    @Override
+    public String getLinkToDocumentation() {
+        return "http://plantuml.com";
+    }
 
 }

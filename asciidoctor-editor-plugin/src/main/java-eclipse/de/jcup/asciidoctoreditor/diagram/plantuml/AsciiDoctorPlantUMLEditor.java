@@ -45,51 +45,14 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
     private static final AsciiDoctorPlantUMLFileDocumentProvider ASCII_DOCTOR_PLANT_UML_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLFileDocumentProvider();
     private static final AsciiDoctorPlantUMLTextFileDocumentProvider ASCII_DOCTOR_PLANT_UML_TEXT_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLTextFileDocumentProvider();
 
-//    private PlantUMLLocalIncludeHierarchySearch search = new PlantUMLLocalIncludeHierarchySearch();
-    
     @Override
     protected AsciidoctorEditorOutlineSupport createOutlineSupport() {
         return new AsciidoctorPlantUMLEditorOutlineSupport(this);
     }
 
     public void beforeAsciidocConvert(WrapperConvertData data) {
-        /* we check if there is a need to copy some local includes to temp folder */
-//        String text = getDocumentText();
-//        File file = data.editorFileOrNull;
-//        if (file==null) {
-//            return;
-//        }
-//        File parentFile = file.getParentFile();
-//        search.setBaseFolder(parentFile);
-//
-//        List<File> files = null;
-//        try {
-//            files = search.searchLocalIncludes(text);
-//            
-//        } catch (IOException e) {
-//            warn("Include search problem: " + e.getMessage());
-//            return;
-//        }
-        
-        
-        
-        // old stuff: we copied the includes
-//        CopySupport copySupport = new CopySupport(parentFile,getTemporaryExternalPreviewFile().getParentFile());
-//        try {
-//            copySupport.copyFilesToNewBase(files);
-//        } catch (IOException e) {
-//            warn("Failed to copy local includes to temp folder: " + e.getMessage());
-//        }
-        
+        /* nothing special here */
     }
-    
-    
-
-//    private void warn(String message) {
-//        AsciiDoctorMarker error = new AsciiDoctorMarker(-1, -1, message);
-//        int severity = IMarker.SEVERITY_WARNING;
-//        AsciiDoctorEditorUtil.addAsciiDoctorMarker(this, 1, error, severity);
-//    }
 
     @Override
     protected ContentTransformer createCustomContentTransformer() {
@@ -117,14 +80,13 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
         previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
         previewToolBarManager.add(new ShowPreviewHorizontalInsideEditorAction(this));
         previewToolBarManager.add(new ShowPreviewInExternalBrowserAction(this));
-        
+
         IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         otherToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
-        
+
         IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         buildToolBarManager.add(rebuildAction);
         buildToolBarManager.add(clearProjectCacheAction);
-
 
         // Add to the cool bar manager
         coolBarManager.add(new ToolBarContributionItem(previewToolBarManager, "asciiDocPlantUMLEditor.toolbar.preview"));

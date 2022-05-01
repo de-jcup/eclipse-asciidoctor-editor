@@ -19,22 +19,22 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
-public class ItalicFormatAction extends FormatTextAction{
-	
-	private static ImageDescriptor IMG_DESCRIPTOR_ITALIC = createToolbarImageDescriptor("format_italic.png");
+public class ItalicFormatAction extends FormatTextAction {
 
-	public ItalicFormatAction(AsciiDoctorEditor editor) {
-		super(editor, "Italic (Ctrl + i)", IMG_DESCRIPTOR_ITALIC);
-	}
+    private static ImageDescriptor IMG_DESCRIPTOR_ITALIC = createToolbarImageDescriptor("format_italic.png");
 
-	@Override
-	protected String formatPrefix() {
-		return "_";
-	}
+    public ItalicFormatAction(AsciiDoctorEditor editor) {
+        super(editor, "Italic (Ctrl + i)", IMG_DESCRIPTOR_ITALIC);
+    }
 
-	@Override
-	protected String formatPostfix() {
-		return "_";
-	}
+    @Override
+    protected String formatPrefix() {
+        return "_";
+    }
+
+    @Override
+    protected String formatPostfix() {
+        return "_";
+    }
 
 }

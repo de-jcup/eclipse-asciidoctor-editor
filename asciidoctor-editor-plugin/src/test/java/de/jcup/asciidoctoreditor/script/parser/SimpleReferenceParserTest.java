@@ -23,28 +23,29 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.jcup.asciidoctoreditor.script.AsciiDoctorFileReference;
+
 public class SimpleReferenceParserTest {
-	private SimpleReferenceParser includeParserToTest;
+    private SimpleReferenceParser includeParserToTest;
     private SimpleReferenceParser imageParserToTest;
-	
-	@Before
-	public void before(){
-		includeParserToTest=SimpleReferenceParser.INCLUDE_PARSER;
-		imageParserToTest=SimpleReferenceParser.IMAGE_PARSER;
-	}
 
-	@Test
-	public void include_target_txt_found_include() throws Exception {
+    @Before
+    public void before() {
+        includeParserToTest = SimpleReferenceParser.INCLUDE_PARSER;
+        imageParserToTest = SimpleReferenceParser.IMAGE_PARSER;
+    }
 
-		/* prepare */
-		String text = "include::label.txt";
-		//.............01234567890 123456789012
+    @Test
+    public void include_target_txt_found_include() throws Exception {
 
-		/* execute */
-		List<AsciiDoctorFileReference> result = includeParserToTest.parse(text);
+        /* prepare */
+        String text = "include::label.txt";
+        // .............01234567890 123456789012
 
-		/* test */
-		/* @formatter:off*/
+        /* execute */
+        List<AsciiDoctorFileReference> result = includeParserToTest.parse(text);
+
+        /* test */
+        /* @formatter:off*/
 		assertReferences(result).
 			hasReferences(1).
 			hasReference("include::label.txt").
@@ -52,20 +53,20 @@ public class SimpleReferenceParserTest {
 				withEnd(17);
 		/* @formatter:on*/
 
-	}
-	
-	@Test
-	public void include_target_txt_new_line_headline1_new_line_include_target2_txt_found_2includes() throws Exception {
+    }
 
-		/* prepare */
-		String text = "include::label.txt\n= headline1\ninclude::target2.txt";
-		//.............01234567890123456789 012345678901 23456789012345678901
+    @Test
+    public void include_target_txt_new_line_headline1_new_line_include_target2_txt_found_2includes() throws Exception {
 
-		/* execute */
-		List<AsciiDoctorFileReference> result = includeParserToTest.parse(text);
+        /* prepare */
+        String text = "include::label.txt\n= headline1\ninclude::target2.txt";
+        // .............01234567890123456789 012345678901 23456789012345678901
 
-		/* test */
-		/* @formatter:off*/
+        /* execute */
+        List<AsciiDoctorFileReference> result = includeParserToTest.parse(text);
+
+        /* test */
+        /* @formatter:off*/
 		assertReferences(result).
 			hasReferences(2).
 			hasReference("include::label.txt").
@@ -77,21 +78,20 @@ public class SimpleReferenceParserTest {
 				withEnd(50);
 		/* @formatter:on*/
 
-	}
-	
-	
-	@Test
-	public void headline1_new_line_include_target_txt_found_include() throws Exception {
+    }
 
-		/* prepare */
-		String text = "headline1\ninclude::label.txt";
-		//.............0123456789 0123456789012345678
+    @Test
+    public void headline1_new_line_include_target_txt_found_include() throws Exception {
 
-		/* execute */
-		List<AsciiDoctorFileReference> result = includeParserToTest.parse(text);
+        /* prepare */
+        String text = "headline1\ninclude::label.txt";
+        // .............0123456789 0123456789012345678
 
-		/* test */
-		/* @formatter:off*/
+        /* execute */
+        List<AsciiDoctorFileReference> result = includeParserToTest.parse(text);
+
+        /* test */
+        /* @formatter:off*/
 		assertReferences(result).
 			hasReferences(1).
 			hasReference("include::label.txt").
@@ -99,14 +99,14 @@ public class SimpleReferenceParserTest {
 				withEnd(27);
 		/* @formatter:on*/
 
-	}
-	
-	@Test
+    }
+
+    @Test
     public void headline1_new_line_include_target_SPACE_with_SPACE_spaces_txt_found_include() throws Exception {
 
         /* prepare */
         String text = "headline1\ninclude::label with spaces.txt";
-        //.............0123456789 0123456789012345678
+        // .............0123456789 0123456789012345678
 
         /* execute */
         List<AsciiDoctorFileReference> result = includeParserToTest.parse(text);
@@ -121,13 +121,13 @@ public class SimpleReferenceParserTest {
         /* @formatter:on*/
 
     }
-	
-	@Test
+
+    @Test
     public void headline1_new_line_image_target_SPACE_with_SPACE_spaces_png_found_include() throws Exception {
 
         /* prepare */
         String text = "headline1\nimage::label with spaces.png[]";
-        //.............0123456789 01234567890123456789012345678
+        // .............0123456789 01234567890123456789012345678
 
         /* execute */
         List<AsciiDoctorFileReference> result = imageParserToTest.parse(text);
@@ -142,5 +142,5 @@ public class SimpleReferenceParserTest {
         /* @formatter:on*/
 
     }
-	
+
 }

@@ -24,64 +24,64 @@ import de.jcup.eclipse.commons.SimpleStringUtils;
 
 public class NewLinkInsertAction extends InsertTextAction {
 
-	private static ImageDescriptor IMG_NEW_LINK = createToolbarImageDescriptor("link.png");
+    private static ImageDescriptor IMG_NEW_LINK = createToolbarImageDescriptor("link.png");
 
-	public NewLinkInsertAction(AsciiDoctorEditor editor) {
-		super(editor, "Insert a link", IMG_NEW_LINK);
-	}
+    public NewLinkInsertAction(AsciiDoctorEditor editor) {
+        super(editor, "Insert a link", IMG_NEW_LINK);
+    }
 
-	private class LinkData {
-		String linkText;
-		String target;
-		LinkType linkType;
-	}
-	
-	@Override
-	protected String getInsertText(InsertTextContext context) {
-		LinkData data = (LinkData) context.data;
-		
-		StringBuilder sb = new StringBuilder();
-		switch (data.linkType){
-		case EXTERNAL:
-			sb.append(data.target);
-			if (! SimpleStringUtils.isEmpty(data.linkText)){
-				sb.append("[");
-				sb.append(data.linkText);
-				sb.append("]");
-			}
-			break;
-		case INTERNAL_CROSS_REFERENCE:
-			sb.append("<<");
-			sb.append(data.target);
-			if (! SimpleStringUtils.isEmpty(data.linkText)){
-				sb.append(',');
-				sb.append(data.linkText);
-			}
-			sb.append(">>");
-			break;
-		default:
-			sb.append("Unsupported blockType:"+data.linkType);
-		}
-		sb.append(" ");
-		context.nextOffset=context.selectedOffset+sb.length();
-		
-		return sb.toString();
-	}
+    private class LinkData {
+        String linkText;
+        String target;
+        LinkType linkType;
+    }
 
-	@Override
-	protected void beforeInsert(InsertTextContext context) {
-		NewLinkDialog dialog = new NewLinkDialog(EclipseUtil.getActiveWorkbenchShell());
-		int result = dialog.open();
-		if (result == Window.CANCEL) {
-			context.canceled = true;
-			return;
-		}
-		LinkData data = new LinkData();
-		data.linkText = dialog.getLinkText();
-		data.target = dialog.getTarget();
-		data.linkType = dialog.getLinkType();
+    @Override
+    protected String getInsertText(InsertTextContext context) {
+        LinkData data = (LinkData) context.data;
 
-		context.data = data;
-	}
+        StringBuilder sb = new StringBuilder();
+        switch (data.linkType) {
+        case EXTERNAL:
+            sb.append(data.target);
+            if (!SimpleStringUtils.isEmpty(data.linkText)) {
+                sb.append("[");
+                sb.append(data.linkText);
+                sb.append("]");
+            }
+            break;
+        case INTERNAL_CROSS_REFERENCE:
+            sb.append("<<");
+            sb.append(data.target);
+            if (!SimpleStringUtils.isEmpty(data.linkText)) {
+                sb.append(',');
+                sb.append(data.linkText);
+            }
+            sb.append(">>");
+            break;
+        default:
+            sb.append("Unsupported blockType:" + data.linkType);
+        }
+        sb.append(" ");
+        context.nextOffset = context.selectedOffset + sb.length();
+
+        return sb.toString();
+    }
+
+    @Override
+    protected void beforeInsert(InsertTextContext context) {
+        NewLinkDialog dialog = new NewLinkDialog(EclipseUtil.getActiveWorkbenchShell());
+        int result = dialog.open();
+        if (result == Window.CANCEL) {
+            context.canceled = true;
+            return;
+        }
+        LinkData data = new LinkData();
+        data.linkText = dialog.getLinkText();
+        data.target = dialog.getTarget();
+        data.linkType = dialog.getLinkType();
+
+        context.data = data;
+    }
 
 }

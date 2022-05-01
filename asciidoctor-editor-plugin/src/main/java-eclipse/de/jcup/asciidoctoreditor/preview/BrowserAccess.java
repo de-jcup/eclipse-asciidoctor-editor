@@ -42,10 +42,11 @@ public class BrowserAccess {
     private MouseListener listener;
 
     /**
-     * In newer eclipse versions we have a newer SWT which does support EDGE.. As long as we
-     * support old eclipse versions as well, we must handle old SWT also and make sure it can be compiled
-     * and also run with the old version. So we just copied the new SWT.EDGE constant here into our own code
-     * and use it only when EDGE environment variable is set by eclipse (so new one).
+     * In newer eclipse versions we have a newer SWT which does support EDGE.. As
+     * long as we support old eclipse versions as well, we must handle old SWT also
+     * and make sure it can be compiled and also run with the old version. So we
+     * just copied the new SWT.EDGE constant here into our own code and use it only
+     * when EDGE environment variable is set by eclipse (so new one).
      */
     private static int SWT_COMPATIBILITY_ADOPT_EDGE = 1 << 18;
 
@@ -103,7 +104,7 @@ public class BrowserAccess {
             if (browser == null) {
                 // Use edge renderer for SWT browser if available
                 String edgeVersion = System.getProperty("org.eclipse.swt.browser.EdgeVersion");
-                int browserStyle = edgeVersion != null && !edgeVersion.isEmpty() ? SWT.CENTER | SWT_COMPATIBILITY_ADOPT_EDGE: SWT.CENTER;
+                int browserStyle = edgeVersion != null && !edgeVersion.isEmpty() ? SWT.CENTER | SWT_COMPATIBILITY_ADOPT_EDGE : SWT.CENTER;
                 browser = new Browser(sashForm, browserStyle);
                 /*
                  * FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if

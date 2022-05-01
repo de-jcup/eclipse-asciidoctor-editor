@@ -366,7 +366,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     public Item getItemAt(int offset) {
         ScriptItemTreeContentProvider provider = resolveScriptItemTreeProviderOrNull();
-        if (provider==null) {
+        if (provider == null) {
             return null;
         }
         Item item = provider.tryToFindByOffset(offset);
@@ -575,14 +575,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     public void resetCache() {
-        recalculateEditorId(); 
+        recalculateEditorId();
         getWrapper().resetCaches();
     }
 
     private void recalculateEditorId() {
 
         IFile file = resolveFileOrNull();
-        editorId= new UniqueAsciidoctorEditorId(file);
+        IPath path = null;
+        if (file != null) {
+            path = file.getFullPath();
+        }
+        editorId = new UniqueAsciidoctorEditorId(path);
     }
 
     public void resourceChanged(IResourceChangeEvent event) {

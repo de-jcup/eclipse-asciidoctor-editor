@@ -23,14 +23,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SimplePlantUMLParserTest {
-    
+
     private SimplePlantUMLParser parserToTest;
 
     @Before
     public void before() {
         parserToTest = new SimplePlantUMLParser();
     }
-    
+
     @Test
     public void a_local_include_is_found_by_parser() {
         /* prepare */
@@ -47,11 +47,10 @@ public class SimplePlantUMLParserTest {
 
         /* execute */
         PlantUMLModel model = parserToTest.parse(plantUml);
-        
 
         /* test */
         List<PlantUMLInclude> includes = model.getIncludes();
-        assertEquals(1,includes.size());
+        assertEquals(1, includes.size());
         PlantUMLInclude include = includes.get(0);
         assertEquals("C4_Context.puml", include.getLocation());
         assertEquals(2, include.getLineNumber());
@@ -73,14 +72,13 @@ public class SimplePlantUMLParserTest {
 
         /* execute */
         PlantUMLModel model = parserToTest.parse(plantUml);
-        
 
         /* test */
         List<PlantUMLInclude> includes = model.getIncludes();
-        assertEquals(1,includes.size());
+        assertEquals(1, includes.size());
         PlantUMLInclude include = includes.get(0);
         assertEquals("https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/release/1-0/C4_Container.puml", include.getLocation());
         assertEquals(2, include.getLineNumber());
     }
-    
+
 }

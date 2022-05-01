@@ -18,16 +18,16 @@ public class UniqueAsciidoctorEditorId implements UniquePrefixProvider {
         }
         uniquePrefix = Sha256Support.SHARED_INSTANCE.createChecksum(originFileLocationPath);
     }
-    
+
     @Override
     public String getUniquePrefix() {
         return uniquePrefix;
     }
-    
+
     public String getOriginFileLocationPath() {
         return originFileLocationPath;
     }
-    
+
     @Override
     public String toString() {
         return getUniquePrefix();

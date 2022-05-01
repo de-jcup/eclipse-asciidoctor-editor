@@ -13,21 +13,17 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.script.parser;
+package de.jcup.asciidoctoreditor.script.parser;
 
-enum ParserState{
-	INIT,
-	INSIDE_COMMENT,
-	
-	INSIDE_SINGLE_STRING,
-	INSIDE_DOUBLE_STRING,
-	INSIDE_DOUBLE_TICKED,
-	
-	CODE,
-	FUNCTION, 
-	
-	VARIABLE,
+enum ParserState {
+    INIT, INSIDE_COMMENT,
 
-	UNKNOWN,
-	
+    INSIDE_SINGLE_STRING, INSIDE_DOUBLE_STRING, INSIDE_DOUBLE_TICKED,
+
+    CODE, FUNCTION,
+
+    VARIABLE,
+
+    UNKNOWN,
+
 }

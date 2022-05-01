@@ -5,9 +5,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Sha256Support {
-    
+
     public static Sha256Support SHARED_INSTANCE = new Sha256Support();
-    
+
     /**
      * Creates a SHA256 checksum for given string
      *
@@ -19,7 +19,7 @@ public class Sha256Support {
         if (content == null) {
             throw new IllegalArgumentException("content may not be null");
         }
-        
+
         MessageDigest md;
         String algorithm = "SHA-256";
         try {

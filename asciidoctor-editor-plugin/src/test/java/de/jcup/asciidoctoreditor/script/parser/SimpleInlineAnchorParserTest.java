@@ -23,26 +23,27 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.jcup.asciidoctoreditor.script.AsciiDoctorInlineAnchor;
+
 public class SimpleInlineAnchorParserTest {
-	private SimpleInlineAnchorParser parserToTest;
-	
-	@Before
-	public void before(){
-		parserToTest=new SimpleInlineAnchorParser();
-	}
+    private SimpleInlineAnchorParser parserToTest;
 
-	@Test
-	public void inline_anchor_section_13() throws Exception {
+    @Before
+    public void before() {
+        parserToTest = new SimpleInlineAnchorParser();
+    }
 
-		/* prepare */
-		String text = "[[section-13]]";
-		//.............01234567890 123456789012
+    @Test
+    public void inline_anchor_section_13() throws Exception {
 
-		/* execute */
-		List<AsciiDoctorInlineAnchor> result = parserToTest.parse(text);
+        /* prepare */
+        String text = "[[section-13]]";
+        // .............01234567890 123456789012
 
-		/* test */
-		/* @formatter:off*/
+        /* execute */
+        List<AsciiDoctorInlineAnchor> result = parserToTest.parse(text);
+
+        /* test */
+        /* @formatter:off*/
 		assertInlineAnchors(result).
 			hasInlineAnchors(1).
 			hasInlineAnchor("[[section-13]]").
@@ -51,20 +52,21 @@ public class SimpleInlineAnchorParserTest {
 				withEnd(13);
 		/* @formatter:on*/
 
-	}
-	
-	@Test
-	public void parser_handles_2_inline_anchors() throws Exception {
+    }
 
-		/* prepare */
-		String text = "[[section-alpha-bravo]]\n==Headline\n\n[[section-delta-gamma]]\ntext\n[[wrong]";
-		//.............01234567890123456789012 3456789012 3 456789012345678901234567 89012345
+    @Test
+    public void parser_handles_2_inline_anchors() throws Exception {
 
-		/* execute */
-		List<AsciiDoctorInlineAnchor> result = parserToTest.parse(text);
+        /* prepare */
+        String text = "[[section-alpha-bravo]]\n==Headline\n\n[[section-delta-gamma]]\ntext\n[[wrong]";
+        // .............01234567890123456789012 3456789012 3 456789012345678901234567
+        // 89012345
 
-		/* test */
-		/* @formatter:off*/
+        /* execute */
+        List<AsciiDoctorInlineAnchor> result = parserToTest.parse(text);
+
+        /* test */
+        /* @formatter:off*/
 		assertInlineAnchors(result).
 			hasInlineAnchors(2).
 			hasInlineAnchor("[[section-alpha-bravo]]").
@@ -77,20 +79,20 @@ public class SimpleInlineAnchorParserTest {
 				withEnd(58);
 		/* @formatter:on*/
 
-	}
-	
-	@Test
-	public void custom_anchor_section_13() throws Exception {
+    }
 
-		/* prepare */
-		String text = "[#section-13]";
-		//.............01234567890 123456789012
+    @Test
+    public void custom_anchor_section_13() throws Exception {
 
-		/* execute */
-		List<AsciiDoctorInlineAnchor> result = parserToTest.parse(text);
+        /* prepare */
+        String text = "[#section-13]";
+        // .............01234567890 123456789012
 
-		/* test */
-		/* @formatter:off*/
+        /* execute */
+        List<AsciiDoctorInlineAnchor> result = parserToTest.parse(text);
+
+        /* test */
+        /* @formatter:off*/
 		assertInlineAnchors(result).
 			hasInlineAnchors(1).
 			hasInlineAnchor("[#section-13]").
@@ -99,20 +101,21 @@ public class SimpleInlineAnchorParserTest {
 				withEnd(12);
 		/* @formatter:on*/
 
-	}
-	
-	@Test
-	public void parser_handles_2_custom_anchors() throws Exception {
+    }
 
-		/* prepare */
-		String text = "[#section-alpha-bravo]\n==Headline\n\n[#section-delta-gamma]\ntext\n[[wrong]";
-		//.............01234567890123456789012 3456789012 3 456789012345678901234567 89012345
+    @Test
+    public void parser_handles_2_custom_anchors() throws Exception {
 
-		/* execute */
-		List<AsciiDoctorInlineAnchor> result = parserToTest.parse(text);
+        /* prepare */
+        String text = "[#section-alpha-bravo]\n==Headline\n\n[#section-delta-gamma]\ntext\n[[wrong]";
+        // .............01234567890123456789012 3456789012 3 456789012345678901234567
+        // 89012345
 
-		/* test */
-		/* @formatter:off*/
+        /* execute */
+        List<AsciiDoctorInlineAnchor> result = parserToTest.parse(text);
+
+        /* test */
+        /* @formatter:off*/
 		assertInlineAnchors(result).
 			hasInlineAnchors(2).
 			hasInlineAnchor("[#section-alpha-bravo]").
@@ -125,6 +128,6 @@ public class SimpleInlineAnchorParserTest {
 				withEnd(56);
 		/* @formatter:on*/
 
-	}
-	
+    }
+
 }

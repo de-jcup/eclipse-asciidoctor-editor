@@ -249,7 +249,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 
             initText();
             initImage();
-            
+
             if (editor == null) {
                 return;
             }
@@ -300,7 +300,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
     protected ImageDescriptor getImageDescriptionNotLinked() {
         return IMG_DESC_NOT_LINKED;
     }
-    
+
     protected ImageDescriptor getImageDescriptionForGrouped() {
         return IMG_DESC_GROUPED;
     }

@@ -72,7 +72,6 @@ public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartit
         rules.add(new SingleLineRule("@enduml", "", preprocessor, (char) -1, true));
         rules.add(new SingleLineRule(":", "", label, (char) -1, true));
 
-        
         buildWordRules(rules, color, PlantUMLColorDocumentKeywords.values());
         rules.add(new HashColorRule(color));
         buildWordRules(rules, keyword, PlantUMLKeywordDocumentKeywords.values());
@@ -80,7 +79,7 @@ public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartit
         buildWordRules(rules, preprocessor, PlantUMLPreprocessorDocumentKeywords.values());
         buildWordRules(rules, skinparameter, PlantUMLSkinparameterDocumentKeywords.values());
         buildWordRules(rules, type, PlantUMLTypeDocumentKeywords.values());
-        
+
         buildWordRules(rules, arrow, PlantUMLArrowKeywords.values());
 
         setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));

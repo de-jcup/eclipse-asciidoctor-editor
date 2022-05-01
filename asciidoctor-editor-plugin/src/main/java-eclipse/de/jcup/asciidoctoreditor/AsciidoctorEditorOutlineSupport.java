@@ -125,7 +125,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
     public void rebuildOutlineAndValidate() {
 
         String text = getEditor().getDocumentText();
-        if (text==null) {
+        if (text == null) {
             return;
         }
 
@@ -162,7 +162,7 @@ public class AsciidoctorEditorOutlineSupport extends AbstractAsciiDoctorEditorSu
 
     protected void validate(AsciiDoctorScriptModel model) {
         AsciiDoctorFileReferenceValidator referenceValidator = new AsciiDoctorFileReferenceValidator(AsciiDoctorEditorPreferences.getInstance().isURLValidationEnabled());
-        
+
         AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
 
         File editorFileOrNull = getEditor().getEditorFileOrNull();

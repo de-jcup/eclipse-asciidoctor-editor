@@ -32,6 +32,7 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciidoctorHTMLOutputParser;
 import de.jcup.asciidoctoreditor.ContentTransformerData;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
+import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
 import de.jcup.asciidoctoreditor.UniquePrefixProvider;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
@@ -260,8 +261,8 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         data.targetType = editor.getType();
         data.asciiDocFile = fileToConvertIntoHTML;
         data.editorId = editor.getEditorId();
-        data.useHiddenFile = isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML);
         data.editorFileOrNull = editorFileOrNull;
+        data.useHiddenFile = isNeedingAHiddenEditorFile(data.targetType, editorFileOrNull, fileToConvertIntoHTML);
         data.internalPreview = internalPreview;
         return data;
     }
@@ -412,22 +413,27 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
     /**
      * Asciidoctor starts normally from a root document and resolves pathes etc. on
-     * the fly by using the base directory. 
-     * <br>
-     * So far so good. but when rendering a sub file resolving base directory for e.g. images, diagrams etc. this 
-     * does always break the includes, because either images do not longer work or the include.<br>
+     * the fly by using the base directory. <br>
+     * So far so good. but when rendering a sub file resolving base directory for
+     * e.g. images, diagrams etc. this does always break the includes, because
+     * either images do not longer work or the include.<br>
      * <br>
      * To prevent this we do following trick: We always create a temporary hidden
-     * file which will include the corresponding real editor file-
+     * file which will include the corresponding real editor file. But we do this
+     * NOT for plant uml or ditaa!
      */
-    private boolean isNeedingAHiddenEditorFile(File editorFileOrNull, File fileToConvertIntoHTML) {
+    private boolean isNeedingAHiddenEditorFile(EditorType targetType, File editorFileOrNull, File fileToConvertIntoHTML) {
+        if (targetType == EditorType.PLANTUML) {
+            return false;
+        }
+        if (targetType == EditorType.DITAA) {
+            return false;
+        }
         /*
          * Still same file so not converted, means still same .adoc file for those files
          * we do always create a temporary editor file which does include the origin one
          * - reason see description in javadoc above
          */
-        // one exception: when we are rendering PlantUML or dita files we do not use the
-        // hidden editor file (because there is already a custom .adoc file...
         return fileToConvertIntoHTML.equals(editorFileOrNull);
     }
 

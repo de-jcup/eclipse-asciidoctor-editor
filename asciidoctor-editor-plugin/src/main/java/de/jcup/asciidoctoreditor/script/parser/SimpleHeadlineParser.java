@@ -22,98 +22,97 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 
 public class SimpleHeadlineParser {
 
-	public List<AsciiDoctorHeadline> parse(String asciidoctorScript) {
-		List<AsciiDoctorHeadline> list = new ArrayList<AsciiDoctorHeadline>();
-		if (asciidoctorScript == null) {
-			return list;
-		}
-		StringBuilder current = new StringBuilder();
-		int start=0;
-		int currentPos = -1;
-		for (char c : asciidoctorScript.toCharArray()) {
-			currentPos++;
-			if (c == '\n') {
-				int end = currentPos-1;// we do not count \n ...
-				addHeadlineWhenCurrentNotEmptyAndHasASpaceAfterLastEqual(asciidoctorScript, list, current, start, end); 
-				/* start next */
-				current = new StringBuilder();
-				start =currentPos+1; // next word (will not be interpreted when current is empty...)
-				continue;
-			}
-			if (current != null) {
-				current.append(c);
-				if (current.charAt(0) != '=') {
-					// short break - line must start with = otherwise no headline
-					current = null;
-				}
-			}
-		}
-		addHeadlineWhenCurrentNotEmptyAndHasASpaceAfterLastEqual(asciidoctorScript, list, current, start, currentPos);
+    public List<AsciiDoctorHeadline> parse(String asciidoctorScript) {
+        List<AsciiDoctorHeadline> list = new ArrayList<AsciiDoctorHeadline>();
+        if (asciidoctorScript == null) {
+            return list;
+        }
+        StringBuilder current = new StringBuilder();
+        int start = 0;
+        int currentPos = -1;
+        for (char c : asciidoctorScript.toCharArray()) {
+            currentPos++;
+            if (c == '\n') {
+                int end = currentPos - 1;// we do not count \n ...
+                addHeadlineWhenCurrentNotEmptyAndHasASpaceAfterLastEqual(asciidoctorScript, list, current, start, end);
+                /* start next */
+                current = new StringBuilder();
+                start = currentPos + 1; // next word (will not be interpreted when current is empty...)
+                continue;
+            }
+            if (current != null) {
+                current.append(c);
+                if (current.charAt(0) != '=') {
+                    // short break - line must start with = otherwise no headline
+                    current = null;
+                }
+            }
+        }
+        addHeadlineWhenCurrentNotEmptyAndHasASpaceAfterLastEqual(asciidoctorScript, list, current, start, currentPos);
 
-		return list;
-	}
+        return list;
+    }
 
-	protected void addHeadlineWhenCurrentNotEmptyAndHasASpaceAfterLastEqual(String asciidoctorScript, List<AsciiDoctorHeadline> list,
-			StringBuilder current, int start, int end) {
-		if (current != null && current.length() > 0) {
-			AsciiDoctorHeadline headline = createHeadlineOrNull(asciidoctorScript, current.toString(), start, end);
-			if (headline!=null){
-				list.add(headline);
-			}
-		}
-	}
+    protected void addHeadlineWhenCurrentNotEmptyAndHasASpaceAfterLastEqual(String asciidoctorScript, List<AsciiDoctorHeadline> list, StringBuilder current, int start, int end) {
+        if (current != null && current.length() > 0) {
+            AsciiDoctorHeadline headline = createHeadlineOrNull(asciidoctorScript, current.toString(), start, end);
+            if (headline != null) {
+                list.add(headline);
+            }
+        }
+    }
 
-	private AsciiDoctorHeadline createHeadlineOrNull(String asciidoctorScript, String identifiedHeadline, int start, int end) {
-		/* check nothing like "==xx" but only "== xx" */
-		boolean charAfterEqualWasSpace=false;
-		for (char c: identifiedHeadline.toCharArray()){
-			if (c!='='){
-				charAfterEqualWasSpace=(c==' ');
-				break;
-			}
-		}
-		if (!charAfterEqualWasSpace){
-			return null;
-		}
-		/* okay, seems right, try to resolve name */
-		String name = calculateName(identifiedHeadline);
-		if (name == null || name.trim().length()==0){
-			return null;
-		}
-		
-		int deep = calculateDeep(identifiedHeadline);
-		AsciiDoctorHeadline headline = new AsciiDoctorHeadline(deep, name, start, end, identifiedHeadline.length());
-		return headline;
-	}
+    private AsciiDoctorHeadline createHeadlineOrNull(String asciidoctorScript, String identifiedHeadline, int start, int end) {
+        /* check nothing like "==xx" but only "== xx" */
+        boolean charAfterEqualWasSpace = false;
+        for (char c : identifiedHeadline.toCharArray()) {
+            if (c != '=') {
+                charAfterEqualWasSpace = (c == ' ');
+                break;
+            }
+        }
+        if (!charAfterEqualWasSpace) {
+            return null;
+        }
+        /* okay, seems right, try to resolve name */
+        String name = calculateName(identifiedHeadline);
+        if (name == null || name.trim().length() == 0) {
+            return null;
+        }
 
-	private String calculateName(String identifiedHeadline) {
-		if (identifiedHeadline == null) {
-			return "";
-		}
-		StringBuilder sb = new StringBuilder();
-		for (char charAt : identifiedHeadline.toCharArray()) {
-			if (sb.length() == 0) {
-				if (charAt == '=') {
-					continue;
-				}
-			}
-			sb.append(charAt);
-		}
-		return sb.toString().trim();
-	}
+        int deep = calculateDeep(identifiedHeadline);
+        AsciiDoctorHeadline headline = new AsciiDoctorHeadline(deep, name, start, end, identifiedHeadline.length());
+        return headline;
+    }
 
-	private int calculateDeep(String word) {
-		if (word == null) {
-			return 0;
-		}
-		int deep = 0;
-		for (char charAt : word.toCharArray()) {
-			if (charAt != '=') {
-				break;
-			}
-			deep++;
-		}
-		return deep;
-	}
+    private String calculateName(String identifiedHeadline) {
+        if (identifiedHeadline == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char charAt : identifiedHeadline.toCharArray()) {
+            if (sb.length() == 0) {
+                if (charAt == '=') {
+                    continue;
+                }
+            }
+            sb.append(charAt);
+        }
+        return sb.toString().trim();
+    }
+
+    private int calculateDeep(String word) {
+        if (word == null) {
+            return 0;
+        }
+        int deep = 0;
+        for (char charAt : word.toCharArray()) {
+            if (charAt != '=') {
+                break;
+            }
+            deep++;
+        }
+        return deep;
+    }
 
 }

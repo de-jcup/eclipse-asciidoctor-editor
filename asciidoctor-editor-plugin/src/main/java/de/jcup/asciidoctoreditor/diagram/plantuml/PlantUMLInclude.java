@@ -72,7 +72,7 @@ public class PlantUMLInclude implements PlantUMLElement {
     }
 
     public int getLength() {
-        if (line==null) {
+        if (line == null) {
             return 0;
         }
         return line.length();

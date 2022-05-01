@@ -19,17 +19,17 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
-public class AddLineBreakAction extends InsertTextAction{
-	
-	private static ImageDescriptor IMG_DESCRIPTOR_ADD_LINEBREAK = createToolbarImageDescriptor("add_linebreak.png");
+public class AddLineBreakAction extends InsertTextAction {
 
-	public AddLineBreakAction(AsciiDoctorEditor editor) {
-		super(editor, "Add linebreak (Ctrl + Enter)", IMG_DESCRIPTOR_ADD_LINEBREAK);
-	}
+    private static ImageDescriptor IMG_DESCRIPTOR_ADD_LINEBREAK = createToolbarImageDescriptor("add_linebreak.png");
+
+    public AddLineBreakAction(AsciiDoctorEditor editor) {
+        super(editor, "Add linebreak (Ctrl + Enter)", IMG_DESCRIPTOR_ADD_LINEBREAK);
+    }
 
     @Override
     protected String getInsertText(InsertTextContext context) {
-        context.nextOffset+=context.selectedOffset+4;
+        context.nextOffset += context.selectedOffset + 4;
         return " +\n";
     }
 

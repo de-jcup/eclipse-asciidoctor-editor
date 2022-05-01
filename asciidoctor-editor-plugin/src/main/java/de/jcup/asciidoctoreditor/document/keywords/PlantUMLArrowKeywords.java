@@ -23,9 +23,8 @@ import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
  */
 public enum PlantUMLArrowKeywords implements DocumentKeyWord {
 
-
     ARROW_0("->"),
-    
+
     ARROW_1("[->"),
 
     ARROW_2("[o->"),
@@ -35,7 +34,7 @@ public enum PlantUMLArrowKeywords implements DocumentKeyWord {
     ARROW_4("[x->"),
 
     ARROW_5("[<-"),
-    
+
     ARROW_6("[x<-"),
 
     ARROW_7("->]"),
@@ -47,27 +46,27 @@ public enum PlantUMLArrowKeywords implements DocumentKeyWord {
     ARROW_10("->x]"),
 
     ARROW_11("<-]"),
-    
+
     ARROW_12("x<-]"),
 
     ARROW_13("<-"),
-    
+
     ARROW_14("-->"),
-    
+
     ARROW_15("--->"),
-    
+
     ARROW_16("<--"),
-    
+
     ARROW_17("<---"),
-    
+
     ARROW_18("<|--"),
-    
+
     ARROW_19("<|-"),
 
     ARROW_20("*--"),
 
     ARROW_21("o--"),
-    
+
     ARROW_22(".."),
 
     ARROW_23("-0-"),
@@ -77,7 +76,7 @@ public enum PlantUMLArrowKeywords implements DocumentKeyWord {
     ARROW_25("-(0-"),
 
     ARROW_26("-0)-"),
-    
+
     ;
 
     private String text;

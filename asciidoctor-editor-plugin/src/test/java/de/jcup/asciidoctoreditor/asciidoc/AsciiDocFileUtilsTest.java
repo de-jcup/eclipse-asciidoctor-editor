@@ -25,53 +25,53 @@ import org.junit.Test;
 public class AsciiDocFileUtilsTest {
 
     @Test
-    public void flat_file_name_test() throws Exception{
+    public void flat_file_name_test() throws Exception {
         /* prepare */
         File file = new File("./testname.jpg");
-        
+
         /* execute */
-        String flatName = AsciiDocFileUtils.createFlatFileName(file,(string)-> {
-                String expected;
-                try {
-                    expected = file.getParentFile().getCanonicalPath();
-                } catch (IOException e) {
-                    throw new IllegalStateException(e);
-                }
-                if (string.equals(expected)){
-                    return "encoded";
-                }
-                return "<unexpected>";
-            });
-        
+        String flatName = AsciiDocFileUtils.createFlatFileName(file, (string) -> {
+            String expected;
+            try {
+                expected = file.getParentFile().getCanonicalPath();
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+            if (string.equals(expected)) {
+                return "encoded";
+            }
+            return "<unexpected>";
+        });
+
         /* test */
         assertTrue(flatName.endsWith("_testname.jpg"));
-        assertEquals("encoded_testname.jpg",flatName);
+        assertEquals("encoded_testname.jpg", flatName);
     }
-    
+
     @Test
-    public void createSafeFilename(){
-        /* change when not standard ASCII code*/
+    public void createSafeFilename() {
+        /* change when not standard ASCII code */
         assertEquals("Apfel-wurfeln-it-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Äpfel-würfeln-ißt-öffentlich-verboten.txt"));
         assertEquals("Apfel-wurfeln-ist-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Äpfel-würfeln-ist-öffentlich-verboten.txt"));
         assertEquals("monchere.txt", AsciiDocFileUtils.createEncodingSafeFileName("mon´chere.txt"));
 
-        /* keep ASCII special chars:*/
+        /* keep ASCII special chars: */
         assertEquals("Apfel-wurfeln-ist-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Apfel-wurfeln-ist-offentlich-verboten.txt"));
         assertEquals("de`juice.txt", AsciiDocFileUtils.createEncodingSafeFileName("de`juice.txt"));
     }
-    
+
     @Test
     public void calculatePathToFileFromBase() {
-       /* prepare */
-       File file = new File("./");
-       File asciiDocFile = new File(file,"basefolder/sub1/sub2/sub3/test.adoc");
-       File baseDir = new File(file,"basefolder");
-       
-       /* execute */
-       String path = AsciiDocFileUtils.calculatePathToFileFromBase(asciiDocFile, baseDir);
-    
-       /* test */
-       assertEquals("sub1/sub2/sub3/test.adoc",path);
+        /* prepare */
+        File file = new File("./");
+        File asciiDocFile = new File(file, "basefolder/sub1/sub2/sub3/test.adoc");
+        File baseDir = new File(file, "basefolder");
+
+        /* execute */
+        String path = AsciiDocFileUtils.calculatePathToFileFromBase(asciiDocFile, baseDir);
+
+        /* test */
+        assertEquals("sub1/sub2/sub3/test.adoc", path);
     }
 
 }

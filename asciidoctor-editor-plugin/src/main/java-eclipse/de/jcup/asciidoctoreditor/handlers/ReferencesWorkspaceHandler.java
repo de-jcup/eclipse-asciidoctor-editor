@@ -90,15 +90,15 @@ public class ReferencesWorkspaceHandler extends AbstractHandler {
             return;
         }
         AsciiDoctorWrapper wrapper = editor.getWrapper();
-        if (wrapper==null) {
+        if (wrapper == null) {
             return;
         }
         AsciiDoctorProviderContext context = wrapper.getContext();
-        if (context==null) {
+        if (context == null) {
             return;
         }
         File baseDir = context.getBaseDir();
-        if (baseDir==null) {
+        if (baseDir == null) {
             return;
         }
         File file = new File(baseDir, filePath);

@@ -13,9 +13,9 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.document;
+package de.jcup.asciidoctoreditor.document;
 
 public interface AsciiDoctorDocumentIdentifier {
 
-	public String getId();
+    public String getId();
 }

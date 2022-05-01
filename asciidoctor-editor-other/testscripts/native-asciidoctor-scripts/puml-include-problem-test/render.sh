@@ -8,11 +8,11 @@ echo "This test script does render different variants for PUML inclusions by asc
 # just clear former output
 source clear-output.sh
 
-echo "> Does work: Render asciidoc document which includes a plantuml file (not including others)"
+echo "> Render asciidoc document which includes a plantuml file (not including others)"
 asciidoctor -r asciidoctor-diagram ./document-with-diagram-no-includes-itself.adoc
 
-echo "> Does not work: Render asciidoc document which includes a plantuml file, which does itself include others"
+echo "> Render asciidoc document which includes a plantuml file, which does itself include others"
 asciidoctor -r asciidoctor-diagram ./document-with-diagram-using-includes.adoc
 
-echo "> Does not work: Render asciidoc document which includes a plantuml file, which does itself include others"
+echo "> Render asciidoc document which includes a plantuml file, which does itself include others - but uses no './'"
 asciidoctor -r asciidoctor-diagram ./document-with-diagram-using-includes-but-not-dot-slash-prefix.adoc

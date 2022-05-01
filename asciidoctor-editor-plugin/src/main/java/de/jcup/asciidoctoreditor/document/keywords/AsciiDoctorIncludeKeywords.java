@@ -18,44 +18,41 @@ package de.jcup.asciidoctoreditor.document.keywords;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 
 public enum AsciiDoctorIncludeKeywords implements StartLineAndHavingDoubleColonsDocumentKeyword {
-	INCLUDE("https://asciidoctor.org/docs/user-manual/#include-directive"),
-	PLANTUML("https://asciidoctor.org/docs/asciidoctor-diagram/#diagram-block-macro"),
-	DITAA("https://asciidoctor.org/docs/asciidoctor-diagram/#diagram-block-macro"),
-	;
+    INCLUDE("https://asciidoctor.org/docs/user-manual/#include-directive"), PLANTUML("https://asciidoctor.org/docs/asciidoctor-diagram/#diagram-block-macro"),
+    DITAA("https://asciidoctor.org/docs/asciidoctor-diagram/#diagram-block-macro"),;
 
-	private String text;
-	private String tooltip;
-	private String linkToDocumentation;
+    private String text;
+    private String tooltip;
+    private String linkToDocumentation;
 
-	private AsciiDoctorIncludeKeywords() {
-		this(null);
-	}
+    private AsciiDoctorIncludeKeywords() {
+        this(null);
+    }
 
-	private AsciiDoctorIncludeKeywords(String linkToDocumentation) {
-		this.text = name().toLowerCase()+"::";
-		this.tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
-		this.linkToDocumentation = linkToDocumentation;
-	}
+    private AsciiDoctorIncludeKeywords(String linkToDocumentation) {
+        this.text = name().toLowerCase() + "::";
+        this.tooltip = TooltipTextSupport.getTooltipText(name().toLowerCase());
+        this.linkToDocumentation = linkToDocumentation;
+    }
 
-	@Override
-	public String getText() {
-		return text;
-	}
+    @Override
+    public String getText() {
+        return text;
+    }
 
-	@Override
-	public boolean isBreakingOnEof() {
-		return true;
-	}
+    @Override
+    public boolean isBreakingOnEof() {
+        return true;
+    }
 
+    @Override
+    public String getTooltip() {
+        return tooltip;
+    }
 
-	@Override
-	public String getTooltip() {
-		return tooltip;
-	}
-
-	@Override
-	public String getLinkToDocumentation() {
-		return linkToDocumentation;
-	}
+    @Override
+    public String getLinkToDocumentation() {
+        return linkToDocumentation;
+    }
 
 }
