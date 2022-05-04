@@ -63,8 +63,7 @@ public class AsciiDocFileUtils {
     }
 
     protected static File createSelfDeletingTempSubFolder(String projectId, String parentFolderName) throws IOException {
-        String tempDir = System.getProperty("java.io.tmpdir");
-        File newTempFolder = new File(tempDir, parentFolderName);
+        File newTempFolder = new File(FileUtils.getTempDirectory(), parentFolderName);
 
         if (!newTempFolder.exists() && !newTempFolder.mkdirs()) {
             throw new IOException("Was not able to create folder:" + newTempFolder);
@@ -73,7 +72,7 @@ public class AsciiDocFileUtils {
 
         File newTempSubFolder = new File(newTempFolder, projectId);
         if (!newTempSubFolder.exists() && !newTempSubFolder.mkdirs()) {
-            throw new IOException("not able to create temp folder:" + newTempSubFolder);
+            throw new IOException("Was not able to create temp folder:" + newTempSubFolder);
         }
         newTempSubFolder.deleteOnExit();
         return newTempSubFolder;
