@@ -18,35 +18,10 @@ package de.jcup.asciidoctoreditor.asciidoc;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.junit.Test;
 
 public class AsciiDocFileUtilsTest {
-
-    @Test
-    public void flat_file_name_test() throws Exception {
-        /* prepare */
-        File file = new File("./testname.jpg");
-
-        /* execute */
-        String flatName = AsciiDocFileUtils.createFlatFileName(file, (string) -> {
-            String expected;
-            try {
-                expected = file.getParentFile().getCanonicalPath();
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-            if (string.equals(expected)) {
-                return "encoded";
-            }
-            return "<unexpected>";
-        });
-
-        /* test */
-        assertTrue(flatName.endsWith("_testname.jpg"));
-        assertEquals("encoded_testname.jpg", flatName);
-    }
 
     @Test
     public void createSafeFilename() {

@@ -30,25 +30,6 @@ import de.jcup.asciidoctoreditor.UniquePrefixProvider;
 
 public class AsciiDocFileUtils {
 
-    /**
-     * Creates a flat filename, which contains of
-     * ${messageDigestAbsolutePath}_{fileNameWithEnding}
-     * 
-     * @param file
-     * @param encoder
-     * @return flat filename
-     */
-    public static String createFlatFileName(File file, StringEncoder encoder) {
-        String name = file.getName();
-        String parentCanonicalPath;
-        try {
-            parentCanonicalPath = file.getParentFile().getCanonicalPath();
-        } catch (IOException e) {
-            parentCanonicalPath = "not_canonical_" + System.currentTimeMillis();
-        }
-        return createEncodingSafeFileName(encoder.encode(parentCanonicalPath) + "_" + name);
-    }
-
     public static File createTempFileForConvertedContent(Path tempFolder, UniquePrefixProvider uniquePrefixProvider, String filename) throws IOException {
         if (tempFolder == null) {
             tempFolder = Files.createTempDirectory("__fallback__");
