@@ -18,12 +18,12 @@ package de.jcup.asciidoctoreditor.asciidoc;
 import java.io.File;
 
 import de.jcup.asciidoctoreditor.EditorType;
-import de.jcup.asciidoctoreditor.UniqueAsciidoctorEditorId;
+import de.jcup.asciidoctoreditor.UniqueEditorId;
 
 public class WrapperConvertData {
     public EditorType targetType = EditorType.ASCIIDOC;
     public File asciiDocFile;
-    public UniqueAsciidoctorEditorId editorId;
+    public UniqueEditorId editorId;
     public boolean useHiddenFile;
     public File editorFileOrNull;
     public boolean internalPreview;

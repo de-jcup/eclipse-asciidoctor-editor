@@ -28,7 +28,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -40,8 +39,7 @@ import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.PluginContentInstaller;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
-import de.jcup.asciidoctoreditor.UniqueAsciidoctorEditorId;
-import de.jcup.asciidoctoreditor.UniquePrefixProvider;
+import de.jcup.asciidoctoreditor.UniqueIdProvider;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -255,10 +253,8 @@ public class AsciiDoctorWrapper {
 
     private Path createTempPath(IProject project) {
         String projectName = "fallback-projectname";
-        IPath path = null;
         if (project != null) {
             IProjectDescription description;
-            path= project.getFullPath();
             try {
                 description = project.getDescription();
                 projectName = description.getName();
@@ -266,17 +262,16 @@ public class AsciiDoctorWrapper {
                 projectName = "" + project.getName();
             }
         }
-        UniqueAsciidoctorEditorId uniqueId = new UniqueAsciidoctorEditorId(path);
-        return AsciiDocFileUtils.createTempFolderForId(projectName,uniqueId);
+        return AsciiDocFileUtils.createTempFolderForId(projectName);
     }
 
-    public File getTempFileFor(File editorFile, UniquePrefixProvider uniquePrefixProvider, TemporaryFileType type) {
+    public File getTempFileFor(File editorFile, UniqueIdProvider uniqueIdProvider, TemporaryFileType type) {
         File parent = getTempFolder().toFile();
 
         String baseName = FilenameUtils.getBaseName(editorFile.getName());
         StringBuilder sb = new StringBuilder();
-        if (!(editorFile.getName().startsWith(uniquePrefixProvider.getUniquePrefix()))) {
-            sb.append(uniquePrefixProvider);
+        if (!(editorFile.getName().startsWith(uniqueIdProvider.getUniqueId()))) {
+            sb.append(uniqueIdProvider.getUniqueId());
             sb.append("_");
         }
         sb.append(type.getPrefix());

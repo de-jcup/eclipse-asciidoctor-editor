@@ -148,7 +148,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     File temporaryExternalPreviewFile;
     private File temporaryInternalPreviewFile;
 
-    private UniqueAsciidoctorEditorId editorId;
+    private UniqueEditorId editorId;
     private String bgColor;
     private BoldFormatAction boldFormatAction;
     private AddLineBreakAction addLineBreakAction;
@@ -172,7 +172,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     private static final AsciiDoctorTextFileDocumentProvider ASCIIDOC_SHARED_TEXTFILE_DOCUMENT_PROVIDER = new AsciiDoctorTextFileDocumentProvider();
     private static final AsciiDoctorFileDocumentProvider ASCIIDOC__SHARED_FILE_DOCUMENT_PROVIDER = new AsciiDoctorFileDocumentProvider();
 
-    public UniqueAsciidoctorEditorId getEditorId() {
+    public UniqueEditorId getEditorId() {
         if (editorId == null) {
             recalculateEditorId();
         }
@@ -586,7 +586,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         if (file != null) {
             path = file.getFullPath();
         }
-        editorId = new UniqueAsciidoctorEditorId(path);
+        editorId = new UniqueEditorId(path);
     }
 
     public void resourceChanged(IResourceChangeEvent event) {

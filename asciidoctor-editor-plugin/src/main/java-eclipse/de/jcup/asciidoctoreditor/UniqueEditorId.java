@@ -16,27 +16,24 @@
 package de.jcup.asciidoctoreditor;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.eclipse.core.runtime.IPath;
 
-public class UniqueAsciidoctorEditorId implements UniquePrefixProvider {
+public class UniqueEditorId implements UniqueIdProvider {
 
-    private String uniquePrefix;
+    private String uniqueId;
     private String originFileLocationPath;
 
-    public UniqueAsciidoctorEditorId(IPath path) {
+    public UniqueEditorId(IPath path) {
         if (path != null) {
             File file = path.toFile();
             originFileLocationPath = file.getAbsolutePath();
         } else {
             originFileLocationPath = "fallback_for_missing_file_" + System.nanoTime();
         }
-        uniquePrefix = Sha256Support.SHARED_INSTANCE.createChecksum(originFileLocationPath);
-    }
-
-    @Override
-    public String getUniquePrefix() {
-        return uniquePrefix;
+        UUID nameUUIDFromBytes = UUID.nameUUIDFromBytes(originFileLocationPath.getBytes());
+        uniqueId = nameUUIDFromBytes.toString();
     }
 
     public String getOriginFileLocationPath() {
@@ -44,8 +41,14 @@ public class UniqueAsciidoctorEditorId implements UniquePrefixProvider {
     }
 
     @Override
-    public String toString() {
-        return getUniquePrefix();
+    public String getUniqueId() {
+        return uniqueId;
     }
 
+    @Override
+    public String toString() {
+        return "UniqueEditorId [uniqueId=" + uniqueId + ", originFileLocationPath=" + originFileLocationPath + "]";
+    }
+
+   
 }

@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
-import de.jcup.asciidoctoreditor.UniquePrefixProvider;
+import de.jcup.asciidoctoreditor.UniqueIdProvider;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 
 import static org.mockito.Mockito.*;
@@ -148,10 +148,10 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	@Test
 	public void converted_content_file_locations_to_base_dir_does_not_throw_an_exception_and_basedir_is_not_root_temp_dir() throws Exception {
 		
-	    UniquePrefixProvider uniquePrefixProvider = mock(UniquePrefixProvider.class);
-	    when(uniquePrefixProvider.getUniquePrefix()).thenReturn("test_"+System.nanoTime());
+	    UniqueIdProvider uniqueIdProvider = mock(UniqueIdProvider.class);
+	    when(uniqueIdProvider.getUniqueId()).thenReturn("test_"+System.nanoTime());
 	    
-		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(null, uniquePrefixProvider,"junit_testcase_temporary_file_for_issue_97.xyz");
+		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(null, uniqueIdProvider,"junit_testcase_temporary_file_for_issue_97.xyz");
 		
 		/* prepare */
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
