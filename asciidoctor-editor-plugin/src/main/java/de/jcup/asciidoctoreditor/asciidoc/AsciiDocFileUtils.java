@@ -26,17 +26,18 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
-import de.jcup.asciidoctoreditor.UniquePrefixProvider;
+import de.jcup.asciidoctoreditor.TemporaryFileType;
+import de.jcup.asciidoctoreditor.UniqueIdProvider;
 
 public class AsciiDocFileUtils {
 
-    public static File createTempFileForConvertedContent(Path tempFolder, UniquePrefixProvider uniquePrefixProvider, String filename) throws IOException {
+    public static File createTempFileForConvertedContent(Path tempFolder, UniqueIdProvider uniqueIdProvider, String filename) throws IOException {
         if (tempFolder == null) {
             tempFolder = Files.createTempDirectory("__fallback__");
         }
         File newTempSubFolder = tempFolder.toFile();
 
-        File newTempFile = new File(newTempSubFolder, uniquePrefixProvider.getUniquePrefix() + "_" + filename);
+        File newTempFile = new File(newTempSubFolder, uniqueIdProvider.getUniqueId() + "_" + filename);
         if (newTempFile.exists()) {
             if (!newTempFile.delete()) {
                 throw new IOException("Unable to delete old tempfile:" + newTempFile);
@@ -52,16 +53,16 @@ public class AsciiDocFileUtils {
      * @param projectId
      * @return path, never <code>null</code>
      */
-    public static Path createTempFolderForId(String projectId, UniquePrefixProvider provider) {
+    public static Path createTempFolderForId(String projectId) {
         try {
-            File newTempSubFolder = createSelfDeletingTempSubFolder(projectId + "/" + provider.getUniquePrefix(), "asciidoctor-editor-temp");
+            File newTempSubFolder = createSelfDeletingTempSubFolder(projectId, "asciidoctor-editor");
             return newTempSubFolder.toPath();
         } catch (IOException e) {
             throw new IllegalStateException("Not able to create temp folder for editor", e);
         }
     }
 
-    protected static File createSelfDeletingTempSubFolder(String tempId, String parentFolderName) throws IOException {
+    protected static File createSelfDeletingTempSubFolder(String projectId, String parentFolderName) throws IOException {
         String tempDir = System.getProperty("java.io.tmpdir");
         File newTempFolder = new File(tempDir, parentFolderName);
 
@@ -70,7 +71,7 @@ public class AsciiDocFileUtils {
         }
         newTempFolder.deleteOnExit();
 
-        File newTempSubFolder = new File(newTempFolder, "project_" + tempId);
+        File newTempSubFolder = new File(newTempFolder, projectId);
         if (!newTempSubFolder.exists() && !newTempSubFolder.mkdirs()) {
             throw new IOException("not able to create temp folder:" + newTempSubFolder);
         }
@@ -100,7 +101,7 @@ public class AsciiDocFileUtils {
         return Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
 
-    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, UniquePrefixProvider uniquePrefixProvider, File baseDir, Path tempFolder,
+    public static File createHiddenEditorFile(LogAdapter logAdapter, File asciidoctorFile, UniqueIdProvider uniqueIdProvider, File baseDir, Path tempFolder,
             List<AsciidoctorConfigFile> configFiles, String rootConfigFolder) throws IOException {
         /* @formatter:off
          * 
@@ -113,13 +114,13 @@ public class AsciiDocFileUtils {
          * So we create the hidden editor file as encoding safe file when not UTF-8 is set as default file encoding on system
          * @formatter:on
          */
-        File hiddenEditorFile = createEncodingSafeFile(tempFolder, uniquePrefixProvider.getUniquePrefix() + "_hidden-editorfile_" + asciidoctorFile.getName());
+        File hiddenEditorFile = createEncodingSafeFile(tempFolder, uniqueIdProvider.getUniqueId() + "_"+TemporaryFileType.HIDDEN_EDITOR_FILE.getPrefix()+ asciidoctorFile.getName());
 
         try {
             String relativePath = calculatePathToFileFromBase(asciidoctorFile, baseDir);
             StringBuilder sb = new StringBuilder();
             sb.append("// origin :").append(asciidoctorFile.getAbsolutePath()).append("\n");
-            sb.append("// editor :").append(uniquePrefixProvider.getUniquePrefix()).append("\n");
+            sb.append("// editor :").append(uniqueIdProvider.getUniqueId()).append("\n");
             sb.append("// basedir:").append(baseDir.getAbsolutePath()).append("\n\n");
             sb.append("// ************************:\n");
             sb.append("// asciidoctorconfig files:\n");

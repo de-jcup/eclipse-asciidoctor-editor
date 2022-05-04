@@ -15,8 +15,8 @@
  */
 package de.jcup.asciidoctoreditor;
 
-public interface UniquePrefixProvider {
+public interface UniqueIdProvider {
 
-    String getUniquePrefix();
+    public String getUniqueId();
 
 }

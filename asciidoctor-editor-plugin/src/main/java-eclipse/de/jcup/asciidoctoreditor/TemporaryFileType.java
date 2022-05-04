@@ -16,7 +16,14 @@
 package de.jcup.asciidoctoreditor;
 
 public enum TemporaryFileType {
-    ORIGIN(""), INTERNAL_PREVIEW("internal_"), EXTERNAL_PREVIEW("preview_");
+    ORIGIN(""), 
+    
+    INTERNAL_PREVIEW("internal_"), 
+    
+    EXTERNAL_PREVIEW("preview_"),
+    
+    HIDDEN_EDITOR_FILE("hidden_");
+    
     private String prefix;
 
     private TemporaryFileType(String prefix) {
