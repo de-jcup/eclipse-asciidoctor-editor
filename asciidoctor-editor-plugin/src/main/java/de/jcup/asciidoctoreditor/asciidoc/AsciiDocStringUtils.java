@@ -23,8 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class AsciiDocStringUtils {
 
@@ -167,11 +165,12 @@ public class AsciiDocStringUtils {
         if (newTempFile.isDirectory()) {
             throw new IllegalArgumentException("file may not be a directory!");
         }
-
+        newTempFile.delete(); // we delete the old file
+        
+        AsciiDocFileUtils.ensureFileAvailableAndAccessByUserOnly(newTempFile);
         File parentFile = newTempFile.getParentFile();
-        Path parentFilePath = parentFile.toPath();
 
-        Files.createDirectories(parentFilePath);
+        AsciiDocFileUtils.ensureFileAvailableAndAccessByUserOnly(parentFile);
 
         try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newTempFile), UTF_8))) {
             bw.write(transformed);

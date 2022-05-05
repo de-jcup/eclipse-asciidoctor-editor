@@ -394,6 +394,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
     private String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, UniqueIdProvider editorId) {
         File generatedFile = editor.getWrapper().getTempFileFor(fileToConvertIntoHTML, editorId, TemporaryFileType.ORIGIN);
         try {
+            AsciiDocFileUtils.ensureFileAvailableAndAccessByUserOnly(generatedFile);
             return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
         } catch (IOException e) {
             AsciiDoctorEditorUtil.logError("Was not able to build new full html variant", e);
