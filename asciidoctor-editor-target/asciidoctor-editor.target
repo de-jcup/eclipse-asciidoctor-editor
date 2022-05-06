@@ -3,20 +3,34 @@
 <target name="asciidoctor-editor">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-			<unit id="org.eclipse.platform.sdk" version="0.0.0"/>
-			<unit id="org.eclipse.emf.common.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.emf.ecore.feature.group" version="0.0.0"/>
-			<repository location="https://download.eclipse.org/releases/2021-12/"/>
+			<unit id="org.eclipse.platform.sdk" version="0.0.0" />
+			<unit id="org.eclipse.emf.common.feature.group" version="0.0.0" />
+			<unit id="org.eclipse.emf.ecore.feature.group" version="0.0.0" />
+			<repository location="https://download.eclipse.org/releases/2021-12/" />
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/latest"/>
-			<unit id="org.junit.jupiter.api" version="0.0.0"/>
-			<unit id="org.junit.jupiter.engine" version="0.0.0"/>
-			<unit id="org.eclipse.jdt.junit5.runtime" version="0.0.0"/>
-			<unit id="org.junit" version="0.0.0"/>
-			<unit id="org.hamcrest.core" version="0.0.0"/>
+			<repository location="https://download.eclipse.org/releases/latest" />
+			<unit id="org.junit.jupiter.api" version="0.0.0" />
+			<unit id="org.junit.jupiter.engine" version="0.0.0" />
+			<unit id="org.eclipse.jdt.junit5.runtime" version="0.0.0" />
+			<unit id="org.junit" version="0.0.0" />
+			<unit id="org.hamcrest.core" version="0.0.0" />
 		</location>
 		<location includeDependencyDepth="infinite" includeDependencyScope="compile" includeSource="true" label="asp launcher" missingManifest="generate" type="Maven">
+
+			<feature id="de.jcup.asciidoctoreditor.asplauncher" label="ASP launcher" provider-name="Albert Tregnaghi" version="1.0.0">
+
+
+				<description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+				<copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+				<license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+			</feature>
 			<dependencies>
 				<dependency>
 					<groupId>commons-io</groupId>
@@ -39,6 +53,19 @@
 			</dependencies>
 		</location>
 		<location includeDependencyDepth="infinite" includeSource="true" missingManifest="generate" type="Maven">
+			<feature id="de.jcup.asciidoctoreditor.aspserver" label="ASP server" provider-name="Albert Tregnaghi" version="1.0.0">
+
+
+				<description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+				<copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+				<license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+			</feature>
 			<dependencies>
 				<dependency>
 					<groupId>de.jcup.asp</groupId>

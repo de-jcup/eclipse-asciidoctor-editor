@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="de.jcup.asciidoctoreditor"
+      id="de.jcup.asciidoctoreditor.feature"
       label="Asciidoctor Editor"
-      version="2.5.0"
+      version="2.6.0"
       provider-name="Albert Tregnaghi">
 
    <description url="https://marketplace.eclipse.org/content/asciidoctor-editor">
@@ -239,12 +239,6 @@ and limitations under the License.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   <plugin
-         id="de.jcup.asciidoctoreditor.libs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
    <plugin
          id="de.jcup.asciidoctoreditor.css"

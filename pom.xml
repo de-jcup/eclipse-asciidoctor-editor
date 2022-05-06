@@ -6,7 +6,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>2.5.0</tycho.version>
+    <tycho.version>2.7.2</tycho.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -79,8 +79,11 @@
 
   <modules>
       <module>asciidoctor-editor-css</module>
+      <module>asciidoctor-converter-plugin</module>
       <module>asciidoctor-editor-plugin</module>
-    
+      <module>asciidoctor-editor-feature</module>
+      <module>asciidoctor-editor-updatesite</module>
+
       <!--
   <module>asciidoctor-editor-doc</module>
       <module>asciidoctor-editor-plugin</module>
