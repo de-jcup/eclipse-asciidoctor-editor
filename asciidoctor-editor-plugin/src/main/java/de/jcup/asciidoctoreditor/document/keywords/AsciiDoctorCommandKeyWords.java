@@ -19,7 +19,10 @@ import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 
 public enum AsciiDoctorCommandKeyWords implements StartLineAndHavingDoubleColonsDocumentKeyword {
 
-    IFDEF("https://asciidoctor.org/docs/user-manual/#ifdef-directive"), IFNDEF("https://asciidoctor.org/docs/user-manual/#ifndef-directive"),
+    IFDEF("https://asciidoctor.org/docs/user-manual/#ifdef-directive"), 
+    
+    IFNDEF("https://asciidoctor.org/docs/user-manual/#ifndef-directive"),
+    
     ENDIF("https://asciidoctor.org/docs/user-manual/#ifdef-directive"),
 
     IMAGE("https://asciidoctor.org/docs/user-manual/#images"),;

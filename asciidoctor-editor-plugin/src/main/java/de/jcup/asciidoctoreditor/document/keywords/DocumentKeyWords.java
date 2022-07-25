@@ -29,7 +29,7 @@ public class DocumentKeyWords {
         return ALL_KEYWORDS;
     }
 
-    public static DocumentKeyWord[] getAllExcedptIncludes() {
+    public static DocumentKeyWord[] getAllExceptIncludes() {
         return ALL_KEYWORDS_EXCEPT_INCLUDES;
     }
 

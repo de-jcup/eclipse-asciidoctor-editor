@@ -59,6 +59,8 @@ import org.eclipse.ui.texteditor.spelling.SpellingAnnotation;
 import de.jcup.asciidoctoreditor.codeassist.AsciidocContentAssistProcessor;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifier;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorDocumentIdentifiers;
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorCommandKeyWords;
+import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorIncludeKeywords;
 import de.jcup.asciidoctoreditor.hyperlink.AsciiDoctorEditorLinkTextHyperlinkDetector;
 import de.jcup.asciidoctoreditor.hyperlink.AsciiDoctorURLHyperlinkDetector;
 import de.jcup.asciidoctoreditor.presentation.AsciiDoctorDefaultTextScanner;
@@ -112,7 +114,15 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
         IContentAssistProcessor templateProcessor = support.getProcessor();
 
         /* first templates, then words etc. */
-        MultipleContentAssistProcessor multiProcessor = new MultipleContentAssistProcessor(templateProcessor, contentAssistProcessor);
+        /* @formatter:on */
+        MultipleContentAssistProcessor multiProcessor = new MultipleContentAssistProcessor(
+                new BlockingPrefixDelegateContentAssistProcessor(templateProcessor,
+                        AsciiDoctorIncludeKeywords.INCLUDE.getText(),
+                        AsciiDoctorIncludeKeywords.PLANTUML.getText(),
+                        AsciiDoctorIncludeKeywords.DITAA.getText(), 
+                        AsciiDoctorCommandKeyWords.IMAGE.getText()), 
+                contentAssistProcessor);
+        /* @formatter:off */
 
         contentAssistant.setContentAssistProcessor(multiProcessor, IDocument.DEFAULT_CONTENT_TYPE);
         for (AsciiDoctorDocumentIdentifier identifier : AsciiDoctorDocumentIdentifiers.values()) {
@@ -128,6 +138,7 @@ public class AsciiDoctorSourceViewerConfiguration extends TextSourceViewerConfig
         this.adaptable = adaptable;
 
     }
+    
 
     public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
         contentAssistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);

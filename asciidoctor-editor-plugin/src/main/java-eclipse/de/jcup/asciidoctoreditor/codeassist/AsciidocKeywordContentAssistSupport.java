@@ -60,7 +60,7 @@ public class AsciidocKeywordContentAssistSupport extends ProposalProviderContent
                     return null;
                 }
                 String word = (String) target;
-                for (DocumentKeyWord keyword : DocumentKeyWords.getAllExcedptIncludes()) {
+                for (DocumentKeyWord keyword : DocumentKeyWords.getAllExceptIncludes()) {
 
                     if (word.equalsIgnoreCase(keyword.getText())) {
                         return keyword.getTooltip();
@@ -79,7 +79,7 @@ public class AsciidocKeywordContentAssistSupport extends ProposalProviderContent
 
     @Override
     protected void prepareCompletion(ProposalProviderSupport completion) {
-
+        
         AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
         boolean addKeyWords = preferences.getBooleanPreference(P_CODE_ASSIST_ADD_KEYWORDS);
         boolean addSimpleWords = preferences.getBooleanPreference(P_CODE_ASSIST_ADD_SIMPLEWORDS);

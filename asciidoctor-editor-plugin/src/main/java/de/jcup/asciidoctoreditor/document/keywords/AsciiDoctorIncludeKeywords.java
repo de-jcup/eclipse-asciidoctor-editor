@@ -18,7 +18,10 @@ package de.jcup.asciidoctoreditor.document.keywords;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 
 public enum AsciiDoctorIncludeKeywords implements StartLineAndHavingDoubleColonsDocumentKeyword {
-    INCLUDE("https://asciidoctor.org/docs/user-manual/#include-directive"), PLANTUML("https://asciidoctor.org/docs/asciidoctor-diagram/#diagram-block-macro"),
+    INCLUDE("https://asciidoctor.org/docs/user-manual/#include-directive"), 
+    
+    PLANTUML("https://asciidoctor.org/docs/asciidoctor-diagram/#diagram-block-macro"),
+    
     DITAA("https://asciidoctor.org/docs/asciidoctor-diagram/#diagram-block-macro"),;
 
     private String text;
