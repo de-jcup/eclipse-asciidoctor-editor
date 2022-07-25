@@ -1,0 +1,4 @@
+== About
+This file is inside a folder where the parent folder 
+has no adoc file. But the base dir resolution shall
+work even with empty folders!
