@@ -27,6 +27,8 @@ Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui,
  org.eclipse.ui.texteditor.spelling,
  org.eclipse.ui.texteditor.templates
+Export-Package: de.jcup.asciidoctoreditor,
+ de.jcup.asciidoctoreditor.outline
 Bundle-ClassPath: .,
  lib/de-jcup-eclipse-commons.jar,
  lib/commons-io-2.6.jar,
