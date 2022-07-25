@@ -18,10 +18,39 @@ package de.jcup.asciidoctoreditor.asciidoc;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.junit.Test;
 
 public class AsciiDocFileUtilsTest {
+
+    @Test
+    public void getUserHomeSubfolderAsExpected() {
+        /* prepare */
+        String userHomeProperty = System.getProperty("user.home");
+        userHomeProperty= userHomeProperty.replace("\\","/");
+        assertFalse(userHomeProperty.endsWith("/"));
+        String expectedPath = userHomeProperty+"/.eclipse-asciidoctor-editor";
+        
+        /* execute */
+        File subFolder = AsciiDocFileUtils.getEditorHomeSubFolder();
+        
+        /* test */
+        assertEquals(expectedPath, subFolder.getAbsolutePath());
+    }
+
+    @Test
+    public void createdTempFolderIsInsideEditorHomeSubFolder() {
+        /* execute*/
+        Path folder = AsciiDocFileUtils.createTempFolderForId("i-am-a-project");
+        
+        /* test */
+        assertNotNull(folder);
+        File parentFile = folder.toFile().getParentFile();
+        
+        assertEquals(new File(AsciiDocFileUtils.getEditorHomeSubFolder(),"tmp"),parentFile);
+        
+    }
 
     @Test
     public void createSafeFilename() {

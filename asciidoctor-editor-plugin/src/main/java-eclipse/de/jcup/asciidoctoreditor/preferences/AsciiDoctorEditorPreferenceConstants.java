@@ -69,7 +69,9 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 
     P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT("outlineGroupingEnabledPerDefault"),
 
-    P_AUTOCREATE_INITIAL_CONFIGFILE("autoCreateInitialAsciidocConfigFile"),
+    P_AUTOCREATE_INITIAL_CONFIGFILE("autoCreateInitialAsciidocConfigFile"), 
+    
+    P_DAYS_TO_KEEP_TEMPFILES("daysToKeepTempFiles"),
 
     ;
 

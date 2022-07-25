@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.eclipse.commons.EclipseResourceHelper;
 
 /**
@@ -145,8 +146,7 @@ public class PluginContentInstaller {
     }
 
     private File getHomeSubFolder() {
-        File homeSubFolder = new File(System.getProperty("user.home"), ".eclipse-asciidoctor-editor");
-        return homeSubFolder;
+        return AsciiDocFileUtils.getEditorHomeSubFolder();
     }
 
 }

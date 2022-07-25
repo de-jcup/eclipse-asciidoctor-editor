@@ -45,6 +45,18 @@
         id="asciidoctoreditor.preferences.keyword.tasks"
         label="tasks">
      </keyword>
+      <keyword
+        id="asciidoctoreditor.preferences.keyword.temp"
+        label="temp">
+     </keyword>
+      <keyword
+        id="asciidoctoreditor.preferences.keyword.tmp"
+        label="tmp">
+     </keyword>
+      <keyword
+        id="asciidoctoreditor.preferences.keyword.cache"
+        label="tmp">
+     </keyword>
     
    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -639,6 +651,21 @@
                id="asciidoctoreditor.preferences.keyword.asciidoctor">
          </keywordReference>
       </page>
+      <page
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorCachePreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorCachePreferencePage"
+         name="Cache"
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.temp">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.tmp">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.cache">
+         </keywordReference>
+      </page>
       <!-- plantuml -->
       <page
          id="asciidoctoreditor.eclipse.preferences.AsciiDoctorPlantUMLEditorPreferencePage"
@@ -667,6 +694,7 @@
                id="asciidoctoreditor.preferences.keyword.color">
          </keywordReference>
       </page>
+      
     </extension>
     <extension
          point="org.eclipse.core.runtime.preferences">

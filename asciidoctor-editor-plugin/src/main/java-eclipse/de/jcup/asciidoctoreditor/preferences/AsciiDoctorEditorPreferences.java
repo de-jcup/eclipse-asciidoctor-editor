@@ -317,4 +317,8 @@ public class AsciiDoctorEditorPreferences {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_AUTOCREATE_INITIAL_CONFIGFILE);
     }
 
+    public int getDaysToKeepTempFiles() {
+        return getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_DAYS_TO_KEEP_TEMPFILES);
+    }
+
 }

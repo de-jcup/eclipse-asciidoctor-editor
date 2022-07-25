@@ -168,7 +168,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	    UniqueIdProvider uniqueIdProvider = mock(UniqueIdProvider.class);
 	    when(uniqueIdProvider.getUniqueId()).thenReturn("test_"+System.nanoTime());
 	    
-		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(null, uniqueIdProvider,"junit_testcase_temporary_file_for_issue_97.xyz");
+		File asciidocFile = AsciiDocFileUtils.createSelfDeletingTempFileForConvertedContent(null, uniqueIdProvider,"junit_testcase_temporary_file_for_issue_97.xyz");
 		
 		/* prepare */
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);

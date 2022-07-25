@@ -146,6 +146,8 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
         store.setDefault(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId(), false);
         store.setDefault(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT.getId(), PlantUMLOutputFormat.SVG.getAsciiDocFormatString());
 
+        
+        store.setDefault(AsciiDoctorEditorPreferenceConstants.P_DAYS_TO_KEEP_TEMPFILES.getId(), 2);
     }
 
 }

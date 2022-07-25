@@ -376,7 +376,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
     private File createTransformedTempfile(String filename, String text) throws IOException {
         Path tempFolder = editor.getWrapper().getTempFolder();
-        File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, editor.getEditorId(), filename);
+        File newTempFile = AsciiDocFileUtils.createSelfDeletingTempFileForConvertedContent(tempFolder, editor.getEditorId(), filename);
 
         ContentTransformerData data = new ContentTransformerData();
         data.origin = text;

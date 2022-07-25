@@ -93,8 +93,9 @@ public class AsciiDoctorWrapper {
 
             /* start conversion by asciidoctor */
             AsciidoctorAdapter asciiDoctorAdapter = context.getAsciiDoctor();
-            asciiDoctorAdapter.convertFile(data.editorFileOrNull, context.getFileToRender(), options, attributes, monitor);
-
+            File fileToRender = context.getFileToRender();
+            asciiDoctorAdapter.convertFile(data.editorFileOrNull, fileToRender, options, attributes, monitor);
+            
             refreshParentFolderIfNecessary();
             /* @formatter:off */
 
@@ -277,7 +278,8 @@ public class AsciiDoctorWrapper {
         sb.append(type.getPrefix());
         sb.append(baseName);
         sb.append(".html");
-        return new File(parent, sb.toString());
+        
+        return  new File(parent, sb.toString());
     }
 
     public void dispose() {

@@ -830,6 +830,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
         AsciiDoctorWrapper wrapper = getWrapper();
         temporaryInternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, getEditorId(), TemporaryFileType.INTERNAL_PREVIEW);
+        
         temporaryExternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, getEditorId(), TemporaryFileType.EXTERNAL_PREVIEW);
 
         browserAccess.ensureBrowser(new BrowserContentInitializer() {
