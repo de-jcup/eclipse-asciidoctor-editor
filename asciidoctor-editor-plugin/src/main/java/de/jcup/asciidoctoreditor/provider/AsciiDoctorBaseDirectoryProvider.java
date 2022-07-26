@@ -24,7 +24,6 @@ import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileFilter;
 import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings;
 
 public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvider {
-    private static final int MAX_ACCPTED_EMPTY_FOLDERS = 3;
 
     private static FileFilter ADOC_FILE_FILTER = new AsciiDocFileFilter(false);
     private Map<File, File> baseDirCache = new HashMap<>();
@@ -47,14 +46,10 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
     }
 
     private File findProjectBaseDirNotCached(File startFrom) {
-        return findProjectBaseDirNotCached(startFrom, startFrom, 0);
-    }
-
-    private File findProjectBaseDirNotCached(File startFrom, File potential, int potentialSearchDeeperCount) {
         getContext().getLogAdapter().resetTimeDiff();
-        File file = resolveUnSaveProjectBaseDir(startFrom, potential, potentialSearchDeeperCount);
+        File file = resolveUnSaveProjectBaseDir(startFrom);
         File tempFolder = getTempFolder();
-        if (tempFolder.equals(file) || tempFolder.equals(potential)) {
+        if (tempFolder.equals(file)) {
             /*
              * this is a fuse - we got this situation with
              * https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/97 . It will be
@@ -67,40 +62,16 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         return file;
     }
 
-    private File resolveUnSaveProjectBaseDir(File dir, File potential, int potentialDeepness) {
-        /* @formatter:on */
-        // gradle-or-mavenproject
-        // .project ?
-        // .gradle
-        // .pom.xml
-        // sub-project-doc1
-        // .project
-        // src/doc/book.adoc
-        // chapters/
-        // chapter01/
-        // first-parts-chapter01.adoc
-        // sub-project-doc2
-        // .project
-        // src/doc/book.adoc
-        // chapters/
-        // chapter01/
-        // first-parts-chapter01.adoc
-        // sub-project-doc3
-        // .project
-        // src/doc/shared
-        // chapters/
-        // chapter01/
-        // headlines.adoc
-        /* @formatter:off */
+    private File resolveUnSaveProjectBaseDir(File dir) {
         // Simple approach: just go up until no longer any asciidoc files
-        // are found - accept 3 folders without .adoc files between.
-        // 
-        // if no longer .adoc files assume this is the end and use directory
+        // are found - accept no folders without .adoc files between.
+        // If somebody has an empty folder between, the workaround must be to define an
+        // empty .adoc file inside.
         if (dir == null) {
             return new File(".");// should not happen but fall back...
         }
         File parentFile = dir.getParentFile();
-        if (parentFile==null) {
+        if (parentFile == null) {
             return dir;
         }
         if (getTempFolder().equals(parentFile)) {
@@ -108,21 +79,13 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
              * when we come to our base temp folder this will be a stop at all - avoid
              * effects occurred in issue_97
              */
-            return potential;
+            return dir;
         }
         if (containsADocFiles(parentFile)) {
-            return findProjectBaseDirNotCached(parentFile,parentFile,0);
-        }else {
-            /* parent file could be empty...*/
-            if (potentialDeepness<MAX_ACCPTED_EMPTY_FOLDERS) {
-                return findProjectBaseDirNotCached(parentFile,potential,potentialDeepness+1);
-            }else {
-                if (potential!=null) {
-                    return potential;
-                }else {
-                    return dir;
-                }
-            }
+            return findProjectBaseDirNotCached(parentFile);
+        } else {
+            /* parent folder is empty */
+            return dir;
         }
     }
 

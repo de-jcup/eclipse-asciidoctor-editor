@@ -38,7 +38,7 @@ public class AsciiDocFileUtils {
     private static File homeSubFolder;
     private static File editorRootTempFolder;
 
-    public static File createSelfDeletingTempFileForConvertedContent(Path tempFolder, UniqueIdProvider uniqueIdProvider, String filename) throws IOException {
+    public static File createTempFileForConvertedContent(Path tempFolder, UniqueIdProvider uniqueIdProvider, String filename) throws IOException {
         if (tempFolder == null) {
             tempFolder = Files.createTempDirectory("__fallback__");
         }

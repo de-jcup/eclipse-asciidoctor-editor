@@ -110,10 +110,10 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	}
 	
 	@Test
-    public void when_asciidocfile_is_set_base_dir_is_scanned_to_last_adoc_file_found_in_upper_hiararchy1_even_when_empty_folder() {
+    public void when_asciidocfile_is_set_base_dir_is_scanned_to_last_adoc_file_found_in_upper_hiararchy1_but__empty_folder_stops() {
 	    
         File asciidocFile = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/subfolder3-no-adocfile/subfolder4/test-file-a.adoc");
-        File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2");
+        File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/subfolder3-no-adocfile/subfolder4");
 
         /* prepare */
         when(context.getAsciiDocFile()).thenReturn(asciidocFile);
@@ -168,7 +168,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	    UniqueIdProvider uniqueIdProvider = mock(UniqueIdProvider.class);
 	    when(uniqueIdProvider.getUniqueId()).thenReturn("test_"+System.nanoTime());
 	    
-		File asciidocFile = AsciiDocFileUtils.createSelfDeletingTempFileForConvertedContent(null, uniqueIdProvider,"junit_testcase_temporary_file_for_issue_97.xyz");
+		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(null, uniqueIdProvider,"junit_testcase_temporary_file_for_issue_97.xyz");
 		
 		/* prepare */
 		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
