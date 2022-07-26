@@ -68,6 +68,9 @@ function initVariables(){
     SOURCE_PROJECT_NAME=${SOURCE_PROJECT_DIR##*/}          # we use current directory name to identify (assume the project has been checked out with name like on github
     TARGET_PROJECT_NAME="update-site-${SOURCE_PROJECT_NAME}"
     
+    # FIXME: remove this dirty workaround - was necessary because of having two checked out projects (while maven build deployment does not work full)
+    TARGET_PROJECT_NAME="update-site-eclipse-asciidoctor-editor"
+    
     cd ..
     THIS_ROOT_DIR="${PWD}"
     TARGET_PROJECT_DIR="${THIS_ROOT_DIR}/${TARGET_PROJECT_NAME}"
