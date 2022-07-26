@@ -1,0 +1,34 @@
+@startuml
+
+'For more examples visit https://plantuml.com/object-diagram
+
+object User1 
+
+object User2 {
+    name="Dummy 2"
+    id = 4711
+}
+
+diamond dia
+
+User1  --> dia
+User2  --> dia
+dia --> Lifeform    
+
+
+User1 : name = "Dummy 1"
+User1 : id = 123
+
+object London
+object Berlin
+
+map CapitalCity {
+ UK *-> London
+ USA => Washington
+ Germany *-> Berlin
+}
+
+User1 -> London
+User2 --> Berlin
+
+@enduml

@@ -1,0 +1,41 @@
+@startsalt
+
+'For more example look at https://plantuml.com/salt
+
+{+
+'Menu:
+{* File | Edit | Source | Refactor
+'Menu-Selection
+ Refactor | New | Open File | - | Close | Close All }
+
+'Tab bar
+{/ General | Fullscreen | Behavior | Saving }
+{
+{ Open image in: | ^Smart Mode^ }
+[X] Smooth images when zoomed
+[X] Confirm image deletion
+[ ] Show hidden images
+.
+Select country:
+}
+{S
+'Tree
+{T
+ + World
+ ++ America
+ +++ Canada
+ +++ USA
+ ++++ New York
+ ++++ Boston
+ +++ Mexico
+ ++ Europe
+ +++ Italy
+ +++ Germany
+ ++++ Berlin 
+ ++ Africa
+}
+}
+' Button
+[Close]
+}
+@endsalt

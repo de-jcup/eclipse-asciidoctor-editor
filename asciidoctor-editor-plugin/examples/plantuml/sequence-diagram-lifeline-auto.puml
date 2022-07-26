@@ -1,0 +1,18 @@
+@startuml
+
+'For more examples look at https://plantuml.com/sequence-diagram
+
+autoactivate on
+
+alice -> bob : hello
+
+bob -> bob : self call
+bill -> bob #005500 : hello from thread 2
+bob -> george ** : create
+return done in thread 2
+return rc
+
+bob -> george !! : delete
+return success
+
+@enduml

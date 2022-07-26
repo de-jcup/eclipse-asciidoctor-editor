@@ -35,6 +35,7 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
+import de.jcup.asciidoctoreditor.toolbar.NewPlantUMLUseExampleBlockAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
@@ -83,6 +84,7 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 
         IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         otherToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
+        otherToolBarManager.add(new NewPlantUMLUseExampleBlockAction(this));
 
         IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         buildToolBarManager.add(rebuildAction);

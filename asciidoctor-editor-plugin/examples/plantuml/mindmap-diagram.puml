@@ -1,0 +1,47 @@
+@startmindmap
+
+'For more examples visit: https://plantuml.com/mindmap-diagram
+
+title A mind map example
+
+<style>
+mindmapDiagram {
+  node {
+    BackgroundColor lightGreen
+  }
+  boxless {
+    FontColor darkgreen
+  }
+  :depth(0) {
+      BackGroundColor white
+  }
+  :depth(2) {
+      BackGroundColor darkGreen
+    FontColor white
+  }
+}
+</style>
+
+* <&flag>Debian
+** <&globe>Ubuntu
+*** Linux Mint
+*** Kubuntu
+*** Lubuntu
+*** KDE Neon
+** <&graph>LMDE
+** <&pulse>SolydXK
+** <&people>SteamOS
+** <&star>Raspbian with a very long name
+*** <s>Raspmbc</s> => OSMC
+*** <s>Raspyfi</s> => Volumio
+
+header
+Mindmaps are easy with plantUML
+endheader
+
+center footer Just an additional information at the bottom
+
+legend right
+  A short legend
+endlegend
+@endmindmap
