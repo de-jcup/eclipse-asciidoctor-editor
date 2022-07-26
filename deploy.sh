@@ -97,17 +97,20 @@ function signNewJarsInUpdateSiteProject(){
     FEATUREDIR=./features/*
     
     echo "Processing features dir $FEATUREDIR file..."
+    echo "ls:"
+    ls $FEATUREDIR -l
+    echo "---"
     for f in $FEATUREDIR;
     do
       if [ ${f: -7} == ".sha256" ] ; then
         continue
       fi
-      CHECKSUM=$(sha256sum $f)
+      CHECKSUM_FILENAME="${f}.sha256"
       if [ ! -f "$CHECKSUM_FILENAME" ] ; then
           echo "Signing feature: $f file..."
           jarsigner -keystore $KEYSTORE_LOCATION -storepass:env KEYSTORE_PWD $f signFiles
           # Build checksum after signing - so available to check downloads, if necessary
-          CHECKSUM_FILENAME="${f}.sha256"
+          CHECKSUM=$(sha256sum $f)
           echo "$CHECKSUM" > $CHECKSUM_FILENAME
           echo
       else
