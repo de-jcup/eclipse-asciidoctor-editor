@@ -27,8 +27,13 @@ import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 
 public class DynamicDitaaContentAssistSupport extends ProposalProviderContentAssistSupport {
 
+    private static final String DITAA_PREFIX = "ditaa::";
+
+    private CodeAssistReferencedFilePathDescriptionCalculator descriptionCalculator = new CodeAssistReferencedFilePathDescriptionCalculator(new DiagramRootParentFinder(),DITAA_PREFIX, '[', "Include ditaa file: ",
+            "Step furher into folder: ");
+    
     public DynamicDitaaContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("ditaa::", new DiagramBaseParentResolver(), new DynamicDitaaEnabledResolver(), new CodeAssistFileFilter(".ditaa")));
+        super(provider, new AsciidocReferenceProposalSupport(DITAA_PREFIX, new DiagramBaseParentResolver(), new DynamicDitaaEnabledResolver(), new CodeAssistFileFilter(".ditaa")));
     }
 
     @Override
@@ -37,11 +42,7 @@ public class DynamicDitaaContentAssistSupport extends ProposalProviderContentAss
 
             @Override
             public Object getProposalInfo(IProgressMonitor monitor, Object target) {
-                if (!(target instanceof String)) {
-                    return null;
-                }
-                String word = (String) target;
-                return word;
+                return descriptionCalculator.calculateReferencedFilePathDescription(target);
             }
 
             @Override

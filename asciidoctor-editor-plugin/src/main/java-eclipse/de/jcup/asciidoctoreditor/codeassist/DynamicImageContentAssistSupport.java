@@ -26,9 +26,15 @@ import de.jcup.eclipse.commons.codeassist.ProposalInfoProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 
 public class DynamicImageContentAssistSupport extends ProposalProviderContentAssistSupport {
+    
+    private static final String IMAGE_PREFIX = "image::";
+    
+    private CodeAssistReferencedFilePathDescriptionCalculator descriptionCalculator = new CodeAssistReferencedFilePathDescriptionCalculator(new ImageRootParentFinder(), IMAGE_PREFIX, '[', "Will use image: ",
+            "Step furher into folder: ");
+
 
     public DynamicImageContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("image::", new ImageBaseParentResolver(), new DynamicImageEnabledResolver(),
+        super(provider, new AsciidocReferenceProposalSupport(IMAGE_PREFIX, new ImageBaseParentResolver(), new DynamicImageEnabledResolver(),
                 new CodeAssistFileFilter(".png", ".svg", ".jpg", ".jpeg", ".gif").ignoreCase()));
     }
 
@@ -38,11 +44,7 @@ public class DynamicImageContentAssistSupport extends ProposalProviderContentAss
 
             @Override
             public Object getProposalInfo(IProgressMonitor monitor, Object target) {
-                if (!(target instanceof String)) {
-                    return null;
-                }
-                String word = (String) target;
-                return word;
+                return descriptionCalculator.calculateReferencedFilePathDescription(target);
             }
 
             @Override
