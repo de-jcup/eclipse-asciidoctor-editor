@@ -26,6 +26,30 @@ import org.junit.Test;
 public class AsciiDocStringUtilsTest {
 
     @Test
+    public void resolveCrossReferenceId_xref_works() {
+        assertEquals("test-target-link-internal-2", resolveCrossReferenceIdOrNull("xref:test-target-link-internal-2[linked with xref]"));
+        assertEquals("test-target-link-internal-2", resolveCrossReferenceIdOrNull("xref:test-target-link-internal-2 [linked with xref]"));
+        assertEquals("test-target-link-internal-2", resolveCrossReferenceIdOrNull("  xref:test-target-link-internal-2[linked with xref]  "));
+        assertEquals("test-target-link-internal-2", resolveCrossReferenceIdOrNull("xref:test-target-link-internal-2[]"));
+        assertEquals("test-target-link-internal-2", resolveCrossReferenceIdOrNull("xref:test-target-link-internal-2["));
+        
+        assertEquals(null, resolveCrossReferenceIdOrNull("xref:test-target-link-internal-2]"));
+        assertEquals(null, resolveCrossReferenceIdOrNull("xref:test-target-link-internal-2"));
+    }
+    
+    @Test
+    public void resolveCrossReferenceId_xref_shortcut_works() {
+        assertEquals("test-target-link-internal-2", resolveCrossReferenceIdOrNull("<<test-target-link-internal-2,linked with xref-shortcut>>"));
+        assertEquals("test-target-link-internal-2", resolveCrossReferenceIdOrNull("<<test-target-link-internal-2,linked with xref-shortcut  >>"));
+        assertEquals("test-target-link-internal-2", resolveCrossReferenceIdOrNull("<<test-target-link-internal-2,  linked with xref-shortcut  >>"));
+        assertEquals("test-target-link-internal-2", resolveCrossReferenceIdOrNull("<<test-target-link-internal-2  ,  linked with xref-shortcut  >>"));
+        
+        assertEquals(null, resolveCrossReferenceIdOrNull("<<test-target-link-internal-2>>"));
+        assertEquals(null, resolveCrossReferenceIdOrNull("<<Natural links are not spuported!>>"));
+        
+    }
+    
+    @Test
     public void deleted_temporary_directory_will_be_autocreated_again() throws Exception {
         /* prepare */
         Path tmp = Files.createTempDirectory("asciidoc-test");
@@ -99,6 +123,13 @@ public class AsciiDocStringUtilsTest {
         String include = "something::very-special-and-useful[title=\"AsciiDoctor Editor Logo\" opts=\"inline\"]";
         String line = include + "... something else";
         assertEquals(include, resolveTextFromStartToBracketsEnd(line, 0, 5).text);
+    }
+    
+    @Test
+    public void resolveCrossReferenceFromStartToBracketsEnd_includeTexts_for_an_image_complete_resolved_0_5() {
+        String include = "<<a,b>>";
+        String line = include + "... something else";
+        assertEquals(include, resolveComparisionSignsBorderedAreaFromStartToBracketsEnd(line, 0, 5).text);
     }
 
 }

@@ -301,6 +301,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
                 return headline;
             }
         }
+        return findInlineAnchorWithId(elementId, model);
+    }
+
+    private AsciidoctorTextSelectable findInlineAnchorWithId(String elementId, AsciiDoctorScriptModel model) {
         Collection<AsciiDoctorInlineAnchor> anchors = model.getInlineAnchors();
         for (AsciiDoctorInlineAnchor anchor : anchors) {
             if (elementId.equals(anchor.getId())) {
@@ -546,6 +550,18 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         File file = new File(editorFileOrNull.getParentFile(), fileName);
         openFileWithEclipseDefault(file);
 
+    }
+    
+    public void openCrossReferenceById(String crossReferenceId) {
+        if (crossReferenceId==null) {
+            return;
+        }
+       AsciiDoctorScriptModel model = outlineSupport.buildModelWithoutValidation();
+       AsciidoctorTextSelectable selectable = findInlineAnchorWithId(crossReferenceId, model);
+       if (selectable!=null) {
+           selectAndReveal(selectable.getSelectionStart(),selectable.getSelectionLength());
+       }
+       
     }
 
     public void openInExternalBrowser() {

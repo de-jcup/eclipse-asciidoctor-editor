@@ -31,16 +31,17 @@ public class AsciiDocStringUtils {
     private static final String IMAGE_PREFIX = "image::";
     private static final String INCLUDE_PREFIX = "include::";
     private static final String UTF_8 = "UTF-8";
+    private static final int MAX_CROSSREFERENCE_SIZE = 128;
 
-    public static String resolveFilenameOfDiagramMacroOrNull(String potentialInclude) {
-        if (potentialInclude == null) {
+    public static String resolveFilenameOfDiagramMacroOrNull(String potentialFileNameReference) {
+        if (potentialFileNameReference == null) {
             return null;
         }
-        String fileName = resolveFilenameOfMacroOrNull(potentialInclude, "ditaa");
+        String fileName = resolveFilenameOfMacroOrNull(potentialFileNameReference, "ditaa");
         if (fileName != null) {
             return fileName;
         }
-        return resolveFilenameOfMacroOrNull(potentialInclude, "plantuml");
+        return resolveFilenameOfMacroOrNull(potentialFileNameReference, "plantuml");
     }
 
     public static String resolveFilenameOfMacroOrNull(String potentialInclude, String macroName) {
@@ -101,8 +102,8 @@ public class AsciiDocStringUtils {
     }
 
     /**
-     * Resolves a text from cursor position to left start (whitspace is terminator)
-     * and to right with ending square bracket ("]").
+     * Resolves a text from cursor position to left start (white space is
+     * terminator) and to right with ending square bracket ("]").
      * 
      * @param line
      * @param offset       (offset in complet document)
@@ -145,6 +146,85 @@ public class AsciiDocStringUtils {
         return data;
     }
 
+    /**
+     * Resolves a text from cursor position to left start (white space is
+     * terminator) and to right with ending square bracket ("]").
+     * 
+     * @param line
+     * @param offset       (offset in complet document)
+     * @param offsetInLine (offset inside the line)
+     * @return link text data object
+     */
+    public static LinkTextData resolveComparisionSignsBorderedAreaFromStartToBracketsEnd(String line, int offset, int offsetInLine) {
+        LinkTextData data = new LinkTextData();
+
+        if (line.indexOf('<') == -1) {
+            return data;
+        }
+        if (line.indexOf('>') == -1) {
+            return data;
+        }
+
+        String lineLeftChars = line.substring(0, offsetInLine);
+        String lineRightChars = line.substring(offsetInLine);
+        StringBuilder sb = new StringBuilder();
+
+        int offsetLeft = offset;
+        /* build right part */
+        boolean foundEndingBracket = false;
+        int endingBracketsCount = 0;
+        int inspectedCharacters = 0;
+        for (char c : lineRightChars.toCharArray()) {
+            inspectedCharacters++;
+            if (inspectedCharacters > MAX_CROSSREFERENCE_SIZE) {
+                return data;
+            }
+            if (c == '>') {
+                endingBracketsCount++;
+            }
+            foundEndingBracket = endingBracketsCount == 2;
+            sb.append(c);
+            if (foundEndingBracket) {
+                break;
+            }
+        }
+        if (!foundEndingBracket) {
+            return data;
+        }
+        inspectedCharacters = 0;
+
+        /* build left part */
+        int startBracketsCount = 0;
+        boolean foundStartBracket = false;
+
+        char[] left = lineLeftChars.toCharArray();
+        for (int i = left.length - 1; i >= 0; i--) {
+            char c = left[i];
+            inspectedCharacters++;
+            if (inspectedCharacters > MAX_CROSSREFERENCE_SIZE) {
+                return data;
+            }
+            sb.insert(0, c);
+            if (c == '<') {
+                startBracketsCount++;
+            }
+            if (startBracketsCount == 2) {
+                foundStartBracket = true;
+            }
+            if (foundStartBracket) {
+                break;
+            }
+            offsetLeft--;
+        }
+        if (!foundStartBracket) {
+            return data;
+        }
+
+        data.text = sb.toString();
+        data.offsetLeft = offsetLeft;
+        return data;
+    }
+
     public static String readUTF8FileToString(File fileToRead) throws IOException {
         String originText = null;
         StringBuilder sb = new StringBuilder();
@@ -178,5 +258,48 @@ public class AsciiDocStringUtils {
             bw.close();
             return newTempFile;
         }
+    }
+
+    /**
+     * Resolves cross reference id if possible. See
+     * https://docs.asciidoctor.org/asciidoc/latest/macros/xref/ for details. <br>
+     * <br>
+     * Examples:
+     * <ul>
+     * <li>xref:test-target-link-internal-2[linked with xref].</li>
+     * <li><<test-target-link-internal-2,Link to
+     * "test-target-link-internal-2">></li>
+     * </ul>
+     * 
+     * @param text
+     * @return id or <code>null</code>
+     */
+    public static String resolveCrossReferenceIdOrNull(String text) {
+        if (text == null) {
+            return null;
+        }
+        String inspect = text.trim();
+        if (inspect.startsWith("xref:")) {
+            String link = inspect.substring("xref:".length());
+            int attributeDefIndex = link.indexOf("[");
+            if (attributeDefIndex == -1) {
+                return null;
+            }
+            link = link.substring(0, attributeDefIndex);
+            return link.trim();
+        } else if (inspect.startsWith("<<")) {
+            String link = inspect.substring("<<".length());
+            if (!link.endsWith(">>")) {
+                return null;
+            }
+            int commaIndex = link.indexOf(',');
+            if (commaIndex == -1) {
+                return null;
+            }
+            link = link.substring(0, commaIndex);
+            return link.trim();
+        }
+
+        return null;
     }
 }
