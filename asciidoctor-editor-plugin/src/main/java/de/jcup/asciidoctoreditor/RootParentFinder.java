@@ -20,7 +20,7 @@ import java.io.File;
 public interface RootParentFinder{
     
     /**
-     * Resolves the (context dependant) root folder - or <code>null</code> if 
+     * Resolves the (context dependant) root folder - or <code>null</code> 
      * @return root folder or <code>null</code>
      */
     public File findRootParent();

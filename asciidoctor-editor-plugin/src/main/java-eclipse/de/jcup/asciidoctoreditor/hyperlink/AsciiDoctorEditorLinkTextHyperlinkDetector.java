@@ -61,6 +61,7 @@ public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlin
         context.append(resolveLinkToDiagram(context));
 
         context.append(resolveLinkToShortCrossReference(context));
+        context.append(resolveLinkToCrossReference(context));
 
         return context.getHyperLinksArrayOrNull();
 
@@ -129,6 +130,10 @@ public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlin
             return ! hyperlinks.isEmpty();
         }
 
+        public String getCrossRefTextDataOrNull() {
+            return whiteSpaceBorderedlinkTextData.text;
+        }
+
     }
 
     private Region createTargetRegionForWhitespaceBordered(LinkDetectorContext context) {
@@ -190,6 +195,20 @@ public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlin
         String crossReferenceId = AsciiDocStringUtils.resolveCrossReferenceIdOrNull(foundText);
         if (crossReferenceId != null) {
             Region targetRegion = createTargetRegionForComparisionSignsBordered(context);
+            return new IHyperlink[] { new AsciiDoctorEditorOpenCrossReferenceHyperlink(targetRegion, crossReferenceId, context.editor) };
+        }
+
+        return null;
+    }
+    
+    protected IHyperlink[] resolveLinkToCrossReference(LinkDetectorContext context) {
+        if (context.hasHyperlinks()) {
+            return null;
+        }
+        String foundText = context.getCrossRefTextDataOrNull();
+        String crossReferenceId = AsciiDocStringUtils.resolveCrossReferenceIdOrNull(foundText);
+        if (crossReferenceId != null) {
+            Region targetRegion = createTargetRegionForWhitespaceBordered(context);
             return new IHyperlink[] { new AsciiDoctorEditorOpenCrossReferenceHyperlink(targetRegion, crossReferenceId, context.editor) };
         }
 
