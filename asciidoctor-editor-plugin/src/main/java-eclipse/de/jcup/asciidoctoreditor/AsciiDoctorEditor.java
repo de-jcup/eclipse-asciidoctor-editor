@@ -123,6 +123,7 @@ import de.jcup.asciidoctoreditor.toolbar.ItalicFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.MonospacedFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
+import de.jcup.asciidoctoreditor.toolbar.NewCrossReferenceMarkerInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewLinkInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
@@ -945,6 +946,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         IToolBarManager insertToolberManager = new ToolBarManager(coolBarManager.getStyle());
 
         insertToolberManager.add(new NewLinkInsertAction(this));
+        insertToolberManager.add(new NewCrossReferenceMarkerInsertAction(this));
         insertToolberManager.add(new NewTableInsertAction(this));
         insertToolberManager.add(new NewCodeBlockInsertAction(this));
         insertToolberManager.add(addLineBreakAction);
