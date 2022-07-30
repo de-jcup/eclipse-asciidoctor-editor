@@ -27,6 +27,9 @@
    <feature url="features/de.jcup.asciidoctoreditor_2.6.1.jar" id="de.jcup.asciidoctoreditor" version="2.6.1">
       <category name="category.asciidoctoreditor.stable"/>
    </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_2.7.0.jar" id="de.jcup.asciidoctoreditor" version="2.7.0">
+      <category name="category.asciidoctoreditor.stable"/>
+   </feature>
    <category-def name="category.asciidoctoreditor.stable" label="Stable">
       <description>
          Contain stable releases
