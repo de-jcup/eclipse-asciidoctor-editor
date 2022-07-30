@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IFile;
 
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.EclipseResourceHelper;
+import de.jcup.asciidoctoreditor.RootParentFinder;
 
 public class CodeAssistReferencedFilePathDescriptionCalculator {
 

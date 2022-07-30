@@ -18,6 +18,7 @@ package de.jcup.asciidoctoreditor.codeassist;
 import java.io.File;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.RootParentFinder;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class ImageRootParentFinder implements RootParentFinder {

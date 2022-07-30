@@ -22,14 +22,14 @@ left mouse button while hovering over links.
 - xref:test-target-link-internal-2 (does not work in asciidoc)
 
 ==== Inside workspace, but other file
-- Linked with xref shortcut <<test-target-link-internal-2,test-target-link-internal-2>> 
+- Linked with xref shortcut <<test-target-link-internal-3,test-target-link-internal-3>> 
 
 - Linked with natural cross reference to  <<Internal Target>>
 
 - xref:test-target-link-internal-2[linked with xref].
 
 ==== Not existing internal link
-<<test-target-link-internal-3 not existing,Link to "test-target-link-internal-3 not existing">>
+<<test-target-link-internal-4 not existing,Link to "test-target-link-internal-4 not existing">>
 
 
 

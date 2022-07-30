@@ -1,0 +1,8 @@
+== This is test1b
+
+
+
+Just some text, so position is different to test1a 
+
+[[section-test1]]
+This is marked again - same ID as in test1.adoc. Wrong, but must be found by editor

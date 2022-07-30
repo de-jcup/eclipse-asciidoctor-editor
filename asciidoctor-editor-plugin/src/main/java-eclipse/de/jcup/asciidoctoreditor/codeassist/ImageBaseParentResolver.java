@@ -35,12 +35,12 @@ public class ImageBaseParentResolver implements BaseParentDirResolver {
 
         IEditorPart editor = EclipseUtil.getActiveEditor();
         if (editor instanceof AsciiDoctorEditor) {
-            return getBaseDirFromEditor(editorFile, (AsciiDoctorEditor) editor);
+            return getImagesBaseDirFromEditor(editorFile, (AsciiDoctorEditor) editor);
         }
         return null;
     }
 
-    private File getBaseDirFromEditor(File editorFile, AsciiDoctorEditor editor) {
+    private File getImagesBaseDirFromEditor(File editorFile, AsciiDoctorEditor editor) {
         String path = editor.getImagesPathOrNull();
         if (path == null) {
             /* no image dir set, so fallback to current folder */

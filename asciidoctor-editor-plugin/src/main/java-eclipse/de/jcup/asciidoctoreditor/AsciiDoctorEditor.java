@@ -20,6 +20,7 @@ import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import org.eclipse.core.resources.IFile;
@@ -41,6 +42,7 @@ import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
@@ -49,7 +51,9 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.CaretEvent;
@@ -62,17 +66,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.contexts.IContextService;
+import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.UIJob;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
@@ -84,6 +91,9 @@ import de.jcup.asciidoctoreditor.diagram.plantuml.AsciiDoctorPlantUMLSourceViewe
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
 import de.jcup.asciidoctoreditor.hyperlink.AsciiDoctorEditorLinkSupport;
+import de.jcup.asciidoctoreditor.model.AsciidocCrossReference;
+import de.jcup.asciidoctoreditor.model.AsciidocCrossReferenceFinder;
+import de.jcup.asciidoctoreditor.model.RootParentFinderFileAdapter;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.outline.ScriptItemTreeContentProvider;
@@ -551,17 +561,56 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         openFileWithEclipseDefault(file);
 
     }
-    
+
     public void openCrossReferenceById(String crossReferenceId) {
-        if (crossReferenceId==null) {
+        if (crossReferenceId == null) {
             return;
         }
-       AsciiDoctorScriptModel model = outlineSupport.buildModelWithoutValidation();
-       AsciidoctorTextSelectable selectable = findInlineAnchorWithId(crossReferenceId, model);
-       if (selectable!=null) {
-           selectAndReveal(selectable.getSelectionStart(),selectable.getSelectionLength());
-       }
-       
+        RootParentFinderFileAdapter rootParentFinder = new RootParentFinderFileAdapter(getWrapper().getContext().getBaseDir());
+        AsciidocCrossReferenceFinder finder = new AsciidocCrossReferenceFinder(rootParentFinder, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        List<AsciidocCrossReference> references = finder.findReferences(crossReferenceId);
+
+        if (references.isEmpty()) {
+            MessageDialog.openWarning(getActiveWorkbenchShell(), "No reference found", "Did not found an asciidoc file which contains\n[[" + crossReferenceId + "]].");
+            return;
+        }
+        AsciidocCrossReference selected = references.iterator().next();
+        if (references.size() > 1) {
+            /* @formatter:off */
+            ListSelectionDialog dlg =
+                    new ListSelectionDialog(
+                        getActiveWorkbenchShell(),
+                        references,
+                        ArrayContentProvider.getInstance(),
+                        new LabelProvider(),
+                        "There are multiple occurrences!\nNormally this is problem: a cross reference ID should only exist one time!");
+                     dlg.setInitialSelections(selected);
+                     dlg.setTitle("Please select the file to open.");
+                     dlg.open();
+                     
+                     
+               
+           /* @formatter:on */
+            if (dlg.getReturnCode() != Dialog.OK) {
+                return;
+            }
+            Object[] result = dlg.getResult();
+
+            // we open all selected reference files
+            for (Object selectedResult : result) {
+                AsciidocCrossReference selectedReference = (AsciidocCrossReference) selectedResult;
+                openAsciidocReferenceWithEclipseDefault(selectedReference);
+            }
+        } else {
+            openAsciidocReferenceWithEclipseDefault(selected);
+        }
+
+//        }
+
+    }
+
+    private void openAsciidocReferenceWithEclipseDefault(AsciidocCrossReference selected) {
+        openFileWithEclipseDefault(selected.getFile(), selected.getPositionStart(), selected.getLength());
     }
 
     public void openInExternalBrowser() {
@@ -846,7 +895,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
         AsciiDoctorWrapper wrapper = getWrapper();
         temporaryInternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, getEditorId(), TemporaryFileType.INTERNAL_PREVIEW);
-        
+
         temporaryExternalPreviewFile = wrapper.getTempFileFor(editorFileOrNull, getEditorId(), TemporaryFileType.EXTERNAL_PREVIEW);
 
         browserAccess.ensureBrowser(new BrowserContentInitializer() {
@@ -948,6 +997,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
     }
 
     protected void openFileWithEclipseDefault(File file) {
+        openFileWithEclipseDefault(file, -1, -1);
+    }
+
+    protected void openFileWithEclipseDefault(File file, int start, int length) {
         IWorkbenchPage activePage = getActivePage();
         if (!file.exists()) {
             boolean fileCreated = requestCreateOfMissingFile(file);
@@ -963,10 +1016,16 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
              * the current workspace
              */
             iFile.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-            IDE.openEditor(activePage, iFile, true);
+            IEditorPart editorPart = IDE.openEditor(activePage, iFile, true);
+            if (start != -1) {
+                if (editorPart instanceof AbstractTextEditor) {
+                    AbstractTextEditor e = (AbstractTextEditor) editorPart;
+                    e.selectAndReveal(start, length);
+                }
+            }
             return;
         } catch (PartInitException e) {
-            AsciiDoctorEditorUtil.logError("Not able to open include", e);
+            AsciiDoctorEditorUtil.logError("Not able to open file", e);
         } catch (CoreException e) {
             AsciiDoctorEditorUtil.logError("CoreException", e);
         }

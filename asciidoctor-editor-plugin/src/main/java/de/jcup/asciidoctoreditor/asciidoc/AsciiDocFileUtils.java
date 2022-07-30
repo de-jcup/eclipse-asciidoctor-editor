@@ -144,6 +144,10 @@ public class AsciiDocFileUtils {
         return hiddenEditorFile;
     }
 
+    public static String readAsciidocfile(File file) throws IOException {
+        return FileUtils.readFileToString(file, "UTF-8");
+    }
+
     static String calculatePathToFileFromBase(File asciidoctorFile, File baseDir) {
         String unixBasePath = FilenameUtils.normalizeNoEndSeparator(baseDir.getAbsolutePath(), true) + "/";
         String unixAsciiDocFilePath = FilenameUtils.normalize(asciidoctorFile.getAbsolutePath(), true);

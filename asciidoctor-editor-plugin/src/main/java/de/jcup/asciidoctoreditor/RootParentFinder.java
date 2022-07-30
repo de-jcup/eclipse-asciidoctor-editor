@@ -13,11 +13,15 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor.codeassist;
+package de.jcup.asciidoctoreditor;
 
 import java.io.File;
 
 public interface RootParentFinder{
     
+    /**
+     * Resolves the (context dependant) root folder - or <code>null</code> if 
+     * @return root folder or <code>null</code>
+     */
     public File findRootParent();
 }
