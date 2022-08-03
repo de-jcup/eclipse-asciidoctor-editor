@@ -9,7 +9,6 @@ left mouse button while hovering over links.
 
 === Internal link
 
-
 ==== Same document
 [[test-target-link-internal-1]]
 - Linked with xref shortcut <<test-target-link-internal-2,to test-target-link-internal-2>> 

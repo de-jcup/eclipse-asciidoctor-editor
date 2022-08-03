@@ -18,6 +18,7 @@ package de.jcup.asciidoctoreditor.provider;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Map;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
@@ -97,6 +98,9 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
         // now we have to apply the parts from config file as well:
         AsciiDocConfigFileSupport support = getContext().getConfigFileSupport();
+        if (support==null) {
+            return Collections.emptyMap();
+        }
         return support.calculateResolvedMap(map, getContext().getConfigFiles());
     }
 

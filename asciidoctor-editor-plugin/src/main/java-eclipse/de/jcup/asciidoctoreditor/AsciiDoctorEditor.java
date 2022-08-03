@@ -90,10 +90,11 @@ import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
 import de.jcup.asciidoctoreditor.diagram.plantuml.AsciiDoctorPlantUMLSourceViewerConfiguration;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorTextFileDocumentProvider;
+import de.jcup.asciidoctoreditor.globalmodel.AsciidocCrossReferenceAnchorFinder;
+import de.jcup.asciidoctoreditor.globalmodel.AsciidocCrossReferenceAnchorNode;
+import de.jcup.asciidoctoreditor.globalmodel.AsciidocFile;
+import de.jcup.asciidoctoreditor.globalmodel.RootParentFinderFileAdapter;
 import de.jcup.asciidoctoreditor.hyperlink.AsciiDoctorEditorLinkSupport;
-import de.jcup.asciidoctoreditor.model.AsciidocCrossReference;
-import de.jcup.asciidoctoreditor.model.AsciidocCrossReferenceFinder;
-import de.jcup.asciidoctoreditor.model.RootParentFinderFileAdapter;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorTreeContentProvider;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.outline.ScriptItemTreeContentProvider;
@@ -116,6 +117,7 @@ import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.AddLineBreakAction;
 import de.jcup.asciidoctoreditor.toolbar.BoldFormatAction;
 import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
+import de.jcup.asciidoctoreditor.toolbar.CreateOverviewAction;
 import de.jcup.asciidoctoreditor.toolbar.CreatePDFAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertAdmonitionAction;
 import de.jcup.asciidoctoreditor.toolbar.InsertSectionTitleAction;
@@ -568,14 +570,14 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             return;
         }
         RootParentFinderFileAdapter rootParentFinder = new RootParentFinderFileAdapter(getWrapper().getContext().getBaseDir());
-        AsciidocCrossReferenceFinder finder = new AsciidocCrossReferenceFinder(rootParentFinder, AsciiDoctorEclipseLogAdapter.INSTANCE);
-        List<AsciidocCrossReference> references = finder.findReferences(crossReferenceId);
+        AsciidocCrossReferenceAnchorFinder finder = new AsciidocCrossReferenceAnchorFinder(rootParentFinder, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        List<AsciidocCrossReferenceAnchorNode> references = finder.findReferences(crossReferenceId);
 
         if (references.isEmpty()) {
             MessageDialog.openWarning(getActiveWorkbenchShell(), "No reference found", "Did not found an asciidoc file which contains\n[[" + crossReferenceId + "]].");
             return;
         }
-        AsciidocCrossReference selected = references.iterator().next();
+        AsciidocCrossReferenceAnchorNode selected = references.iterator().next();
         if (references.size() > 1) {
             /* @formatter:off */
             ListSelectionDialog dlg =
@@ -599,19 +601,21 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
             // we open all selected reference files
             for (Object selectedResult : result) {
-                AsciidocCrossReference selectedReference = (AsciidocCrossReference) selectedResult;
+                AsciidocCrossReferenceAnchorNode selectedReference = (AsciidocCrossReferenceAnchorNode) selectedResult;
                 openAsciidocReferenceWithEclipseDefault(selectedReference);
             }
         } else {
             openAsciidocReferenceWithEclipseDefault(selected);
         }
 
-//        }
-
     }
 
-    private void openAsciidocReferenceWithEclipseDefault(AsciidocCrossReference selected) {
-        openFileWithEclipseDefault(selected.getFile(), selected.getPositionStart(), selected.getLength());
+    private void openAsciidocReferenceWithEclipseDefault(AsciidocCrossReferenceAnchorNode selected) {
+        AsciidocFile asciidocFile = selected.getAsciidocFile();
+        if (asciidocFile==null) {
+            return;
+        }
+        openFileWithEclipseDefault(asciidocFile.getFile(), selected.getPositionStart(), selected.getLength());
     }
 
     public void openInExternalBrowser() {
@@ -630,6 +634,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     public void createAndShowPDF() {
         AsciiDoctorEditorPDFLauncher.INSTANCE.createAndShowPDF(this);
+    }
+    
+    public void createAndShowOverview() {
+        AsciiDoctorEditorOverviewLauncher.INSTANCE.createAndShowOverview(this);
     }
 
     public void rebuild() {
@@ -966,6 +974,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         IToolBarManager outputToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         outputToolBarManager.add(new CreatePDFAction(this));
+        outputToolBarManager.add(new CreateOverviewAction(this));
 
         // Add to the cool bar manager
         coolBarManager.add(new ToolBarContributionItem(previewToolBarManager, "asciiDocEditor.toolbar.preview"));
@@ -1321,5 +1330,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
 
     }
+
+    
 
 }

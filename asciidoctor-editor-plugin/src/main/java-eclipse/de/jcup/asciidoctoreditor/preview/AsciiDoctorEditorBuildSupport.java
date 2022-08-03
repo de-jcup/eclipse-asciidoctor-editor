@@ -67,8 +67,8 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         getEditor().validate();
 
         boolean rebuildEnabled = true;
-        boolean internalPreview2 = getEditor().isInternalPreview();
-        if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !internalPreview2) {
+        boolean editorIsInInternalPreviewMode = getEditor().isInternalPreview();
+        if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !editorIsInInternalPreviewMode) {
             rebuildEnabled = AsciiDoctorEditorPreferences.getInstance().isAutoBuildEnabledForExternalPreview();
         }
         if (!rebuildEnabled) {

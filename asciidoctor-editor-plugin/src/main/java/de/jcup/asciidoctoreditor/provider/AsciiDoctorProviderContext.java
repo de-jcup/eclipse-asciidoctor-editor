@@ -23,11 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
-
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorConfigFile;
 import de.jcup.asp.api.asciidoc.AsciidocOption;
@@ -35,7 +34,7 @@ import de.jcup.asp.api.asciidoc.AsciidocOption;
 public class AsciiDoctorProviderContext {
 
     private LogAdapter logAdapter;
-    private File asciidocFile;
+    private File asciiDocFile;
     /**
      * Base dir used for asciidoctor rendering - is either the project base dir, or
      * a configured directory by a asciidoctorconfig file using "base_dir" option
@@ -114,11 +113,11 @@ public class AsciiDoctorProviderContext {
         return optionsProvider;
     }
 
-    public void setAsciidocFile(File asciidocFile) {
-        if (this.asciidocFile == asciidocFile) {
+    public void setAsciidocFile(File file) {
+        if (this.asciiDocFile == file) {
             return;
         }
-        this.asciidocFile = asciidocFile;
+        this.asciiDocFile = file;
         this.projectBaseDir = baseDirProvider.findProjectBaseDir();
         getAttributesProvider().reset();
         Map<String, Object> attributes = getAttributesProvider().getCachedAttributes();
@@ -165,7 +164,7 @@ public class AsciiDoctorProviderContext {
      * recalculated on next rendering time fo editor content
      */
     public void resetCaches() {
-        this.asciidocFile = null;
+        this.asciiDocFile = null;
         this.baseDir = null;
         this.projectBaseDir = null;
         this.outputFolder = null;
@@ -210,7 +209,7 @@ public class AsciiDoctorProviderContext {
     }
 
     public File getAsciiDocFile() {
-        return asciidocFile;
+        return asciiDocFile;
     }
 
     public void setUseInstalled(boolean usingInstalledAsciidoctor) {
@@ -225,6 +224,10 @@ public class AsciiDoctorProviderContext {
         this.fileToRender = fileToRender;
     }
 
+    /**
+     * 
+     * @return the file to render, means the asciidoc file (either editor file or a temporary one which is generated in background)
+     */
     public File getFileToRender() {
         return fileToRender;
     }
@@ -234,15 +237,20 @@ public class AsciiDoctorProviderContext {
      * @return target pdf file or <code>null</code>
      */
     public File getTargetPDFFileOrNull() {
+        return getTargetForFileEndingOrNull(".pdf");
+    }
+
+    private File getTargetForFileEndingOrNull(String ending) {
         if (fileToRender == null) {
             return null;
         }
         String originName = fileToRender.getName(); /* xyz.adoc, xyz.asciidoc, xyz, xyz.txt */
-        String fileName = FilenameUtils.getBaseName(originName) + ".pdf";
-        File file = new File(fileToRender.getParentFile(), fileName);
+        String targetName = AsciiDocFileUtils.createTargetName(originName, ending);
+        File file = new File(fileToRender.getParentFile(), targetName);
         return file;
     }
 
+    
     public <T extends AbstractAsciiDoctorProvider> T register(T provider) {
         providers.add(provider);
         return provider;
@@ -316,5 +324,7 @@ public class AsciiDoctorProviderContext {
     public File getConfigRoot() {
         return configRoot;
     }
+
+    
 
 }

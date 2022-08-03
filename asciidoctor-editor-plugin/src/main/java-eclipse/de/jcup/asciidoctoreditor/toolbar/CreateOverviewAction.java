@@ -19,22 +19,22 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
-public class CreatePDFAction extends ToolbarAction {
+public class CreateOverviewAction extends ToolbarAction {
 
-    private static ImageDescriptor IMG_CREATE_PDF = createToolbarImageDescriptor("create_pdf.png");
+    private static ImageDescriptor IMG_CREATE_OVERVIEW = createToolbarImageDescriptor("show_overview_graph.png");
 
-    public CreatePDFAction(AsciiDoctorEditor editor) {
+    public CreateOverviewAction(AsciiDoctorEditor editor) {
         super(editor);
         initUI();
     }
 
     private void initUI() {
-        setImageDescriptor(IMG_CREATE_PDF);
-        setToolTipText("Create temporary pdf file and open it");
+        setImageDescriptor(IMG_CREATE_OVERVIEW);
+        setToolTipText("Create overview graph for this document");
     }
 
     @Override
     public void run() {
-        asciiDoctorEditor.createAndShowPDF();
+        asciiDoctorEditor.createAndShowOverview();
     }
 }

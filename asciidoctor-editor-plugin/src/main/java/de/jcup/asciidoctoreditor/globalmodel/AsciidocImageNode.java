@@ -13,34 +13,28 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor.model;
+package de.jcup.asciidoctoreditor.globalmodel;
 
 import java.io.File;
 
-public class AsciidocCrossReference {
+public class AsciidocImageNode extends AbstractAsciidocNode {
 
-    File file;
-    String id;
-    int positionStartIndex;
-    int length;
+    File imageFile;
 
-    public File getFile() {
-        return file;
+    public File getImageFile() {
+        return imageFile;
     }
-    
-    public String getId() {
-        return id;
-    }
-    
-    public int getPositionStart() {
-        return positionStartIndex;
-    }
-    
-    public int getLength() {
-        return length;
-    }
+
     @Override
     public String toString() {
-        return file.getName()+" - "+id;
+        return resolveSafeAsciidocFileName() + " - image::" + resolveSafeImageFileName() + "[]";
+    }
+
+    private String resolveSafeImageFileName() {
+        String target = "null";
+        if (imageFile != null) {
+            target = imageFile.getName();
+        }
+        return target;
     }
 }

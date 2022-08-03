@@ -22,9 +22,62 @@ import de.jcup.asciidoctoreditor.UniqueEditorId;
 
 public class WrapperConvertData {
     public EditorType targetType = EditorType.ASCIIDOC;
-    public File asciiDocFile;
-    public UniqueEditorId editorId;
-    public boolean useHiddenFile;
-    public File editorFileOrNull;
-    public boolean internalPreview;
+    /**
+     * This is the file where the base directory calculation will be done! Also the
+     * calculation of .asciidocconfig files, base attributes etc. will be done from
+     * here!
+     */
+    private File asciiDocFile;
+    private UniqueEditorId editorId;
+    private boolean useHiddenFile;
+    private File editorFileOrNull;
+    private boolean internalPreview;
+
+    public EditorType getTargetType() {
+        return targetType;
+    }
+
+    public void setTargetType(EditorType targetType) {
+        this.targetType = targetType;
+    }
+
+    public File getAsciiDocFile() {
+        return asciiDocFile;
+    }
+
+    public void setAsciiDocFile(File asciiDocFile) {
+        this.asciiDocFile = asciiDocFile;
+    }
+
+    public UniqueEditorId getEditorId() {
+        return editorId;
+    }
+
+    public void setEditorId(UniqueEditorId editorId) {
+        this.editorId = editorId;
+    }
+
+    public boolean isUseHiddenFile() {
+        return useHiddenFile;
+    }
+
+    public void setUseHiddenFile(boolean useHiddenFile) {
+        this.useHiddenFile = useHiddenFile;
+    }
+
+    public File getEditorFileOrNull() {
+        return editorFileOrNull;
+    }
+
+    public void setEditorFileOrNull(File editorFileOrNull) {
+        this.editorFileOrNull = editorFileOrNull;
+    }
+
+    public boolean isInternalPreview() {
+        return internalPreview;
+    }
+
+    public void setInternalPreview(boolean internalPreview) {
+        this.internalPreview = internalPreview;
+    }
 }

@@ -1,0 +1,4 @@
+== I am test 2
+This is from test2
+
+include::subfolder1/test3.adoc[]

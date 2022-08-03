@@ -60,11 +60,11 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	@Test
     public void asciidoc_files_having_same_name_and_no_common_base_adoc_file_are_rendered_correctly() {
         
-        File asciidocFile = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder1/001_article.adoc");
+        File file = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder1/001_article.adoc");
         File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder1/");
 
         /* prepare */
-        when(context.getAsciiDocFile()).thenReturn(asciidocFile);
+        when(context.getAsciiDocFile()).thenReturn(file);
         
         /* execute */
         File baseDir = providerToTest.findProjectBaseDir();
@@ -77,11 +77,11 @@ public class AsciiDoctorBaseDirectoryProviderTest {
         /* phase 2*/       // we use now subfolder2 with same name
         /* ------ */
         
-        asciidocFile = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/001_article.adoc");
+        file = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/001_article.adoc");
         expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/");
 
         /* prepare */
-        when(context.getAsciiDocFile()).thenReturn(asciidocFile);
+        when(context.getAsciiDocFile()).thenReturn(file);
         
         /* execute */
         baseDir = providerToTest.findProjectBaseDir();
@@ -95,11 +95,11 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	@Test
 	public void when_asciidocfile_is_set_base_dir_is_scanned_to_last_adoc_file_found_in_upper_hiararchy1() {
 		
-		File asciidocFile = ensuredTestFile("src/test/resources/basedirtesting/testproject1/mydoc1/subfolder1/testproject1.adoc");
+		File file = ensuredTestFile("src/test/resources/basedirtesting/testproject1/mydoc1/subfolder1/testproject1.adoc");
 		File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject1/mydoc1/subfolder1");
 
 		/* prepare */
-		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
+		when(context.getAsciiDocFile()).thenReturn(file);
 		
 		/* execute */
 		File baseDir = providerToTest.findProjectBaseDir();
@@ -112,11 +112,11 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	@Test
     public void when_asciidocfile_is_set_base_dir_is_scanned_to_last_adoc_file_found_in_upper_hiararchy1_but__empty_folder_stops() {
 	    
-        File asciidocFile = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/subfolder3-no-adocfile/subfolder4/test-file-a.adoc");
+        File file = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/subfolder3-no-adocfile/subfolder4/test-file-a.adoc");
         File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/subfolder3-no-adocfile/subfolder4");
 
         /* prepare */
-        when(context.getAsciiDocFile()).thenReturn(asciidocFile);
+        when(context.getAsciiDocFile()).thenReturn(file);
         
         /* execute */
         File baseDir = providerToTest.findProjectBaseDir();
@@ -129,11 +129,11 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	@Test
 	public void when_asciidocfile_is_set_base_dir_is_scanned_to_last_adoc_file_found_in_upper_hiararchy2() {
 		
-		File asciidocFile = ensuredTestFile("src/test/resources/basedirtesting/testproject1/mydoc1/subfolder1/sub2/testproject2.adoc");
+		File file = ensuredTestFile("src/test/resources/basedirtesting/testproject1/mydoc1/subfolder1/sub2/testproject2.adoc");
 		File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject1/mydoc1/subfolder1");
 
 		/* prepare */
-		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
+		when(context.getAsciiDocFile()).thenReturn(file);
 		
 		/* execute */
 		File baseDir = providerToTest.findProjectBaseDir();
@@ -146,16 +146,16 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	@Test
 	public void when_calculated_base_dir_user_local_temp_an_illegal_state_exception_is_thrown() throws Exception {
 		
-		File asciidocFile = Files.createTempFile("prefix", "suffix").toFile();
+		File file = Files.createTempFile("prefix", "suffix").toFile();
 		/* sanity check - it must be clear the the parent directory is potentially problematic- e.g. on windows : C:\Users\$username\AppData\Local\Temp*/
 		File problematic = new File(System.getProperty("java.io.tmpdir"));
-		assertEquals(problematic, asciidocFile.getParentFile());
+		assertEquals(problematic, file.getParentFile());
 
 		/* test */
 		expectedException.expect(IllegalStateException.class);
 		
 		/* prepare */
-		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
+		when(context.getAsciiDocFile()).thenReturn(file);
 		
 		/* execute */
 		providerToTest.findProjectBaseDir();
@@ -168,10 +168,10 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	    UniqueIdProvider uniqueIdProvider = mock(UniqueIdProvider.class);
 	    when(uniqueIdProvider.getUniqueId()).thenReturn("test_"+System.nanoTime());
 	    
-		File asciidocFile = AsciiDocFileUtils.createTempFileForConvertedContent(null, uniqueIdProvider,"junit_testcase_temporary_file_for_issue_97.xyz");
+		File file = AsciiDocFileUtils.createTempFileForConvertedContent(null, uniqueIdProvider,"junit_testcase_temporary_file_for_issue_97.xyz");
 		
 		/* prepare */
-		when(context.getAsciiDocFile()).thenReturn(asciidocFile);
+		when(context.getAsciiDocFile()).thenReturn(file);
 		
 		/* execute */
 		File baseDir = providerToTest.findProjectBaseDir();
@@ -187,14 +187,14 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	
 	
 	protected File ensuredTestFile(String pathname) {
-		File asciidocFile = new File(pathname);
-		if (! asciidocFile.exists()){
-			asciidocFile=new File("asciidoctor-editor-other/"+pathname);
+		File file = new File(pathname);
+		if (! file.exists()){
+			file=new File("asciidoctor-editor-other/"+pathname);
 		}
-		if (! asciidocFile.exists()){
-			throw new IllegalStateException("test case corrupt-file not found:"+asciidocFile);
+		if (! file.exists()){
+			throw new IllegalStateException("test case corrupt-file not found:"+file);
 		}
-		return asciidocFile;
+		return file;
 	}
 
 }

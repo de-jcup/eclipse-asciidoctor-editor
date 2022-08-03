@@ -23,8 +23,20 @@ import de.jcup.asp.api.asciidoc.AsciidocAttributes;
 import de.jcup.asp.api.asciidoc.AsciidocOptions;
 import de.jcup.asp.client.AspClientProgressMonitor;
 
+/**
+ * Implementations do conversion by Asciidoctor
+ *
+ */
 public interface AsciidoctorAdapter {
 
+    /**
+     * Converts given file with asciidoc 
+     * @param editorFileOrNull - the file name is used to show up in console
+     * @param asciiDocFile - the real asciidoc file to render. If not processed/prepared/generated, the asciidoc file is the same as the editor file 
+     * @param options
+     * @param attributes
+     * @param monitor
+     */
     void convertFile(File editorFileOrNull, File asciiDocFile, AsciidocOptions options, AsciidocAttributes attributes, AspClientProgressMonitor monitor);
 
     default public Map<String, Object> resolveAttributes(File fileOrDirectory) {

@@ -25,7 +25,6 @@ import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings;
 
 public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvider {
 
-    private static FileFilter ADOC_FILE_FILTER = new AsciiDocFileFilter(false);
     private Map<File, File> baseDirCache = new HashMap<>();
 
     AsciiDoctorBaseDirectoryProvider(AsciiDoctorProviderContext context) {
@@ -105,7 +104,7 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         if (!dir.isDirectory()) {
             return false;
         }
-        File[] files = dir.listFiles(ADOC_FILE_FILTER);
+        File[] files = dir.listFiles(AsciiDocFileFilter.ASCIIDOC_FILES_ONLY);
         if (files.length == 0) {
             return false;
         }

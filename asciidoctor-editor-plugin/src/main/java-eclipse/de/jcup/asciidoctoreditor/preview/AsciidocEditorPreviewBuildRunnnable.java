@@ -258,12 +258,12 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
     private WrapperConvertData createWrapperData(File editorFileOrNull, File fileToConvertIntoHTML) {
         WrapperConvertData data = new WrapperConvertData();
-        data.targetType = editor.getType();
-        data.asciiDocFile = fileToConvertIntoHTML;
-        data.editorId = editor.getEditorId();
-        data.editorFileOrNull = editorFileOrNull;
-        data.useHiddenFile = isNeedingAHiddenEditorFile(data.targetType, editorFileOrNull, fileToConvertIntoHTML);
-        data.internalPreview = internalPreview;
+        data.setTargetType(editor.getType());
+        data.setAsciiDocFile(fileToConvertIntoHTML);
+        data.setEditorId(editor.getEditorId());
+        data.setEditorFileOrNull(editorFileOrNull);
+        data.setUseHiddenFile(isNeedingAHiddenEditorFile(data.targetType, editorFileOrNull, fileToConvertIntoHTML));
+        data.setInternalPreview(internalPreview);
         return data;
     }
 

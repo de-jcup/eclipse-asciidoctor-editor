@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor.model;
+package de.jcup.asciidoctoreditor.globalmodel;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,13 +25,12 @@ import de.jcup.asciidoctoreditor.RootParentFinder;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileFilter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 
-public class AsciidocCrossReferenceFinder {
+public class AsciidocCrossReferenceAnchorFinder {
 
-    private AsciiDocFileFilter fileFilter = new AsciiDocFileFilter(true);
     private LogAdapter logAdapter;
     private RootParentFinder rootParentFinder;
 
-    public AsciidocCrossReferenceFinder(RootParentFinder rootParentFinder, LogAdapter logAdapter) {
+    public AsciidocCrossReferenceAnchorFinder(RootParentFinder rootParentFinder, LogAdapter logAdapter) {
         this.rootParentFinder = rootParentFinder;
         this.logAdapter = logAdapter;
     }
@@ -44,7 +43,7 @@ public class AsciidocCrossReferenceFinder {
      * @param id
      * @return references list, never <code>null</code>
      */
-    public List<AsciidocCrossReference> findReferences(String crossReferenceId) {
+    public List<AsciidocCrossReferenceAnchorNode> findReferences(String crossReferenceId) {
 
         File rootParentFolder = rootParentFinder.findRootParent();
         if (rootParentFolder == null) {
@@ -61,19 +60,19 @@ public class AsciidocCrossReferenceFinder {
     }
 
     private class SearchCrossReferenceContext {
-        List<AsciidocCrossReference> list = new ArrayList<>();
+        List<AsciidocCrossReferenceAnchorNode> list = new ArrayList<>();
         String crossReferenceId;
         String toSearch;
     }
 
     private void collectReferences(File parent, SearchCrossReferenceContext context) {
-        File[] files = parent.listFiles(fileFilter);
+        File[] files = parent.listFiles(AsciiDocFileFilter.ASCIIDOC_FILES_AND_FOLDERS);
         for (File file : files) {
             if (file.isDirectory()) {
                 collectReferences(file, context);
             } else {
                 try {
-                    String content = AsciiDocFileUtils.readAsciidocfile(file);
+                    String content = AsciiDocFileUtils.readAsciidocFile(file);
                     addFoundReferencesInFile(context, content, file);
                 } catch (IOException e) {
                     logAdapter.logError("Was not able to read file: " + file, e);
@@ -90,8 +89,10 @@ public class AsciidocCrossReferenceFinder {
         if (pos == -1) {
             return;
         }
-        AsciidocCrossReference ref = new AsciidocCrossReference();
-        ref.file = file;
+        AsciidocFile asciidocFile = new AsciidocFile();
+        asciidocFile.file=file;
+        AsciidocCrossReferenceAnchorNode ref = new AsciidocCrossReferenceAnchorNode();
+        ref.asciidocFile = asciidocFile;
         ref.id = context.crossReferenceId;
         ref.positionStartIndex = pos;
         ref.length = context.toSearch.length();

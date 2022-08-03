@@ -1,0 +1,9 @@
+== Recursion example
+
+The next include will include 32, which includes this file again.
+So we would have an endless loop/recursion .
+
+This must be detected by global model recursive
+finder and visible as a problem inside overview graph.
+
+include::subfolder1/recursion_32_included_back.adoc[]

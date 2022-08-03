@@ -57,11 +57,11 @@ public class AsciiDoctorEditorPDFLauncher {
     public void createAndShowPDF(AsciiDoctorEditor editor) {
 
         WrapperConvertData data = new WrapperConvertData();
-        data.targetType = editor.getType();
-        data.asciiDocFile = editor.getEditorFileOrNull();
-        data.editorId = editor.getEditorId();
-        data.useHiddenFile = true;
-        data.editorFileOrNull = editor.getEditorFileOrNull();
+        data.setTargetType(editor.getType());
+        data.setAsciiDocFile(editor.getEditorFileOrNull());
+        data.setEditorId(editor.getEditorId());
+        data.setUseHiddenFile(true);
+        data.setEditorFileOrNull(editor.getEditorFileOrNull());
 
         ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(EclipseUtil.getActiveWorkbenchShell());
         try {
