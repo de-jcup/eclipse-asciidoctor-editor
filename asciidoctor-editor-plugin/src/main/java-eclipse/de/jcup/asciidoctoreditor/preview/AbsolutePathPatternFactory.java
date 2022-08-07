@@ -29,7 +29,7 @@ public class AbsolutePathPatternFactory {
     }
 
     public Pattern createRemoveAbsolutePathToBaseFolderPattern(AsciiDoctorWrapper wrapper) {
-        Path folder = wrapper.getContext().getBaseDir().toPath();
+        Path folder = wrapper.getBaseDir();
         return createRemoveAbsolutePathPattern(folder);
     }
 

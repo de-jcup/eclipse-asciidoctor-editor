@@ -25,10 +25,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
-import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
-import de.jcup.asciidoctoreditor.asp.AspCompatibleProgressMonitorAdapter;
+import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
+import de.jcup.asciidoctoreditor.asciidoc.PDFSupport;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
@@ -56,7 +54,7 @@ public class AsciiDoctorEditorPDFLauncher {
 
     public void createAndShowPDF(AsciiDoctorEditor editor) {
 
-        WrapperConvertData data = new WrapperConvertData();
+        ConversionData data = new ConversionData();
         data.setTargetType(editor.getType());
         data.setAsciiDocFile(editor.getEditorFileOrNull());
         data.setEditorId(editor.getEditorId());
@@ -65,7 +63,7 @@ public class AsciiDoctorEditorPDFLauncher {
 
         ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(EclipseUtil.getActiveWorkbenchShell());
         try {
-            progressDialog.run(true, true, new PDFRunnableWithProgress(editor.getWrapper(), data));
+            progressDialog.run(true, true, new PDFRunnableWithProgress(editor.getPDFSupport(), data));
         } catch (Exception e) {
             AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to create/show PDF", e);
         }
@@ -73,10 +71,10 @@ public class AsciiDoctorEditorPDFLauncher {
 
     private class PDFRunnableWithProgress implements IRunnableWithProgress {
 
-        private WrapperConvertData data;
-        private AsciiDoctorWrapper wrapper;
+        private ConversionData data;
+        private PDFSupport wrapper;
 
-        private PDFRunnableWithProgress(AsciiDoctorWrapper wrapper, WrapperConvertData data) {
+        private PDFRunnableWithProgress(PDFSupport wrapper, ConversionData data) {
             this.data = data;
             this.wrapper = wrapper;
         }
@@ -96,7 +94,7 @@ public class AsciiDoctorEditorPDFLauncher {
 
         }
 
-        private void createAndOpen(IProgressMonitor monitor, AsciiDoctorWrapper wrapper, WrapperConvertData data) throws Exception {
+        private void createAndOpen(IProgressMonitor monitor, PDFSupport wrapper, ConversionData data) throws Exception {
             if (monitor.isCanceled()) {
                 return;
             }
@@ -118,7 +116,7 @@ public class AsciiDoctorEditorPDFLauncher {
             }
             monitor.subTask("Open in external browser");
 
-            File file = wrapper.getContext().getTargetPDFFileOrNull();
+            File file = wrapper.getTargetPDFFileOrNull();
 
             if (file == null || !file.exists()) {
                 monitor.setCanceled(true);
@@ -140,7 +138,7 @@ public class AsciiDoctorEditorPDFLauncher {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    wrapper.convert(data, AsciiDoctorBackendType.PDF, new AspCompatibleProgressMonitorAdapter(monitor));
+                    wrapper.convertPDF(data, monitor);
                     done = true;
                     return Status.OK_STATUS;
                 } catch (Exception e) {

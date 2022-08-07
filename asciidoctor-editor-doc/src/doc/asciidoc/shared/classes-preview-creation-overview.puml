@@ -53,11 +53,6 @@ package de.jcup.asciidoctoreditor.asciidoc{
     class ASPServerAdapter
     
     class AsciiDoctorWrapperHTMLBuilder
-    class AsciiDoctorWrapperRegistry{
-      map: Map<IProject, AsciiDoctorWrapper>
-      getWrapper(IProject project): AsciiDoctorWrapper
-      - createWrapper(IProject project)
-    }
 } 
 
 class AsciiDoctorEditorPreferences{
@@ -87,7 +82,7 @@ ASPServerAdapter --> ExternalProcessAsciidoctorJServerLauncher :uses
 
 AsciidoctorEditor --> AsciiDoctorWrapper #green;line.bold :knows and uses
 AsciidoctorEditor --> AsciiDoctorWrapperRegistry #green;line.bold :asks for wrapper
-AsciiDoctorWrapperRegistry --> AsciiDoctorWrapper : creates
+AsciidoctorEditor --> AsciiDoctorWrapper : creates
 
 AsciiDoctorWrapper --> AsciiDoctorProviderContext #blue;line.bold;text:blue :creates context
 AsciiDoctorWrapper --> AsciiDoctorEditorPreferences #blue;line.bold;text:blue :reads 

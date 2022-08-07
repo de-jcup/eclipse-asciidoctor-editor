@@ -38,11 +38,10 @@ import de.jcup.asciidoctoreditor.UniqueIdProvider;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocStringUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
 import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
+import de.jcup.asciidoctoreditor.asciidoc.PreviewSupport;
 import de.jcup.asciidoctoreditor.asciidoc.Sha256StringEncoder;
-import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
-import de.jcup.asciidoctoreditor.asp.AspCompatibleProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorAttributesProvider;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
@@ -97,7 +96,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         if (isCanceled(monitor)) {
             return;
         }
-        AsciiDoctorWrapper asciidocWrapper = editor.getWrapper();
+        PreviewSupport previewSupport = editor.getPreviewSupport();
         File outputFile = null;
 
         try {
@@ -132,7 +131,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* ----Call Asciidoctor ----- */
             /* -------------------------- */
             /* -------------------------- */
-            convertTempAsciidocFileToHTML(monitor, asciidocWrapper, editorFileOrNull, tempAsciiDocFileToConvertIntoHTML);
+            convertTempAsciidocFileToHTML(monitor, previewSupport, editorFileOrNull, tempAsciiDocFileToConvertIntoHTML);
 
             increaseWorked(monitor);
 
@@ -146,7 +145,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* ----- Read origin------- */
             /* ----- Asciidoc output----- */
             /* -------------------------- */
-            File fileToRender = asciidocWrapper.getContext().getFileToRender();
+            File fileToRender = previewSupport.getFileToRender();
             String originalAsciidocHTML = readFileCreatedByAsciiDoctor(fileToRender, editor.getEditorId());
 
             String asciidocHTML = originalAsciidocHTML;
@@ -157,7 +156,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* -- Read image pathes -- */
             /* ---from Asciidoc output -- */
             /* -------------------------- */
-            asciidocHTML = fixImageLocationPathesInsideHTML(asciidocWrapper, asciidocHTML);
+            asciidocHTML = fixImageLocationPathesInsideHTML(previewSupport, asciidocHTML);
 
             if (isCanceled(monitor)) {
                 return;
@@ -168,7 +167,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* -- Create final preview -- */
             /* ---HTML file ------------- */
             /* -------------------------- */
-            outputFile = enrichPreviewHTMLAndWriteToDisk(monitor, asciidocWrapper, asciidocHTML);
+            outputFile = enrichPreviewHTMLAndWriteToDisk(monitor, previewSupport, asciidocHTML);
 
         } catch (Throwable e) {
             /*
@@ -199,9 +198,9 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
      * @return
      * @throws IOException
      */
-    private String fixImageLocationPathesInsideHTML(AsciiDoctorWrapper asciidocWrapper, String asciidocHTML) throws IOException {
+    private String fixImageLocationPathesInsideHTML(PreviewSupport asciidocWrapper, String asciidocHTML) throws IOException {
         AsciidoctorHTMLOutputParser parser = new AsciidoctorHTMLOutputParser();
-        File tempFolder = asciidocWrapper.getTempFolder().toFile();
+        File tempFolder = asciidocWrapper.getProjectTempFolder().toFile();
         File imageOutDir = new File(tempFolder, AsciiDoctorAttributesProvider.IMAGE_OUTPUT_DIR_NAME);
         Set<String> pathes = parser.findImageSourcePathes(asciidocHTML);
         for (String path : pathes) {
@@ -224,7 +223,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
                 String replacePath = null;
                 if (p2.startsWith(".")) {
                     // relative path
-                    file = new File(asciidocWrapper.getContext().getBaseDir(), p2);
+                    file = new File(asciidocWrapper.getBaseDir(), p2);
                     if (file.exists()) {
                         replacePath = file.getCanonicalPath();
                     }
@@ -248,16 +247,16 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         monitor.worked(++worked.amount);
     }
 
-    private void convertTempAsciidocFileToHTML(IProgressMonitor monitor, AsciiDoctorWrapper asciidocWrapper, File editorFileOrNull, File tempFileToConvertIntoHTML) throws Exception {
-        WrapperConvertData wrapperConvertData = createWrapperData(editorFileOrNull, tempFileToConvertIntoHTML);
-        editor.beforeAsciidocConvert(wrapperConvertData);
+    private void convertTempAsciidocFileToHTML(IProgressMonitor monitor, PreviewSupport previewSupport, File editorFileOrNull, File tempFileToConvertIntoHTML) throws Exception {
+        ConversionData conversionData = createWrapperData(editorFileOrNull, tempFileToConvertIntoHTML);
+        editor.beforeAsciidocConvert(conversionData);
 
         /* convert */
-        asciidocWrapper.convert(wrapperConvertData, backend, new AspCompatibleProgressMonitorAdapter(monitor));
+        previewSupport.convert(conversionData, backend, monitor);
     }
 
-    private WrapperConvertData createWrapperData(File editorFileOrNull, File fileToConvertIntoHTML) {
-        WrapperConvertData data = new WrapperConvertData();
+    private ConversionData createWrapperData(File editorFileOrNull, File fileToConvertIntoHTML) {
+        ConversionData data = new ConversionData();
         data.setTargetType(editor.getType());
         data.setAsciiDocFile(fileToConvertIntoHTML);
         data.setEditorId(editor.getEditorId());
@@ -313,7 +312,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         });
     }
 
-    private File enrichPreviewHTMLAndWriteToDisk(IProgressMonitor monitor, AsciiDoctorWrapper asciidocWrapper, String asciiDocHtml) {
+    private File enrichPreviewHTMLAndWriteToDisk(IProgressMonitor monitor, PreviewSupport asciidocWrapper, String asciiDocHtml) {
         String previewHTML;
         if (internalPreview) {
             previewHTML = asciidocWrapper.enrichHTML(asciiDocHtml, 0);
@@ -375,7 +374,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
     }
 
     private File createTransformedTempfile(String filename, String text) throws IOException {
-        Path tempFolder = editor.getWrapper().getTempFolder();
+        Path tempFolder = editor.getPreviewSupport().getProjectTempFolder();
         File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, editor.getEditorId(), filename);
 
         ContentTransformerData data = new ContentTransformerData();
@@ -392,7 +391,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
     }
 
     private String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, UniqueIdProvider editorId) {
-        File generatedFile = editor.getWrapper().getTempFileFor(fileToConvertIntoHTML, editorId, TemporaryFileType.ORIGIN);
+        File generatedFile = editor.getPreviewSupport().getTempFileFor(fileToConvertIntoHTML, editorId, TemporaryFileType.ORIGIN);
         try {
             return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
         } catch (IOException e) {

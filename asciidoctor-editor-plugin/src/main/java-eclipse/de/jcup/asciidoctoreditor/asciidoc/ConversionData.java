@@ -20,7 +20,7 @@ import java.io.File;
 import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.UniqueEditorId;
 
-public class WrapperConvertData {
+public class ConversionData {
     public EditorType targetType = EditorType.ASCIIDOC;
     /**
      * This is the file where the base directory calculation will be done! Also the

@@ -107,7 +107,7 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
             /* we only need this one time */
             previewFileURL = "";
 
-            File previewInitializingFile = new File(editor.getWrapper().getAddonsFolder(), "html/initialize/preview_initializing.html");
+            File previewInitializingFile = new File(editor.getAddonsFolder(), "html/initialize/preview_initializing.html");
             if (previewInitializingFile.exists()) {
                 try {
                     previewFileURL = previewInitializingFile.toURI().toURL().toExternalForm();

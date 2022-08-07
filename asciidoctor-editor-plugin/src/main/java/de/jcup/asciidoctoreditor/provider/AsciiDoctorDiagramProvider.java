@@ -19,7 +19,7 @@ import java.io.File;
 
 public class AsciiDoctorDiagramProvider extends AbstractAsciiDoctorProvider {
 
-    public AsciiDoctorDiagramProvider(AsciiDoctorProviderContext context) {
+    public AsciiDoctorDiagramProvider(AsciiDoctorWrapperContext context) {
         super(context);
     }
 

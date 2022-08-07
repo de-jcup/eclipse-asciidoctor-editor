@@ -16,23 +16,26 @@
 package de.jcup.asciidoctoreditor.asciidoc;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 
 import de.jcup.asp.api.asciidoc.AsciidocAttributes;
 import de.jcup.asp.api.asciidoc.AsciidocOptions;
 import de.jcup.asp.client.AspClientProgressMonitor;
 
 /**
- * Implementations do conversion by Asciidoctor
+ * Implementations convert the given Asciidoc file to target format via Asciidoctor (directly or via ASP server)
  *
  */
 public interface AsciidoctorAdapter {
 
     /**
-     * Converts given file with asciidoc 
+     * Converts given file with asciidoc
+     * 
      * @param editorFileOrNull - the file name is used to show up in console
-     * @param asciiDocFile - the real asciidoc file to render. If not processed/prepared/generated, the asciidoc file is the same as the editor file 
+     * @param asciiDocFile     - the real asciidoc file to render. If not
+     *                         processed/prepared/generated, the asciidoc file is
+     *                         the same as the editor file
      * @param options
      * @param attributes
      * @param monitor
@@ -40,7 +43,9 @@ public interface AsciidoctorAdapter {
     void convertFile(File editorFileOrNull, File asciiDocFile, AsciidocOptions options, AsciidocAttributes attributes, AspClientProgressMonitor monitor);
 
     default public Map<String, Object> resolveAttributes(File fileOrDirectory) {
-        Objects.requireNonNull(fileOrDirectory, "File path must be set!");
+        if (fileOrDirectory == null) {
+            return Collections.emptyMap();
+        }
         return AsciiDocAttributeResolver.DEFAULT.resolveAttributes(fileOrDirectory);
 
     }

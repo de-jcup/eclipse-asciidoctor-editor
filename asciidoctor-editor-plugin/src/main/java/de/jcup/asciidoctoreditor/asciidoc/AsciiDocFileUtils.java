@@ -34,7 +34,8 @@ import de.jcup.asciidoctoreditor.TemporaryFileType;
 import de.jcup.asciidoctoreditor.UniqueIdProvider;
 
 public class AsciiDocFileUtils {
-
+    
+    public static final String PROJECT_NAME_FOR_NO_PROJECT = ".no-project";
     private static File homeSubFolder;
     private static File editorRootTempFolder;
 
@@ -51,6 +52,10 @@ public class AsciiDocFileUtils {
             }
         }
         return newTempFile;
+    }
+    
+    public static Path createTempFolderForNoProject() {
+        return createTempFolderForId(PROJECT_NAME_FOR_NO_PROJECT);
     }
 
     /**

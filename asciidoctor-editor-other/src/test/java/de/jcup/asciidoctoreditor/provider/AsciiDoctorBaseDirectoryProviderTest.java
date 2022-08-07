@@ -33,7 +33,7 @@ import java.nio.file.Files;
 
 public class AsciiDoctorBaseDirectoryProviderTest {
 
-	private AsciiDoctorProviderContext context;
+	private AsciiDoctorWrapperContext context;
 	private AsciiDoctorBaseDirectoryProvider providerToTest;
 
 	@Rule
@@ -42,7 +42,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	
 	@Before
 	public void before(){
-		context = mock(AsciiDoctorProviderContext.class);
+		context = mock(AsciiDoctorWrapperContext.class);
 		logAdapter = mock(LogAdapter.class);
 		when(context.getLogAdapter()).thenReturn(logAdapter);
 		providerToTest = new AsciiDoctorBaseDirectoryProvider(context);

@@ -30,7 +30,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
     public static final String IMAGE_OUTPUT_DIR_NAME = "img";
     private Map<String, Object> cachedAttributes;
 
-    AsciiDoctorAttributesProvider(AsciiDoctorProviderContext context) {
+    AsciiDoctorAttributesProvider(AsciiDoctorWrapperContext context) {
         super(context);
     }
 
@@ -92,7 +92,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
     }
 
     protected Map<String, Object> resolveAttributes() {
-        AsciiDoctorProviderContext context = getContext();
+        AsciiDoctorWrapperContext context = getContext();
 
         Map<String, Object> map = getContext().getAsciiDoctor().resolveAttributes(context.getAsciiDocFile());
 

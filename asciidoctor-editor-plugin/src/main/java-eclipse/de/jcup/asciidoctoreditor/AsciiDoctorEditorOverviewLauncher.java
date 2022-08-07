@@ -29,12 +29,12 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
-import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
+import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
+import de.jcup.asciidoctoreditor.asciidoc.OverviewDataProvider;
 import de.jcup.asciidoctoreditor.asp.AspCompatibleProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLContentTransformer;
 import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLOutputFormat;
 import de.jcup.asciidoctoreditor.globalmodel.GlobalAsciidocModel;
-import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
 import de.jcup.asciidoctoreditor.tools.DocumentPlantUMLMindMapGenerator;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
@@ -72,7 +72,7 @@ public class AsciiDoctorEditorOverviewLauncher {
             if (editorFileOrNull==null) {
                 return;
             }
-            progressDialog.run(true, true, new OverviewRunnableWithProgress(editor.getWrapper(), editor.getEditorId(), editorFileOrNull));
+            progressDialog.run(true, true, new OverviewRunnableWithProgress(editor.getOverviewer(), editor.getEditorId(), editorFileOrNull));
         } catch (Exception e) {
             AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to create/show Overview", e);
         }
@@ -80,10 +80,10 @@ public class AsciiDoctorEditorOverviewLauncher {
 
     private class OverviewRunnableWithProgress implements IRunnableWithProgress {
 
-        private AsciiDoctorWrapper selectedAsciidocFileWrapper;
+        private OverviewDataProvider selectedAsciidocFileWrapper;
         private File editorFile;
         private File generatedOverviewFile;
-        public OverviewRunnableWithProgress(AsciiDoctorWrapper wrapper, UniqueEditorId id, File editorFile) {
+        public OverviewRunnableWithProgress(OverviewDataProvider wrapper, UniqueEditorId id, File editorFile) {
             this.selectedAsciidocFileWrapper = wrapper;
             this.editorFile=editorFile;
             
@@ -129,7 +129,7 @@ public class AsciiDoctorEditorOverviewLauncher {
 
             String originFileName = generatedOverviewFile.getName();
             
-            File fileToOpenInBrowser = new File(wrapper.getContext().getOutputFolder().toFile(),"img/"+originFileName+".svg");
+            File fileToOpenInBrowser = new File(wrapper.getOutputFolder().toFile(),"img/"+originFileName+".svg");
 
             if (fileToOpenInBrowser == null || !fileToOpenInBrowser.exists()) {
                 monitor.setCanceled(true);
@@ -152,13 +152,12 @@ public class AsciiDoctorEditorOverviewLauncher {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     monitor.subTask("Create global model");
-                    AsciiDoctorProviderContext context = selectedAsciidocFileWrapper.getContext();
-                    File baseDir = context.getBaseDir();
+                    File baseDir = selectedAsciidocFileWrapper.getBaseDir();
                     /* @formatter:off */
                     GlobalAsciidocModel model = 
                                 GlobalAsciidocModel.builder().
                                     from(baseDir).
-                                    withImages(true, new File(context.getImageProvider().getCachedSourceImagesPath())).
+                                    withImages(true, new File(selectedAsciidocFileWrapper.getCachedSourceImagesPath())).
                                     logWith(AsciiDoctorEclipseLogAdapter.INSTANCE).
                                     build();
                     /* @formatter:on */
@@ -179,7 +178,7 @@ public class AsciiDoctorEditorOverviewLauncher {
             }
 
             private void convertToHTML(IProgressMonitor monitor) throws Exception {
-                WrapperConvertData data = new WrapperConvertData();
+                ConversionData data = new ConversionData();
                 data.setAsciiDocFile(generatedOverviewFile);
                 data.setEditorFileOrNull(generatedOverviewFile);
                 data.setTargetType(EditorType.PLANTUML);

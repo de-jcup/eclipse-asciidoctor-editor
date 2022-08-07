@@ -9,8 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.jcup.asciidoctoreditor.SystemOutLogAdapter;
-import de.jcup.asciidoctoreditor.globalmodel.AsciidocFile;
-import de.jcup.asciidoctoreditor.globalmodel.GlobalAsciidocModel;
 
 public class GlobalAsciidocModelTest {
 

@@ -31,7 +31,7 @@ import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorConfigFile;
 import de.jcup.asp.api.asciidoc.AsciidocOption;
 
-public class AsciiDoctorProviderContext {
+public class AsciiDoctorWrapperContext {
 
     private LogAdapter logAdapter;
     private File asciiDocFile;
@@ -57,7 +57,6 @@ public class AsciiDoctorProviderContext {
     private AsciiDoctorAttributesProvider attributesProvider;
     private AsciiDoctorOptionsProvider optionsProvider;
 
-//    File targetImagesDir;
     int tocLevels;
     private boolean useInstalled;
     private File fileToRender;
@@ -72,7 +71,7 @@ public class AsciiDoctorProviderContext {
     private List<AsciidoctorConfigFile> configFiles = new ArrayList<>();
     private File configRoot;
 
-    public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
+    public AsciiDoctorWrapperContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
             throw new IllegalArgumentException("logAdapter may never be null!");
         }
@@ -111,26 +110,6 @@ public class AsciiDoctorProviderContext {
 
     public AsciiDoctorOptionsProvider getOptionsProvider() {
         return optionsProvider;
-    }
-
-    public void setAsciidocFile(File file) {
-        if (this.asciiDocFile == file) {
-            return;
-        }
-        this.asciiDocFile = file;
-        this.projectBaseDir = baseDirProvider.findProjectBaseDir();
-        getAttributesProvider().reset();
-        Map<String, Object> attributes = getAttributesProvider().getCachedAttributes();
-        Object baseDirFromAttributesObj = attributes.get(AsciidocOption.BASEDIR.getKey());
-        if (baseDirFromAttributesObj instanceof String) {
-            String baseDirFromAttributes = baseDirFromAttributesObj.toString();
-            this.baseDir = new File(baseDirFromAttributes);
-            if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
-                System.out.println("Using base dir from attributes:" + baseDirFromAttributes);
-            }
-        } else {
-            this.baseDir = projectBaseDir;
-        }
     }
 
     public void setImageHandlingMode(ImageHandlingMode imageHandlingMode) {
@@ -199,9 +178,29 @@ public class AsciiDoctorProviderContext {
 
     public File getBaseDir() {
         if (baseDir == null) {
-            baseDir = baseDirProvider.findProjectBaseDir();
+            
+            Map<String, Object> attributes = getAttributesProvider().getCachedAttributes();
+            Object baseDirFromAttributesObj = attributes.get(AsciidocOption.BASEDIR.getKey());
+            if (baseDirFromAttributesObj instanceof String) {
+                String baseDirFromAttributes = baseDirFromAttributesObj.toString();
+                this.baseDir = new File(baseDirFromAttributes);
+                if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
+                    System.out.println("Using base dir from attributes:" + baseDirFromAttributes);
+                }
+            } else {
+                this.baseDir = getProjectBaseDir();
+            }
         }
         return baseDir;
+    }
+
+    public void initConfigFileSupportAndSetConfigRoot(File configRoot) {
+        if (configRoot == null) {
+            configRoot = getBaseDir();
+        }
+
+        this.configRoot = configRoot;
+        this.configFileSupport = new AsciiDocConfigFileSupport(configRoot.toPath());
     }
 
     public LogAdapter getLogAdapter() {
@@ -226,7 +225,8 @@ public class AsciiDoctorProviderContext {
 
     /**
      * 
-     * @return the file to render, means the asciidoc file (either editor file or a temporary one which is generated in background)
+     * @return the file to render, means the asciidoc file (either editor file or a
+     *         temporary one which is generated in background)
      */
     public File getFileToRender() {
         return fileToRender;
@@ -250,7 +250,6 @@ public class AsciiDoctorProviderContext {
         return file;
     }
 
-    
     public <T extends AbstractAsciiDoctorProvider> T register(T provider) {
         providers.add(provider);
         return provider;
@@ -312,19 +311,8 @@ public class AsciiDoctorProviderContext {
         return configFiles;
     }
 
-    public void setConfigRoot(File configRoot) {
-        if (configRoot == null) {
-            configRoot = getBaseDir();
-        }
-
-        this.configRoot = configRoot;
-        this.configFileSupport = new AsciiDocConfigFileSupport(configRoot.toPath());
-    }
-
     public File getConfigRoot() {
         return configRoot;
     }
-
-    
 
 }
