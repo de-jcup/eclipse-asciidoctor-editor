@@ -49,15 +49,6 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 	}
 	
 	@Test
-	public void when_no_asciidocfile_is_set_an_illegal_state_exception_is_thrown() {
-		/* test */
-		expectedException.expect(IllegalStateException.class);
-		
-		/* execute */
-		providerToTest.findProjectBaseDir();
-	}
-	
-	@Test
     public void asciidoc_files_having_same_name_and_no_common_base_adoc_file_are_rendered_correctly() {
         
         File file = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder1/001_article.adoc");
