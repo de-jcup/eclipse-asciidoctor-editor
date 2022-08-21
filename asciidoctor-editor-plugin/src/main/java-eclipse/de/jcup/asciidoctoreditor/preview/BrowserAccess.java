@@ -50,10 +50,6 @@ public class BrowserAccess {
      */
     private static int SWT_COMPATIBILITY_ADOPT_EDGE = 1 << 18;
 
-    /*
-     * FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if
-     * this could be removed
-     */
     public interface BrowserContentInitializer {
 
         public void initialize(Browser browser);
@@ -106,10 +102,7 @@ public class BrowserAccess {
                 String edgeVersion = System.getProperty("org.eclipse.swt.browser.EdgeVersion");
                 int browserStyle = edgeVersion != null && !edgeVersion.isEmpty() ? SWT.CENTER | SWT_COMPATIBILITY_ADOPT_EDGE : SWT.CENTER;
                 browser = new Browser(sashForm, browserStyle);
-                /*
-                 * FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if
-                 * this could be removed
-                 */
+                
                 Job job = Job.create("Init browser", new ICoreRunnable() {
 
                     @Override

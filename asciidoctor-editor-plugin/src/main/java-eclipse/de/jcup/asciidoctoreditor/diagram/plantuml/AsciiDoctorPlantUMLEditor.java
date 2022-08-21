@@ -28,7 +28,7 @@ import de.jcup.asciidoctoreditor.AsciidoctorEditorOutlineSupport;
 import de.jcup.asciidoctoreditor.ContentTransformer;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.EditorType;
-import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
+import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLTextFileDocumentProvider;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -51,7 +51,7 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
         return new AsciidoctorPlantUMLEditorOutlineSupport(this);
     }
 
-    public void beforeAsciidocConvert(WrapperConvertData data) {
+    public void beforeAsciidocConvert(ConversionData data) {
         /* nothing special here */
     }
 

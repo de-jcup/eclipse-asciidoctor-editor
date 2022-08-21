@@ -16,19 +16,18 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileFilter;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings;
 
 public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvider {
 
-    private static FileFilter ADOC_FILE_FILTER = new AsciiDocFileFilter(false);
     private Map<File, File> baseDirCache = new HashMap<>();
 
-    AsciiDoctorBaseDirectoryProvider(AsciiDoctorProviderContext context) {
+    AsciiDoctorBaseDirectoryProvider(AsciiDoctorWrapperContext context) {
         super(context);
     }
 
@@ -100,12 +99,12 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         }
         return cachedProjectBaseDir;
     }
-
+    
     private boolean containsADocFiles(File dir) {
         if (!dir.isDirectory()) {
             return false;
         }
-        File[] files = dir.listFiles(ADOC_FILE_FILTER);
+        File[] files = dir.listFiles(AsciiDocFileFilter.ASCIIDOC_FILES_ONLY);
         if (files.length == 0) {
             return false;
         }
@@ -121,12 +120,20 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
          * problems with includes!
          */
         if (PlantUMLFileEndings.isPlantUmlFile(editorFileOrNull)) {
-            return editorFileOrNull.getParentFile();
+            return failSafeEditorFileParent(editorFileOrNull);
         }
         if (asciiDocFile == null) {
-            throw new IllegalStateException("No asciidoc file set!");
+            return failSafeEditorFileParent(editorFileOrNull);
         }
+        
         return findCachedProjectBaseDirOrStartSearch(asciiDocFile.getParentFile());
+    }
+    
+    private File failSafeEditorFileParent(File editorFileOrNull) {
+        if (editorFileOrNull==null) {
+            return AsciiDocFileUtils.getEditorRootTempFolder();
+        }
+        return editorFileOrNull.getParentFile();
     }
 
     public void reset() {

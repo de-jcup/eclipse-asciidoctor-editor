@@ -18,7 +18,7 @@ package de.jcup.asciidoctoreditor.toolbar;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.asciidoc.ProjectCleaner;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 
 public class ClearProjectCacheAsciiDocViewAction extends ToolbarAction {
@@ -32,12 +32,11 @@ public class ClearProjectCacheAsciiDocViewAction extends ToolbarAction {
 
     @Override
     public void run() {
-        AsciiDoctorWrapper wrapper = asciiDoctorEditor.getWrapper();
+        ProjectCleaner projectCleaner = asciiDoctorEditor.getProjectCleaner();
         AsciiDoctorConsoleUtil.showConsole();
         AsciiDoctorConsoleUtil.output("\nClear complete cache for project:" + asciiDoctorEditor.getProjectName());
-        wrapper.deleteTempFolder();
-        wrapper.resetCaches();
-        ;
+        projectCleaner.deleteTempFolder();
+        projectCleaner.resetCaches();
     }
 
     private void initUI() {

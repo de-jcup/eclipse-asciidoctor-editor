@@ -16,6 +16,7 @@
 package de.jcup.asciidoctoreditor.console;
 
 import static de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleColorsConstants.*;
+import static de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +33,6 @@ import org.eclipse.swt.graphics.RGB;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asp.api.ServerLogSeverity;
-import static de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings.*;
 
 /**
  * Inspired from EGradleConsoleStyleListener

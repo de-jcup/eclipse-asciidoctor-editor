@@ -18,6 +18,7 @@ package de.jcup.asciidoctoreditor.provider;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Map;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
@@ -29,7 +30,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
     public static final String IMAGE_OUTPUT_DIR_NAME = "img";
     private Map<String, Object> cachedAttributes;
 
-    AsciiDoctorAttributesProvider(AsciiDoctorProviderContext context) {
+    AsciiDoctorAttributesProvider(AsciiDoctorWrapperContext context) {
         super(context);
     }
 
@@ -91,12 +92,15 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
     }
 
     protected Map<String, Object> resolveAttributes() {
-        AsciiDoctorProviderContext context = getContext();
+        AsciiDoctorWrapperContext context = getContext();
 
         Map<String, Object> map = getContext().getAsciiDoctor().resolveAttributes(context.getAsciiDocFile());
 
         // now we have to apply the parts from config file as well:
         AsciiDocConfigFileSupport support = getContext().getConfigFileSupport();
+        if (support==null) {
+            return Collections.emptyMap();
+        }
         return support.calculateResolvedMap(map, getContext().getConfigFiles());
     }
 

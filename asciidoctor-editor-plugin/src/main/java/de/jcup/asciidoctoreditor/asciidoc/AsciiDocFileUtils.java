@@ -34,7 +34,8 @@ import de.jcup.asciidoctoreditor.TemporaryFileType;
 import de.jcup.asciidoctoreditor.UniqueIdProvider;
 
 public class AsciiDocFileUtils {
-
+    
+    public static final String PROJECT_NAME_FOR_NO_PROJECT = ".no-project";
     private static File homeSubFolder;
     private static File editorRootTempFolder;
 
@@ -51,6 +52,10 @@ public class AsciiDocFileUtils {
             }
         }
         return newTempFile;
+    }
+    
+    public static Path createTempFolderForNoProject() {
+        return createTempFolderForId(PROJECT_NAME_FOR_NO_PROJECT);
     }
 
     /**
@@ -144,8 +149,12 @@ public class AsciiDocFileUtils {
         return hiddenEditorFile;
     }
 
-    public static String readAsciidocfile(File file) throws IOException {
+    public static String readAsciidocFile(File file) throws IOException {
         return FileUtils.readFileToString(file, "UTF-8");
+    }
+
+    public static void writeAsciidocFile(File file, String content) throws IOException {
+        AsciiDocStringUtils.writeTextToUTF8File(content, file);
     }
 
     static String calculatePathToFileFromBase(File asciidoctorFile, File baseDir) {
@@ -240,4 +249,9 @@ public class AsciiDocFileUtils {
             emptyFoldersDeleted = deleteEmptyFolders(path, true);
         } while (emptyFoldersDeleted != 0);
     }
+
+    public static String createTargetName(String originName, String ending) {
+        return FilenameUtils.getBaseName(originName) + ending;
+    }
+
 }

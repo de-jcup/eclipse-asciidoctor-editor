@@ -13,23 +13,28 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor.model;
+package de.jcup.asciidoctoreditor.globalmodel;
 
 import java.io.File;
 
-import de.jcup.asciidoctoreditor.RootParentFinder;
+public class AsciidocDiagramNode extends AbstractAsciidocNode {
 
-public class RootParentFinderFileAdapter implements RootParentFinder{
+    File diagramFile;
 
-    private File rootParent;
-
-    public RootParentFinderFileAdapter(File rootParent) {
-        this.rootParent=rootParent;
+    public File getDiagramFile() {
+        return diagramFile;
     }
-    
+
     @Override
-    public File findRootParent() {
-        return rootParent;
+    public String toString() {
+        return resolveSafeAsciidocFileName() + " - diagram::" + resolveSafeDiagramFileName() + "[]";
     }
 
+    private String resolveSafeDiagramFileName() {
+        String target = "null";
+        if (diagramFile != null) {
+            target = diagramFile.getName();
+        }
+        return target;
+    }
 }

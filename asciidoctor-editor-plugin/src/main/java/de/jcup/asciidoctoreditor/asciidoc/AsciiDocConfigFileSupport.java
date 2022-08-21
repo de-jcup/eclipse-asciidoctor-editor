@@ -83,13 +83,13 @@ public class AsciiDocConfigFileSupport {
      * Collects configuration files - when auto create is enabled, a configuraiton
      * at root level will be created when no other config has been found.
      * 
-     * @param asciidocFile
+     * @param file
      * @return configuration files - first one inside list the most far one (near
      *         parent), last one the nearest!
      */
-    public List<AsciidoctorConfigFile> collectConfigFiles(Path asciidocFile) {
+    public List<AsciidoctorConfigFile> collectConfigFiles(Path file) {
         ReverseFileWalker walker = new ReverseFileWalker();
-        walker.walk(asciidocFile);
+        walker.walk(file);
         /* we must reverse order */
         Collections.reverse(walker.filesFound);
 
@@ -105,12 +105,7 @@ public class AsciiDocConfigFileSupport {
             File file = new File(rootFolder.toFile(), FILENAME_ASCIIDOCTORCONFIG_ADOC);
             Path targetPath = file.toPath();
 
-            if (file.exists()) {
-                // this is an odd situation - which should normally not happen, but there were
-                // occasions
-                // so doing here a guard close
-                logHandler.logWarn("asciidoctor config file already exists in root folder, so skip auto create for:" + file.getAbsolutePath());
-            } else {
+            if (!file.exists()) {
                 /* we shall create a config file at root level */
                 /* @formatter:off */
                 String content="// +++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"+
@@ -162,8 +157,8 @@ public class AsciiDocConfigFileSupport {
             rootPathFile = rootFolder.toFile();
         }
 
-        public void walk(Path asciidocFile) {
-            inspect(asciidocFile.toFile().getParentFile());
+        public void walk(Path file) {
+            inspect(file.toFile().getParentFile());
         }
 
         private void inspect(File folder) {

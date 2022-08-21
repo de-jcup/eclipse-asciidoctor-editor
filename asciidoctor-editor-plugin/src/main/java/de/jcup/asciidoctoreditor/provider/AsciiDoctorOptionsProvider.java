@@ -24,7 +24,7 @@ import de.jcup.asp.api.asciidoc.AsciidocSafeMode;
 
 public class AsciiDoctorOptionsProvider extends AbstractAsciiDoctorProvider {
 
-    AsciiDoctorOptionsProvider(AsciiDoctorProviderContext context) {
+    AsciiDoctorOptionsProvider(AsciiDoctorWrapperContext context) {
         super(context);
     }
 

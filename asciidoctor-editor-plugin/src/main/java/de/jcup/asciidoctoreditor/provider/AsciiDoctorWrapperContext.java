@@ -23,19 +23,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
-
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorConfigFile;
 import de.jcup.asp.api.asciidoc.AsciidocOption;
 
-public class AsciiDoctorProviderContext {
+public class AsciiDoctorWrapperContext {
 
     private LogAdapter logAdapter;
-    private File asciidocFile;
+    private File asciiDocFile;
     /**
      * Base dir used for asciidoctor rendering - is either the project base dir, or
      * a configured directory by a asciidoctorconfig file using "base_dir" option
@@ -58,7 +57,6 @@ public class AsciiDoctorProviderContext {
     private AsciiDoctorAttributesProvider attributesProvider;
     private AsciiDoctorOptionsProvider optionsProvider;
 
-//    File targetImagesDir;
     int tocLevels;
     private boolean useInstalled;
     private File fileToRender;
@@ -73,7 +71,7 @@ public class AsciiDoctorProviderContext {
     private List<AsciidoctorConfigFile> configFiles = new ArrayList<>();
     private File configRoot;
 
-    public AsciiDoctorProviderContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
+    public AsciiDoctorWrapperContext(AsciiDoctorAdapterProvider provider, LogAdapter logAdapter) {
         if (logAdapter == null) {
             throw new IllegalArgumentException("logAdapter may never be null!");
         }
@@ -114,26 +112,6 @@ public class AsciiDoctorProviderContext {
         return optionsProvider;
     }
 
-    public void setAsciidocFile(File asciidocFile) {
-        if (this.asciidocFile == asciidocFile) {
-            return;
-        }
-        this.asciidocFile = asciidocFile;
-        this.projectBaseDir = baseDirProvider.findProjectBaseDir();
-        getAttributesProvider().reset();
-        Map<String, Object> attributes = getAttributesProvider().getCachedAttributes();
-        Object baseDirFromAttributesObj = attributes.get(AsciidocOption.BASEDIR.getKey());
-        if (baseDirFromAttributesObj instanceof String) {
-            String baseDirFromAttributes = baseDirFromAttributesObj.toString();
-            this.baseDir = new File(baseDirFromAttributes);
-            if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
-                System.out.println("Using base dir from attributes:" + baseDirFromAttributes);
-            }
-        } else {
-            this.baseDir = projectBaseDir;
-        }
-    }
-
     public void setImageHandlingMode(ImageHandlingMode imageHandlingMode) {
         this.imageHandlingMode = imageHandlingMode;
     }
@@ -165,7 +143,7 @@ public class AsciiDoctorProviderContext {
      * recalculated on next rendering time fo editor content
      */
     public void resetCaches() {
-        this.asciidocFile = null;
+        this.asciiDocFile = null;
         this.baseDir = null;
         this.projectBaseDir = null;
         this.outputFolder = null;
@@ -200,9 +178,29 @@ public class AsciiDoctorProviderContext {
 
     public File getBaseDir() {
         if (baseDir == null) {
-            baseDir = baseDirProvider.findProjectBaseDir();
+            
+            Map<String, Object> attributes = getAttributesProvider().getCachedAttributes();
+            Object baseDirFromAttributesObj = attributes.get(AsciidocOption.BASEDIR.getKey());
+            if (baseDirFromAttributesObj instanceof String) {
+                String baseDirFromAttributes = baseDirFromAttributesObj.toString();
+                this.baseDir = new File(baseDirFromAttributes);
+                if (EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED) {
+                    System.out.println("Using base dir from attributes:" + baseDirFromAttributes);
+                }
+            } else {
+                this.baseDir = getProjectBaseDir();
+            }
         }
         return baseDir;
+    }
+
+    public void initConfigFileSupportAndSetConfigRoot(File configRoot) {
+        if (configRoot == null) {
+            configRoot = getBaseDir();
+        }
+
+        this.configRoot = configRoot;
+        this.configFileSupport = new AsciiDocConfigFileSupport(configRoot.toPath());
     }
 
     public LogAdapter getLogAdapter() {
@@ -210,7 +208,7 @@ public class AsciiDoctorProviderContext {
     }
 
     public File getAsciiDocFile() {
-        return asciidocFile;
+        return asciiDocFile;
     }
 
     public void setUseInstalled(boolean usingInstalledAsciidoctor) {
@@ -225,6 +223,11 @@ public class AsciiDoctorProviderContext {
         this.fileToRender = fileToRender;
     }
 
+    /**
+     * 
+     * @return the file to render, means the asciidoc file (either editor file or a
+     *         temporary one which is generated in background)
+     */
     public File getFileToRender() {
         return fileToRender;
     }
@@ -234,12 +237,16 @@ public class AsciiDoctorProviderContext {
      * @return target pdf file or <code>null</code>
      */
     public File getTargetPDFFileOrNull() {
+        return getTargetForFileEndingOrNull(".pdf");
+    }
+
+    private File getTargetForFileEndingOrNull(String ending) {
         if (fileToRender == null) {
             return null;
         }
         String originName = fileToRender.getName(); /* xyz.adoc, xyz.asciidoc, xyz, xyz.txt */
-        String fileName = FilenameUtils.getBaseName(originName) + ".pdf";
-        File file = new File(fileToRender.getParentFile(), fileName);
+        String targetName = AsciiDocFileUtils.createTargetName(originName, ending);
+        File file = new File(fileToRender.getParentFile(), targetName);
         return file;
     }
 
@@ -302,15 +309,6 @@ public class AsciiDoctorProviderContext {
      */
     public List<AsciidoctorConfigFile> getConfigFiles() {
         return configFiles;
-    }
-
-    public void setConfigRoot(File configRoot) {
-        if (configRoot == null) {
-            configRoot = getBaseDir();
-        }
-
-        this.configRoot = configRoot;
-        this.configFileSupport = new AsciiDocConfigFileSupport(configRoot.toPath());
     }
 
     public File getConfigRoot() {

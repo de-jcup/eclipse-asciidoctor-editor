@@ -31,7 +31,6 @@ public class CreatePDFAction extends ToolbarAction {
     private void initUI() {
         setImageDescriptor(IMG_CREATE_PDF);
         setToolTipText("Create temporary pdf file and open it");
-
     }
 
     @Override

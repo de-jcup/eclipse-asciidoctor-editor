@@ -52,7 +52,7 @@ public class AsciiDoctorEditorUtil {
 
     private static UnpersistedMarkerHelper validationMarkerHelper = new UnpersistedMarkerHelper("de.jcup.asciidoctoreditor.script.problem");
     private static UnpersistedMarkerHelper aspMarkerHelper = new UnpersistedMarkerHelper("de.jcup.asciidoctoreditor.asp.marker");
-
+    
     public static AsciiDoctorEditorPreferences getPreferences() {
         return AsciiDoctorEditorPreferences.getInstance();
     }

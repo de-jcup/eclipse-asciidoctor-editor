@@ -16,22 +16,14 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
-import de.jcup.asciidoctoreditor.TestscriptsUtil;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 
 public class AsciiDoctorProviderContextTest {
@@ -54,7 +46,7 @@ public class AsciiDoctorProviderContextTest {
 	@Test
 	public void file_is_testfile_adoc_then_pdf_target_is_testfile_pdf() {
 	    /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        AsciiDoctorWrapperContext context = new AsciiDoctorWrapperContext(provider, logAdapter);
         File fileToRender = new File("testfile.adoc");
         context.setFileToRender(fileToRender);
         
@@ -64,7 +56,7 @@ public class AsciiDoctorProviderContextTest {
 	@Test
     public void file_is_a_without_file_ending_then_pdf_target_is_a_pdf() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        AsciiDoctorWrapperContext context = new AsciiDoctorWrapperContext(provider, logAdapter);
         File fileToRender = new File("a");
         context.setFileToRender(fileToRender);
         
@@ -75,7 +67,7 @@ public class AsciiDoctorProviderContextTest {
 	@Test
     public void file_is_null_pdf_target_is_null() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        AsciiDoctorWrapperContext context = new AsciiDoctorWrapperContext(provider, logAdapter);
         File fileToRender =null;
         context.setFileToRender(fileToRender);
         
@@ -85,7 +77,7 @@ public class AsciiDoctorProviderContextTest {
 	@Test
     public void file_is_testfile_asciidoc_then_pdf_target_is_testfile_pdf() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        AsciiDoctorWrapperContext context = new AsciiDoctorWrapperContext(provider, logAdapter);
         File fileToRender = new File("testfile.asciidoc");
         context.setFileToRender(fileToRender);
         
@@ -96,7 +88,7 @@ public class AsciiDoctorProviderContextTest {
 	@Test
     public void file_is_testfile_txt_then_pdf_target_is_testfile_pdf() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        AsciiDoctorWrapperContext context = new AsciiDoctorWrapperContext(provider, logAdapter);
         File fileToRender = new File("testfile.txt");
         context.setFileToRender(fileToRender);
         
@@ -107,7 +99,7 @@ public class AsciiDoctorProviderContextTest {
 	@Test
     public void file_is_testfile_without_file_ending_then_pdf_target_is_testfile_pdf() {
         /* prepare */
-        AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+        AsciiDoctorWrapperContext context = new AsciiDoctorWrapperContext(provider, logAdapter);
         File fileToRender = new File("testfile");
         context.setFileToRender(fileToRender);
         
@@ -118,7 +110,7 @@ public class AsciiDoctorProviderContextTest {
 	@Test
 	public void test_normal_creating_context_creates_internal_providers() {
 		/* execute */
-		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+		AsciiDoctorWrapperContext context = new AsciiDoctorWrapperContext(provider, logAdapter);
 	
 		/* test */
 		assertNotNull(context.getAsciiDoctor());
@@ -177,7 +169,7 @@ public class AsciiDoctorProviderContextTest {
 
 //	private Set<File> testInternalImages(boolean imageDirSet) throws IOException {
 //		/* before */
-//		AsciiDoctorProviderContext context = new AsciiDoctorProviderContext(provider, logAdapter);
+//		AsciiDoctorWrapperContext context = new AsciiDoctorWrapperContext(provider, logAdapter);
 //		
 //		File testFile = TestscriptsUtil.assertFileInTestscripts("09_includes.adoc");
 //		context.setAsciidocFile(testFile);

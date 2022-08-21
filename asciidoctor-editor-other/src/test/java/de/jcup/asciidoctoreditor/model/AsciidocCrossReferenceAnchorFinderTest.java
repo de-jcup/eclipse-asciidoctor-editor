@@ -26,12 +26,14 @@ import org.junit.Test;
 
 import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.RootParentFinder;
+import de.jcup.asciidoctoreditor.globalmodel.AsciidocCrossReferenceAnchorFinder;
+import de.jcup.asciidoctoreditor.globalmodel.AsciidocCrossReferenceAnchorNode;
 
-public class AsciidocCrossReferenceFinderTest {
+public class AsciidocCrossReferenceAnchorFinderTest {
 
     private LogAdapter logAdapter;
     private RootParentFinder rootParentFinder;
-    private AsciidocCrossReferenceFinder finderToTest;
+    private AsciidocCrossReferenceAnchorFinder finderToTest;
     private File workspace1Folder;
 
     @Before
@@ -39,7 +41,7 @@ public class AsciidocCrossReferenceFinderTest {
         rootParentFinder = mock(RootParentFinder.class);
         logAdapter = mock(LogAdapter.class);
 
-        finderToTest = new AsciidocCrossReferenceFinder(rootParentFinder, logAdapter);
+        finderToTest = new AsciidocCrossReferenceAnchorFinder(rootParentFinder, logAdapter);
     
         workspace1Folder = new File("./src/test/resources/crossreferences/workspace1");
         assertTrue(workspace1Folder.exists());
@@ -54,20 +56,20 @@ public class AsciidocCrossReferenceFinderTest {
         when(rootParentFinder.findRootParent()).thenReturn(workspace1Folder);
 
         /* execute */
-        List<AsciidocCrossReference> references = finderToTest.findReferences("section-test1");
+        List<AsciidocCrossReferenceAnchorNode> references = finderToTest.findReferences("section-test1");
 
         /* test */
         assertEquals(2, references.size());
 
-        for (AsciidocCrossReference reference : references) {
-            File referenceFile = reference.getFile();
+        for (AsciidocCrossReferenceAnchorNode reference : references) {
+            File referenceFile = reference.getAsciidocFile().getFile();
             String name = referenceFile.getName();
             if (name.contentEquals("test1a.adoc")) {
                 assertEquals("test1a pos check failed", 19, reference.getPositionStart());
             }else {
                 assertEquals("test1b* pos check failed", 74, reference.getPositionStart());
             }
-            assertEquals(17,reference.length);
+            assertEquals(17,reference.getLength());
         }
 
     }
@@ -77,11 +79,11 @@ public class AsciidocCrossReferenceFinderTest {
         when(rootParentFinder.findRootParent()).thenReturn(workspace1Folder);
 
         /* execute */
-        List<AsciidocCrossReference> references = finderToTest.findReferences("section-test3");
+        List<AsciidocCrossReferenceAnchorNode> references = finderToTest.findReferences("section-test3");
 
         /* test */
         assertEquals(1, references.size());
-        assertEquals("test3.adoc", references.iterator().next().getFile().getName());
+        assertEquals("test3.adoc", references.iterator().next().getAsciidocFile().getFile().getName());
 
     }
 

@@ -19,16 +19,16 @@ import java.nio.file.Path;
 
 public abstract class AbstractAsciiDoctorProvider {
 
-    private AsciiDoctorProviderContext context;
+    private AsciiDoctorWrapperContext context;
 
-    AbstractAsciiDoctorProvider(AsciiDoctorProviderContext context) {
+    AbstractAsciiDoctorProvider(AsciiDoctorWrapperContext context) {
         if (context == null) {
             throw new IllegalArgumentException("context may never be null!");
         }
         this.context = context;
     }
 
-    AsciiDoctorProviderContext getContext() {
+    AsciiDoctorWrapperContext getContext() {
         return context;
     }
 

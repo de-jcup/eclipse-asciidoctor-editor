@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Albert Tregnaghi
+ * Copyright 2021 Albert Tregnaghi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,23 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor.asciidoc;
+package de.jcup.asciidoctoreditor.globalmodel;
 
 import java.io.File;
 
-import de.jcup.asciidoctoreditor.EditorType;
-import de.jcup.asciidoctoreditor.UniqueEditorId;
+import de.jcup.asciidoctoreditor.RootParentFinder;
 
-public class WrapperConvertData {
-    public EditorType targetType = EditorType.ASCIIDOC;
-    public File asciiDocFile;
-    public UniqueEditorId editorId;
-    public boolean useHiddenFile;
-    public File editorFileOrNull;
-    public boolean internalPreview;
+public class RootParentFinderFileAdapter implements RootParentFinder{
+
+    private File rootParent;
+
+    public RootParentFinderFileAdapter(File rootParent) {
+        this.rootParent=rootParent;
+    }
+    
+    @Override
+    public File findRootParent() {
+        return rootParent;
+    }
+
 }
