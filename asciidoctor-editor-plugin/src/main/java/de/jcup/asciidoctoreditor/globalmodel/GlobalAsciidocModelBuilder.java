@@ -18,6 +18,7 @@ public class GlobalAsciidocModelBuilder {
     private File baseFolder;
     private boolean withImages;
     private File imageDir;
+    private boolean withDiagrams;
     
     GlobalAsciidocModelBuilder() {
     }
@@ -35,6 +36,11 @@ public class GlobalAsciidocModelBuilder {
     public GlobalAsciidocModelBuilder withImages(boolean withImages, File imageDir) {
         this.withImages=withImages;
         this.imageDir = imageDir;
+        return this;
+    }
+    
+    public GlobalAsciidocModelBuilder withDiagrams(boolean withDiagrams) {
+        this.withDiagrams=withDiagrams;
         return this;
     }
 
@@ -80,8 +86,23 @@ public class GlobalAsciidocModelBuilder {
         if (withImages) {
             connectImages(model, asciidocFile, content);
         }
+        if (withDiagrams) {
+            connectDiagrams(model, asciidocFile, content);
+        }
     }
 
+    private void connectDiagrams(GlobalAsciidocModel model, AsciidocFile asciidocFile, String content) throws IOException {
+        List<AsciiDoctorFileReference> plantUMLReferences = SimpleReferenceParser.PLANTUML_PARSER.parse(content);
+        for (AsciiDoctorFileReference plantUMLReference : plantUMLReferences) {
+            File relativeFile = new File(baseFolder, plantUMLReference.getFilePath());
+            asciidocFile.addDiagram(relativeFile, plantUMLReference.getPosition(),plantUMLReference.getLengthToNameEnd());
+        }
+        List<AsciiDoctorFileReference> ditaaReferences = SimpleReferenceParser.DITAA_PARSER.parse(content);
+        for (AsciiDoctorFileReference ditaaReference : ditaaReferences) {
+            File relativeFile = new File(baseFolder, ditaaReference.getFilePath());
+            asciidocFile.addDiagram(relativeFile, ditaaReference.getPosition(),ditaaReference.getLengthToNameEnd());
+        }
+    }
     private void connectImages(GlobalAsciidocModel model, AsciidocFile asciidocFile, String content) throws IOException {
         List<AsciiDoctorFileReference> images = SimpleReferenceParser.IMAGE_PARSER.parse(content);
         for (AsciiDoctorFileReference image : images) {

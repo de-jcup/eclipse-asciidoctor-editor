@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import de.jcup.asciidoctoreditor.SystemOutLogAdapter;
+import de.jcup.asciidoctoreditor.globalmodel.AsciidocDiagramNode;
 import de.jcup.asciidoctoreditor.globalmodel.AsciidocFile;
 import de.jcup.asciidoctoreditor.globalmodel.AsciidocImageNode;
 import de.jcup.asciidoctoreditor.globalmodel.AsciidocIncludeNode;
@@ -28,6 +29,19 @@ public class DocumentPlantUMLMindMapGenerator {
 
         context.append("@startmindmap\n");
 
+        context.append("\n<style>\n" + 
+                "node {\n" + 
+                "    Padding 8\n" + 
+                "    Margin 2\n" + 
+                "    HorizontalAlignment center\n" + 
+                "    LineColor black\n" + 
+                "    LineThickness 1.0\n" + 
+                "    BackgroundColor white\n" + 
+                "    RoundCorner 40\n" + 
+//                "    MaximumWidth 200\n" + 
+                "}\n" + 
+                "</style>\n");
+        
         generate(file, context, 1,model);
 
         context.append("@endmindmap\n");
@@ -80,17 +94,62 @@ public class DocumentPlantUMLMindMapGenerator {
         }
         context.markAsGenerated(file);
         
+        if (fileExists) {
+            appendImages(file, context, depth);
+            appendDiagrams(file, context, depth);
+            appendIncludes(file, context, depth, model);
+        }
+        
+    }
+
+    private void appendIncludes(AsciidocFile file, AsciidocFileGeneratorContext context, int depth, GlobalAsciidocModel model) {
+        /* handle includes */
+        List<AsciidocIncludeNode> included = file.getIncludeNodes();
+        
+        if (included.size()>0) {
+            context.append(mindMapPrefix(depth+1, true));
+            context.append("[#Gold] includes");
+            context.append("\n");
+            for (AsciidocIncludeNode include : included) {
+                AsciidocFile child = include.getIncludedAsciidocFile();
+                generate(child, context, depth + 2, model);
+            }
+        }
+    }
+
+    private void appendDiagrams(AsciidocFile file, AsciidocFileGeneratorContext context, int depth) {
+        /* handle diagrams */
+        List<AsciidocDiagramNode> diagramNodes = file.getDiagramNodes();
+        if (! diagramNodes.isEmpty()) {
+            context.append(mindMapPrefix(depth+1, true));
+            context.append("[#GreenYellow] diagrams\n");
+            for (AsciidocDiagramNode diagramNode: diagramNodes ) {
+                File diagramFile = diagramNode.getDiagramFile();
+                boolean diagramProblem = !diagramFile.exists();
+                
+                context.append(mindMapPrefix(depth+2, diagramProblem));
+                if (diagramProblem) {
+                    context.append("[#darkorange]");
+                }
+                context.append(" ");
+                appendFileNameWithShortPathAndHandleNotExisting(diagramFile, context, diagramFile.exists());
+                context.append("\n");
+            }
+        }
+    }
+
+    private void appendImages(AsciidocFile file, AsciidocFileGeneratorContext context, int depth) {
         /* handle images */
         List<AsciidocImageNode> imageNodes = file.getImageNodes();
         if (! imageNodes.isEmpty()) {
             context.append(mindMapPrefix(depth+1, true));
-            context.append("[#palegreen] images\n");
+            context.append("[#SkyBlue] images\n");
             for (AsciidocImageNode imageNode: imageNodes ) {
                 File imageFile = imageNode.getImageFile();
-                boolean imageProblem = imageFile.exists();
+                boolean imageProblem = !imageFile.exists();
                 
                 context.append(mindMapPrefix(depth+2, imageProblem));
-                if (!fileExists) {
+                if (imageProblem) {
                     context.append("[#darkorange]");
                 }
                 context.append(" ");
@@ -98,20 +157,6 @@ public class DocumentPlantUMLMindMapGenerator {
                 context.append("\n");
             }
         }
-
-        /* handle includes */
-        List<AsciidocIncludeNode> included = file.getIncludeNodes();
-        
-        if (included.size()>0) {
-            context.append(mindMapPrefix(depth+1, true));
-            context.append("[#white] includes");
-            context.append("\n");
-            for (AsciidocIncludeNode include : included) {
-                AsciidocFile child = include.getIncludedAsciidocFile();
-                generate(child, context, depth + 2, model);
-            }
-        }
-        
     }
 
     private void appendFileNameWithShortPathAndHandleNotExisting(AsciidocFile file, AsciidocFileGeneratorContext context, boolean fileExists) {

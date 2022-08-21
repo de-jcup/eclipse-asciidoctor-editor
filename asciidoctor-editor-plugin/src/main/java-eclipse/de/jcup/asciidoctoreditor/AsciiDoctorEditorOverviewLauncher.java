@@ -158,6 +158,7 @@ public class AsciiDoctorEditorOverviewLauncher {
                                 GlobalAsciidocModel.builder().
                                     from(baseDir).
                                     withImages(true, new File(selectedAsciidocFileWrapper.getCachedSourceImagesPath())).
+                                    withDiagrams(true).
                                     logWith(AsciiDoctorEclipseLogAdapter.INSTANCE).
                                     build();
                     /* @formatter:on */

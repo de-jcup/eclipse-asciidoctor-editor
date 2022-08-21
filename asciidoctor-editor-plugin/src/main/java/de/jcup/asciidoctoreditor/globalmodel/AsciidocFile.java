@@ -11,6 +11,7 @@ public class AsciidocFile {
     private List<AsciidocFile> asciiDocFilesWhichIncludesThisFile = new ArrayList<>();
     
     private List<AsciidocImageNode> imageNodes = new ArrayList<>();
+    private List<AsciidocDiagramNode> diagramNodes = new ArrayList<>();
     
     File file;
     private boolean fallback;
@@ -21,6 +22,10 @@ public class AsciidocFile {
     
     public List<AsciidocImageNode> getImageNodes() {
         return imageNodes;
+    }
+    
+    public List<AsciidocDiagramNode> getDiagramNodes() {
+        return diagramNodes;
     }
 
     public List<AsciidocIncludeNode> getIncludeNodes() {
@@ -88,6 +93,17 @@ public class AsciidocFile {
         imageNode.length=length;
         
         imageNodes.add(imageNode);
+    }
+
+    public void addDiagram(File diagramFile, int position, int length) {
+        AsciidocDiagramNode imageNode = new AsciidocDiagramNode();
+        imageNode.asciidocFile=this;
+        imageNode.diagramFile=diagramFile;
+        imageNode.positionStartIndex=position;
+        imageNode.length=length;
+        
+        diagramNodes.add(imageNode);
+        
     }
 
     
