@@ -72,11 +72,11 @@ public class AsciiDoctorEditorPDFLauncher {
     private class PDFRunnableWithProgress implements IRunnableWithProgress {
 
         private ConversionData data;
-        private PDFSupport wrapper;
+        private PDFSupport pdfSupport;
 
-        private PDFRunnableWithProgress(PDFSupport wrapper, ConversionData data) {
+        private PDFRunnableWithProgress(PDFSupport pdfSupport, ConversionData data) {
             this.data = data;
-            this.wrapper = wrapper;
+            this.pdfSupport = pdfSupport;
         }
 
         @Override
@@ -85,7 +85,7 @@ public class AsciiDoctorEditorPDFLauncher {
             monitor.beginTask("Create and show PDF", IProgressMonitor.UNKNOWN);
             try {
                 monitor.subTask("Initialize");
-                createAndOpen(monitor, wrapper, data);
+                createAndOpen(monitor, pdfSupport, data);
 
             } catch (Exception e) {
                 AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to create/show PDF", e);
@@ -94,7 +94,7 @@ public class AsciiDoctorEditorPDFLauncher {
 
         }
 
-        private void createAndOpen(IProgressMonitor monitor, PDFSupport wrapper, ConversionData data) throws Exception {
+        private void createAndOpen(IProgressMonitor monitor, PDFSupport pdfSupport, ConversionData data) throws Exception {
             if (monitor.isCanceled()) {
                 return;
             }
@@ -116,7 +116,7 @@ public class AsciiDoctorEditorPDFLauncher {
             }
             monitor.subTask("Open in external browser");
 
-            File file = wrapper.getTargetPDFFileOrNull();
+            File file = pdfSupport.getTargetPDFFileOrNull();
 
             if (file == null || !file.exists()) {
                 monitor.setCanceled(true);
@@ -138,7 +138,7 @@ public class AsciiDoctorEditorPDFLauncher {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    wrapper.convertPDF(data, monitor);
+                    pdfSupport.convertPDF(data, monitor);
                     done = true;
                     return Status.OK_STATUS;
                 } catch (Exception e) {

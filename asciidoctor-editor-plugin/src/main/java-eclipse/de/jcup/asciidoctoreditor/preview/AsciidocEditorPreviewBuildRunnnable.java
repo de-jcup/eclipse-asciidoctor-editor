@@ -193,14 +193,14 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
      * but asciidoctor-diagramm does use imageoutdir and asciidoctor generator for
      * HTML generates wrong pathes targeting imagedir and not imageoutdir...
      * 
-     * @param asciidocWrapper
+     * @param previewSupport
      * @param asciidocHTML
      * @return
      * @throws IOException
      */
-    private String fixImageLocationPathesInsideHTML(PreviewSupport asciidocWrapper, String asciidocHTML) throws IOException {
+    private String fixImageLocationPathesInsideHTML(PreviewSupport previewSupport, String asciidocHTML) throws IOException {
         AsciidoctorHTMLOutputParser parser = new AsciidoctorHTMLOutputParser();
-        File tempFolder = asciidocWrapper.getProjectTempFolder().toFile();
+        File tempFolder = previewSupport.getProjectTempFolder().toFile();
         File imageOutDir = new File(tempFolder, AsciiDoctorAttributesProvider.IMAGE_OUTPUT_DIR_NAME);
         Set<String> pathes = parser.findImageSourcePathes(asciidocHTML);
         for (String path : pathes) {
@@ -223,7 +223,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
                 String replacePath = null;
                 if (p2.startsWith(".")) {
                     // relative path
-                    file = new File(asciidocWrapper.getBaseDir(), p2);
+                    file = new File(previewSupport.getBaseDir(), p2);
                     if (file.exists()) {
                         replacePath = file.getCanonicalPath();
                     }
@@ -312,13 +312,13 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         });
     }
 
-    private File enrichPreviewHTMLAndWriteToDisk(IProgressMonitor monitor, PreviewSupport asciidocWrapper, String asciiDocHtml) {
+    private File enrichPreviewHTMLAndWriteToDisk(IProgressMonitor monitor, PreviewSupport previewSupport, String asciiDocHtml) {
         String previewHTML;
         if (internalPreview) {
-            previewHTML = asciidocWrapper.enrichHTML(asciiDocHtml, 0);
+            previewHTML = previewSupport.enrichHTML(asciiDocHtml, 0);
         } else {
             int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
-            previewHTML = asciidocWrapper.enrichHTML(asciiDocHtml, refreshAutomaticallyInSeconds);
+            previewHTML = previewSupport.enrichHTML(asciiDocHtml, refreshAutomaticallyInSeconds);
         }
 
         return writePreviewHTMLFile(monitor, previewHTML);
