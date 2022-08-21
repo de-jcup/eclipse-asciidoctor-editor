@@ -21,6 +21,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -29,6 +30,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -107,7 +112,8 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
         viewMenuManager.add(toggleLinkingAction);
         
         configureContextMenu();
-
+		configureDragAndDrop();
+		
         /*
          * when no input is set on init state - let the editor rebuild outline (async)
          */
@@ -125,6 +131,38 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 		Menu contextMenu = menuManager.createContextMenu(getTreeViewer().getTree());
 		getTreeViewer().getTree().setMenu(contextMenu);
 		getSite().registerContextMenu(MENU_ID, menuManager, getTreeViewer());
+	}
+	
+	private void configureDragAndDrop() {
+		int ops = DND.DROP_COPY | DND.DROP_MOVE;
+		DragSource source = new DragSource(getTreeViewer().getControl(), ops);
+		source.setTransfer(LocalSelectionTransfer.getTransfer());
+		source.addDragListener(new DragSourceListener() {
+			@Override
+			public void dragStart(DragSourceEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) getTreeViewer().getSelection();
+				// Only start the drag if anything is actually selected in the tree.
+				if (selection.isEmpty()) {
+					event.doit = false;
+				}
+			}
+
+			@Override
+			public void dragSetData(DragSourceEvent event) {
+				// Provide the data of the requested type.
+				if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType)) {
+					event.data = getTreeViewer().getSelection();
+					LocalSelectionTransfer.getTransfer().setSelection(getTreeViewer().getSelection());
+					((DragSource) event.widget).setTransfer(LocalSelectionTransfer.getTransfer());
+				}
+			}
+
+			@Override
+			public void dragFinished(DragSourceEvent event) {
+				// Deliberately do nothing
+			}
+
+		});
 	}
     
     @Override
