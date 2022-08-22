@@ -333,9 +333,9 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         Composite pathComposite = new Composite(content, SWT.NONE);
         pathToJavaForASPlaunch = new AccessibleFileFieldEditor(P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH.getId(), "Path to Java binary", pathComposite);
-        pathToJavaForASPlaunch.getTextControl(pathComposite).setMessage("Use installed java");
+        pathToJavaForASPlaunch.getTextControl(pathComposite).setMessage("Use Eclipse JRE");
         pathToJavaForASPlaunch.getTextControl(pathComposite)
-                .setToolTipText("Full path to another java executable (java/java.exe) which will be called to launch ASP server.\n\nWhen empty, installed java version will be used.");
+                .setToolTipText("Full path to another java executable (java/java.exe) which will be called to launch ASP server.\n\nWhen empty, the JRE which does run Eclipse will be used.");
         pathToJavaForASPlaunch.setEmptyStringAllowed(true);
         pathToJavaForASPlaunch.setErrorMessage("Invalid path to java executable");
 

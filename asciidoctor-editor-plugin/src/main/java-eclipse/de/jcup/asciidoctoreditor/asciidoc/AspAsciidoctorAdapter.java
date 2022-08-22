@@ -20,6 +20,7 @@ import java.io.File;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 
+import de.jcup.asciidoctoreditor.ASPSupport;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -48,7 +49,8 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             } else {
                 AsciiDoctorConsoleUtil.output("ASP: Processing file:" + editorFileOrNull.getAbsolutePath());
             }
-            Response response = resolveClient().convertFile(asciiDocFile.toPath(), options, attributes, monitor);
+            AspClient client = resolveClient();
+            Response response = client.convertFile(asciiDocFile.toPath(), options, attributes, monitor);
             handleServerLog(response);
         } catch (AspClientException e) {
             Throwable rootCause = e;
@@ -66,7 +68,8 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
 
     private AspClient resolveClient() {
         AsciiDoctorEditorActivator activator = AsciiDoctorEditorActivator.getDefault();
-        return activator.getAspSupport().getAspClient();
+        ASPSupport aspSupport = activator.getAspSupport();
+        return aspSupport.getAspClient();
     }
 
     private void handleServerLog(Response response) {

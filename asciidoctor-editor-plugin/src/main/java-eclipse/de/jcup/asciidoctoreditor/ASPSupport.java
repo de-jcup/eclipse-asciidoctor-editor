@@ -26,12 +26,15 @@ import de.jcup.asp.client.AspClient;
 
 public class ASPSupport {
 
+    private InstalledJavaBinaryPathResolver installedBinaryPathResolver;
+    
     private ASPServerAdapter aspServerAdapter;
 
     private boolean aspServerStarted;
 
     public ASPSupport() {
         aspServerAdapter = new ASPServerAdapter();
+        installedBinaryPathResolver = new InstalledJavaBinaryPathResolver(new SystemAccess());
     }
 
     /**
@@ -101,6 +104,10 @@ public class ASPSupport {
         File aspServer = new File(aspFolder, "asp-server-asciidoctorj-dist.jar");
 
         String pathToJavaBinary = preferences.getPathToJavaBinaryForASPLaunch();
+        
+        if (pathToJavaBinary==null || pathToJavaBinary.isEmpty()) {
+            pathToJavaBinary = installedBinaryPathResolver.resolvePathToJavaBinary();
+        }
         aspServerAdapter.setPathToJavaBinary(pathToJavaBinary);
         aspServerAdapter.setPathToServerJar(aspServer.getAbsolutePath());
         aspServerAdapter.setMinPort(preferences.getAspServerMinPort());
