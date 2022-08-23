@@ -26,6 +26,7 @@ import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner implements EnsureFileRunnable {
 
+    private static final FinalPreviewFileResolver finalPreviewFileResolver = new FinalPreviewFileResolver();
     private final AsciiDoctorEditor asciiDoctorEditor;
     private IProgressMonitor monitor;
 
@@ -39,6 +40,8 @@ public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner imple
         long start = System.currentTimeMillis();
         try {
             File temporaryExternalPreviewFile = asciiDoctorEditor.getTemporaryExternalPreviewFile();
+            
+            
             while (asciiDoctorEditor.isNotCanceled(monitor) && (temporaryExternalPreviewFile == null || !temporaryExternalPreviewFile.exists())) {
                 if (System.currentTimeMillis() - start > 20000) {
                     // after 20 seconds there seems to be no chance to get
@@ -49,7 +52,8 @@ public class WaitForGeneratedFileAndShowInsideExternalPreviewPreviewRunner imple
                 }
                 Thread.sleep(300);
             }
-            AsciiDoctorEditorUtil.openFileInExternalBrowser(temporaryExternalPreviewFile);
+            File finalPreviewFile = finalPreviewFileResolver.resolvePreviewFileFromGeneratedHTMLFile(temporaryExternalPreviewFile, asciiDoctorEditor.getType());
+            AsciiDoctorEditorUtil.openFileInExternalBrowser(finalPreviewFile);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

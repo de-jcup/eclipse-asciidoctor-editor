@@ -29,6 +29,7 @@ import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements EnsureFileRunnable {
 
+    private static final FinalPreviewFileResolver finalPreviewFileResolver = new FinalPreviewFileResolver();
     private final AsciiDoctorEditor asciiDoctorEditor;
     private IProgressMonitor monitor;
 
@@ -43,11 +44,11 @@ public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements En
         boolean aquired = false;
         try {
             BrowserAccess browserAccess = asciiDoctorEditor.getBrowserAccess();
-            while (asciiDoctorEditor.isNotCanceled(monitor) && (getPreviewFile() == null || !getPreviewFile().exists())) {
+            while (asciiDoctorEditor.isNotCanceled(monitor) && (getHTML5PreviewFile() == null || !getHTML5PreviewFile().exists())) {
                 if (System.currentTimeMillis() - start > 20000) {
                     // after 20 seconds there seems to be no chance to get
                     // the generated preview file back
-                    browserAccess.safeBrowserSetText("<html><body><h3>Preview file generation timed out, so preview not available at:\n<pre>" + getPreviewFile() + "</pre></h3></body></html>");
+                    browserAccess.safeBrowserSetText("<html><body><h3>Preview file generation timed out, so preview not available at:\n<pre>" + getHTML5PreviewFile() + "</pre></h3></body></html>");
                     return;
                 }
                 Thread.sleep(300);
@@ -57,7 +58,10 @@ public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements En
             safeAsyncExec(() -> {
 
                 try {
-                    URL url = getPreviewFile().toURI().toURL();
+                    File interhalHTML5previewFile = getHTML5PreviewFile();
+                    File finalPreviewFile = finalPreviewFileResolver.resolvePreviewFileFromGeneratedHTMLFile(interhalHTML5previewFile, asciiDoctorEditor.getType());
+                    
+                    URL url = finalPreviewFile.toURI().toURL();
                     String foundURL = browserAccess.getUrl();
                     try {
                         URL formerURL = new URL(browserAccess.getUrl());
@@ -88,7 +92,7 @@ public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements En
 
     }
 
-    private File getPreviewFile() {
+    private File getHTML5PreviewFile() {
         return asciiDoctorEditor.getTemporaryInternalPreviewFile();
     }
 }

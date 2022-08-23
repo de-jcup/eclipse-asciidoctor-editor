@@ -22,6 +22,7 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
+import org.junit.FixMethodOrder;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciidoctorEditorOutlineSupport;
@@ -124,6 +125,9 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 
     @Override
     public PlantUMLOutputFormat getOutputFormat() {
+        /* FIXME de-jcup , 2022: remove the if true.... */
+        if (true) return PlantUMLOutputFormat.SVG;
+            
         return AsciiDoctorEditorPreferences.getInstance().getPlantUMLOutputFormat();
     }
 
