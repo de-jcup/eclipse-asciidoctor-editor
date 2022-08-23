@@ -23,6 +23,7 @@ public enum AsciiDoctorPlantUMLEditorPreferenceConstants implements PreferenceId
 
     P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT("pumlStoreDiagramsInProject"),
 
+    @Deprecated // shall be removed
     P_PLANTUML_EDITOR_OUTPUT_FORMAT("pumlOutputFormat"),;
 
     private String id;

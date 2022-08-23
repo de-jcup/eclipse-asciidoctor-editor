@@ -83,7 +83,6 @@ import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.junit.FixMethodOrder;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
@@ -1480,6 +1479,10 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
             referenceSupport = new ReferenceSupportImpl();
         }
         return referenceSupport;
+    }
+
+    public void updateScaleFactor(double percentage) {
+        /* do nothing per default*/
     }
 
 }

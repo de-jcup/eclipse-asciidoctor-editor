@@ -22,7 +22,6 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
-import org.junit.FixMethodOrder;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciidoctorEditorOutlineSupport;
@@ -32,7 +31,6 @@ import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLTextFileDocumentProvider;
-import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
@@ -41,11 +39,18 @@ import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewVerticalInsideEditorAction;
+import de.jcup.asciidoctoreditor.toolbar.ZoomLevelContributionItem;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements PlantUMLDataProvider {
 
+    private static final double MAXIMUM_SCALE_FACTOR = 5.0;
+    private static final double MINIMUM_SCALE_FACTOR = 0.1;
+    
     private static final AsciiDoctorPlantUMLFileDocumentProvider ASCII_DOCTOR_PLANT_UML_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLFileDocumentProvider();
     private static final AsciiDoctorPlantUMLTextFileDocumentProvider ASCII_DOCTOR_PLANT_UML_TEXT_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLTextFileDocumentProvider();
+    private double pumlScaleFactor;
+    private ZoomLevelContributionItem zoomLevelContributionItem;
 
     @Override
     protected AsciidoctorEditorOutlineSupport createOutlineSupport() {
@@ -82,6 +87,8 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
         previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
         previewToolBarManager.add(new ShowPreviewHorizontalInsideEditorAction(this));
         previewToolBarManager.add(new ShowPreviewInExternalBrowserAction(this));
+        zoomLevelContributionItem = new ZoomLevelContributionItem(this);
+        previewToolBarManager.add(zoomLevelContributionItem);
 
         IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         otherToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
@@ -125,10 +132,38 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 
     @Override
     public PlantUMLOutputFormat getOutputFormat() {
-        /* FIXME de-jcup , 2022: remove the if true.... */
-        if (true) return PlantUMLOutputFormat.SVG;
-            
-        return AsciiDoctorEditorPreferences.getInstance().getPlantUMLOutputFormat();
+        return PlantUMLOutputFormat.SVG;
+    }
+
+    @Override
+    public void updateScaleFactor(double percentage) {
+        if (pumlScaleFactor==percentage) {
+            return;
+        }
+        pumlScaleFactor = percentage;
+        rebuild();
+    }
+
+    @Override
+    public double getScaleFactor() {
+        ensureScaleFactorValid();
+        return pumlScaleFactor;
+    }
+
+    private void ensureScaleFactorValid() {
+        if (pumlScaleFactor <= 0) {
+            pumlScaleFactor = 1;
+            return;
+        }
+        if (pumlScaleFactor < MINIMUM_SCALE_FACTOR) {
+            pumlScaleFactor = MINIMUM_SCALE_FACTOR;
+        }
+        if (pumlScaleFactor > MAXIMUM_SCALE_FACTOR) {
+            pumlScaleFactor = MAXIMUM_SCALE_FACTOR;
+        }
+        if (zoomLevelContributionItem!=null) {
+            EclipseUtil.safeAsyncExec(()-> zoomLevelContributionItem.updateZoomLevel(pumlScaleFactor));
+        }
     }
 
 }

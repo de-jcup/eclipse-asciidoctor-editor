@@ -309,6 +309,7 @@ public class AsciiDoctorEditorPreferences {
         return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
     }
 
+    @Deprecated // shall be removed
     public PlantUMLOutputFormat getPlantUMLOutputFormat() {
         return PlantUMLOutputFormat.fromString(getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT));
     }
