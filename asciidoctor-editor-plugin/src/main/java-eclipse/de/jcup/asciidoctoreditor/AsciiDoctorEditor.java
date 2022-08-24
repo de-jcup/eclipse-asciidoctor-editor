@@ -267,6 +267,26 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
         createToolbar();
 
+        createSashFormAndBrowserAccess();
+        
+        initPreview(sashForm);
+
+        initToolbar(); // init after browser creation so we toolbar icons are
+                       // set depending on browser visible or not...
+
+        initCaretListener();
+        
+        activateAsciiDoctorEditorContext();
+
+        handleResourceChanges();
+
+        setTitleImageInitial();
+
+        
+        
+    }
+
+    protected void createSashFormAndBrowserAccess() {
         GridData sashGD = new GridData(GridData.FILL_BOTH);
         sashForm = new SashForm(topComposite, INITIAL_LAYOUT_ORIENTATION);
         sashForm.setLayoutData(sashGD);
@@ -275,26 +295,21 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         super.createPartControl(sashForm);
 
         browserAccess = new BrowserAccess(sashForm);
-        initPreview(sashForm);
+    }
 
-        initToolbar(); // init after browser creation so we toolbar icons are
-                       // set depending on browser visible or not...
+    protected void handleResourceChanges() {
+        /*
+         * register as resource change listener to provide marker change listening
+         */
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+    }
 
+    protected void initCaretListener() {
         Control adapter = getAdapter(Control.class);
         if (adapter instanceof StyledText) {
             StyledText text = (StyledText) adapter;
             text.addCaretListener(new AsciiDoctorEditorCaretListener());
         }
-
-        activateAsciiDoctorEditorContext();
-
-        /*
-         * register as resource change listener to provide marker change listening
-         */
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
-
-        setTitleImageInitial();
-
     }
 
     @Override

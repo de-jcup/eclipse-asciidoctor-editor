@@ -26,7 +26,7 @@ public class PlantUMLContentTransformer extends AbstractContentTransformer {
     public void setDataProvider(PlantUMLDataProvider provider) {
         this.provider = provider;
     }
-
+    
     @Override
     protected String saveTransform(ContentTransformerData data) {
         StringBuilder sb = new StringBuilder();

@@ -29,7 +29,7 @@ public class ZoomLevelContributionItem extends ControlContribution {
     protected Control createControl(Composite parent) {
         combo = new Combo(parent, SWT.DROP_DOWN);
         
-        combo.setToolTipText("Set the zoom level for the PlantUML diagram preview.");
+        combo.setToolTipText("Set the zoom level for the PlantUML diagram preview.\nYou can also press 'CTRL' and use the mouse wheel inside the internal preview.");
         String[] items = { "25 %", "50 %", "100 %", "150 %", "200 %", "300 %", "400 %" };
         combo.setItems(items);
         combo.setText("100 %");

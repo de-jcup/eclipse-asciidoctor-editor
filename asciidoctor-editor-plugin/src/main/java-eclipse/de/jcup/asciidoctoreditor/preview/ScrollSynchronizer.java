@@ -44,7 +44,7 @@ public class ScrollSynchronizer {
     }
 
     public void installInBrowser() {
-        editor.getBrowserAccess().install(scrollSyncListener);
+        editor.getBrowserAccess().installMouseListener(scrollSyncListener);
     }
 
     class ScrollSyncMouseListener extends MouseAdapter {
@@ -56,7 +56,7 @@ public class ScrollSynchronizer {
             onMouseClickInBrowser(elementId);
         }
     }
-
+    
     private void onMouseClickInBrowser(String elementId) {
         if (!editor.getPreferences().isLinkEditorWithPreviewEnabled()) {
             return;

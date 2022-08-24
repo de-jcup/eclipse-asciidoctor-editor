@@ -19,6 +19,11 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseWheelListener;
+import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
@@ -31,6 +36,7 @@ import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLTextFileDocumentProvider;
+import de.jcup.asciidoctoreditor.preview.BrowserAccess;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
@@ -44,17 +50,32 @@ import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements PlantUMLDataProvider {
 
-    private static final double MAXIMUM_SCALE_FACTOR = 5.0;
+    private static final double MAXIMUM_SCALE_FACTOR = 4.0;
     private static final double MINIMUM_SCALE_FACTOR = 0.1;
-    
+
     private static final AsciiDoctorPlantUMLFileDocumentProvider ASCII_DOCTOR_PLANT_UML_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLFileDocumentProvider();
     private static final AsciiDoctorPlantUMLTextFileDocumentProvider ASCII_DOCTOR_PLANT_UML_TEXT_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLTextFileDocumentProvider();
-    private double pumlScaleFactor;
+    private double pumlScaleFactor = 1;
     private ZoomLevelContributionItem zoomLevelContributionItem;
 
     @Override
     protected AsciidoctorEditorOutlineSupport createOutlineSupport() {
         return new AsciidoctorPlantUMLEditorOutlineSupport(this);
+    }
+
+    @Override
+    protected void createSashFormAndBrowserAccess() {
+        super.createSashFormAndBrowserAccess();
+    }
+
+    @Override
+    protected void initPreview(SashForm sashForm) {
+        super.initPreview(sashForm);
+
+        PlantUMLPreviewMouseWheelAndKeyListener mouseWheelAndKeyListener = new PlantUMLPreviewMouseWheelAndKeyListener();
+        BrowserAccess browserAccess = getBrowserAccess();
+        
+        browserAccess.installMouseWheelListener(mouseWheelAndKeyListener);
     }
 
     public void beforeAsciidocConvert(ConversionData data) {
@@ -137,33 +158,115 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 
     @Override
     public void updateScaleFactor(double percentage) {
-        if (pumlScaleFactor==percentage) {
+        updateScaleFactor(percentage, false);
+    }
+
+    private void updateScaleFactor(double percentage, boolean alwaysUpdateUI) {
+        double newPumlScaleFactor = ensureScaleFactorValid(percentage);
+        if (alwaysUpdateUI || newPumlScaleFactor != percentage) {
+            updateZoomLevelOnUI();
+        }
+        if (pumlScaleFactor == newPumlScaleFactor) {
             return;
         }
-        pumlScaleFactor = percentage;
+        pumlScaleFactor = newPumlScaleFactor;
+
         rebuild();
     }
 
     @Override
     public double getScaleFactor() {
-        ensureScaleFactorValid();
         return pumlScaleFactor;
     }
 
-    private void ensureScaleFactorValid() {
-        if (pumlScaleFactor <= 0) {
-            pumlScaleFactor = 1;
-            return;
+    /**
+     * Ensures given scale factor is valid. If valid, the factor will be returned.
+     * If not, another(but valid) factor will be returned
+     * 
+     * @param scaleFactor
+     * @return valid factor
+     */
+    private double ensureScaleFactorValid(double scaleFactor) {
+        if (scaleFactor <= 0) {
+            scaleFactor = 1;
         }
-        if (pumlScaleFactor < MINIMUM_SCALE_FACTOR) {
-            pumlScaleFactor = MINIMUM_SCALE_FACTOR;
+        if (scaleFactor < MINIMUM_SCALE_FACTOR) {
+            scaleFactor = MINIMUM_SCALE_FACTOR;
         }
-        if (pumlScaleFactor > MAXIMUM_SCALE_FACTOR) {
-            pumlScaleFactor = MAXIMUM_SCALE_FACTOR;
+        if (scaleFactor > MAXIMUM_SCALE_FACTOR) {
+            scaleFactor = MAXIMUM_SCALE_FACTOR;
         }
-        if (zoomLevelContributionItem!=null) {
-            EclipseUtil.safeAsyncExec(()-> zoomLevelContributionItem.updateZoomLevel(pumlScaleFactor));
-        }
+        return scaleFactor;
     }
 
+    private void updateZoomLevelOnUI() {
+        if (zoomLevelContributionItem == null) {
+            return;
+        }
+        EclipseUtil.safeAsyncExec(() -> zoomLevelContributionItem.updateZoomLevel(pumlScaleFactor));
+    }
+
+    private class PlantUMLPreviewMouseWheelAndKeyListener implements MouseWheelListener, Runnable {
+
+        private int lastEventTime;
+        private Object monitor = new Object();
+        private Thread updateThread;
+        private long lastMouseWheelChange;
+        
+        public void mouseScrolled(MouseEvent e) {
+            if ((e.stateMask & SWT.CTRL) == 0) {
+                /* not CTRL pressed, so ignore */
+                return;
+            }
+            boolean zoomIn = e.count > 0;
+            
+            handleZoomAction(e, zoomIn);
+        }
+
+        private void handleZoomAction(TypedEvent e, boolean zoomIn) {
+            /* with the next time check we avoid multiple events at same time */
+            if (e.time == lastEventTime) {
+                return;
+            }
+            lastMouseWheelChange = System.currentTimeMillis();
+            lastEventTime = e.time;
+            double newPumlScaleFactor = pumlScaleFactor;
+            if (zoomIn) {
+                newPumlScaleFactor = newPumlScaleFactor += 0.1;
+            } else {
+                newPumlScaleFactor = newPumlScaleFactor -= 0.1;
+            }
+            double ensured = ensureScaleFactorValid(newPumlScaleFactor);
+            
+            if (ensured != newPumlScaleFactor) {
+                /* not valid - so just do not change */
+                return;
+            }
+            pumlScaleFactor = newPumlScaleFactor;
+            updateZoomLevelOnUI();
+
+            synchronized (monitor) {
+                /* if no update thread currently running/existing, create a new one */
+                if (updateThread == null || !updateThread.isAlive()) {
+                    updateThread = new Thread(this, "puml-scale-update-delay");
+                    updateThread.start();
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            while (System.currentTimeMillis() - lastMouseWheelChange < 300) {
+                /* while we have changes - we wait until no more changes */
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            rebuild();
+        }
+
+      
+    }
 }
