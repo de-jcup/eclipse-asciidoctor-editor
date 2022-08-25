@@ -17,20 +17,14 @@ package de.jcup.asciidoctoreditor.search;
 
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.search.ui.text.AbstractTextSearchResult;
 import org.eclipse.search.ui.text.Match;
 
 public class FileTreeContentProvider implements ITreeContentProvider {
 
     private final Object[] EMPTY_ARR = new Object[0];
 
-    private AbstractTextSearchResult result;
-    private AsciidocSearchResultPage page;
-    private AbstractTreeViewer viewer;
-
     FileTreeContentProvider(AsciidocSearchResultPage page, AbstractTreeViewer viewer) {
-        this.page = page;
-        this.viewer = viewer;
+
     }
 
     @Override

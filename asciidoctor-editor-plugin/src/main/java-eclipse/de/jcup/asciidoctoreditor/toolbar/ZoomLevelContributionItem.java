@@ -1,3 +1,18 @@
+/*
+ * Copyright 2022 Albert Tregnaghi
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *		http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions
+ * and limitations under the License.
+ *
+ */
 package de.jcup.asciidoctoreditor.toolbar;
 
 import static org.eclipse.swt.events.SelectionListener.*;
@@ -13,6 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 
 public class ZoomLevelContributionItem extends ControlContribution {
 
@@ -30,9 +46,9 @@ public class ZoomLevelContributionItem extends ControlContribution {
         combo = new Combo(parent, SWT.DROP_DOWN);
         
         combo.setToolTipText("Set the zoom level for the PlantUML diagram preview.\nYou can also press 'CTRL' and use the mouse wheel inside the internal preview.");
-        String[] items = { "25 %", "50 %", "100 %", "150 %", "200 %", "300 %", "400 %" };
+        String[] items = ZoomLevel.DEFAULT_TEXT_ENTRIES;
         combo.setItems(items);
-        combo.setText("100 %");
+        combo.setText(AsciiDoctorEditorPreferences.getInstance().getPlantUMLDefaultZoomLevelAsText());
         GridData gridData = GridDataFactory.defaultsFor(combo).grab(false, false).create();
         gridData.heightHint=12;
         combo.setLayoutData(gridData);
@@ -54,16 +70,11 @@ public class ZoomLevelContributionItem extends ControlContribution {
     }
 
     protected void setZoomLevel(String text, boolean enteredByUser) {
-        String[] splitted = text.split("%");
-        if (splitted.length < 1) {
+        Double level = ZoomLevel.calculatePercentagefromString(text);
+        if (level == null) {
             return;
         }
-        String valueOnly = splitted[0].trim();
-        Integer value = Integer.parseInt(valueOnly);
-
-        double percentage = ((double) value) / 100;
-
-        editor.updateScaleFactor(percentage);
+        editor.updateScaleFactor(level);
     }
 
     @Override

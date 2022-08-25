@@ -23,8 +23,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -176,8 +174,6 @@ public class AsciiDoctorWrapper {
             File fileToRender = context.getFileToRender();
             asciiDoctorAdapter.convertFile(data.getEditorFileOrNull(), fileToRender, param.options, param.attributes, monitor);
 
-            refreshParentFolderIfNecessary();
-
         } catch (Exception e) {
             logAdapter.logError("Cannot convert to html:" + data.getAsciiDocFile(), e);
             throw e;
@@ -208,29 +204,6 @@ public class AsciiDoctorWrapper {
         return param;
     }
 
-    private void refreshParentFolderIfNecessary() {
-        if (context.getImageHandlingMode() != ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL) {
-            return;
-        }
-        File editorFileOrNull = context.getEditorFileOrNull();
-        if (editorFileOrNull == null) {
-            return;
-        }
-        IFile asFile = EclipseResourceHelper.DEFAULT.toIFile(editorFileOrNull);
-        if (asFile == null) {
-            return;
-        }
-        IContainer parent = asFile.getParent();
-        if (parent == null) {
-            return;
-        }
-        try {
-            parent.refreshLocal(IFile.DEPTH_ONE, null);
-        } catch (CoreException e) {
-            AsciiDoctorEditorUtil.logError("Refresh was not possible", e);
-        }
-    }
-
     private void initProviderContext(AsciiDoctorWrapperContext context, ConversionData data, File configRoot) throws IOException {
         File asciiDocFile = data.getAsciiDocFile();
 
@@ -257,11 +230,7 @@ public class AsciiDoctorWrapper {
             }
         } else {
             if (type == EditorType.PLANTUML) {
-                if (AsciiDoctorEditorPreferences.getInstance().isStoringPlantUmlFiles()) {
-                    context.setImageHandlingMode(ImageHandlingMode.STORE_DIAGRAM_FILES_LOCAL);
-                } else {
                     context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);
-                }
             } else {
                 /* currently all other editor types ( ditaa) will use images dir approach */
                 context.setImageHandlingMode(ImageHandlingMode.IMAGESDIR_FROM_PREVIEW_DIRECTORY);

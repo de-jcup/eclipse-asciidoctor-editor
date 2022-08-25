@@ -21,13 +21,23 @@ package de.jcup.asciidoctoreditor.preferences;
  */
 public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiable {
 
-    P_EDITOR_MATCHING_BRACKETS_ENABLED("matchingBrackets"), P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION("highlightBracketAtCaretLocation"), P_EDITOR_ENCLOSING_BRACKETS("enclosingBrackets"),
-    P_EDITOR_MATCHING_BRACKETS_COLOR("matchingBracketsColor"), P_EDITOR_AUTO_CREATE_END_BRACKETSY("autoCreateEndBrackets"),
+    P_EDITOR_MATCHING_BRACKETS_ENABLED("matchingBrackets"),
 
-    @Deprecated // see
-    P_USE_PREVIEW_IMAGEDIRECTORY("usePreviewImageDirectory"), P_LINK_OUTLINE_WITH_EDITOR("linkOutlineWithEditor"), P_LINK_EDITOR_WITH_PREVIEW("linkEditorWithPreview"),
+    P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION("highlightBracketAtCaretLocation"),
 
-    P_CODE_ASSIST_ADD_KEYWORDS("codeAssistAddsKeyWords"), P_CODE_ASSIST_ADD_SIMPLEWORDS("codeAssistAddsSimpleWords"),
+    P_EDITOR_ENCLOSING_BRACKETS("enclosingBrackets"),
+
+    P_EDITOR_MATCHING_BRACKETS_COLOR("matchingBracketsColor"),
+
+    P_EDITOR_AUTO_CREATE_END_BRACKETSY("autoCreateEndBrackets"),
+
+    P_LINK_OUTLINE_WITH_EDITOR("linkOutlineWithEditor"),
+
+    P_LINK_EDITOR_WITH_PREVIEW("linkEditorWithPreview"),
+
+    P_CODE_ASSIST_ADD_KEYWORDS("codeAssistAddsKeyWords"),
+
+    P_CODE_ASSIST_ADD_SIMPLEWORDS("codeAssistAddsSimpleWords"),
 
     P_TOOLTIPS_ENABLED("toolTipsEnabled"),
 
@@ -69,8 +79,8 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 
     P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT("outlineGroupingEnabledPerDefault"),
 
-    P_AUTOCREATE_INITIAL_CONFIGFILE("autoCreateInitialAsciidocConfigFile"), 
-    
+    P_AUTOCREATE_INITIAL_CONFIGFILE("autoCreateInitialAsciidocConfigFile"),
+
     P_DAYS_TO_KEEP_TEMPFILES("daysToKeepTempFiles"),
 
     ;

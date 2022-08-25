@@ -36,6 +36,7 @@ import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLTextFileDocumentProvider;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preview.BrowserAccess;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
@@ -45,6 +46,7 @@ import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewVerticalInsideEditorAction;
+import de.jcup.asciidoctoreditor.toolbar.ZoomLevel;
 import de.jcup.asciidoctoreditor.toolbar.ZoomLevelContributionItem;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
@@ -55,7 +57,7 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 
     private static final AsciiDoctorPlantUMLFileDocumentProvider ASCII_DOCTOR_PLANT_UML_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLFileDocumentProvider();
     private static final AsciiDoctorPlantUMLTextFileDocumentProvider ASCII_DOCTOR_PLANT_UML_TEXT_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLTextFileDocumentProvider();
-    private double pumlScaleFactor = 1;
+    private double pumlScaleFactor;
     private ZoomLevelContributionItem zoomLevelContributionItem;
 
     @Override
@@ -70,6 +72,14 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 
     @Override
     protected void initPreview(SashForm sashForm) {
+        String defaultZoomLevel = AsciiDoctorEditorPreferences.getInstance().getPlantUMLDefaultZoomLevelAsText();
+        Double defaultPercentageOrNull = ZoomLevel.calculatePercentagefromString(defaultZoomLevel);
+        
+        if (defaultPercentageOrNull==null) {
+            pumlScaleFactor = ZoomLevel.LEVEL_100_PERCENT_VALUE;
+        }else {
+            pumlScaleFactor = defaultPercentageOrNull; 
+        }
         super.initPreview(sashForm);
 
         PlantUMLPreviewMouseWheelAndKeyListener mouseWheelAndKeyListener = new PlantUMLPreviewMouseWheelAndKeyListener();
@@ -188,7 +198,7 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
      */
     private double ensureScaleFactorValid(double scaleFactor) {
         if (scaleFactor <= 0) {
-            scaleFactor = 1;
+            scaleFactor = ZoomLevel.LEVEL_100_PERCENT_VALUE;
         }
         if (scaleFactor < MINIMUM_SCALE_FACTOR) {
             scaleFactor = MINIMUM_SCALE_FACTOR;

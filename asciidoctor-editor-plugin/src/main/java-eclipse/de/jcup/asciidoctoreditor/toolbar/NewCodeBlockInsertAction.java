@@ -48,7 +48,7 @@ public class NewCodeBlockInsertAction extends InsertTextAction {
         ListDialog dlg = new ListDialog(shell);
         dlg.setContentProvider(contentProvider);
         dlg.setLabelProvider(provider);
-        dlg.setInitialSelections(new String[] { JAVA }); // we use string array here for legacy depedne
+        dlg.setInitialSelections(new Object[] { JAVA });
         dlg.setInput(new String[] { JAVA, RUBY, XML, JSON });
         dlg.setTitle("Select source code blockType");
 

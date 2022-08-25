@@ -21,10 +21,8 @@ package de.jcup.asciidoctoreditor.preferences;
  */
 public enum AsciiDoctorPlantUMLEditorPreferenceConstants implements PreferenceIdentifiable {
 
-    P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT("pumlStoreDiagramsInProject"),
-
-    @Deprecated // shall be removed
-    P_PLANTUML_EDITOR_OUTPUT_FORMAT("pumlOutputFormat"),;
+    P_DEFAULT_ZOOM_LEVEL("plantUMLdefaultZoomLevel")
+    ;
 
     private String id;
 

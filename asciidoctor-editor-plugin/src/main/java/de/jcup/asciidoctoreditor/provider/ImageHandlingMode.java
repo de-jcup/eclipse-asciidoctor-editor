@@ -28,7 +28,4 @@ public enum ImageHandlingMode {
      */
     RELATIVE_PATHES,
 
-    /** Variant to keep generated diagram files - will be used by plantuml editor */
-    STORE_DIAGRAM_FILES_LOCAL,;
-
 }

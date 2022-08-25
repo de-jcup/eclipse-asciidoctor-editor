@@ -31,7 +31,6 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.PreviewLayout;
-import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLOutputFormat;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 import de.jcup.eclipse.commons.ui.ColorUtil;
 
@@ -305,14 +304,6 @@ public class AsciiDoctorEditorPreferences {
     /* ------------------------------------ */
     /* - plantuml parts */ // maybe own class in future?
     /* ------------------------------------ */
-    public boolean isStoringPlantUmlFiles() {
-        return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
-    }
-
-    @Deprecated // shall be removed
-    public PlantUMLOutputFormat getPlantUMLOutputFormat() {
-        return PlantUMLOutputFormat.fromString(getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT));
-    }
 
     public boolean isAutoCreateConfigEnabled() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_AUTOCREATE_INITIAL_CONFIGFILE);
@@ -320,6 +311,10 @@ public class AsciiDoctorEditorPreferences {
 
     public int getDaysToKeepTempFiles() {
         return getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_DAYS_TO_KEEP_TEMPFILES);
+    }
+
+    public String getPlantUMLDefaultZoomLevelAsText() {
+        return getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_DEFAULT_ZOOM_LEVEL);
     }
 
 }
