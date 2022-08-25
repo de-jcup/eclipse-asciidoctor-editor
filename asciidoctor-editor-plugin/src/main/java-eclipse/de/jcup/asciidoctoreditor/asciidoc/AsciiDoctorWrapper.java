@@ -65,6 +65,7 @@ import de.jcup.asp.client.AspClientProgressMonitor;
  */
 public class AsciiDoctorWrapper {
 
+    private static final Path FALLBACK_TEMP_FOLDER_WHEN_NO_PROJECT_SET = AsciiDocFileUtils.createTempFolderForNoProject();
     private LogAdapter logAdapter;
     private AsciiDoctorWrapperHTMLBuilder htmlBuilder;
 
@@ -94,24 +95,24 @@ public class AsciiDoctorWrapper {
             throw new IllegalArgumentException("log adapter may not be null!");
         }
         this.editor = editor;
-        if (editor != null) {
-            this.project = editor.getProject();
-        }
         this.logAdapter = logAdapter;
-        this.tempFolder = createTempPath(project);
+
+        this.project = null; // at this time, the editor does not know the project. Will be set afterwards in initialize method
+        this.tempFolder = FALLBACK_TEMP_FOLDER_WHEN_NO_PROJECT_SET;
 
         this.context = new AsciiDoctorWrapperContext(EclipseAsciiDoctorAdapterProvider.INSTANCE, AsciiDoctorEclipseLogAdapter.INSTANCE);
         this.htmlBuilder = new AsciiDoctorWrapperHTMLBuilder(context);
 
     }
 
-    public void initialze(LogAdapter logAdapter, IEditorInput editorInput) {
+    public void initialize(LogAdapter logAdapter, IEditorInput editorInput) {
         try {
             File configRoot = null;
             try {
                 IProject project = AsciiDoctorEditor.resolveProjectOrNull(editorInput);
                 if (project != null) {
                     IPath projectLocation = project.getLocation();
+                    this.tempFolder = createTempPath(project);
                     configRoot = EclipseResourceHelper.DEFAULT.toFile(projectLocation);
                 }
             } catch (Exception e) {
@@ -145,7 +146,7 @@ public class AsciiDoctorWrapper {
         }
         data.setAsciiDocFile(editorInputFileOrNull);
         data.setEditorFileOrNull(editorInputFileOrNull);
-        
+
         data.setUseHiddenFile(false);
         data.setInternalPreview(false);
         return data;
@@ -184,7 +185,7 @@ public class AsciiDoctorWrapper {
     }
 
     private AttributesAndOptionsParameter initContextAndResolveParameters(File configRoot, ConversionData data, AsciiDoctorBackendType asciiDoctorBackendType) throws IOException {
-        
+
         initProviderContext(context, data, configRoot);
 
         AttributesAndOptionsParameter param = createConvertParameter(asciiDoctorBackendType);
@@ -232,13 +233,13 @@ public class AsciiDoctorWrapper {
 
     private void initProviderContext(AsciiDoctorWrapperContext context, ConversionData data, File configRoot) throws IOException {
         File asciiDocFile = data.getAsciiDocFile();
-        
-        if (configRoot!=null) {
+
+        if (configRoot != null) {
             context.initConfigFileSupportAndSetConfigRoot(configRoot);
         }
-        
+
         List<AsciidoctorConfigFile> configFiles = initConfigFileSupport(context, asciiDocFile);
-        
+
         AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
 
         context.setInternalPreview(data.isInternalPreview());
@@ -268,7 +269,6 @@ public class AsciiDoctorWrapper {
             context.setNoFooter(true);
         }
         context.setOutputFolder(getTempFolder());
-
 
         if (data.isUseHiddenFile()) {
             /*

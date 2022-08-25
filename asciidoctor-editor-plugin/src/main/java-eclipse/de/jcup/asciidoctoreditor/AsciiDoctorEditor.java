@@ -788,7 +788,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     @Override
     protected void doSetInput(IEditorInput input) throws CoreException {
-        wrapper.initialze(AsciiDoctorEclipseLogAdapter.INSTANCE, input);
+        wrapper.initialize(AsciiDoctorEclipseLogAdapter.INSTANCE, input);
         
         setDocumentProvider(resolveDocumentProvider(input));
         super.doSetInput(input);
