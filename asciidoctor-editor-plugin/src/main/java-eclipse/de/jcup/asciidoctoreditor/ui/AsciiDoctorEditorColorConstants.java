@@ -126,6 +126,8 @@ public interface AsciiDoctorEditorColorConstants {
     public static final RGB DARK_THEME_MEDIUM_BLUE = rgb(52, 101, 164);// #34 65 A4
     public static final RGB DARK_THEME_LIGHT_BLUE = rgb(114, 159, 207);
 
+    public static final RGB DARK_THEME_PINK = rgb(191, 63, 172); // BF3FAC 
+
     public static RGB rgb(int r, int g, int b) {
         return new RGB(r, g, b);
     }
