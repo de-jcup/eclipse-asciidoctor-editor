@@ -1,0 +1,21 @@
+@startuml
+Bob ->x Alice
+Bob --->x Alice
+Bob -> Alice
+Bob --->> Alice
+Bob <<--x Alice
+Bob -\ Alice
+Bob -/ Alice
+Bob \\- Alice
+Bob //-- Alice
+
+Bob ->o Alice
+Bob o\\-- Alice
+
+Bob <-> Alice
+Bob <->o Alice
+
+Storage ->x]
+
+@enduml
+

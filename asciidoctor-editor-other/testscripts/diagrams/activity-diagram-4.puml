@@ -11,42 +11,42 @@ if "Page.onSecurityCheck" then
    ->[no] "Process controls"
    
    if "continue processing?" then
-     -->[yes] ===RENDERING===
+     --> [yes] ===RENDERING===
    else
-     -->[no] ===REDIRECT_CHECK===
+     --> [no] ===REDIRECT_CHECK===
    endif
    
   else
-   -->[yes] ===RENDERING===
+   --> [yes] ===RENDERING===
   endif
   
   if "is Post?" then
-    -->[yes] "Page.onPost()"
+    --> [yes] "Page.onPost()"
     --> "Page.onRender(yxzz)" as render
     --> ===REDIRECT_CHECK===
   else
-    -->[no] "Page.onGet()"
+    --> [no] "Page.onGet()"
     --> render
   endif
   
 else
-  -->[false] ===REDIRECT_CHECK===
+  --> [false] ===REDIRECT_CHECK===
 endif
 
 if "Do redirect?" then
- ->[yes] "redirect request"
+ -> [yes] "redirect request"
  --> ==BEFORE_DESTROY===
 else
  if "Do Forward?" then
-  -left->[yes] "Forward request"
+  -left-> [yes] "Forward request"
   --> ==BEFORE_DESTROY===
  else
-  -right->[no] "Render page template"
+  -right-> [no] "Render page template"
   --> ==BEFORE_DESTROY===
  endif
 endif
 
 --> "Page.onDestroy()"
--->(*)
+--> (*)
 
 @enduml

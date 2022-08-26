@@ -1,0 +1,8 @@
+@startuml
+
+(*) -up-> "First Action"
+-right-> "Second Action"
+--> "Third Action"
+-left-> (*)
+
+@enduml

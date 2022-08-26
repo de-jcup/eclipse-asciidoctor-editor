@@ -1,0 +1,24 @@
+@startuml
+title Bracketed line color
+class foo
+class bar
+class Bla implements Blub{
+    <<mocked_product>>
+}
+bar1 : [#red]
+bar2 : [#green]
+bar3 : [#blue]
+
+foo --> bar
+foo -[#red]-> bar1     : [#red]
+foo -[#green]-> bar2   : [#green]
+foo -[#blue]-> bar3    : [#blue]
+'foo -[#blue;#yellow;#green]-> bar4
+foo .[#orange]...> bar5    : [#orange]
+
+note top of foo
+ This may not be highlighted in editor: 
+ <b>metadata.txt</b> 
+ anonther Text with some problems </b>.
+end note
+@enduml

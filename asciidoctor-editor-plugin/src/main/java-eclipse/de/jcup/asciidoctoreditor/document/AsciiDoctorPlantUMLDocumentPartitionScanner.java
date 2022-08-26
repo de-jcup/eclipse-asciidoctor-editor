@@ -28,7 +28,6 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
-import de.jcup.asciidoctoreditor.document.keywords.PlantUMLArrowKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLColorDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLKeywordDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLMissingKeywordDocumentKeywords;
@@ -80,7 +79,7 @@ public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartit
         buildWordRules(rules, skinparameter, PlantUMLSkinparameterDocumentKeywords.values());
         buildWordRules(rules, type, PlantUMLTypeDocumentKeywords.values());
 
-        buildWordRules(rules, arrow, PlantUMLArrowKeywords.values());
+        rules.add(new PlantUMLArrowRule(arrow));
 
         setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
     }
