@@ -13,29 +13,28 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.toolbar;
+package de.jcup.asciidoctoreditor.toolbar;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class CreatePDFAction extends ToolbarAction {
-	
-	private static ImageDescriptor IMG_CREATE_PDF = createToolbarImageDescriptor("create_pdf.png");
-	
-	public CreatePDFAction(AsciiDoctorEditor editor) {
-		super(editor);
-		initUI();
-	}
-	
-	private void initUI() {
-		setImageDescriptor(IMG_CREATE_PDF);
-		setToolTipText("Create temporary pdf file and open it");
-		
-	}
 
-	@Override
-	public void run() {
-		asciiDoctorEditor.createAndShowPDF();
-	}
+    private static ImageDescriptor IMG_CREATE_PDF = createToolbarImageDescriptor("create_pdf.png");
+
+    public CreatePDFAction(AsciiDoctorEditor editor) {
+        super(editor);
+        initUI();
+    }
+
+    private void initUI() {
+        setImageDescriptor(IMG_CREATE_PDF);
+        setToolTipText("Create temporary pdf file and open it");
+    }
+
+    @Override
+    public void run() {
+        asciiDoctorEditor.createAndShowPDF();
+    }
 }

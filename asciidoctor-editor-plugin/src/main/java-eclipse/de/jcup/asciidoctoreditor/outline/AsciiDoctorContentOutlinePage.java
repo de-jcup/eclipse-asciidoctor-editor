@@ -18,8 +18,10 @@ package de.jcup.asciidoctoreditor.outline;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -28,9 +30,15 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
@@ -41,13 +49,16 @@ import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
-public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements IDoubleClickListener {
+public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements IDoubleClickListener, ScriptItemContentOutlinePage {
     private static final ImageDescriptor IMG_DESC_GROUPED = createOutlineImageDescriptor("grouped.png");;
     private static final ImageDescriptor IMG_DESC_NOT_GROUPED = createOutlineImageDescriptor("not_grouped.png");;
     private static final ImageDescriptor IMG_DESC_LINKED = createOutlineImageDescriptor("synced.png");
     private static final ImageDescriptor IMG_DESC_NOT_LINKED = createOutlineImageDescriptor("sync_broken.png");
     private static final ImageDescriptor IMG_DESC_EXPAND_ALL = createOutlineImageDescriptor("expandall.png");
     private static final ImageDescriptor IMG_DESC_COLLAPSE_ALL = createOutlineImageDescriptor("collapseall.png");
+    
+    private static final String MENU_ID = "de.jcup.asciidoctoreditor.outline";
+	private static final String CONTEXT_MENU_ID = "AsciiDoctorOutlinePageContextMenu";
 
     private AsciiDoctorEditorTreeContentProvider contentProvider;
     private Object input;
@@ -64,7 +75,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
         this.contentProvider.setGroupingEnabled(AsciiDoctorEditorPreferences.getInstance().isGroupingInOutlineEnabledPerDefault());
     }
 
-    public AsciiDoctorEditorTreeContentProvider getContentProvider() {
+    public AsciiDoctorEditorTreeContentProvider getScriptItemTreeContentProvider() {
         return contentProvider;
     }
 
@@ -99,7 +110,10 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 
         viewMenuManager.add(new Separator("treeGroup")); //$NON-NLS-1$
         viewMenuManager.add(toggleLinkingAction);
-
+        
+        configureContextMenu();
+		configureDragAndDrop();
+		
         /*
          * when no input is set on init state - let the editor rebuild outline (async)
          */
@@ -109,6 +123,48 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 
     }
 
+    private void configureContextMenu() {
+		MenuManager menuManager = new MenuManager(CONTEXT_MENU_ID, CONTEXT_MENU_ID);
+		menuManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		menuManager.setRemoveAllWhenShown(true);
+		
+		Menu contextMenu = menuManager.createContextMenu(getTreeViewer().getTree());
+		getTreeViewer().getTree().setMenu(contextMenu);
+		getSite().registerContextMenu(MENU_ID, menuManager, getTreeViewer());
+	}
+	
+	private void configureDragAndDrop() {
+		int ops = DND.DROP_COPY | DND.DROP_MOVE;
+		DragSource source = new DragSource(getTreeViewer().getControl(), ops);
+		source.setTransfer(LocalSelectionTransfer.getTransfer());
+		source.addDragListener(new DragSourceListener() {
+			@Override
+			public void dragStart(DragSourceEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) getTreeViewer().getSelection();
+				// Only start the drag if anything is actually selected in the tree.
+				if (selection.isEmpty()) {
+					event.doit = false;
+				}
+			}
+
+			@Override
+			public void dragSetData(DragSourceEvent event) {
+				// Provide the data of the requested type.
+				if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType)) {
+					event.data = getTreeViewer().getSelection();
+					LocalSelectionTransfer.getTransfer().setSelection(getTreeViewer().getSelection());
+					((DragSource) event.widget).setTransfer(LocalSelectionTransfer.getTransfer());
+				}
+			}
+
+			@Override
+			public void dragFinished(DragSourceEvent event) {
+				// Deliberately do nothing
+			}
+
+		});
+	}
+    
     @Override
     public void doubleClick(DoubleClickEvent event) {
         if (editor == null) {
@@ -175,8 +231,8 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
             return;
         }
         ignoreNextSelectionEvents = true;
-        if (contentProvider instanceof AsciiDoctorEditorTreeContentProvider) {
-            AsciiDoctorEditorTreeContentProvider provider = (AsciiDoctorEditorTreeContentProvider) contentProvider;
+        if (contentProvider instanceof ScriptItemTreeContentProvider) {
+            ScriptItemTreeContentProvider provider = (ScriptItemTreeContentProvider) contentProvider;
             Item item = provider.tryToFindByOffset(caretOffset);
             if (item != null) {
                 StructuredSelection selection = new StructuredSelection(item);
@@ -249,7 +305,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
 
             initText();
             initImage();
-            
+
             if (editor == null) {
                 return;
             }
@@ -300,7 +356,7 @@ public class AsciiDoctorContentOutlinePage extends ContentOutlinePage implements
     protected ImageDescriptor getImageDescriptionNotLinked() {
         return IMG_DESC_NOT_LINKED;
     }
-    
+
     protected ImageDescriptor getImageDescriptionForGrouped() {
         return IMG_DESC_GROUPED;
     }

@@ -58,8 +58,8 @@ public class PlantUMLLocalIncludeHierarchySearchTest {
     }
 
     @Test
-    public void test1_puml_is_resolved_together_with_it_sub_includes() throws Exception{
-        
+    public void test1_puml_is_resolved_together_with_it_sub_includes() throws Exception {
+
         /* prepare */
         /* @formatter:off */
         String plantUml="@startuml context\n" + 
@@ -67,23 +67,22 @@ public class PlantUMLLocalIncludeHierarchySearchTest {
                 "\n" + 
                 "@enduml";
         /* @formatter:on */
-       search.setBaseFolder(TestResourcesLoader.assertTestFile("test1.puml").getParentFile());
-       /* execute */ 
-       List<File> found = search.searchLocalIncludes(plantUml);
-       
-       
-       /* test */
-       assertEquals(3,found.size());
-       Iterator<File> it = found.iterator();
-       File file1 = it.next();
-       File file2 = it.next();
-       File file3 = it.next();
-       
-       assertEquals("test1.puml",file1.getName());
-       assertEquals("test2.puml",file2.getName());
-       assertEquals("test3.puml",file3.getName());
-       assertEquals("sub1",file3.getParentFile().getName());
-       
+        search.setBaseFolder(TestResourcesLoader.assertTestFile("test1.puml").getParentFile());
+        /* execute */
+        List<File> found = search.searchLocalIncludes(plantUml);
+
+        /* test */
+        assertEquals(3, found.size());
+        Iterator<File> it = found.iterator();
+        File file1 = it.next();
+        File file2 = it.next();
+        File file3 = it.next();
+
+        assertEquals("test1.puml", file1.getName());
+        assertEquals("test2.puml", file2.getName());
+        assertEquals("test3.puml", file3.getName());
+        assertEquals("sub1", file3.getParentFile().getName());
+
     }
 
 }

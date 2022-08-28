@@ -19,6 +19,7 @@ import java.io.File;
 
 /**
  * Resolves base parent directory by a given editor file
+ * 
  * @author albert
  *
  */

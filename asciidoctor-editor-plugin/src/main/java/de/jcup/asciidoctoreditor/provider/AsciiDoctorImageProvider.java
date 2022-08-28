@@ -16,145 +16,48 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider {
+    private String cachedSourceImagesPath;
 
-public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider{
-	private static ImageFilesFilter IMAGE_FILTER = new ImageFilesFilter();
-	private String cachedSourceImagesPath;
-
-	AsciiDoctorImageProvider(AsciiDoctorProviderContext context) {
-		super(context);
-	}
-
-//	private void copyImagesToOutputFolder(String sourcePath, File target) {
-//		getContext().getLogAdapter().resetTimeDiff();
-//		File cachedImagesFile = new File(sourcePath);
-//		if (!cachedImagesFile.exists()) {
-//			return;
-//		}
-//		try {
-//			FileUtils.copyDirectory(cachedImagesFile, target, IMAGE_FILTER);
-//		} catch (IOException e) {
-//			getContext().getLogAdapter().logError("Cannot copy images", e);
-//		}
-//		getContext().getLogAdapter().logTimeDiff("copied images to output folder:"+sourcePath);
-//
-//	}
-
-//	@Deprecated
-//	public void ensureImages() {
-//		Path outputFolder = getContext().getOutputFolder();
-//		if (outputFolder==null){
-//			throw new IllegalStateException("no output folder set!");
-//		}
-//		File targetImagesDir = new File(outputFolder.toFile(), "images");
-//		if (!targetImagesDir.exists()) {
-//			targetImagesDir.mkdirs();
-//			targetImagesDir.deleteOnExit();
-//		}
-//		copyImagesToOutputFolder(getCachedSourceImagesPath(), targetImagesDir);
-//		getContext().targetImagesDir=targetImagesDir;
-//
-//	}
-	
-    public void ensureImageByRelativePath(String relativePath) {
-        Path outputFolder = getContext().getOutputFolder();
-        if (outputFolder==null){
-            throw new IllegalStateException("no output folder set!");
-        }
-        File baseDir = getContext().getBaseDir();
-        
-        File originImage = new File(baseDir, relativePath);
-        if (! IMAGE_FILTER.accept(originImage)) {
-            return;
-        }
-        File targetImage = new File(outputFolder.toFile(), relativePath);
-        File parentFile = targetImage.getParentFile();
-        if (!parentFile.exists()) {
-            parentFile.mkdirs();
-        }
-        try {
-            FileUtils.copyFile(originImage, targetImage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    AsciiDoctorImageProvider(AsciiDoctorWrapperContext context) {
+        super(context);
     }
-	
-	public String getCachedSourceImagesPath() {
-		if (cachedSourceImagesPath == null) {
-			cachedSourceImagesPath = resolveImagesDirPath(getContext().getBaseDir());
-		}
-		return cachedSourceImagesPath;
-	}
-	
-	private static class ImageFilesFilter implements FileFilter{
 
-		@Override
-		public boolean accept(File file) {
-			if (file==null || ! file.exists()){
-				return false;
-			}
-			if (file.isDirectory()){
-				return true;
-			}
-			String ext = FilenameUtils.getExtension(file.getName());
-			if (ext==null || ext.isEmpty()){
-				return false;
-			}
-			String e = ext.toLowerCase();
-			if ("png".equals(e)){
-				return true;
-			}
-			if ("jpg".equals(e)){
-				return true;
-			}
-			if ("gif".equals(e)){
-				return true;
-			}
-			if ("svg".equals(e)){
-				return true;
-			}
-			if ("bmp".equals(e)){
-				return true;
-			}
-			if ("tiff".equals(e)){
-				return true;
-			}
-			return false;
-		}
-		
-	}
+    public String getCachedSourceImagesPath() {
+        if (cachedSourceImagesPath == null) {
+            cachedSourceImagesPath = resolveImagesDirPath(getContext().getBaseDir());
+        }
+        return cachedSourceImagesPath;
+    }
 
-	protected String resolveImagesDirPath(File baseDir) {
-	    getContext().getLogAdapter().resetTimeDiff();
-		AsciiDoctorAttributesProvider attributesProvider = getContext().getAttributesProvider();
+    protected String resolveImagesDirPath(File baseDir) {
+        getContext().getLogAdapter().resetTimeDiff();
+        AsciiDoctorAttributesProvider attributesProvider = getContext().getAttributesProvider();
         Map<String, Object> cachedAttributes = attributesProvider.getCachedAttributes();
         Object imagesDir = cachedAttributes.get("imagesdir");
 
-		String imagesDirPath = null;
-		if (imagesDir != null) {
-			imagesDirPath = imagesDir.toString();
-			if (imagesDirPath.startsWith("./")) {
-				File imagePathNew = new File(baseDir, imagesDirPath.substring(2));
-				imagesDirPath = imagePathNew.getAbsolutePath();
-			}
-		} else {
-			/* fallback when not defined - as defined at https://asciidoctor.org/docs/asciidoctor-pdf/#image-paths*/
-			imagesDirPath = baseDir.getAbsolutePath();
-		}
-		getContext().getLogAdapter().logTimeDiff("resolveImagesDirPath, baseDir:"+baseDir);
-		return imagesDirPath;
-	}
+        String imagesDirPath = null;
+        if (imagesDir != null) {
+            imagesDirPath = imagesDir.toString();
+            if (imagesDirPath.startsWith("./")) {
+                File imagePathNew = new File(baseDir, imagesDirPath.substring(2));
+                imagesDirPath = imagePathNew.getAbsolutePath();
+            }
+        } else {
+            /*
+             * fallback when not defined - as defined at
+             * https://asciidoctor.org/docs/asciidoctor-pdf/#image-paths
+             */
+            imagesDirPath = baseDir.getAbsolutePath();
+        }
+        getContext().getLogAdapter().logTimeDiff("resolveImagesDirPath, baseDir:" + baseDir);
+        return imagesDirPath;
+    }
 
-	public void reset() {
-		this.cachedSourceImagesPath=null;
-	}
+    public void reset() {
+        this.cachedSourceImagesPath = null;
+    }
 
 }

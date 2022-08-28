@@ -127,12 +127,13 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         } catch (NumberFormatException e) {
             /* ignore done by field editors */
         }
-        
+
         boolean ok = super.performOk();
         // we handle the directory field special, not added as field, so setting default
         // in this way
-        AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR, pathToInstalledAsciidoctor.getStringValue());
-        AsciiDoctorEditorPreferences.getInstance().setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH, pathToJavaForASPlaunch.getStringValue());
+        AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+        preferences.setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR, pathToInstalledAsciidoctor.getStringValue());
+        preferences.setStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH, pathToJavaForASPlaunch.getStringValue());
         AsciiDoctorEditorActivator.getDefault().getAspSupport().configurationChanged();
         return ok;
     }
@@ -215,20 +216,19 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         devNull = new Composite(uiComposite, SWT.NONE);
         BooleanFieldEditor autoConfigFileCreationEnabled = new BooleanFieldEditor(P_AUTOCREATE_INITIAL_CONFIGFILE.getId(), "Enable initial config file auto creation", devNull);
-        autoConfigFileCreationEnabled.getDescriptionControl(devNull)
-                .setToolTipText("When enabled, a "+AsciiDocConfigFileSupport.FILENAME_ASCIIDOCTORCONFIG_ADOC+" with description inside \n"
-                        + "will be created in project root folder when no other config file exists.");
+        autoConfigFileCreationEnabled.getDescriptionControl(devNull).setToolTipText("When enabled, a " + AsciiDocConfigFileSupport.FILENAME_ASCIIDOCTORCONFIG_ADOC + " with description inside \n"
+                + "will be created in project root folder when no other config file exists.");
         addField(autoConfigFileCreationEnabled);
         devNull = new Composite(uiComposite, SWT.NONE);
-        
+
         BooleanFieldEditor linkEditorWithPreviewEnabled = new BooleanFieldEditor(P_LINK_EDITOR_WITH_PREVIEW.getId(), "Link editor with internal preview", devNull);
         linkEditorWithPreviewEnabled.getDescriptionControl(devNull)
                 .setToolTipText("When enabled editor caret movements are scrolled in internal preview.\n" + "This works only in some situations e.g. when cursor moves to a headline");
         addField(linkEditorWithPreviewEnabled);
-        
-        BooleanFieldEditor groupOutlineEnabledPerDefault= new BooleanFieldEditor(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(), "Show outline grouped per default", devNull);
-        groupOutlineEnabledPerDefault.getDescriptionControl(devNull)
-        .setToolTipText("This changes default behaviour of editor outline: When enabled outline items are grouped on new opened editor outlines per default.\n\nWhen grouping is turned off the items in outline are ordered by their offset inside document.");
+
+        BooleanFieldEditor groupOutlineEnabledPerDefault = new BooleanFieldEditor(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(), "Show outline grouped per default", devNull);
+        groupOutlineEnabledPerDefault.getDescriptionControl(devNull).setToolTipText(
+                "This changes default behaviour of editor outline: When enabled outline items are grouped on new opened editor outlines per default.\n\nWhen grouping is turned off the items in outline are ordered by their offset inside document.");
         addField(groupOutlineEnabledPerDefault);
     }
 
@@ -247,7 +247,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         addField(autobuildForExternalPreviewEnabled);
 
         Composite devNull2 = new Composite(externalPreviewGroup, SWT.NONE);
-        IntegerFieldEditor autorefreshSeconds = new IntegerFieldEditor(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), "Auto refresh in external preview (in seconds)", devNull2);
+        IntegerFieldEditor autorefreshSeconds = new IntegerFieldEditor(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS.getId(), "Auto refresh in external preview (in seconds)", devNull2);
         autorefreshSeconds.setValidRange(0, 30);
         autorefreshSeconds.setTextLimit(2);
         autorefreshSeconds.getLabelControl(devNull2).setToolTipText("0 will turn off auto refresh for external previews.\n\nIf auto build has been disabled, this value will be ignored!");
@@ -255,20 +255,20 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         createDependency(autobuildForExternalPreviewEnabled.getChangeControl(devNull1), autorefreshSeconds.getTextControl(devNull2));
     }
+
     @Override
     protected void checkState() {
         super.checkState();
         // we handle the file field special, not added as field, so validating
         // value in this way
-        if (pathToInstalledAsciidoctor !=null && !pathToInstalledAsciidoctor.checkState()) {
+        if (pathToInstalledAsciidoctor != null && !pathToInstalledAsciidoctor.checkState()) {
             setValid(false);
         }
-        
-        if (pathToJavaForASPlaunch !=null && !pathToJavaForASPlaunch.checkState()) {
+
+        if (pathToJavaForASPlaunch != null && !pathToJavaForASPlaunch.checkState()) {
             setValid(false);
         }
     }
-    
 
     protected void createAsciidoctorGroup(Composite group) {
 
@@ -333,9 +333,9 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
 
         Composite pathComposite = new Composite(content, SWT.NONE);
         pathToJavaForASPlaunch = new AccessibleFileFieldEditor(P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH.getId(), "Path to Java binary", pathComposite);
-        pathToJavaForASPlaunch.getTextControl(pathComposite).setMessage("Use installed java");
+        pathToJavaForASPlaunch.getTextControl(pathComposite).setMessage("Use Eclipse JRE");
         pathToJavaForASPlaunch.getTextControl(pathComposite)
-                .setToolTipText("Full path to another java executable (java/java.exe) which will be called to launch ASP server.\n\nWhen empty, installed java version will be used.");
+                .setToolTipText("Full path to another java executable (java/java.exe) which will be called to launch ASP server.\n\nWhen empty, the JRE which does run Eclipse will be used.");
         pathToJavaForASPlaunch.setEmptyStringAllowed(true);
         pathToJavaForASPlaunch.setErrorMessage("Invalid path to java executable");
 

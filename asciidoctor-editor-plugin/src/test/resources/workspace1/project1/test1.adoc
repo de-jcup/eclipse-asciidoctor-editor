@@ -1,0 +1,5 @@
+== I am test 1
+This is from test1
+
+include::test2.adoc[]
+

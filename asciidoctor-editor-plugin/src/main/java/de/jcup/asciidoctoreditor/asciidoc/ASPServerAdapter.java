@@ -128,10 +128,7 @@ public class ASPServerAdapter {
 
             @Override
             public void output(String message) {
-                if (consoleAdapter != null) {
-                    consoleAdapter.output(message);
-                }
-
+                consoleOutput(message);
             };
         };
         this.port = getFreePortToUse(minPort, maxPort);
@@ -143,7 +140,7 @@ public class ASPServerAdapter {
         launcher.setOutputHandler(outputHandler);
 
         if (customEnvironmentEntries != null) {
-            for (String key: customEnvironmentEntries.keySet()) {
+            for (String key : customEnvironmentEntries.keySet()) {
                 launcher.setEnvironment(key, customEnvironmentEntries.get(key));
             }
         }
@@ -156,7 +153,7 @@ public class ASPServerAdapter {
              */
             key = key.trim();
 
-            outputHandler.output(">> ASP Server has been started successfully");
+            outputHandler.output(">> ASP Server has been started successfully at port:" + launcher.getPort());
             this.client = new AspClient(key);
             this.client.setPortNumber(port);
             this.client.setOutputHandler(outputHandler);
@@ -170,14 +167,13 @@ public class ASPServerAdapter {
     }
 
     private int getFreePortToUse(int minPort, int maxPort) {
-        for (int p = minPort; p <= maxPort; p++) {
+        for (int triedPort = minPort; triedPort <= maxPort; triedPort++) {
             try {
-                ServerSocket socket = new ServerSocket(p);
+                ServerSocket socket = new ServerSocket(triedPort);
                 socket.close();
                 // able to open a server socket on port p, so it will be possible for ASP server
-                // as well
-                // we use this port;
-                return p;
+                // as well - so we use this port;
+                return triedPort;
             } catch (IOException e) {
                 /* ignore */
             }
@@ -193,9 +189,37 @@ public class ASPServerAdapter {
      */
     public boolean stopServer() {
         if (launcher != null) {
-            return launcher.stopServer();
+            boolean stopDone = launcher.stopServer();
+            if (stopDone) {
+                consoleOutput(">> ASP Server stop triggered.");
+                waitForServerNoLongerAlive();
+                consoleOutput(">> ASP Server stop done.");
+            }
         }
         return false;
+    }
+
+    private void consoleOutput(String message) {
+        if (consoleAdapter == null) {
+            return;
+        }
+        consoleAdapter.output(message);
+
+    }
+
+    private void waitForServerNoLongerAlive() {
+        for (int i = 0; i < 10; i++) {
+            if (!client.isServerAlive(null)) {
+                return;
+            }
+            consoleOutput(">>> Wait for server no longer alive...");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+        }
     }
 
     public boolean isServerStarted() {

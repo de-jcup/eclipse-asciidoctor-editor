@@ -17,11 +17,11 @@ package de.jcup.asciidoctoreditor.handlers;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
-public class ValidateHandler extends AbstractAsciiDoctorEditorHandler{
+public class ValidateHandler extends AbstractAsciiDoctorEditorHandler {
 
-	@Override
-	protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
-		asciidoctorEditor.validate();
-	}
+    @Override
+    protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
+        asciidoctorEditor.validate();
+    }
 
 }

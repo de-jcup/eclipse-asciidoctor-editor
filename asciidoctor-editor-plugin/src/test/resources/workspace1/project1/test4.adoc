@@ -1,0 +1,10 @@
+== I am test 4
+This is from test4 - and endless loop include. 
+
+[NOTE]
+====
+This IS wanted here! Inside junit test we can check the include is collected, but the loop shall not make problems
+
+====
+
+include::test4.adoc[] 

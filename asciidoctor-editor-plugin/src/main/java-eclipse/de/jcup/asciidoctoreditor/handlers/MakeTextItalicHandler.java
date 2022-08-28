@@ -19,11 +19,12 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class MakeTextItalicHandler extends AbstractAsciiDoctorEditorHandler {
 
-	public static final String COMMAND_ID = "asciidoctoreditor.editor.commands.formattext.italic";
+    public static final String COMMAND_ID = "asciidoctoreditor.editor.commands.formattext.italic";
 
-	@Override
-	protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
-		asciidoctorEditor.makeSelectedTextItalic();;
-	}
+    @Override
+    protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
+        asciidoctorEditor.makeSelectedTextItalic();
+        ;
+    }
 
 }

@@ -19,26 +19,26 @@ import java.nio.file.Path;
 
 public abstract class AbstractAsciiDoctorProvider {
 
-    private AsciiDoctorProviderContext context;
+    private AsciiDoctorWrapperContext context;
 
-    AbstractAsciiDoctorProvider(AsciiDoctorProviderContext context){
-        if (context==null ){
+    AbstractAsciiDoctorProvider(AsciiDoctorWrapperContext context) {
+        if (context == null) {
             throw new IllegalArgumentException("context may never be null!");
         }
-        this.context=context;
+        this.context = context;
     }
-    
-    AsciiDoctorProviderContext getContext() {
+
+    AsciiDoctorWrapperContext getContext() {
         return context;
     }
-    
+
     public Path getOutputFolder() {
         Path outputFolder = getContext().getOutputFolder();
-        if (outputFolder==null){
+        if (outputFolder == null) {
             throw new IllegalStateException("output folder not defined");
         }
         return outputFolder;
     }
 
-    protected abstract void reset() ;
+    protected abstract void reset();
 }

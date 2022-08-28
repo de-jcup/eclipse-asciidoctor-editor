@@ -11,3 +11,5 @@ include::not_existing_example.adoc[]
 //include::16_images.adoc[]
 
 include::16_images_with_imageDir_set.adoc[]
+
+include::./33_recursion.adoc[]

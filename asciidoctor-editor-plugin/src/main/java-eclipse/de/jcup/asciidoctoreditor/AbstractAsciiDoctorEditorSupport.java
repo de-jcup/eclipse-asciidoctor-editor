@@ -22,13 +22,13 @@ public abstract class AbstractAsciiDoctorEditorSupport {
     private AsciiDoctorEditor editor;
 
     public AbstractAsciiDoctorEditorSupport(AsciiDoctorEditor editor) {
-        this.editor=editor;
+        this.editor = editor;
     }
-    
+
     public AsciiDoctorEditor getEditor() {
         return editor;
     }
-    
+
     public boolean isFileNotAvailable(File file) {
         if (file == null) {
             return true;
@@ -36,9 +36,8 @@ public abstract class AbstractAsciiDoctorEditorSupport {
         return !file.exists();
     }
 
-    public long getEditorId() {
+    public UniqueEditorId getUniquEditorId() {
         return getEditor().getEditorId();
     }
 
-    
 }

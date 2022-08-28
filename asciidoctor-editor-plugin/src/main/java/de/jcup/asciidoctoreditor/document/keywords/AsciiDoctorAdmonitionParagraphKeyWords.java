@@ -20,51 +20,51 @@ import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 
 public enum AsciiDoctorAdmonitionParagraphKeyWords implements DocumentKeyWord {
 
-	TIP("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),
+    TIP("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),
 
-	NOTE("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),
+    NOTE("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),
 
-	IMPORTANT("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),
+    IMPORTANT("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),
 
-	WARNING("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),
+    WARNING("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),
 
-	CAUTION("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),;
+    CAUTION("https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#paragraphs"),;
 
-	private String text;
+    private String text;
 
-	private AsciiDoctorAdmonitionParagraphKeyWords(String linkToOnlineDocumentation) {
-		this.text = name() + ":";
-		tooltip = TooltipTextSupport.getTooltipText("admonition-paragraphs");
-		if (tooltip == null || tooltip.isEmpty()) {
-			tooltip = "An internal asciidoctor attribute. See online documentation for mor information.";
-		}
-		this.linkToDocumentation = linkToOnlineDocumentation;
-		if (this.linkToDocumentation == null) {
-			this.linkToDocumentation = "https://asciidoctor.org/docs/user-manual";
-		}
-	}
+    private AsciiDoctorAdmonitionParagraphKeyWords(String linkToOnlineDocumentation) {
+        this.text = name() + ":";
+        tooltip = TooltipTextSupport.getTooltipText("admonition-paragraphs");
+        if (tooltip == null || tooltip.isEmpty()) {
+            tooltip = "An internal asciidoctor attribute. See online documentation for mor information.";
+        }
+        this.linkToDocumentation = linkToOnlineDocumentation;
+        if (this.linkToDocumentation == null) {
+            this.linkToDocumentation = "https://asciidoctor.org/docs/user-manual";
+        }
+    }
 
-	@Override
-	public String getText() {
-		return text;
-	}
+    @Override
+    public String getText() {
+        return text;
+    }
 
-	@Override
-	public boolean isBreakingOnEof() {
-		return false;
-	}
+    @Override
+    public boolean isBreakingOnEof() {
+        return false;
+    }
 
-	private String tooltip;
-	private String linkToDocumentation;
+    private String tooltip;
+    private String linkToDocumentation;
 
-	@Override
-	public String getTooltip() {
-		return tooltip;
-	}
+    @Override
+    public String getTooltip() {
+        return tooltip;
+    }
 
-	@Override
-	public String getLinkToDocumentation() {
-		return linkToDocumentation;
-	}
+    @Override
+    public String getLinkToDocumentation() {
+        return linkToDocumentation;
+    }
 
 }

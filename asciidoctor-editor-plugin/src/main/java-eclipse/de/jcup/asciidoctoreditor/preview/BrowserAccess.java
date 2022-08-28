@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
@@ -39,12 +40,18 @@ public class BrowserAccess {
     private Browser browser;
     private Object monitor = new Object();
     private Composite sashForm;
-    private MouseListener listener;
+    private MouseListener mouseListener;
+    private MouseWheelListener mouseWheelListener;
 
-    /*
-     * FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if
-     * this could be removed
+    /**
+     * In newer eclipse versions we have a newer SWT which does support EDGE.. As
+     * long as we support old eclipse versions as well, we must handle old SWT also
+     * and make sure it can be compiled and also run with the old version. So we
+     * just copied the new SWT.EDGE constant here into our own code and use it only
+     * when EDGE environment variable is set by eclipse (so new one).
      */
+    private static int SWT_COMPATIBILITY_ADOPT_EDGE = 1 << 18;
+
     public interface BrowserContentInitializer {
 
         public void initialize(Browser browser);
@@ -82,8 +89,11 @@ public class BrowserAccess {
         if (browser == null) {
             return;
         }
-        if (this.listener != null && ! browser.isDisposed()) {
-            browser.removeMouseListener(this.listener);
+        if (this.mouseListener != null && !browser.isDisposed()) {
+            browser.removeMouseListener(this.mouseListener);
+        }
+        if (this.mouseWheelListener != null && !browser.isDisposed()) {
+            browser.removeMouseWheelListener(this.mouseWheelListener);
         }
         if (!browser.isDisposed()) {
             browser.dispose();
@@ -93,11 +103,11 @@ public class BrowserAccess {
     public Browser ensureBrowser(BrowserContentInitializer initializer) {
         synchronized (monitor) {
             if (browser == null) {
-                browser = new Browser(sashForm, SWT.CENTER);
-                /*
-                 * FIXME ATR, 26.04.2018: the initializer parts are no longer used - check if
-                 * this could be removed
-                 */
+                // Use edge renderer for SWT browser if available
+                String edgeVersion = System.getProperty("org.eclipse.swt.browser.EdgeVersion");
+                int browserStyle = edgeVersion != null && !edgeVersion.isEmpty() ? SWT.CENTER | SWT_COMPATIBILITY_ADOPT_EDGE : SWT.CENTER;
+                browser = new Browser(sashForm, browserStyle);
+
                 Job job = Job.create("Init browser", new ICoreRunnable() {
 
                     @Override
@@ -130,18 +140,37 @@ public class BrowserAccess {
     }
 
     /**
-     * Installs a mouse listener - we do only suppport ONE mouse listener at same time. Calling this method multiple times will uninstall former one!
+     * Installs a mouse mouseListener - we do only suppport ONE mouse mouseListener
+     * at same time. Calling this method multiple times will uninstall former one!
+     * 
      * @param mouseListener
      */
-    public void install(MouseListener mouseListener) {
+    public void installMouseListener(MouseListener mouseListener) {
         if (isBrowserNotAvailable()) {
             return;
         }
-        if (this.listener != null) {
-            browser.removeMouseListener(this.listener);
+        if (this.mouseListener != null) {
+            browser.removeMouseListener(this.mouseListener);
         }
-        this.listener = mouseListener;
-        browser.addMouseListener(listener);
+        this.mouseListener = mouseListener;
+        browser.addMouseListener(mouseListener);
+    }
+
+    /**
+     * Installs a mouse mouseListener - we do only suppport ONE mouse mouseListener
+     * at same time. Calling this method multiple times will uninstall former one!
+     * 
+     * @param mouseListener
+     */
+    public void installMouseWheelListener(MouseWheelListener mouseWheelListener) {
+        if (isBrowserNotAvailable()) {
+            return;
+        }
+        if (this.mouseWheelListener != null) {
+            browser.removeMouseWheelListener(this.mouseWheelListener);
+        }
+        this.mouseWheelListener = mouseWheelListener;
+        browser.addMouseWheelListener(mouseWheelListener);
     }
 
     public void safeBrowserExecuteJavascript(final String javascript) {

@@ -13,15 +13,15 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.document;
+package de.jcup.asciidoctoreditor.document;
 
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 
-public class AsciiDoctorPartitioner extends FastPartitioner{
+public class AsciiDoctorPartitioner extends FastPartitioner {
 
-	public AsciiDoctorPartitioner(IPartitionTokenScanner scanner, String[] legalContentTypes) {
-		super(scanner, legalContentTypes);
-	}
+    public AsciiDoctorPartitioner(IPartitionTokenScanner scanner, String[] legalContentTypes) {
+        super(scanner, legalContentTypes);
+    }
 
 }

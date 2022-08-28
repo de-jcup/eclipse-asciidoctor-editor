@@ -13,76 +13,77 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.document;
+package de.jcup.asciidoctoreditor.document;
 
 public enum AsciiDoctorDocumentIdentifiers implements AsciiDoctorDocumentIdentifier {
-	
-	COMMENT,
-	
-	HYPERLINK,
-	
-	TEXT_BLOCK,
-	
-	INCLUDE_KEYWORD,
-	
-	ASCIIDOCTOR_COMMAND,
-	
-	KNOWN_VARIABLES,
-	
-	VARIABLES,
-	
-	TEXT_BOLD,
-	
-	TEXT_ITALIC,
 
-	TEXT_MONOSPACED,
-	
-	HEADLINE,
-	
-	DELIMITERS,
-	
-	;
+    COMMENT,
 
+    HYPERLINK,
 
-	@Override
-	public String getId() {
-		return name();
-	}
-	public static String[] allIdsToStringArray(){
-		return internal_allIdsToStringArray();
-	}
-	public static String[] allIdsToStringArray(String ...additionalDefaultIds){
-	    return internal_allIdsToStringArray(additionalDefaultIds);
-	}
-	
-	private static String[] internal_allIdsToStringArray(String ...additionalDefaultIds){
-		AsciiDoctorDocumentIdentifiers[] values = values();
-		int size = values.length;
-			size+=additionalDefaultIds.length;
-		String[] data = new String[size];
-		int pos=0;
-		for (String additionalDefaultId: additionalDefaultIds) {
-		    if (additionalDefaultId!=null){
-		        data[pos++]=additionalDefaultId;
-		    }
-		}
-		for (AsciiDoctorDocumentIdentifiers d: values){
-			data[pos++]=d.getId();
-		}
-		return data;
-	}
-	
-	public static boolean isContaining(String contentType) {
-		if (contentType==null){
-			return false;
-		}
-		for (AsciiDoctorDocumentIdentifiers identifier: values()){
-			if (identifier.getId().equals(contentType)){
-				return true;
-			}
-		}
-		
-		return false;
-	}
+    TEXT_BLOCK,
+
+    INCLUDE_KEYWORD,
+
+    ASCIIDOCTOR_COMMAND,
+
+    KNOWN_VARIABLES,
+
+    VARIABLES,
+
+    TEXT_BOLD,
+
+    TEXT_ITALIC,
+
+    TEXT_MONOSPACED,
+
+    HEADLINE,
+
+    DELIMITERS,
+
+    ;
+
+    @Override
+    public String getId() {
+        return name();
+    }
+
+    public static String[] allIdsToStringArray() {
+        return internal_allIdsToStringArray();
+    }
+
+    public static String[] allIdsToStringArray(String... additionalDefaultIds) {
+        return internal_allIdsToStringArray(additionalDefaultIds);
+    }
+
+    private static String[] internal_allIdsToStringArray(String... additionalDefaultIds) {
+        AsciiDoctorDocumentIdentifiers[] values = values();
+        int size = values.length;
+        size += additionalDefaultIds.length;
+        String[] data = new String[size];
+        int pos = 0;
+        for (String additionalDefaultId : additionalDefaultIds) {
+            if (additionalDefaultId != null) {
+                data[pos++] = additionalDefaultId;
+            }
+        }
+        for (AsciiDoctorDocumentIdentifiers d : values) {
+            data[pos++] = d.getId();
+        }
+        return data;
+    }
+
+    public static boolean isContaining(String contentType) {
+        if (contentType == null) {
+            return false;
+        }
+        for (AsciiDoctorDocumentIdentifiers identifier : values()) {
+            if (identifier.getId().equals(contentType)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 }

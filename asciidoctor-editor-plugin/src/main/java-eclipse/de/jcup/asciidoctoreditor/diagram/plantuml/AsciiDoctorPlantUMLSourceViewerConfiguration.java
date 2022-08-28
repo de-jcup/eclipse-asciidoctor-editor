@@ -63,167 +63,154 @@ import de.jcup.asciidoctoreditor.ui.ColorManager;
  */
 public class AsciiDoctorPlantUMLSourceViewerConfiguration extends TextSourceViewerConfiguration {
 
-	private AsciiDoctorDefaultTextScanner scanner;
-	private ColorManager colorManager;
+    private AsciiDoctorDefaultTextScanner scanner;
+    private ColorManager colorManager;
 
-	private TextAttribute defaultTextAttribute;
-	private AsciiDoctorPlantUMLEditorAnnotationHoover annotationHoover;
-	private ContentAssistant contentAssistant;
-	private PlantumlContentAssistProcessor contentAssistProcessor;
+    private TextAttribute defaultTextAttribute;
+    private AsciiDoctorPlantUMLEditorAnnotationHoover annotationHoover;
+    private ContentAssistant contentAssistant;
+    private PlantumlContentAssistProcessor contentAssistProcessor;
 
-	/**
-	 * Creates configuration by given adaptable
-	 * 
-	 * @param adaptable
-	 *            must provide {@link ColorManager} and {@link IFile}
-	 */
-	public AsciiDoctorPlantUMLSourceViewerConfiguration(IAdaptable adaptable) {
+    /**
+     * Creates configuration by given adaptable
+     * 
+     * @param adaptable must provide {@link ColorManager} and {@link IFile}
+     */
+    public AsciiDoctorPlantUMLSourceViewerConfiguration(IAdaptable adaptable) {
 
-		IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
-		this.fPreferenceStore = new ChainedPreferenceStore(
-				new IPreferenceStore[] { getPreferences().getPreferenceStore(), generalTextStore });
+        IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
+        this.fPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] { getPreferences().getPreferenceStore(), generalTextStore });
 
-		Assert.isNotNull(adaptable, "adaptable may not be null!");
-		this.annotationHoover = new AsciiDoctorPlantUMLEditorAnnotationHoover();
+        Assert.isNotNull(adaptable, "adaptable may not be null!");
+        this.annotationHoover = new AsciiDoctorPlantUMLEditorAnnotationHoover();
 
-		this.contentAssistant = new ContentAssistant();
-		contentAssistProcessor = new PlantumlContentAssistProcessor();
-		
-		contentAssistant.enableColoredLabels(true);
-			
-		contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
-		for (AsciiDoctorDocumentIdentifier identifier : AsciiDoctorPlantUMLDocumentIdentifiers.values()) {
-			contentAssistant.setContentAssistProcessor(contentAssistProcessor, identifier.getId());
-		}
-		
+        this.contentAssistant = new ContentAssistant();
+        contentAssistProcessor = new PlantumlContentAssistProcessor();
 
-		contentAssistant.addCompletionListener(contentAssistProcessor.getCompletionListener());
+        contentAssistant.enableColoredLabels(true);
 
-		this.colorManager = adaptable.getAdapter(ColorManager.class);
-		Assert.isNotNull(colorManager, " adaptable must support color manager");
-		defaultTextAttribute = new TextAttribute(
-				colorManager.getColor(getPreferences().getColor(COLOR_PLANTUML_NORMAL_TEXT)));
+        contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
+        for (AsciiDoctorDocumentIdentifier identifier : AsciiDoctorPlantUMLDocumentIdentifiers.values()) {
+            contentAssistant.setContentAssistProcessor(contentAssistProcessor, identifier.getId());
+        }
 
+        contentAssistant.addCompletionListener(contentAssistProcessor.getCompletionListener());
 
-	}
+        this.colorManager = adaptable.getAdapter(ColorManager.class);
+        Assert.isNotNull(colorManager, " adaptable must support color manager");
+        defaultTextAttribute = new TextAttribute(colorManager.getColor(getPreferences().getColor(COLOR_PLANTUML_NORMAL_TEXT)));
 
-	
+    }
 
-	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
-		return contentAssistant;
-	}
+    public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+        return contentAssistant;
+    }
 
-	@Override
-	public IQuickAssistAssistant getQuickAssistAssistant(ISourceViewer sourceViewer) {
-		/*
-		 * currently we avoid the default quick assistence parts (spell checking
-		 * etc.)
-		 */
-		return null;
-	}
+    @Override
+    public IQuickAssistAssistant getQuickAssistAssistant(ISourceViewer sourceViewer) {
+        /*
+         * currently we avoid the default quick assistence parts (spell checking etc.)
+         */
+        return null;
+    }
 
-	public IReconciler getReconciler(ISourceViewer sourceViewer) {
-		/*
-		 * currently we avoid the default reconciler mechanism parts (spell
-		 * checking etc.)
-		 */
-		return null;
-	}
+    public IReconciler getReconciler(ISourceViewer sourceViewer) {
+        /*
+         * currently we avoid the default reconciler mechanism parts (spell checking
+         * etc.)
+         */
+        return null;
+    }
 
-	@Override
-	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-		return annotationHoover;
-	}
+    @Override
+    public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
+        return annotationHoover;
+    }
 
-	private class AsciiDoctorPlantUMLEditorAnnotationHoover extends DefaultAnnotationHover {
-		@Override
-		protected boolean isIncluded(Annotation annotation) {
-			if (annotation instanceof MarkerAnnotation) {
-				return true;
-			}
-			/* we do not support other annotations */
-			return false;
-		}
-	}
+    private class AsciiDoctorPlantUMLEditorAnnotationHoover extends DefaultAnnotationHover {
+        @Override
+        protected boolean isIncluded(Annotation annotation) {
+            if (annotation instanceof MarkerAnnotation) {
+                return true;
+            }
+            /* we do not support other annotations */
+            return false;
+        }
+    }
 
-	@Override
-	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return new AsciiDoctorTextHover();
-	}
+    @Override
+    public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+        return new AsciiDoctorTextHover();
+    }
 
-	@Override
-	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		/* @formatter:off */
+    @Override
+    public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
+        /* @formatter:off */
 		return allIdsToStringArray( 
 				IDocument.DEFAULT_CONTENT_TYPE);
 		/* @formatter:on */
-	}
+    }
 
-	@Override
-	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-		PresentationReconciler reconciler = new PresentationReconciler();
+    @Override
+    public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
+        PresentationReconciler reconciler = new PresentationReconciler();
 
-		addDefaultPresentation(reconciler);
-		/* TODO Albert: think about using own color preferences here*/
-		addPresentation(reconciler, PLANTUML_PREPROCESSOR.getId(), getPreferences().getColor(COLOR_PLANTUML_PREPROCESSOR), SWT.NONE);
-		addPresentation(reconciler, PLANTUML_DOUBLE_STRING.getId(), getPreferences().getColor(COLOR_PLANTUML_DOUBLESTRING), SWT.NONE);
-		addPresentation(reconciler, PLANTUML_KEYWORD.getId(), getPreferences().getColor(COLOR_PLANTUML_KEYWORD), SWT.NONE);
-		addPresentation(reconciler, PLANTUML_NOTE.getId(), getPreferences().getColor(COLOR_PLANTUML_NOTE), SWT.NONE);
-		addPresentation(reconciler, PLANTUML_COMMENT.getId(), getPreferences().getColor(COLOR_PLANTUML_COMMENT), SWT.NONE);
-		addPresentation(reconciler, PLANTUML_SKINPARAMETER.getId(), getPreferences().getColor(COLOR_PLANTUML_SKINPARAMETER), SWT.NONE);
-		addPresentation(reconciler, PLANTUML_COLOR.getId(), getPreferences().getColor(COLOR_PLANTUML_COLOR), SWT.NONE);
-		addPresentation(reconciler, PLANTUML_TYPE.getId(), getPreferences().getColor(COLOR_PLANTUML_TYPE), SWT.NONE);
-		addPresentation(reconciler, PLANTUML_DIVIDER.getId(), getPreferences().getColor(COLOR_PLANTUML_DIVIDER), SWT.NONE);
-		addPresentation(reconciler, PLANTUML_ARROW.getId(), getPreferences().getColor(COLOR_PLANTUML_ARROW), SWT.BOLD);
-		addPresentation(reconciler, PLANTUML_LABEL.getId(), getPreferences().getColor(COLOR_PLANTUML_LABEL), SWT.NONE);
-		return reconciler;
-	}
+        addDefaultPresentation(reconciler);
+        /* TODO Albert: think about using own color preferences here */
+        addPresentation(reconciler, PLANTUML_PREPROCESSOR.getId(), getPreferences().getColor(COLOR_PLANTUML_PREPROCESSOR), SWT.NONE);
+        addPresentation(reconciler, PLANTUML_DOUBLE_STRING.getId(), getPreferences().getColor(COLOR_PLANTUML_DOUBLESTRING), SWT.NONE);
+        addPresentation(reconciler, PLANTUML_KEYWORD.getId(), getPreferences().getColor(COLOR_PLANTUML_KEYWORD), SWT.NONE);
+        addPresentation(reconciler, PLANTUML_NOTE.getId(), getPreferences().getColor(COLOR_PLANTUML_NOTE), SWT.NONE);
+        addPresentation(reconciler, PLANTUML_COMMENT.getId(), getPreferences().getColor(COLOR_PLANTUML_COMMENT), SWT.NONE);
+        addPresentation(reconciler, PLANTUML_SKINPARAMETER.getId(), getPreferences().getColor(COLOR_PLANTUML_SKINPARAMETER), SWT.NONE);
+        addPresentation(reconciler, PLANTUML_COLOR.getId(), getPreferences().getColor(COLOR_PLANTUML_COLOR), SWT.NONE);
+        addPresentation(reconciler, PLANTUML_TYPE.getId(), getPreferences().getColor(COLOR_PLANTUML_TYPE), SWT.NONE);
+        addPresentation(reconciler, PLANTUML_DIVIDER.getId(), getPreferences().getColor(COLOR_PLANTUML_DIVIDER), SWT.NONE);
+        addPresentation(reconciler, PLANTUML_ARROW.getId(), getPreferences().getColor(COLOR_PLANTUML_ARROW), SWT.BOLD);
+        addPresentation(reconciler, PLANTUML_LABEL.getId(), getPreferences().getColor(COLOR_PLANTUML_LABEL), SWT.NONE);
+        return reconciler;
+    }
 
-	private void addDefaultPresentation(PresentationReconciler reconciler) {
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getDefaultTextScanner());
-		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
-		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
-	}
+    private void addDefaultPresentation(PresentationReconciler reconciler) {
+        DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getDefaultTextScanner());
+        reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
+        reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+    }
 
-	private IToken createColorToken(RGB rgb) {
-		Token token = new Token(new TextAttribute(colorManager.getColor(rgb)));
-		return token;
-	}
+    private IToken createColorToken(RGB rgb) {
+        Token token = new Token(new TextAttribute(colorManager.getColor(rgb)));
+        return token;
+    }
 
-	private void addPresentation(PresentationReconciler reconciler, String id, RGB rgb, int style) {
-		addPresentation(reconciler, id, rgb, style, null, null);
-	}
+    private void addPresentation(PresentationReconciler reconciler, String id, RGB rgb, int style) {
+        addPresentation(reconciler, id, rgb, style, null, null);
+    }
 
-	private void addPresentation(PresentationReconciler reconciler, String id, RGB foreGround, int style, Font font,
-			RGB backGround) {
-		Color backGroundColor = (backGround == null ? defaultTextAttribute.getBackground()
-				: colorManager.getColor(backGround));
-		Color foreGroundColor = (foreGround == null ? defaultTextAttribute.getForeground()
-				: colorManager.getColor(foreGround));
+    private void addPresentation(PresentationReconciler reconciler, String id, RGB foreGround, int style, Font font, RGB backGround) {
+        Color backGroundColor = (backGround == null ? defaultTextAttribute.getBackground() : colorManager.getColor(backGround));
+        Color foreGroundColor = (foreGround == null ? defaultTextAttribute.getForeground() : colorManager.getColor(foreGround));
 
-		TextAttribute textAttribute = new TextAttribute(foreGroundColor, backGroundColor, style, font);
-		
-		PresentationSupport presentation = new PresentationSupport(textAttribute);
-		reconciler.setDamager(presentation, id);
-		reconciler.setRepairer(presentation, id);
-	}
+        TextAttribute textAttribute = new TextAttribute(foreGroundColor, backGroundColor, style, font);
 
-	private AsciiDoctorDefaultTextScanner getDefaultTextScanner() {
-		if (scanner == null) {
-			scanner = new AsciiDoctorDefaultTextScanner(colorManager);
-			updateTextScannerDefaultColorToken();
-		}
-		return scanner;
-	}
+        PresentationSupport presentation = new PresentationSupport(textAttribute);
+        reconciler.setDamager(presentation, id);
+        reconciler.setRepairer(presentation, id);
+    }
 
-	public void updateTextScannerDefaultColorToken() {
-		if (scanner == null) {
-			return;
-		}
-		RGB color = getPreferences().getColor(COLOR_PLANTUML_NORMAL_TEXT);
-		scanner.setDefaultReturnToken(createColorToken(color));
-	}
+    private AsciiDoctorDefaultTextScanner getDefaultTextScanner() {
+        if (scanner == null) {
+            scanner = new AsciiDoctorDefaultTextScanner(colorManager);
+            updateTextScannerDefaultColorToken();
+        }
+        return scanner;
+    }
 
-	
-	
+    public void updateTextScannerDefaultColorToken() {
+        if (scanner == null) {
+            return;
+        }
+        RGB color = getPreferences().getColor(COLOR_PLANTUML_NORMAL_TEXT);
+        scanner.setDefaultReturnToken(createColorToken(color));
+    }
+
 }

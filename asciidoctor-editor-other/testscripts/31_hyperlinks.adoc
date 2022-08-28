@@ -1,0 +1,102 @@
+== Hyperlinks
+This is just a test file to check
+hyperlinks are working inside editor
+
+This is a manual test - just go through 
+each headline in editor and check if the
+hyperlink do work by pressing `CTRL` + 
+left mouse button while hovering over links.
+
+=== Internal link
+
+==== Same document
+[[test-target-link-internal-1]]
+- Linked with xref shortcut <<test-target-link-internal-2,to test-target-link-internal-2>> 
+- Linked with xref shortcut <<test-target-link-internal-2,  to test-target-link-internal-2  >> 
+
+- Linked with natural cross reference to  <<Internal Target>> (not supported)
+
+- xref:test-target-link-internal-2[linked with xref].
+- xref:test-target-link-internal-2 [linked with xref (+spaces)].
+- xref:test-target-link-internal-2 (does not work in asciidoc)
+
+==== Inside workspace, but other file
+- Linked with xref shortcut <<test-target-link-internal-3,test-target-link-internal-3>> 
+
+- Linked with natural cross reference to  <<Internal Target>>
+
+- xref:test-target-link-internal-2[linked with xref].
+
+==== Not existing internal link
+<<test-target-link-internal-4 not existing,Link to "test-target-link-internal-4 not existing">>
+
+
+
+==== External link
+- https://google.de[Google search] - with text defined
+
+- https://duckduckgo.com (no text)
+
+=== Diagrams
+plantuml::diagrams/activity-diagram-4.puml[]
+ditaa::diagrams/diagram2.ditaa[]
+
+=== Includes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=== Internal Target
+[[test-target-link-internal-2]]
+I am "test-target-link-internal-2".
+
+You can go back to <<test-target-link-internal-1,Link to "test-target-link-internal-1">>
+This should work in IDE editor and also in editor preview.

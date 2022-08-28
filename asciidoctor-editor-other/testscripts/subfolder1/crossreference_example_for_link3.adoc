@@ -1,0 +1,4 @@
+== This is a an example for cross references
+[[test-target-link-internal-3]]
+
+Let us jump back to <<test-target-link-internal-1,test-target-link-internal-1>> 

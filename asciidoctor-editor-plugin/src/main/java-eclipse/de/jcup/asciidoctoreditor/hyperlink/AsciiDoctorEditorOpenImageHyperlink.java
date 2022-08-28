@@ -24,39 +24,37 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
 public class AsciiDoctorEditorOpenImageHyperlink implements IHyperlink {
 
-	private IRegion region;
-	private AsciiDoctorEditor editor;
-	private String fileName;
-	
+    private IRegion region;
+    private AsciiDoctorEditor editor;
+    private String fileName;
 
-	public AsciiDoctorEditorOpenImageHyperlink(IRegion region, String fileName, AsciiDoctorEditor editor) {
-		isNotNull(region, "Hyperlink region may not be null!");
-		isNotNull(fileName, "fileName may not be null!");
-		isNotNull(editor, "editor may not be null!");
-		this.region = region;
-		this.fileName = fileName;
-		this.editor=editor;
-	}
+    public AsciiDoctorEditorOpenImageHyperlink(IRegion region, String fileName, AsciiDoctorEditor editor) {
+        isNotNull(region, "Hyperlink region may not be null!");
+        isNotNull(fileName, "fileName may not be null!");
+        isNotNull(editor, "editor may not be null!");
+        this.region = region;
+        this.fileName = fileName;
+        this.editor = editor;
+    }
 
-	@Override
-	public IRegion getHyperlinkRegion() {
-		return region;
-	}
+    @Override
+    public IRegion getHyperlinkRegion() {
+        return region;
+    }
 
-	@Override
-	public String getTypeLabel() {
-		return "Open image";
-	}
+    @Override
+    public String getTypeLabel() {
+        return "Open image";
+    }
 
-	@Override
-	public String getHyperlinkText() {
-		return "Opens image:"+fileName;
-	}
+    @Override
+    public String getHyperlinkText() {
+        return "Opens image:" + fileName;
+    }
 
-
-	@Override
-	public void open() {
-		editor.openImage(fileName);
-	}
+    @Override
+    public void open() {
+        editor.openImage(fileName);
+    }
 
 }

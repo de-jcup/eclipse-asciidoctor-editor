@@ -19,6 +19,7 @@ import static de.jcup.asciidoctoreditor.util.EclipseUtil.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.nio.file.Path;
 import java.util.Set;
 
@@ -31,15 +32,16 @@ import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciidoctorHTMLOutputParser;
 import de.jcup.asciidoctoreditor.ContentTransformerData;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
+import de.jcup.asciidoctoreditor.EditorType;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
+import de.jcup.asciidoctoreditor.UniqueIdProvider;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocStringUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
+import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
 import de.jcup.asciidoctoreditor.asciidoc.InstalledAsciidoctorException;
+import de.jcup.asciidoctoreditor.asciidoc.PreviewSupport;
 import de.jcup.asciidoctoreditor.asciidoc.Sha256StringEncoder;
-import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
-import de.jcup.asciidoctoreditor.asp.AspCompatibleProgressMonitorAdapter;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorAttributesProvider;
 import de.jcup.asciidoctoreditor.script.AsciiDoctorErrorBuilder;
@@ -94,7 +96,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         if (isCanceled(monitor)) {
             return;
         }
-        AsciiDoctorWrapper asciidocWrapper = editor.getWrapper();
+        PreviewSupport previewSupport = editor.getPreviewSupport();
         File outputFile = null;
 
         try {
@@ -107,7 +109,8 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* -------------------------- */
             /* --- Transform Asciidoc --- */
             /* --- content if necessary - */
-            /* --- (e.g. plantuml files)- */
+            /* --- (e.g. for rendering -- */
+            /* --- PlantUML files) ------ */
             /* ----before HTML generation */
             /* -------------------------- */
             File tempAsciiDocFileToConvertIntoHTML = createTransformedTempFileOrNull(editorFileOrNull);
@@ -128,7 +131,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* ----Call Asciidoctor ----- */
             /* -------------------------- */
             /* -------------------------- */
-            convertTempAsciidocFileToHTML(monitor, asciidocWrapper, editorFileOrNull, tempAsciiDocFileToConvertIntoHTML);
+            convertTempAsciidocFileToHTML(monitor, previewSupport, editorFileOrNull, tempAsciiDocFileToConvertIntoHTML);
 
             increaseWorked(monitor);
 
@@ -142,7 +145,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* ----- Read origin------- */
             /* ----- Asciidoc output----- */
             /* -------------------------- */
-            File fileToRender = asciidocWrapper.getContext().getFileToRender();
+            File fileToRender = previewSupport.getFileToRender();
             String originalAsciidocHTML = readFileCreatedByAsciiDoctor(fileToRender, editor.getEditorId());
 
             String asciidocHTML = originalAsciidocHTML;
@@ -153,7 +156,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* -- Read image pathes -- */
             /* ---from Asciidoc output -- */
             /* -------------------------- */
-            asciidocHTML = fixImageLocationPathesInsideHTML(asciidocWrapper, asciidocHTML);
+            asciidocHTML = fixImageLocationPathesInsideHTML(previewSupport, asciidocHTML);
 
             if (isCanceled(monitor)) {
                 return;
@@ -164,7 +167,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
             /* -- Create final preview -- */
             /* ---HTML file ------------- */
             /* -------------------------- */
-            outputFile = enrichPreviewHTMLAndWriteToDisk(monitor, asciidocWrapper, asciidocHTML);
+            outputFile = enrichPreviewHTMLAndWriteToDisk(monitor, previewSupport, asciidocHTML);
 
         } catch (Throwable e) {
             /*
@@ -190,34 +193,37 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
      * but asciidoctor-diagramm does use imageoutdir and asciidoctor generator for
      * HTML generates wrong pathes targeting imagedir and not imageoutdir...
      * 
-     * @param asciidocWrapper
+     * @param previewSupport
      * @param asciidocHTML
      * @return
      * @throws IOException
      */
-    private String fixImageLocationPathesInsideHTML(AsciiDoctorWrapper asciidocWrapper, String asciidocHTML) throws IOException {
+    private String fixImageLocationPathesInsideHTML(PreviewSupport previewSupport, String asciidocHTML) throws IOException {
         AsciidoctorHTMLOutputParser parser = new AsciidoctorHTMLOutputParser();
-        File tempFolder = asciidocWrapper.getTempFolder().toFile();
+        File tempFolder = previewSupport.getProjectTempFolder().toFile();
         File imageOutDir = new File(tempFolder, AsciiDoctorAttributesProvider.IMAGE_OUTPUT_DIR_NAME);
         Set<String> pathes = parser.findImageSourcePathes(asciidocHTML);
         for (String path : pathes) {
-            if (path==null) {
+            if (path == null) {
                 continue;
             }
-            if (path.indexOf("://")!=-1) {
-                /* we do not replace URIs - e.g. https://example.com/...*/
+            if (path.indexOf("://") != -1) {
+                /* we do not replace URIs - e.g. https://example.com/... */
                 continue;
             }
-            File file = new File(path);
+
+            // file path might contains spaces or special characters that are URL encoded
+            File file = new File(URLDecoder.decode(path, "UTF-8"));
             if (file.exists()) {
-                /* keep as is */
-                continue;
+                /* replace with a valid URI format */
+                String uri = file.toURI().toString();
+                asciidocHTML = asciidocHTML.replace(path, uri);
             } else {
                 String p2 = file.getPath();
                 String replacePath = null;
                 if (p2.startsWith(".")) {
                     // relative path
-                    file = new File(asciidocWrapper.getContext().getBaseDir(), p2);
+                    file = new File(previewSupport.getBaseDir(), p2);
                     if (file.exists()) {
                         replacePath = file.getCanonicalPath();
                     }
@@ -231,6 +237,9 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
             }
         }
+
+        asciidocHTML = asciidocHTML.replace("<!--[if IE]><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><![endif]-->", "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
+
         return asciidocHTML;
     }
 
@@ -238,22 +247,22 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         monitor.worked(++worked.amount);
     }
 
-    private void convertTempAsciidocFileToHTML(IProgressMonitor monitor, AsciiDoctorWrapper asciidocWrapper, File editorFileOrNull, File tempFileToConvertIntoHTML) throws Exception {
-        WrapperConvertData wrapperConvertData = createWrapperData(editorFileOrNull, tempFileToConvertIntoHTML);
-        editor.beforeAsciidocConvert(wrapperConvertData);
+    private void convertTempAsciidocFileToHTML(IProgressMonitor monitor, PreviewSupport previewSupport, File editorFileOrNull, File tempFileToConvertIntoHTML) throws Exception {
+        ConversionData conversionData = createWrapperData(editorFileOrNull, tempFileToConvertIntoHTML);
+        editor.beforeAsciidocConvert(conversionData);
 
         /* convert */
-        asciidocWrapper.convert(wrapperConvertData, backend, new AspCompatibleProgressMonitorAdapter(monitor));
+        previewSupport.convert(conversionData, backend, monitor);
     }
 
-    private WrapperConvertData createWrapperData(File editorFileOrNull, File fileToConvertIntoHTML) {
-        WrapperConvertData data = new WrapperConvertData();
-        data.targetType = editor.getType();
-        data.asciiDocFile = fileToConvertIntoHTML;
-        data.editorId = editor.getEditorId();
-        data.useHiddenFile = isNeedingAHiddenEditorFile(editorFileOrNull, fileToConvertIntoHTML);
-        data.editorFileOrNull = editorFileOrNull;
-        data.internalPreview = internalPreview;
+    private ConversionData createWrapperData(File editorFileOrNull, File fileToConvertIntoHTML) {
+        ConversionData data = new ConversionData();
+        data.setTargetType(editor.getType());
+        data.setAsciiDocFile(fileToConvertIntoHTML);
+        data.setEditorId(editor.getEditorId());
+        data.setEditorFileOrNull(editorFileOrNull);
+        data.setUseHiddenFile(isNeedingAHiddenEditorFile(data.targetType, editorFileOrNull, fileToConvertIntoHTML));
+        data.setInternalPreview(internalPreview);
         return data;
     }
 
@@ -303,13 +312,13 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         });
     }
 
-    private File enrichPreviewHTMLAndWriteToDisk(IProgressMonitor monitor, AsciiDoctorWrapper asciidocWrapper, String asciiDocHtml) {
+    private File enrichPreviewHTMLAndWriteToDisk(IProgressMonitor monitor, PreviewSupport previewSupport, String asciiDocHtml) {
         String previewHTML;
         if (internalPreview) {
-            previewHTML = asciidocWrapper.enrichHTML(asciiDocHtml, 0);
+            previewHTML = previewSupport.enrichHTML(asciiDocHtml, 0);
         } else {
             int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
-            previewHTML = asciidocWrapper.enrichHTML(asciiDocHtml, refreshAutomaticallyInSeconds);
+            previewHTML = previewSupport.enrichHTML(asciiDocHtml, refreshAutomaticallyInSeconds);
         }
 
         return writePreviewHTMLFile(monitor, previewHTML);
@@ -365,7 +374,7 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
     }
 
     private File createTransformedTempfile(String filename, String text) throws IOException {
-        Path tempFolder = editor.getWrapper().getTempFolder();
+        Path tempFolder = editor.getPreviewSupport().getProjectTempFolder();
         File newTempFile = AsciiDocFileUtils.createTempFileForConvertedContent(tempFolder, editor.getEditorId(), filename);
 
         ContentTransformerData data = new ContentTransformerData();
@@ -381,8 +390,8 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
         }
     }
 
-    private String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, long editorId) {
-        File generatedFile = editor.getWrapper().getTempFileFor(fileToConvertIntoHTML, editorId, TemporaryFileType.ORIGIN);
+    private String readFileCreatedByAsciiDoctor(File fileToConvertIntoHTML, UniqueIdProvider editorId) {
+        File generatedFile = editor.getPreviewSupport().getTempFileFor(fileToConvertIntoHTML, editorId, TemporaryFileType.ORIGIN);
         try {
             return AsciiDocStringUtils.readUTF8FileToString(generatedFile);
         } catch (IOException e) {
@@ -403,24 +412,27 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
 
     /**
      * Asciidoctor starts normally from a root document and resolves pathes etc. on
-     * the fly by using the base directory. So far so good. but when resolving base
-     * directory for e.g. images, diagrams etc. and setting it but rendering a sub
-     * file this does always break the includes, because either images do not longer
-     * work or the include.<br>
+     * the fly by using the base directory. <br>
+     * So far so good. but when rendering a sub file resolving base directory for
+     * e.g. images, diagrams etc. this does always break the includes, because
+     * either images do not longer work or the include.<br>
      * <br>
-     * To prevent this we do following trick. We always create a temporary hidden
-     * file which will include the corresponding real editor file This temporary
-     * file is always settled at base folder
+     * To prevent this we do following trick: We always create a temporary hidden
+     * file which will include the corresponding real editor file. But we do this
+     * NOT for plant uml or ditaa!
      */
-    private boolean isNeedingAHiddenEditorFile(File editorFileOrNull, File fileToConvertIntoHTML) {
+    private boolean isNeedingAHiddenEditorFile(EditorType targetType, File editorFileOrNull, File fileToConvertIntoHTML) {
+        if (targetType == EditorType.PLANTUML) {
+            return false;
+        }
+        if (targetType == EditorType.DITAA) {
+            return false;
+        }
         /*
          * Still same file so not converted, means still same .adoc file for those files
          * we do always create a temporary editor file which does include the origin one
          * - reason see description in javadoc above
          */
-        // one exception: when we are rendering plantuml or dita files we do not use the
-        // hidden editor file (because there
-        // is already a custom .adoc file...
         return fileToConvertIntoHTML.equals(editorFileOrNull);
     }
 

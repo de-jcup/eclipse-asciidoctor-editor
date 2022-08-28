@@ -34,116 +34,200 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorHeadline;
 
 public class AsciiDoctorEditorLinkTextHyperlinkDetector extends AbstractHyperlinkDetector {
 
-	private IAdaptable adaptable;
+    private IAdaptable adaptable;
 
-	public AsciiDoctorEditorLinkTextHyperlinkDetector(IAdaptable editor) {
-		this.adaptable = editor;
-	}
-	
-	@Override
-	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-		if (adaptable == null) {
-			return null;
-		}
-		AsciiDoctorEditor editor = adaptable.getAdapter(AsciiDoctorEditor.class);
-		if (editor == null) {
-			return null;
-		}
-		return resolveHyperlinks(textViewer, region, editor);
-	}
+    public AsciiDoctorEditorLinkTextHyperlinkDetector(IAdaptable editor) {
+        this.adaptable = editor;
+    }
 
-	public IHyperlink[] resolveHyperlinks(ITextViewer textViewer, IRegion region, AsciiDoctorEditor editor) {
-		IDocument document = textViewer.getDocument();
-		int offset = region.getOffset();
+    @Override
+    public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
+        if (adaptable == null) {
+            return null;
+        }
+        AsciiDoctorEditor editor = adaptable.getAdapter(AsciiDoctorEditor.class);
+        if (editor == null) {
+            return null;
+        }
+        return resolveHyperlinks(textViewer, region, editor);
+    }
 
-		IRegion lineInfo;
-		String line;
-		try {
-			lineInfo = document.getLineInformationOfOffset(offset);
-			line = document.get(lineInfo.getOffset(), lineInfo.getLength());
-		} catch (BadLocationException ex) {
-			return null;
-		}
+    public IHyperlink[] resolveHyperlinks(ITextViewer textViewer, IRegion region, AsciiDoctorEditor editor) {
+        LinkDetectorContext context = createContext(textViewer, region, editor);
 
-		int offsetInLine = offset - lineInfo.getOffset();
+        context.append(resolveLinkToInclude(context));
+        context.append(resolveLinkToImage(context));
+        context.append(resolveLinkToHeadline(context));
+        context.append(resolveLinkToDiagram(context));
 
-		LinkTextData linkTextData = AsciiDocStringUtils.resolveTextFromStartToBracketsEnd(line, offset, offsetInLine);
+        context.append(resolveLinkToShortCrossReference(context));
+        context.append(resolveLinkToCrossReference(context));
 
-		List<IHyperlink> hyperlinks = new ArrayList<>();
-		append(hyperlinks, resolveLinkToInclude(linkTextData, editor));
-		append(hyperlinks, resolveLinkToImage(linkTextData, editor));
-		append(hyperlinks, resolveLinkToHeadline(linkTextData, editor));
-		append(hyperlinks, resolveLinkToDiagram(linkTextData, editor));
+        return context.getHyperLinksArrayOrNull();
 
-		if (hyperlinks.isEmpty()) {
-			return null;
-		}
-		return hyperlinks.toArray(new IHyperlink[hyperlinks.size()]);
-	}
+    }
 
-	private Region createTargetRegion(LinkTextData linkTextData) {
-		Region targetRegion = new Region(linkTextData.offsetLeft, linkTextData.text.length());
-		return targetRegion;
-	}
+    private LinkDetectorContext createContext(ITextViewer textViewer, IRegion region, AsciiDoctorEditor editor) {
+        IDocument document = textViewer.getDocument();
+        int offset = region.getOffset();
 
-	private void append(List<IHyperlink> hyperlinks, IHyperlink[] hyperlinkArray) {
-		if (hyperlinkArray == null) {
-			return;
-		}
-		for (IHyperlink hyperlink : hyperlinkArray) {
-			if (hyperlink == null) {
-				continue;
-			}
-			hyperlinks.add(hyperlink);
-		}
+        IRegion lineInfo;
+        String line;
+        try {
+            lineInfo = document.getLineInformationOfOffset(offset);
+            line = document.get(lineInfo.getOffset(), lineInfo.getLength());
+        } catch (BadLocationException ex) {
+            return null;
+        }
 
-	}
+        int offsetInLine = offset - lineInfo.getOffset();
 
-	private IHyperlink[] resolveLinkToImage(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+        LinkDetectorContext context = new LinkDetectorContext(editor, line, offset, offsetInLine);
+        return context;
+    }
 
-		String imageName = AsciiDocStringUtils.resolveFilenameOfImageOrNull(linkTextData.text);
-		if (imageName != null) {
-			Region targetRegion = createTargetRegion(linkTextData);
-			return new IHyperlink[] { new AsciiDoctorEditorOpenImageHyperlink(targetRegion, imageName, editor) };
+    private class LinkDetectorContext {
+        private List<IHyperlink> hyperlinks = new ArrayList<>();
+        private LinkTextData whiteSpaceBorderedlinkTextData;
+        private LinkTextData comparisionSignsBorderedLinkTextData;
+        private AsciiDoctorEditor editor;
 
-		}
-		return null;
-	}
+        public LinkDetectorContext(AsciiDoctorEditor editor, String line, int offset, int offsetInLine) {
+            this.editor = editor;
+            this.whiteSpaceBorderedlinkTextData = AsciiDocStringUtils.resolveTextFromStartToBracketsEnd(line, offset, offsetInLine);
+            this.comparisionSignsBorderedLinkTextData = AsciiDocStringUtils.resolveComparisionSignsBorderedAreaFromStartToBracketsEnd(line, offset, offsetInLine);
+        }
 
-	private IHyperlink[] resolveLinkToHeadline(LinkTextData linkTextData, AsciiDoctorEditor editor) {
-		String foundText = linkTextData.text;
-		AsciiDoctorHeadline headline = editor.findAsciiDoctorHeadlineByName(foundText);
-		if (headline != null) {
-			Region targetRegion = createTargetRegion(linkTextData);
-			return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, headline, editor) };
-		}
-		return null;
-	}
+        public IHyperlink[] getHyperLinksArrayOrNull() {
+            if (hyperlinks.isEmpty()) {
+                return null;
+            }
+            return hyperlinks.toArray(new IHyperlink[hyperlinks.size()]);
+        }
 
-	protected IHyperlink[] resolveLinkToInclude(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+        private void append(IHyperlink... hyperlinkArray) {
+            if (hyperlinkArray == null) {
+                return;
+            }
+            for (IHyperlink hyperlink : hyperlinkArray) {
+                if (hyperlink == null) {
+                    continue;
+                }
+                hyperlinks.add(hyperlink);
+            }
 
-		String foundText = linkTextData.text;
-		String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrNull(foundText);
-		if (includeFileName != null) {
-			Region targetRegion = createTargetRegion(linkTextData);
-			return new IHyperlink[] {
-					new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, editor) };
-		}
-		
-		return null;
-	}
-	
-	protected IHyperlink[] resolveLinkToDiagram(LinkTextData linkTextData, AsciiDoctorEditor editor) {
+        }
+        
+        public String getCrossRefShortCutlinkTextDataOrNull() {
+            return comparisionSignsBorderedLinkTextData.text;
+        }
 
-		String foundText = linkTextData.text;
-		String diagramFileName = AsciiDocStringUtils.resolveFilenameOfDiagramMacroOrNull(foundText);
-		if (diagramFileName != null) {
-			Region targetRegion = createTargetRegion(linkTextData);
-			return new IHyperlink[] {
-					new AsciiDoctorEditorOpenDiagramHyperlink(targetRegion, diagramFileName, editor) };
-		}
-		
-		return null;
-	}
+        public String getWhiteSpaceBorderedLinkTextOrNull() {
+            return whiteSpaceBorderedlinkTextData.text;
+        }
+
+        public boolean hasHyperlinks() {
+            return ! hyperlinks.isEmpty();
+        }
+
+        public String getCrossRefTextDataOrNull() {
+            return whiteSpaceBorderedlinkTextData.text;
+        }
+
+    }
+
+    private Region createTargetRegionForWhitespaceBordered(LinkDetectorContext context) {
+        LinkTextData textData = context.whiteSpaceBorderedlinkTextData;
+        Region targetRegion = new Region(textData.offsetLeft, textData.text.length());
+        return targetRegion;
+    }
+    private Region createTargetRegionForComparisionSignsBordered(LinkDetectorContext context) {
+        LinkTextData textData = context.comparisionSignsBorderedLinkTextData;
+        Region targetRegion = new Region(textData.offsetLeft, textData.text.length());
+        return targetRegion;
+    }
+
+    protected IHyperlink[] resolveLinkToImage(LinkDetectorContext context) {
+        if (context.hasHyperlinks()) {
+            return null;
+        }
+        String imageName = AsciiDocStringUtils.resolveFilenameOfImageOrNull(context.getWhiteSpaceBorderedLinkTextOrNull());
+        if (imageName != null) {
+            Region targetRegion = createTargetRegionForWhitespaceBordered(context);
+            return new IHyperlink[] { new AsciiDoctorEditorOpenImageHyperlink(targetRegion, imageName, context.editor) };
+
+        }
+        return null;
+    }
+
+    protected IHyperlink[] resolveLinkToHeadline(LinkDetectorContext context) {
+        if (context.hasHyperlinks()) {
+            return null;
+        }
+        String foundText = context.getWhiteSpaceBorderedLinkTextOrNull();
+        AsciiDoctorHeadline headline = context.editor.findAsciiDoctorHeadlineByName(foundText);
+        if (headline != null) {
+            Region targetRegion = createTargetRegionForWhitespaceBordered(context);
+            return new IHyperlink[] { new AsciiDoctorEditorHeadlineHyperlink(targetRegion, headline, context.editor) };
+        }
+        return null;
+    }
+
+    protected IHyperlink[] resolveLinkToInclude(LinkDetectorContext context) {
+        if (context.hasHyperlinks()) {
+            return null;
+        }
+        String foundText = context.getWhiteSpaceBorderedLinkTextOrNull();
+        String includeFileName = AsciiDocStringUtils.resolveFilenameOfIncludeOrNull(foundText);
+        if (includeFileName != null) {
+            Region targetRegion = createTargetRegionForWhitespaceBordered(context);
+            return new IHyperlink[] { new AsciiDoctorEditorOpenIncludeHyperlink(targetRegion, includeFileName, context.editor) };
+        }
+
+        return null;
+    }
+
+    protected IHyperlink[] resolveLinkToShortCrossReference(LinkDetectorContext context) {
+        if (context.hasHyperlinks()) {
+            return null;
+        }
+        String foundText = context.getCrossRefShortCutlinkTextDataOrNull();
+        String crossReferenceId = AsciiDocStringUtils.resolveCrossReferenceIdOrNull(foundText);
+        if (crossReferenceId != null) {
+            Region targetRegion = createTargetRegionForComparisionSignsBordered(context);
+            return new IHyperlink[] { new AsciiDoctorEditorOpenCrossReferenceHyperlink(targetRegion, crossReferenceId, context.editor) };
+        }
+
+        return null;
+    }
+    
+    protected IHyperlink[] resolveLinkToCrossReference(LinkDetectorContext context) {
+        if (context.hasHyperlinks()) {
+            return null;
+        }
+        String foundText = context.getCrossRefTextDataOrNull();
+        String crossReferenceId = AsciiDocStringUtils.resolveCrossReferenceIdOrNull(foundText);
+        if (crossReferenceId != null) {
+            Region targetRegion = createTargetRegionForWhitespaceBordered(context);
+            return new IHyperlink[] { new AsciiDoctorEditorOpenCrossReferenceHyperlink(targetRegion, crossReferenceId, context.editor) };
+        }
+
+        return null;
+    }
+
+    protected IHyperlink[] resolveLinkToDiagram(LinkDetectorContext context) {
+        if (context.hasHyperlinks()) {
+            return null;
+        }
+
+        String foundText = context.getWhiteSpaceBorderedLinkTextOrNull();
+        String diagramFileName = AsciiDocStringUtils.resolveFilenameOfDiagramMacroOrNull(foundText);
+        if (diagramFileName != null) {
+            Region targetRegion = createTargetRegionForWhitespaceBordered(context);
+            return new IHyperlink[] { new AsciiDoctorEditorOpenDiagramHyperlink(targetRegion, diagramFileName, context.editor) };
+        }
+
+        return null;
+    }
 
 }

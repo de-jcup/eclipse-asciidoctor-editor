@@ -18,40 +18,68 @@ package de.jcup.asciidoctoreditor.diagram.plantuml;
 import de.jcup.asciidoctoreditor.AbstractContentTransformer;
 import de.jcup.asciidoctoreditor.ContentTransformerData;
 
-public class PlantUMLContentTransformer extends AbstractContentTransformer{
+public class PlantUMLContentTransformer extends AbstractContentTransformer {
 
+    
     private PlantUMLDataProvider provider;
 
     public void setDataProvider(PlantUMLDataProvider provider) {
-        this.provider=provider;
+        this.provider = provider;
     }
     
-	@Override
-	protected String saveTransform(ContentTransformerData data) {
-		StringBuilder sb = new StringBuilder();
-		if (data.origin!=null){
-			sb.append("[plantuml");
-			if(data.filename!=null && !data.filename.isEmpty()) {
-				sb.append(",");
-				sb.append(data.filename);
-			}
-			if (provider!=null) {
-			    PlantUMLOutputFormat format = provider.getOutputFormat();
-			    if(format!=null) {
-			        sb.append(",");
-			        sb.append(format.getAsciiDocFormatString());
-			    }
-			}
-			sb.append("]\n----\n");
-			sb.append(data.origin);
-			sb.append("\n----\n");
-		}
-		return sb.toString();
-	}
+    @Override
+    protected String saveTransform(ContentTransformerData data) {
+        StringBuilder sb = new StringBuilder();
+        if (data.origin != null) {
+            sb.append("[plantuml");
+            if (data.filename != null && !data.filename.isEmpty()) {
+                sb.append(",");
+                sb.append(data.filename);
+            }
+            double scaleFactor = 1;
+            if (provider != null) {
+                PlantUMLOutputFormat format = provider.getOutputFormat();
+                if (format != null) {
+                    sb.append(",");
+                    sb.append(format.getAsciiDocFormatString());
+                }
+                scaleFactor = provider.getScaleFactor();
+            }
+            sb.append("]\n----\n");
+            
+            sb.append(scaled(data.origin,scaleFactor));
+            
+            
+            sb.append("\n----\n");
+        }
+        return sb.toString();
+    }
 
-	@Override
-	public boolean isTransforming(Object data) {
-		return true;
-	}
+    private String scaled(String origin, double scaleFactor) {
+        if (scaleFactor==1) {
+            return origin;
+        }
+        
+        // find the first @plantuml @mind map etc.
+        int atIndex = origin.indexOf("@");
+        if (atIndex==-1) {
+            return origin;
+        }
+        int newLineAfterAtIndex = origin.indexOf('\n',atIndex);
+        if (newLineAfterAtIndex==-1) {
+            return origin;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(origin);
+        String scaleString = "scale "+scaleFactor+"\n";
+        sb.insert(newLineAfterAtIndex+1, scaleString);
+        
+        return sb.toString();
+    }
+
+    @Override
+    public boolean isTransforming(Object data) {
+        return true;
+    }
 
 }

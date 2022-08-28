@@ -18,6 +18,7 @@ package de.jcup.asciidoctoreditor.codeassist;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.graphics.Image;
 
+import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings;
 import de.jcup.asciidoctoreditor.outline.AsciiDoctorEditorOutlineLabelProvider;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.ui.AsciidoctorIconConstants;
@@ -27,9 +28,14 @@ import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 
 public class DynamicPlantumlContentAssistSupport extends ProposalProviderContentAssistSupport {
 
+    private static final String PLANTUML_PREFIX = "plantuml::";
+
+    private CodeAssistReferencedFilePathDescriptionCalculator descriptionCalculator = new CodeAssistReferencedFilePathDescriptionCalculator(new DiagramRootParentFinder(), PLANTUML_PREFIX, '[',
+            "Include plantUML file: ", "Step furher into folder: ");
+
     public DynamicPlantumlContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("plantuml::", new DiagramBaseParentResolver(), new DynamicPlantumlEnabledResolver(),
-                new CodeAssistFileFilter(".puml", ".plantuml", ".pu", ".iuml")));
+        super(provider,
+                new AsciidocReferenceProposalSupport(PLANTUML_PREFIX, new DiagramBaseParentResolver(), new DynamicPlantumlEnabledResolver(), new CodeAssistFileFilter(PlantUMLFileEndings.asArray())));
     }
 
     @Override
@@ -38,11 +44,7 @@ public class DynamicPlantumlContentAssistSupport extends ProposalProviderContent
 
             @Override
             public Object getProposalInfo(IProgressMonitor monitor, Object target) {
-                if (!(target instanceof String)) {
-                    return null;
-                }
-                String word = (String) target;
-                return word;
+                return descriptionCalculator.calculateReferencedFilePathDescription(target);
             }
 
             @Override

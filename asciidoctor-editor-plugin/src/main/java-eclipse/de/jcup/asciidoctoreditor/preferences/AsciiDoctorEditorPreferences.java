@@ -31,7 +31,6 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.PreviewLayout;
-import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLOutputFormat;
 import de.jcup.asciidoctoreditor.util.EclipseUtil;
 import de.jcup.eclipse.commons.ui.ColorUtil;
 
@@ -172,9 +171,18 @@ public class AsciiDoctorEditorPreferences {
         PreferenceConverter.setDefault(getPreferenceStore(), identifiable.getId(), color);
     }
 
-    /* ----------------------------------------------------------------------------------------- */
-    /* - ....................... Dedicated getter/setter ..................................... - */
-    /* ----------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ------------
+     */
+    /*
+     * - ....................... Dedicated getter/setter
+     * ..................................... -
+     */
+    /*
+     * -----------------------------------------------------------------------------
+     * ------------
+     */
     public boolean isLinkOutlineWithEditorEnabled() {
         return getBooleanPreference(P_LINK_OUTLINE_WITH_EDITOR);
     }
@@ -199,7 +207,7 @@ public class AsciiDoctorEditorPreferences {
              */
             return 0;
         }
-        return getPreferenceStore().getInt(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId());
+        return getPreferenceStore().getInt(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS.getId());
     }
 
     public PreviewLayout getInitialLayoutModeForNewEditors() {
@@ -228,7 +236,8 @@ public class AsciiDoctorEditorPreferences {
     }
 
     public boolean isUsingPreviewImageDirectory() {
-        return true; // we do now always use the preview image directory see https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/314
+        return true; // we do now always use the preview image directory see
+                     // https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/314
 //        return getBooleanPreference(P_USE_PREVIEW_IMAGEDIRECTORY);
     }
 
@@ -244,7 +253,6 @@ public class AsciiDoctorEditorPreferences {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_URLS);
     }
 
-    
     public boolean isIncludeValidationEnabled() {
         return getBooleanPreference(AsciiDoctorEditorValidationPreferenceConstants.VALIDATE_INCLUDES);
     }
@@ -264,7 +272,7 @@ public class AsciiDoctorEditorPreferences {
     public boolean isShowingAspServerOutputInConsole() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE);
     }
-    
+
     public boolean isShowingAspCommunicationInConsole() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_ASP_COMMUNICATION_SHOWN_IN_CONSOLE);
     }
@@ -296,17 +304,17 @@ public class AsciiDoctorEditorPreferences {
     /* ------------------------------------ */
     /* - plantuml parts */ // maybe own class in future?
     /* ------------------------------------ */
-    public boolean isStoringPlantUmlFiles() {
-        return getPreferenceStore().getBoolean(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId());
-    }
-    
-    public PlantUMLOutputFormat getPlantUMLOutputFormat() {
-        return PlantUMLOutputFormat.fromString(getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT));
-    }
 
     public boolean isAutoCreateConfigEnabled() {
         return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_AUTOCREATE_INITIAL_CONFIGFILE);
     }
 
+    public int getDaysToKeepTempFiles() {
+        return getIntegerPreference(AsciiDoctorEditorPreferenceConstants.P_DAYS_TO_KEEP_TEMPFILES);
+    }
+
+    public String getPlantUMLDefaultZoomLevelAsText() {
+        return getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_DEFAULT_ZOOM_LEVEL);
+    }
 
 }

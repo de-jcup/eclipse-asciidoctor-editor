@@ -1,0 +1,7 @@
+== README
+
+Inside this folder scripts can be found which do execute some simple asciidoctor rendering with native
+installed asciidoctor instance.
+
+The purpose for those files is to check standard behaviour of asciidoctor outside.
+So we can check if works "native" and only not inside editor or if its a general asciidoctor problem/situation.

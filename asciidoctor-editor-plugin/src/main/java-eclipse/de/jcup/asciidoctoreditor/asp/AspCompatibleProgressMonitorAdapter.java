@@ -20,17 +20,17 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 import de.jcup.asp.client.AspClientProgressMonitor;
 
-public class AspCompatibleProgressMonitorAdapter implements AspClientProgressMonitor{
+public class AspCompatibleProgressMonitorAdapter implements AspClientProgressMonitor {
     private static final IProgressMonitor NULL_PROGRESS = new NullProgressMonitor();
     private IProgressMonitor monitor;
-    
+
     public AspCompatibleProgressMonitorAdapter(IProgressMonitor monitor) {
-        if (monitor==null) {
-            monitor=NULL_PROGRESS;
+        if (monitor == null) {
+            monitor = NULL_PROGRESS;
         }
-        this.monitor=monitor;
+        this.monitor = monitor;
     }
-    
+
     @Override
     public boolean isCanceled() {
         return monitor.isCanceled();

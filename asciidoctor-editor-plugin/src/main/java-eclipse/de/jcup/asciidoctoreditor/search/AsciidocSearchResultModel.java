@@ -31,15 +31,15 @@ public class AsciidocSearchResultModel implements AsciidocSearchResultElement {
 
     private ProjectElement FALLBACK_PROJECT = new ProjectElement("[NO-Project]");
     private Map<String, ProjectElement> projectElements = new TreeMap<>();
-    
+
     public ResourceElement addResourceElement(IResource resource) {
         IProject project = resource.getProject();
         String projectNameToSearch = FALLBACK_PROJECT.getProjectName();
-        if (project!=null) {
-            projectNameToSearch= project.getName();
+        if (project != null) {
+            projectNameToSearch = project.getName();
         }
-        ProjectElement pe = projectElements.computeIfAbsent(projectNameToSearch, projectName-> createProjectElement(projectName));
-        
+        ProjectElement pe = projectElements.computeIfAbsent(projectNameToSearch, projectName -> createProjectElement(projectName));
+
         ResourceElement element = new ResourceElement(resource);
         pe.resourceElements.add(element);
         return element;
@@ -59,7 +59,7 @@ public class AsciidocSearchResultModel implements AsciidocSearchResultElement {
         private String name;
 
         public ProjectElement(String name) {
-            this.name=name;
+            this.name = name;
         }
 
         public String getProjectName() {
@@ -168,9 +168,9 @@ public class AsciidocSearchResultModel implements AsciidocSearchResultElement {
 
     public Object[] getFlatResourceElements() {
         List<ResourceLineContentElement> list = new ArrayList<>();
-        for (ProjectElement pe: projectElements.values()) {
-            for (ResourceElement element: pe.resourceElements) {
-                for (ResourceLineElement le: element.lines) {
+        for (ProjectElement pe : projectElements.values()) {
+            for (ResourceElement element : pe.resourceElements) {
+                for (ResourceLineElement le : element.lines) {
                     for (ResourceLineContentElement lce : le.contentData) {
                         list.add(lce);
                     }

@@ -23,58 +23,56 @@ import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 
 public class AsciiDoctorScriptModel {
 
-	Collection<AsciiDoctorHeadline> headlines = new ArrayList<>();
-	Collection<AsciiDoctorFileReference> includes = new ArrayList<>(); 
-	Collection<AsciiDoctorFileReference> images = new ArrayList<>(); 
-	Collection<AsciiDoctorFileReference> diagrams = new ArrayList<>(); 
-	Collection<AsciiDoctorMarker> errors = new ArrayList<>();
-	Collection<AsciiDoctorInlineAnchor> inlineAnchors = new ArrayList<>();
-	List<ParseToken> debugTokenList;
+    Collection<AsciiDoctorHeadline> headlines = new ArrayList<>();
+    Collection<AsciiDoctorFileReference> includes = new ArrayList<>();
+    Collection<AsciiDoctorFileReference> images = new ArrayList<>();
+    Collection<AsciiDoctorFileReference> diagrams = new ArrayList<>();
+    Collection<AsciiDoctorMarker> errors = new ArrayList<>();
+    Collection<AsciiDoctorInlineAnchor> inlineAnchors = new ArrayList<>();
+    List<ParseToken> debugTokenList;
 
-	public Collection<AsciiDoctorHeadline> getHeadlines() {
-		return headlines;
-	}
+    public Collection<AsciiDoctorHeadline> getHeadlines() {
+        return headlines;
+    }
 
-	public Collection<AsciiDoctorFileReference> getIncludes() {
-		return includes;
-	}
-	public Collection<AsciiDoctorFileReference> getImages() {
-	    return images;
-	}
-	
-	public Collection<AsciiDoctorFileReference> getDiagrams() {
+    public Collection<AsciiDoctorFileReference> getIncludes() {
+        return includes;
+    }
+
+    public Collection<AsciiDoctorFileReference> getImages() {
+        return images;
+    }
+
+    public Collection<AsciiDoctorFileReference> getDiagrams() {
         return diagrams;
     }
-	
-	public Collection<AsciiDoctorInlineAnchor> getInlineAnchors() {
-		return inlineAnchors;
-	}
 
-	public Collection<AsciiDoctorMarker> getErrors() {
-		return errors;
-	}
+    public Collection<AsciiDoctorInlineAnchor> getInlineAnchors() {
+        return inlineAnchors;
+    }
 
-	public boolean hasErrors() {
-		return !getErrors().isEmpty();
-	}
+    public Collection<AsciiDoctorMarker> getErrors() {
+        return errors;
+    }
 
-	/**
-	 * Returns a debug token list - if list is null, a new one will be created
-	 * 
-	 * @return debug token list, never <code>null</code>
-	 */
-	public List<ParseToken> getDebugTokens() {
-		if (debugTokenList == null) {
-			debugTokenList = new ArrayList<>();
-		}
-		return debugTokenList;
-	}
+    public boolean hasErrors() {
+        return !getErrors().isEmpty();
+    }
 
-	public boolean hasDebugTokens() {
-		return debugTokenList != null;
-	}
+    /**
+     * Returns a debug token list - if list is null, a new one will be created
+     * 
+     * @return debug token list, never <code>null</code>
+     */
+    public List<ParseToken> getDebugTokens() {
+        if (debugTokenList == null) {
+            debugTokenList = new ArrayList<>();
+        }
+        return debugTokenList;
+    }
 
-    
-
+    public boolean hasDebugTokens() {
+        return debugTokenList != null;
+    }
 
 }

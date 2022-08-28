@@ -1,0 +1,17 @@
+@startuml
+
+'For more examples please visit https://plantuml.com/gantt-diagram
+
+saturday are closed
+sunday are closed
+
+Project starts 2022-07-22
+[Prototype design end] as [DESIGN_PHASE] lasts 5 days
+
+[DESIGN_PHASE] is colored in Lavender/LightBlue
+[Testing] lasts 10 days
+[DESIGN_PHASE]->[Testing]
+
+2022-07-25 to 2022-07-26 are named [End's committee]
+2022-07-25 to 2022-07-26 are colored in salmon 
+@enduml

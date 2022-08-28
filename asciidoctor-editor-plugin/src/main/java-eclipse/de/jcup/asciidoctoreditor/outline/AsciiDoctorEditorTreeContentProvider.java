@@ -30,7 +30,7 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptModel;
 import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 import de.jcup.eclipse.commons.SimpleStringUtils;
 
-public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvider {
+public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvider, ScriptItemTreeContentProvider {
 
     private static final String ASCIIDOCTOR_SCRIPT_CONTAINS_ERRORS = "AsciiDoctorWrapper script contains errors.";
     private static final String ASCIIDOCTOR_SCRIPT_DOES_NOT_CONTAIN_OUTLINE_PARTS = "Your document has no includes or headlines";
@@ -132,28 +132,28 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
     private void ungroup(Map<Integer, Item> parents, List<Item> list) {
         List<Item> itemsToMoveInHeadlineTree = new ArrayList<>(list);
         List<Item> headlineFlatList = new ArrayList<>();
-        
+
         /* Build flat line list of parents */
         for (Item parent : parents.values()) {
-            findFlatHeadlineParts(parent,headlineFlatList);
+            findFlatHeadlineParts(parent, headlineFlatList);
         }
-        /* parent map contains not first levels - so we must add those too:*/
-        for (Item item: list) {
-            if (item.type==ItemType.HEADLINE) {
-                if (! headlineFlatList.contains(item)) {
+        /* parent map contains not first levels - so we must add those too: */
+        for (Item item : list) {
+            if (item.type == ItemType.HEADLINE) {
+                if (!headlineFlatList.contains(item)) {
                     headlineFlatList.add(item);
                 }
             }
         }
-        /* items which must be moved do not contain already existing headline entries*/
+        /* items which must be moved do not contain already existing headline entries */
         itemsToMoveInHeadlineTree.removeAll(headlineFlatList);
-        
+
         for (Item itemToMove : itemsToMoveInHeadlineTree) {
             if (itemToMove.getItemType() == ItemType.HEADLINE) {
                 continue;
             }
             Item targetParent = null;
-            int targetOffsetDiff=Integer.MAX_VALUE;
+            int targetOffsetDiff = Integer.MAX_VALUE;
             /**
              * Find most suitable parent:
              * @formatter:off
@@ -168,11 +168,11 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
              * 
              */
             for (Item parent : headlineFlatList) {
-                int newDiff = itemToMove.getOffset()-parent.getOffset();
-                if (newDiff<=0) {
+                int newDiff = itemToMove.getOffset() - parent.getOffset();
+                if (newDiff <= 0) {
                     continue;
                 }
-                if (newDiff<targetOffsetDiff) {
+                if (newDiff < targetOffsetDiff) {
                     targetParent = parent;
                     targetOffsetDiff = newDiff;
                 }
@@ -183,7 +183,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
                 childList.add(itemToMove);
             }
         }
-        
+
         /* after lists have changed - sort them by offset */
         for (Item parent : headlineFlatList) {
             List<Item> childList = parent.getChildren();
@@ -191,15 +191,15 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
         }
         Collections.sort(list);
     }
-    
-    private void findFlatHeadlineParts(Item parent ,List<Item> list) {
-        if (parent== null || parent.getItemType() != ItemType.HEADLINE) {
+
+    private void findFlatHeadlineParts(Item parent, List<Item> list) {
+        if (parent == null || parent.getItemType() != ItemType.HEADLINE) {
             return;
         }
         List<Item> children = parent.getChildren();
         list.addAll(children);
-        for (Item child: children) {
-            findFlatHeadlineParts(child,list);
+        for (Item child : children) {
+            findFlatHeadlineParts(child, list);
         }
     }
 
@@ -287,7 +287,7 @@ public class AsciiDoctorEditorTreeContentProvider implements ITreeContentProvide
 
                 }
             }
-            /* not existing or offset differernt, so reset always to null */
+            /* not existing or offset different, so reset always to null */
             cachedLastFoundItemByOffset = null;
 
             List<Item> list = new ArrayList<>();

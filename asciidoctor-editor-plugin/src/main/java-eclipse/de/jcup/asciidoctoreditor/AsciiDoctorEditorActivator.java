@@ -15,6 +15,7 @@
  */
 package de.jcup.asciidoctoreditor;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,6 +26,8 @@ import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.template.AsciidoctorEditorTemplateSupportConfig;
 import de.jcup.asciidoctoreditor.ui.ColorManager;
 import de.jcup.eclipse.commons.PluginContextProvider;
@@ -63,29 +66,36 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     public ColorManager getColorManager() {
         return colorManager;
     }
-    
+
     public ASPSupport getAspSupport() {
         return aspSupport;
     }
-   
 
     public void start(BundleContext context) throws Exception {
         super.start(context);
+
+        cleanupTempFolder();
+        
         getAspSupport().start();
         plugin = this;
-
         taskSupportProvider.getTodoTaskSupport().install();
-        
+
     }
-    
-    
 
     public void stop(BundleContext context) throws Exception {
         plugin = null;
         getAspSupport().stop();
         taskSupportProvider.getTodoTaskSupport().uninstall();
         colorManager.dispose();
+        
+        cleanupTempFolder();
+        
         super.stop(context);
+    }
+
+    private void cleanupTempFolder() throws IOException {
+        
+        AsciiDocFileUtils.deleteEmptyFoldersAndTempFilesOlderThanDaysAnd(AsciiDoctorEditorPreferences.getInstance().getDaysToKeepTempFiles());
     }
 
     /**

@@ -33,12 +33,12 @@ public class AsciidoctorConfigFile {
             throw new IllegalArgumentException("content amy not be null");
         }
         this.content = content;
-        this.location= location;
+        this.location = location;
 
         this.asciidoctorconfigdir = location.getParent().toAbsolutePath().toString();
 
     }
-    
+
     public Path getLocation() {
         return location;
     }
@@ -58,19 +58,19 @@ public class AsciidoctorConfigFile {
     public Map<String, String> toContentCustomizedMap() {
         Map<String, String> map = new LinkedHashMap<>();
         String[] lines = getContentCustomized().split("\n");
-        for (String line: lines) {
+        for (String line : lines) {
             if (!line.startsWith(":")) {
                 continue;
             }
             String[] splitted = line.split(":");
-            if (splitted.length<3) {
+            if (splitted.length < 3) {
                 continue;
             }
-            String key=splitted[1];
-            String value=splitted[2];
+            String key = splitted[1];
+            String value = splitted[2];
             map.put(key.trim(), value.trim());
         }
-        
+
         return map;
     }
 

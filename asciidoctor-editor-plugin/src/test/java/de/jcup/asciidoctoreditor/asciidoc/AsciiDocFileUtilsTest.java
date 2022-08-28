@@ -18,62 +18,64 @@ package de.jcup.asciidoctoreditor.asciidoc;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Path;
 
 import org.junit.Test;
-
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 
 public class AsciiDocFileUtilsTest {
 
     @Test
-    public void flat_file_name_test() throws Exception{
+    public void getUserHomeSubfolderAsExpected() {
         /* prepare */
-        File file = new File("./testname.jpg");
+        String userHomeProperty = System.getProperty("user.home");
+        userHomeProperty= userHomeProperty.replace("\\","/");
+        assertFalse(userHomeProperty.endsWith("/"));
+        String expectedPath = userHomeProperty+"/.eclipse-asciidoctor-editor";
         
         /* execute */
-        String flatName = AsciiDocFileUtils.createFlatFileName(file,(string)-> {
-                String expected;
-                try {
-                    expected = file.getParentFile().getCanonicalPath();
-                } catch (IOException e) {
-                    throw new IllegalStateException(e);
-                }
-                if (string.equals(expected)){
-                    return "encoded";
-                }
-                return "<unexpected>";
-            });
+        File subFolder = AsciiDocFileUtils.getEditorHomeSubFolder();
         
         /* test */
-        assertTrue(flatName.endsWith("_testname.jpg"));
-        assertEquals("encoded_testname.jpg",flatName);
+        assertEquals(expectedPath, subFolder.getAbsolutePath());
     }
-    
+
     @Test
-    public void createSafeFilename(){
-        /* change when not standard ASCII code*/
+    public void createdTempFolderIsInsideEditorHomeSubFolder() {
+        /* execute*/
+        Path folder = AsciiDocFileUtils.createTempFolderForId("i-am-a-project");
+        
+        /* test */
+        assertNotNull(folder);
+        File parentFile = folder.toFile().getParentFile();
+        
+        assertEquals(new File(AsciiDocFileUtils.getEditorHomeSubFolder(),"tmp"),parentFile);
+        
+    }
+
+    @Test
+    public void createSafeFilename() {
+        /* change when not standard ASCII code */
         assertEquals("Apfel-wurfeln-it-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Äpfel-würfeln-ißt-öffentlich-verboten.txt"));
         assertEquals("Apfel-wurfeln-ist-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Äpfel-würfeln-ist-öffentlich-verboten.txt"));
         assertEquals("monchere.txt", AsciiDocFileUtils.createEncodingSafeFileName("mon´chere.txt"));
 
-        /* keep ASCII special chars:*/
+        /* keep ASCII special chars: */
         assertEquals("Apfel-wurfeln-ist-offentlich-verboten.txt", AsciiDocFileUtils.createEncodingSafeFileName("Apfel-wurfeln-ist-offentlich-verboten.txt"));
         assertEquals("de`juice.txt", AsciiDocFileUtils.createEncodingSafeFileName("de`juice.txt"));
     }
-    
+
     @Test
     public void calculatePathToFileFromBase() {
-       /* prepare */
-       File file = new File("./");
-       File asciiDocFile = new File(file,"basefolder/sub1/sub2/sub3/test.adoc");
-       File baseDir = new File(file,"basefolder");
-       
-       /* execute */
-       String path = AsciiDocFileUtils.calculatePathToFileFromBase(asciiDocFile, baseDir);
-    
-       /* test */
-       assertEquals("sub1/sub2/sub3/test.adoc",path);
+        /* prepare */
+        File file = new File("./");
+        File asciiDocFile = new File(file, "basefolder/sub1/sub2/sub3/test.adoc");
+        File baseDir = new File(file, "basefolder");
+
+        /* execute */
+        String path = AsciiDocFileUtils.calculatePathToFileFromBase(asciiDocFile, baseDir);
+
+        /* test */
+        assertEquals("sub1/sub2/sub3/test.adoc", path);
     }
 
 }

@@ -1,0 +1,13 @@
+== I am test 5
+This is from test5. 
+
+[NOTE]
+====
+Next we try to resolve unexisting `test6-not-existing.adoc`. 
+
+This IS wanted here! Inside junit test we can check the include is collected as well by model
+builder but marked as a "fallback". 
+
+====
+
+include::test6-not-existing.adoc[] 

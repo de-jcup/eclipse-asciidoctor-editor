@@ -21,25 +21,23 @@ import org.eclipse.swt.widgets.Composite;
 
 public class AccessibleFileFieldEditor extends FileFieldEditor {
 
-	public AccessibleFileFieldEditor(String name, String labelText, Composite parent) {
-		super(name, labelText, parent);
-	}
+    public AccessibleFileFieldEditor(String name, String labelText, Composite parent) {
+        super(name, labelText, parent);
+    }
 
-	@Override
-	public Button getChangeControl(Composite parent) {
-		return super.getChangeControl(parent);
-	}
+    @Override
+    public Button getChangeControl(Composite parent) {
+        return super.getChangeControl(parent);
+    }
 
-	
-	@Override
-	protected void createControl(Composite parent) {
-		super.createControl(parent);
-	}
+    @Override
+    protected void createControl(Composite parent) {
+        super.createControl(parent);
+    }
 
-	@Override
-	public boolean checkState() {
-		return super.checkState();
-	}
-	
-	
+    @Override
+    public boolean checkState() {
+        return super.checkState();
+    }
+
 }

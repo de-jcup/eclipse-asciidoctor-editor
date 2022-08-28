@@ -1,0 +1,7 @@
+Used asciidoctor config file:
+{asciidoctorconfigdir}
+
+The base dir is set to:
+{base_dir}
+
+plantuml::including-diagram.puml[]

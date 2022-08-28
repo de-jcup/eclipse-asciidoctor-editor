@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.script;
+package de.jcup.asciidoctoreditor.script;
 
 import static org.junit.Assert.*;
 
@@ -21,141 +21,140 @@ import java.util.Collection;
 
 public class AssertScriptModel {
 
-	public static AssertScriptModel assertThat(AsciiDoctorScriptModel model) {
-		if (model == null) {
-			throw new IllegalArgumentException("model is null");
-		}
-		return new AssertScriptModel(model);
-	}
+    public static AssertScriptModel assertThat(AsciiDoctorScriptModel model) {
+        if (model == null) {
+            throw new IllegalArgumentException("model is null");
+        }
+        return new AssertScriptModel(model);
+    }
 
-	private AsciiDoctorScriptModel model;
+    private AsciiDoctorScriptModel model;
 
-	private AssertScriptModel(AsciiDoctorScriptModel model) {
-		this.model = model;
-	}
+    private AssertScriptModel(AsciiDoctorScriptModel model) {
+        this.model = model;
+    }
 
-	public AssertScriptModel hasNoHeadlines() {
-		return hasHeadlines(0);
-	}
-		
-	public AssertScriptModel hasHeadlines(int amount) {
-		Collection<AsciiDoctorHeadline> headlines = getHeadlines();
-		if (amount!=headlines.size()){
-			assertEquals("asciidoc file model has not expected amount of headlines \nheadlines found:"+headlines,amount, headlines.size());
-		}
-		return this;
-	}
+    public AssertScriptModel hasNoHeadlines() {
+        return hasHeadlines(0);
+    }
 
-	public AssertScriptModel hasNoHeadline(String headlineName) {
-		return hasHeadline(SearchMode.BY_NAME, headlineName, false, -1);
-	}
-	
-	public AssertScriptModel hasHeadline(String headlineName) {
-		return hasHeadline(SearchMode.BY_NAME,headlineName, true, -1);
-	}
-	
-	public AssertScriptModel hasHeadlineWithId(String id) {
-		return hasHeadline(SearchMode.BY_ID,id, true, -1);
-	}
+    public AssertScriptModel hasHeadlines(int amount) {
+        Collection<AsciiDoctorHeadline> headlines = getHeadlines();
+        if (amount != headlines.size()) {
+            assertEquals("asciidoc file model has not expected amount of headlines \nheadlines found:" + headlines, amount, headlines.size());
+        }
+        return this;
+    }
 
-	public AssertScriptModel hasHeadlineWithPosition(String headlineName, int expectedPosition) {
-		return hasHeadline(SearchMode.BY_NAME, headlineName, true, expectedPosition);
+    public AssertScriptModel hasNoHeadline(String headlineName) {
+        return hasHeadline(SearchMode.BY_NAME, headlineName, false, -1);
+    }
 
-	}
-	
-	private enum SearchMode{
-		BY_NAME,
-		BY_ID,
-	}
+    public AssertScriptModel hasHeadline(String headlineName) {
+        return hasHeadline(SearchMode.BY_NAME, headlineName, true, -1);
+    }
 
-	public AssertScriptModel hasHeadline(SearchMode mode, String text, boolean excpectedFunctionExists, int expectedPosition) {
-		AsciiDoctorHeadline found = null;
+    public AssertScriptModel hasHeadlineWithId(String id) {
+        return hasHeadline(SearchMode.BY_ID, id, true, -1);
+    }
 
-		for (AsciiDoctorHeadline headline : getHeadlines()) {
-			
-			if (mode==SearchMode.BY_NAME && headline.getName().equals(text)) {
-				found = headline;
-			}else if (mode==SearchMode.BY_ID && headline.getId().equals(text)) {
-				found = headline;
-			}
-			if (found != null) {
-				break;
-			}
-		}
-		/* assert headline available or not */
-		if (found != null) {
-			if (!excpectedFunctionExists) {
-				fail("Did not expect, but script has headline with label:" + text);
-			}
+    public AssertScriptModel hasHeadlineWithPosition(String headlineName, int expectedPosition) {
+        return hasHeadline(SearchMode.BY_NAME, headlineName, true, expectedPosition);
 
-			/* assert start if wanted */
-			assertFunctionHasPosition(found, expectedPosition);
+    }
 
-		} else {
-			if (excpectedFunctionExists) {
-				fail(mode.toString()+" failed: Did not found with text:" + text+". But it contains following headlines:"+createHeadlineStringList(mode));
-			}
-		}
+    private enum SearchMode {
+        BY_NAME, BY_ID,
+    }
 
-		return this;
-	}
+    public AssertScriptModel hasHeadline(SearchMode mode, String text, boolean excpectedFunctionExists, int expectedPosition) {
+        AsciiDoctorHeadline found = null;
 
-	private StringBuilder createHeadlineStringList(SearchMode mode) {
-		StringBuilder sb = new StringBuilder();
-		for (AsciiDoctorHeadline headline : getHeadlines()){
-			sb.append('\'');
-			if (mode==SearchMode.BY_NAME){
-				sb.append(headline.name);
-			}else if (mode==SearchMode.BY_ID){
-				sb.append(headline.getId());
-			}
-			sb.append('\'');
-			sb.append(',');
-		}
-		return sb;
-	}
+        for (AsciiDoctorHeadline headline : getHeadlines()) {
 
-	private void assertFunctionHasPosition(AsciiDoctorHeadline found, int expectedPosition) {
-		if (found == null) {
-			throw new IllegalArgumentException("wrong usage of this method, found may not be null here!");
-		}
-		if (expectedPosition == -1) {
-			return;
-		}
-		assertEquals("Position of headline is not as expected!", expectedPosition, found.position);
+            if (mode == SearchMode.BY_NAME && headline.getName().equals(text)) {
+                found = headline;
+            } else if (mode == SearchMode.BY_ID && headline.getId().equals(text)) {
+                found = headline;
+            }
+            if (found != null) {
+                break;
+            }
+        }
+        /* assert headline available or not */
+        if (found != null) {
+            if (!excpectedFunctionExists) {
+                fail("Did not expect, but script has headline with label:" + text);
+            }
 
-	}
+            /* assert start if wanted */
+            assertFunctionHasPosition(found, expectedPosition);
 
-	private Collection<AsciiDoctorHeadline> getHeadlines() {
-		Collection<AsciiDoctorHeadline> headlines = model.getHeadlines();
-		assertNotNull(headlines);
-		return headlines;
-	}
-	
-	private Collection<AsciiDoctorMarker> getErrors() {
-		Collection<AsciiDoctorMarker> errors = model.getErrors();
-		assertNotNull(errors);
-		return errors;
-	}
+        } else {
+            if (excpectedFunctionExists) {
+                fail(mode.toString() + " failed: Did not found with text:" + text + ". But it contains following headlines:" + createHeadlineStringList(mode));
+            }
+        }
 
-	public AssertScriptModel hasErrors(int expectedAmountOfErrors) {
-		assertEquals("Script has not expected amount of errors!",expectedAmountOfErrors, getErrors().size());
-		return this;
-	}
+        return this;
+    }
 
-	public AssertScriptModel hasNoErrors() {
-		return hasErrors(0);
-	}
+    private StringBuilder createHeadlineStringList(SearchMode mode) {
+        StringBuilder sb = new StringBuilder();
+        for (AsciiDoctorHeadline headline : getHeadlines()) {
+            sb.append('\'');
+            if (mode == SearchMode.BY_NAME) {
+                sb.append(headline.name);
+            } else if (mode == SearchMode.BY_ID) {
+                sb.append(headline.getId());
+            }
+            sb.append('\'');
+            sb.append(',');
+        }
+        return sb;
+    }
 
-	public AssertScriptModel hasNoDebugTokens() {
-		assertFalse(model.hasDebugTokens());
-		return this;
-	}
+    private void assertFunctionHasPosition(AsciiDoctorHeadline found, int expectedPosition) {
+        if (found == null) {
+            throw new IllegalArgumentException("wrong usage of this method, found may not be null here!");
+        }
+        if (expectedPosition == -1) {
+            return;
+        }
+        assertEquals("Position of headline is not as expected!", expectedPosition, found.position);
 
-	public AssertScriptModel hasDebugTokens(int amount) {
-		assertTrue(model.hasDebugTokens());
-		assertEquals("Amount of debug tokens not as expected", amount ,model.getDebugTokens().size());
-		return this;
-	}
+    }
+
+    private Collection<AsciiDoctorHeadline> getHeadlines() {
+        Collection<AsciiDoctorHeadline> headlines = model.getHeadlines();
+        assertNotNull(headlines);
+        return headlines;
+    }
+
+    private Collection<AsciiDoctorMarker> getErrors() {
+        Collection<AsciiDoctorMarker> errors = model.getErrors();
+        assertNotNull(errors);
+        return errors;
+    }
+
+    public AssertScriptModel hasErrors(int expectedAmountOfErrors) {
+        assertEquals("Script has not expected amount of errors!", expectedAmountOfErrors, getErrors().size());
+        return this;
+    }
+
+    public AssertScriptModel hasNoErrors() {
+        return hasErrors(0);
+    }
+
+    public AssertScriptModel hasNoDebugTokens() {
+        assertFalse(model.hasDebugTokens());
+        return this;
+    }
+
+    public AssertScriptModel hasDebugTokens(int amount) {
+        assertTrue(model.hasDebugTokens());
+        assertEquals("Amount of debug tokens not as expected", amount, model.getDebugTokens().size());
+        return this;
+    }
 
 }

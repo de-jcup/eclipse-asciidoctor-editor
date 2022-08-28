@@ -25,24 +25,22 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorBackendType;
-import de.jcup.asciidoctoreditor.asciidoc.AsciiDoctorWrapper;
-import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
-import de.jcup.asciidoctoreditor.asp.AspCompatibleProgressMonitorAdapter;
+import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
+import de.jcup.asciidoctoreditor.asciidoc.PDFSupport;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 /**
  * Starts a progress dialog which is blocking on ui but can be canceld by user.
- * (reason for blocking: while pdf conversion is running (and this can take a while))
- * working on the document can lead to problems.
- * <br><br>
+ * (reason for blocking: while pdf conversion is running (and this can take a
+ * while)) working on the document can lead to problems. <br>
+ * <br>
  * The conversion itself is done inside a Job - why? Because asciidoc call
- * cannot be canceled, when its running it runs until done or failed...
- * <br><br>
- * But to give user possibility to cancel and keep on working we provide at 
- * least to cancel blocking dialog. When underlying job is still running
- * the user is able to work
+ * cannot be canceled, when its running it runs until done or failed... <br>
+ * <br>
+ * But to give user possibility to cancel and keep on working we provide at
+ * least to cancel blocking dialog. When underlying job is still running the
+ * user is able to work
  * 
  * @author albert
  *
@@ -56,29 +54,29 @@ public class AsciiDoctorEditorPDFLauncher {
 
     public void createAndShowPDF(AsciiDoctorEditor editor) {
 
-        WrapperConvertData data = new WrapperConvertData();
-        data.targetType = editor.getType();
-        data.asciiDocFile = editor.getEditorFileOrNull();
-        data.editorId = editor.getEditorId();
-        data.useHiddenFile = true;
-        data.editorFileOrNull = editor.getEditorFileOrNull();
+        ConversionData data = new ConversionData();
+        data.setTargetType(editor.getType());
+        data.setAsciiDocFile(editor.getEditorFileOrNull());
+        data.setEditorId(editor.getEditorId());
+        data.setUseHiddenFile(true);
+        data.setEditorFileOrNull(editor.getEditorFileOrNull());
 
         ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(EclipseUtil.getActiveWorkbenchShell());
         try {
-            progressDialog.run(true, true, new PDFRunnableWithProgress(editor.getWrapper(), data));
+            progressDialog.run(true, true, new PDFRunnableWithProgress(editor.getPDFSupport(), data));
         } catch (Exception e) {
             AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to create/show PDF", e);
         }
     }
-    
+
     private class PDFRunnableWithProgress implements IRunnableWithProgress {
 
-        private WrapperConvertData data;
-        private AsciiDoctorWrapper wrapper;
+        private ConversionData data;
+        private PDFSupport pdfSupport;
 
-        private PDFRunnableWithProgress(AsciiDoctorWrapper wrapper, WrapperConvertData data) {
+        private PDFRunnableWithProgress(PDFSupport pdfSupport, ConversionData data) {
             this.data = data;
-            this.wrapper = wrapper;
+            this.pdfSupport = pdfSupport;
         }
 
         @Override
@@ -87,7 +85,7 @@ public class AsciiDoctorEditorPDFLauncher {
             monitor.beginTask("Create and show PDF", IProgressMonitor.UNKNOWN);
             try {
                 monitor.subTask("Initialize");
-                createAndOpen(monitor, wrapper, data);
+                createAndOpen(monitor, pdfSupport, data);
 
             } catch (Exception e) {
                 AsciiDoctorEclipseLogAdapter.INSTANCE.logError("Was not able to create/show PDF", e);
@@ -96,7 +94,7 @@ public class AsciiDoctorEditorPDFLauncher {
 
         }
 
-        private void createAndOpen(IProgressMonitor monitor, AsciiDoctorWrapper wrapper, WrapperConvertData data) throws Exception {
+        private void createAndOpen(IProgressMonitor monitor, PDFSupport pdfSupport, ConversionData data) throws Exception {
             if (monitor.isCanceled()) {
                 return;
             }
@@ -118,17 +116,17 @@ public class AsciiDoctorEditorPDFLauncher {
             }
             monitor.subTask("Open in external browser");
 
-            File file = wrapper.getContext().getTargetPDFFileOrNull();
-            
-            if (file==null || !file.exists()) {
+            File file = pdfSupport.getTargetPDFFileOrNull();
+
+            if (file == null || !file.exists()) {
                 monitor.setCanceled(true);
-                AsciiDoctorEditorUtil.logError("Was not able to open pdf - file does not exist:"+file,null);
+                AsciiDoctorEditorUtil.logError("Was not able to open pdf - file does not exist:" + file, null);
                 return;
             }
             AsciiDoctorEditorUtil.openFileInExternalBrowser(file);
 
         }
-        
+
         private class PDFConvertJob extends Job {
             private boolean done;
             private Exception failed;
@@ -140,7 +138,7 @@ public class AsciiDoctorEditorPDFLauncher {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    wrapper.convert(data, AsciiDoctorBackendType.PDF, new AspCompatibleProgressMonitorAdapter(monitor));
+                    pdfSupport.convertPDF(data, monitor);
                     done = true;
                     return Status.OK_STATUS;
                 } catch (Exception e) {

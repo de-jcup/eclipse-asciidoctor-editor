@@ -15,6 +15,6 @@
  */
 package de.jcup.asciidoctoreditor.preview;
 
-public interface EnsureFileRunnable extends Runnable{
+public interface EnsureFileRunnable extends Runnable {
 
 }

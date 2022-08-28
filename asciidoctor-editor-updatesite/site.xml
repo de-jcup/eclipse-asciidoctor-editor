@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+  <description name="Asciidoctor Editor Update Site" url="https://de-jcup.github.io/update-site-eclipse-asciidoctor-editor/update-site/">
+      This update site contains feature and plugins of Asciidoctor Editor
+   </description>
+   <feature url="features/de.jcup.asciidoctor.converter_1.1.0.jar" id="de.jcup.asciidoctor.converter" version="1.1.0">
+      <category name="category.asciidoctoreditor.stable"/>
+   </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_2.3.0.jar" id="de.jcup.asciidoctoreditor" version="2.3.0">
+      <category name="category.asciidoctoreditor.stable"/>
+   </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_2.4.0.jar" id="de.jcup.asciidoctoreditor" version="2.4.0">
+      <category name="category.asciidoctoreditor.stable"/>
+   </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_2.4.1.jar" id="de.jcup.asciidoctoreditor" version="2.4.1">
+      <category name="category.asciidoctoreditor.stable"/>
+   </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_2.5.0.jar" id="de.jcup.asciidoctoreditor" version="2.5.0">
+      <category name="category.asciidoctoreditor.stable"/>
+   </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_2.5.1.jar" id="de.jcup.asciidoctoreditor" version="2.5.1">
+      <category name="category.asciidoctoreditor.stable"/>
+   </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_2.6.0.jar" id="de.jcup.asciidoctoreditor" version="2.6.0">
+      <category name="category.asciidoctoreditor.unstable"/>
+   </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_2.6.1.jar" id="de.jcup.asciidoctoreditor" version="2.6.1">
+      <category name="category.asciidoctoreditor.stable"/>
+   </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_2.7.0.jar" id="de.jcup.asciidoctoreditor" version="2.7.0">
+      <category name="category.asciidoctoreditor.stable"/>
+   </feature>
+   <category-def name="category.asciidoctoreditor.stable" label="Stable">
+      <description>
+         Contain stable releases
+      </description>
+   </category-def>
+   <category-def name="category.asciidoctoreditor.unstable" label="Unstable">
+      <description>
+         Unstable marked versions
+      </description>
+   </category-def>
+</site>

@@ -1,0 +1,4 @@
+:toc:
+:toc-title: Table of contents
+:toclevels: 5
+:sectnums:

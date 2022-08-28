@@ -135,23 +135,23 @@ public class AsciidocSearchResultLabelProvider extends BaseLabelProvider impleme
         if (element instanceof ResourceLineContentElement) {
             ResourceLineContentElement rlce = (ResourceLineContentElement) element;
             ResourceLineElement le = rlce.getParent();
-            if (le==null) {
+            if (le == null) {
                 return null;
             }
             ResourceElement re = le.getParent();
-            if (re==null) {
+            if (re == null) {
                 return null;
             }
             IResource resource = re.getResource();
-            if (resource==null) {
+            if (resource == null) {
                 return null;
             }
             IProject project = resource.getProject();
             String projectName = null;
-            if (project==null) {
-                projectName="(?)";
-            }else {
-                projectName=project.getName();
+            if (project == null) {
+                projectName = "(?)";
+            } else {
+                projectName = project.getName();
             }
             StringBuilder sb = new StringBuilder();
             /* @formatter:off*/
@@ -164,8 +164,7 @@ public class AsciidocSearchResultLabelProvider extends BaseLabelProvider impleme
                 append(rlce.getText());
             return sb.toString();
             /* @formatter:on*/
-            
-            
+
         }
         return getText(element);
     }

@@ -1,0 +1,9 @@
+[[test-link1]]
+== I am hyperlink1
+test-link1...
+
+Let us jump to: <<test-link2, To Link2>> 
+
+Let us jump to: <<test-link3,To link3>>
+
+Let us jump to: <<test-link4,To link4>> (which is duplicated)  

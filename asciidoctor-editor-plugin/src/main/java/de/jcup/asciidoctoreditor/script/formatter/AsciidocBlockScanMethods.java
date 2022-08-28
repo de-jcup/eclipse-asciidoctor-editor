@@ -24,7 +24,7 @@ public class AsciidocBlockScanMethods {
     public static Boolean isBlockMarker(String line) {
         return line.startsWith("----");
     }
-    
+
     public static Boolean isMetaInfoMarker(String line) {
         return line.startsWith("[");
     }

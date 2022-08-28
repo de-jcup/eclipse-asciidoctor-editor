@@ -24,25 +24,26 @@ import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 /**
  * Uses always editor file parent as base parent file
+ * 
  * @author albert
  *
  */
-public class ImageBaseParentResolver implements BaseParentDirResolver{
+public class ImageBaseParentResolver implements BaseParentDirResolver {
 
     @Override
     public File getBaseParentDir(File editorFile) {
-        
+
         IEditorPart editor = EclipseUtil.getActiveEditor();
         if (editor instanceof AsciiDoctorEditor) {
-            return getBaseDirFromEditor(editorFile,(AsciiDoctorEditor)editor);
+            return getImagesBaseDirFromEditor(editorFile, (AsciiDoctorEditor) editor);
         }
         return null;
     }
 
-    private File getBaseDirFromEditor(File editorFile, AsciiDoctorEditor editor) {
+    private File getImagesBaseDirFromEditor(File editorFile, AsciiDoctorEditor editor) {
         String path = editor.getImagesPathOrNull();
-        if (path==null) {
-            /* no image dir set, so fallback to current folder*/
+        if (path == null) {
+            /* no image dir set, so fallback to current folder */
             return editorFile.getParentFile();
         }
         return new File(path);

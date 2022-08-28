@@ -17,39 +17,38 @@ package de.jcup.asciidoctoreditor.script.parser.validator;
 
 public enum AsciiDoctorEditorValidationErrorLevel {
 
-	INFO("info"),
-	
-	WARNING("warning"), 
+    INFO("info"),
 
-	ERROR("error"), 
-	;
-	
+    WARNING("warning"),
 
-	private String id;
+    ERROR("error"),;
 
-	private AsciiDoctorEditorValidationErrorLevel(String id) {
-		if (id == null) {
-			throw new IllegalArgumentException("id may not be null!");
-		}
-		this.id = id;
-	}
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    private AsciiDoctorEditorValidationErrorLevel(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id may not be null!");
+        }
+        this.id = id;
+    }
 
+    public String getId() {
+        return id;
+    }
 
-	/**
-	 * @param id
-	 * @return error level, never <code>null</code>. If not identifiable by id the default will be returned: {@link AsciiDoctorEditorValidationErrorLevel#ERROR}
-	 */
-	public static AsciiDoctorEditorValidationErrorLevel fromId(String id) {
-		if (WARNING.getId().equals(id)) {
-			return WARNING;
-		}
-		if (INFO.getId().equals(id)) {
-			return INFO;
-		}
-		return ERROR;
-	}
+    /**
+     * @param id
+     * @return error level, never <code>null</code>. If not identifiable by id the
+     *         default will be returned:
+     *         {@link AsciiDoctorEditorValidationErrorLevel#ERROR}
+     */
+    public static AsciiDoctorEditorValidationErrorLevel fromId(String id) {
+        if (WARNING.getId().equals(id)) {
+            return WARNING;
+        }
+        if (INFO.getId().equals(id)) {
+            return INFO;
+        }
+        return ERROR;
+    }
 }

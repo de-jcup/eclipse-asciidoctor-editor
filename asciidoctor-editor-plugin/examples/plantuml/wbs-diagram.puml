@@ -1,0 +1,30 @@
+@startwbs
+
+<style>
+rootNode {
+    LineStyle 8.0;3.0
+    LineColor blue  
+    BackgroundColor white
+    LineThickness 1.0
+    RoundCorner 5
+    Shadowing 0.0
+}
+</style>
+
++ <&flag> New Job
+++[#SkyBlue] Decide on Job Requirements
++++[#pink] Identity gaps
++++ Review JDs
+++++ Sign-Up for courses
+++++ Volunteer
+++++ Reading
+++-_ Checklist
++++- Responsibilities
++++- Location
+++[#paleGreen] CV Upload Done
++++ CV Updated
+++++ Spelling & Grammar
+++++ Check dates
+---- Skills
++++ Recruitment sites chosen
+@endwbs

@@ -51,12 +51,12 @@ public class AsciiDoctorFileReference {
     }
 
     private boolean isPartOfTarget(char charAt) {
-        if(Character.isSpaceChar(charAt)) {
+        if (Character.isSpaceChar(charAt)) {
             /* we allow spaces */
             return true;
         }
-        /* we do not allow  [ becaus it terminates target part*/
-        if (charAt == '[' ) {
+        /* we do not allow [ becaus it terminates target part */
+        if (charAt == '[') {
             return false;
         }
         if (Character.isWhitespace(charAt)) {
@@ -118,7 +118,7 @@ public class AsciiDoctorFileReference {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"=" + target + "[pos:" + position + ",end:" + end + ",lengthToNameEnd:" + lengthToNameEnd + "]";
+        return getClass().getSimpleName() + "=" + target + "[pos:" + position + ",end:" + end + ",lengthToNameEnd:" + lengthToNameEnd + "]";
     }
 
     public String getFullExpression() {
@@ -132,6 +132,5 @@ public class AsciiDoctorFileReference {
     public String getFilePath() {
         return filePath;
     }
-
 
 }

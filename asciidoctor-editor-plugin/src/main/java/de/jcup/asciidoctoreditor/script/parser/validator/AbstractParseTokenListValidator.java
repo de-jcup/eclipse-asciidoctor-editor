@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.script.parser.validator;
+package de.jcup.asciidoctoreditor.script.parser.validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,23 +22,24 @@ import de.jcup.asciidoctoreditor.script.AsciiDoctorScriptValidator;
 import de.jcup.asciidoctoreditor.script.ValidationResult;
 import de.jcup.asciidoctoreditor.script.parser.ParseToken;
 
-public abstract class AbstractParseTokenListValidator implements AsciiDoctorScriptValidator<List<ParseToken>>{
+public abstract class AbstractParseTokenListValidator implements AsciiDoctorScriptValidator<List<ParseToken>> {
 
-	@Override
-	public final List<ValidationResult> validate(List<ParseToken> toValidate) {
-		List<ValidationResult> result = new ArrayList<ValidationResult>();
-		if (toValidate==null || toValidate.size()==0){
-			return result;
-		}
-		doValidation(toValidate, result);
-		return result;
-	}
+    @Override
+    public final List<ValidationResult> validate(List<ParseToken> toValidate) {
+        List<ValidationResult> result = new ArrayList<ValidationResult>();
+        if (toValidate == null || toValidate.size() == 0) {
+            return result;
+        }
+        doValidation(toValidate, result);
+        return result;
+    }
 
-	/**
-	 * Do validation
-	 * @param tokens - not <code>null</code> and not empty
-	 * @param result - not <b>null</b>
-	 */
-	protected abstract void doValidation(List<ParseToken> tokens, List<ValidationResult> result);
+    /**
+     * Do validation
+     * 
+     * @param tokens - not <code>null</code> and not empty
+     * @param result - not <b>null</b>
+     */
+    protected abstract void doValidation(List<ParseToken> tokens, List<ValidationResult> result);
 
 }

@@ -68,6 +68,9 @@ function initVariables(){
     SOURCE_PROJECT_NAME=${SOURCE_PROJECT_DIR##*/}          # we use current directory name to identify (assume the project has been checked out with name like on github
     TARGET_PROJECT_NAME="update-site-${SOURCE_PROJECT_NAME}"
     
+    # FIXME: remove this dirty workaround - was necessary because of having two checked out projects (while maven build deployment does not work full)
+    TARGET_PROJECT_NAME="update-site-eclipse-asciidoctor-editor"
+    
     cd ..
     THIS_ROOT_DIR="${PWD}"
     TARGET_PROJECT_DIR="${THIS_ROOT_DIR}/${TARGET_PROJECT_NAME}"
@@ -94,17 +97,20 @@ function signNewJarsInUpdateSiteProject(){
     FEATUREDIR=./features/*
     
     echo "Processing features dir $FEATUREDIR file..."
+    echo "ls:"
+    ls $FEATUREDIR -l
+    echo "---"
     for f in $FEATUREDIR;
     do
       if [ ${f: -7} == ".sha256" ] ; then
         continue
       fi
-      CHECKSUM=$(sha256sum $f)
+      CHECKSUM_FILENAME="${f}.sha256"
       if [ ! -f "$CHECKSUM_FILENAME" ] ; then
           echo "Signing feature: $f file..."
           jarsigner -keystore $KEYSTORE_LOCATION -storepass:env KEYSTORE_PWD $f signFiles
           # Build checksum after signing - so available to check downloads, if necessary
-          CHECKSUM_FILENAME="${f}.sha256"
+          CHECKSUM=$(sha256sum $f)
           echo "$CHECKSUM" > $CHECKSUM_FILENAME
           echo
       else

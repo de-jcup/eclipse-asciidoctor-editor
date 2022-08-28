@@ -15,18 +15,16 @@
  */
 package de.jcup.asciidoctoreditor.asciidoc;
 
-public class ASPAsciidoctorException extends RuntimeException{
+public class ASPAsciidoctorException extends RuntimeException {
 
     private static final long serialVersionUID = 3313210338419413298L;
 
     public ASPAsciidoctorException(String message, Throwable cause) {
-		super(message, cause);
-	}
+        super(message, cause);
+    }
 
-	public ASPAsciidoctorException(String message) {
-		super(message);
-	}
-	
-	
+    public ASPAsciidoctorException(String message) {
+        super(message);
+    }
 
 }

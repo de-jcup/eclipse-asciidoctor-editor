@@ -1,0 +1,9 @@
+@startuml
+title I am "diagram-without-other-includes.puml"
+
+AsciiDoc -> PlantUML: show this
+
+PlantUML -> NoOther: Nothing other included
+
+
+@enduml

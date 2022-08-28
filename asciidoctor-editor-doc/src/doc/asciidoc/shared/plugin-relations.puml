@@ -1,0 +1,46 @@
+@startuml
+
+skinparam linetype ortho
+
+skinparam component {
+  FontSize 13
+  BackgroundColor<<Process>> DodgerBlue
+  BorderColor<<Process>> #MediumBlue
+  FontName Courier
+  BorderColor black
+  BackgroundColor MediumSlateBlue 
+  ArrowFontName Impact
+  ArrowColor #DarkBlue
+  ArrowFontColor #777777
+}
+
+
+component [Editor plugin] as editor_plugin
+component [Converter plugin] as converter_plugin
+component [Libraries plugin] as libraries_plugin
+
+frame "Asciidoctor access" {
+
+    node "ASP" {
+    
+        component "ASP server" as asp_server <<Process>>
+        
+        interface "ASP protocol" as asp_protocol
+    
+    }
+    node "Native" {
+        component "Native asciidoctor" as asciidoctor_native <<Process>>
+    }
+}
+editor_plugin --> asciidoctor_native 
+editor_plugin --> converter_plugin : uses
+editor_plugin ..> libraries_plugin : uses libraries plugin\nto fetch asp server jar location
+editor_plugin --> asp_server : starts server
+
+libraries_plugin ..> asp_server
+editor_plugin --> asp_protocol : communicates via
+asp_protocol --> asp_server
+
+note bottom of converter_plugin: Provides some converter possibilities. \nE.g. to transform markdown files to asciidoc
+note bottom of libraries_plugin : contains distribution jar of server
+@enduml

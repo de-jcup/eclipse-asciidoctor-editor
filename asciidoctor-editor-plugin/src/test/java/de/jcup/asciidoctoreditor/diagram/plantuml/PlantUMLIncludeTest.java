@@ -29,7 +29,7 @@ public class PlantUMLIncludeTest {
         /* test */
         assertFalse(include.isLocal());
     }
-    
+
     @Test
     public void location_with_https_localhost_is_not_local() {
         /* prepare + execute */
@@ -38,7 +38,7 @@ public class PlantUMLIncludeTest {
         /* test */
         assertFalse(include.isLocal());
     }
-    
+
     @Test
     public void location_with_C4_Content_pumlis_local() {
         /* prepare + execute */

@@ -16,11 +16,11 @@
 package de.jcup.asciidoctoreditor.asciidoc;
 
 import java.io.File;
-import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 
+import de.jcup.asciidoctoreditor.ASPSupport;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -32,40 +32,44 @@ import de.jcup.asp.api.Response;
 import de.jcup.asp.api.ServerLog;
 import de.jcup.asp.api.ServerLogEntry;
 import de.jcup.asp.api.ServerLogSeverity;
+import de.jcup.asp.api.asciidoc.AsciidocAttributes;
+import de.jcup.asp.api.asciidoc.AsciidocOptions;
 import de.jcup.asp.client.AspClient;
 import de.jcup.asp.client.AspClientException;
 import de.jcup.asp.client.AspClientProgressMonitor;
 import de.jcup.eclipse.commons.EclipseResourceHelper;
 
 public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
-
+	
     @Override
-    public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options, AspClientProgressMonitor monitor) {
+    public void convertFile(File editorFileOrNull, File asciiDocFile, AsciidocOptions options, AsciidocAttributes attributes, AspClientProgressMonitor monitor) {
         try {
             if (editorFileOrNull == null) {
                 AsciiDoctorConsoleUtil.output("ASP: Processing content");
             } else {
                 AsciiDoctorConsoleUtil.output("ASP: Processing file:" + editorFileOrNull.getAbsolutePath());
             }
-            Response response = resolveClient().convertFile(asciiDocFile.toPath(), options,monitor);
+            AspClient client = resolveClient();
+            Response response = client.convertFile(asciiDocFile.toPath(), options, attributes, monitor);
             handleServerLog(response);
         } catch (AspClientException e) {
             Throwable rootCause = e;
             while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
                 rootCause = rootCause.getCause();
             }
-            String rootMessage="";
-            if (rootCause!=null && rootCause!=e) {
-                rootMessage=rootCause.getMessage();
+            String rootMessage = "";
+            if (rootCause != null && rootCause != e) {
+                rootMessage = rootCause.getMessage();
             }
-            AsciiDoctorConsoleUtil.error(e.getMessage()+rootMessage);
+            AsciiDoctorConsoleUtil.error(e.getMessage() + rootMessage);
             throw new ASPAsciidoctorException("Cannot convert file" + asciiDocFile, e);
         }
     }
 
     private AspClient resolveClient() {
         AsciiDoctorEditorActivator activator = AsciiDoctorEditorActivator.getDefault();
-        return activator.getAspSupport().getAspClient();
+        ASPSupport aspSupport = activator.getAspSupport();
+        return aspSupport.getAspClient();
     }
 
     private void handleServerLog(Response response) {
@@ -98,7 +102,7 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             case UNKNOWN:
             case DEBUG:
             default:
-                ignore=true;
+                ignore = true;
                 break;
             }
             if (ignore) {
@@ -118,11 +122,11 @@ public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
             IFile resource = null;
             if (file != null) {
                 resource = EclipseResourceHelper.DEFAULT.toIFile(file);
-                if (resource!=null) {
+                if (resource != null) {
                     AsciiDoctorEditorUtil.addAsciiDoctorMarker(entry.getLineNumber(), marker, eclipseSeverity, resource);
                 }
-            } 
-            if (resource==null) {
+            }
+            if (resource == null) {
                 /* fallback, we need a resource to have markers */
                 AsciiDoctorEditorUtil.addAsciiDoctorMarker(EclipseUtil.getActiveEditor(), entry.getLineNumber(), marker, eclipseSeverity);
             }

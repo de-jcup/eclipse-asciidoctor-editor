@@ -35,7 +35,6 @@ public class AsciiDocAttributeResolver {
 
     private LogAdapter logadapter;
 
-    private AsciiDocFileFilter filter = new AsciiDocFileFilter(true);
     private AsciiDocDocumentAttributeScanner scanner = new AsciiDocDocumentAttributeScanner();
 
     public void setLogadapter(LogAdapter logadapter) {
@@ -52,7 +51,7 @@ public class AsciiDocAttributeResolver {
 
     private void inspect(File file, Map<String, Object> map) {
         if (file.isDirectory()) {
-            File[] files = file.listFiles(filter);
+            File[] files = file.listFiles(AsciiDocFileFilter.ASCIIDOC_FILES_AND_FOLDERS);
             for (File child : files) {
                 inspect(child, map);
             }

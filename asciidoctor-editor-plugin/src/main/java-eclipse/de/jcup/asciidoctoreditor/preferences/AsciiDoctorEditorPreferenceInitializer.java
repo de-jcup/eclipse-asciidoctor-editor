@@ -27,125 +27,124 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.jcup.asciidoctoreditor.PreviewLayout;
 import de.jcup.asciidoctoreditor.asciidoc.ASPServerAdapter;
-import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLOutputFormat;
 import de.jcup.asciidoctoreditor.script.parser.validator.AsciiDoctorEditorValidationErrorLevel;
+import de.jcup.asciidoctoreditor.toolbar.ZoomLevel;
 
 /**
  * Class used to initialize default preference values.
  */
 public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceInitializer {
 
-	public void initializeDefaultPreferences() {
-		AsciiDoctorEditorPreferences preferences = getPreferences();
-		IPreferenceStore store = preferences.getPreferenceStore();
+    public void initializeDefaultPreferences() {
+        AsciiDoctorEditorPreferences preferences = getPreferences();
+        IPreferenceStore store = preferences.getPreferenceStore();
 
-		/* Outline */
-		store.setDefault(P_LINK_OUTLINE_WITH_EDITOR.getId(), true);
+        /* Outline */
+        store.setDefault(P_LINK_OUTLINE_WITH_EDITOR.getId(), true);
 
-		/* Preview*/
-		store.setDefault(P_USE_PREVIEW_IMAGEDIRECTORY.getId(), true);
-		store.setDefault(P_LINK_EDITOR_WITH_PREVIEW.getId(), true);
+        /* Preview */
+        store.setDefault(P_LINK_EDITOR_WITH_PREVIEW.getId(), true);
 
-		/* ++++++++++++ */
-		/* + Brackets + */
-		/* ++++++++++++ */
-		/* bracket rendering configuration */
-		store.setDefault(P_EDITOR_MATCHING_BRACKETS_ENABLED.getId(), true);
-		store.setDefault(P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION.getId(), false);
-		store.setDefault(P_EDITOR_ENCLOSING_BRACKETS.getId(), false);
-		store.setDefault(P_EDITOR_AUTO_CREATE_END_BRACKETSY.getId(), true);
+        /* ++++++++++++ */
+        /* + Brackets + */
+        /* ++++++++++++ */
+        /* bracket rendering configuration */
+        store.setDefault(P_EDITOR_MATCHING_BRACKETS_ENABLED.getId(), true);
+        store.setDefault(P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION.getId(), false);
+        store.setDefault(P_EDITOR_ENCLOSING_BRACKETS.getId(), false);
+        store.setDefault(P_EDITOR_AUTO_CREATE_END_BRACKETSY.getId(), true);
 
-		/* bracket color */
-		preferences.setDefaultColor(P_EDITOR_MATCHING_BRACKETS_COLOR, GRAY_JAVA);
+        /* bracket color */
+        preferences.setDefaultColor(P_EDITOR_MATCHING_BRACKETS_COLOR, GRAY_JAVA);
 
-		/* +++++++++++++++ */
+        /* +++++++++++++++ */
         /* + Code assist + */
-		/* +++++++++++++++ */
-		store.setDefault(P_CODE_ASSIST_ADD_KEYWORDS.getId(), true);
-		store.setDefault(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(), true);
+        /* +++++++++++++++ */
+        store.setDefault(P_CODE_ASSIST_ADD_KEYWORDS.getId(), true);
+        store.setDefault(P_CODE_ASSIST_ADD_SIMPLEWORDS.getId(), true);
 
-		store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES.getId(), true);
-		store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_IMAGES.getId(), true);
-		store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO.getId(), true);
-		store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_PLANTUML_MACRO.getId(), true);
-		
-		store.setDefault(P_AUTOCREATE_INITIAL_CONFIGFILE.getId(), true);
+        store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES.getId(), true);
+        store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_IMAGES.getId(), true);
+        store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO.getId(), true);
+        store.setDefault(P_CODE_ASSIST_DYNAMIC_FOR_PLANTUML_MACRO.getId(), true);
 
-		/* ++++++++++++ */
-		/* + Tooltips + */
-		/* ++++++++++++ */
-		store.setDefault(P_TOOLTIPS_ENABLED.getId(), true);
+        store.setDefault(P_AUTOCREATE_INITIAL_CONFIGFILE.getId(), true);
 
-		/* +++++++++++ */
-		/* + Preview + */
-		/* +++++++++++ */
-		store.setDefault(P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT.getId(), PreviewLayout.VERTICAL.getId());
-		store.setDefault(P_EDITOR_TOC_LEVELS.getId(), 6);
-		store.setDefault(P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS.getId(), 0); // per default auto refresh is turned off
-		store.setDefault(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED.getId(), false);
-		store.setDefault(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), false);
-		store.setDefault(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS.getId(),
-				"-r asciidoctor-diagram\n--no-header-footer\n");
-		store.setDefault(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT.getId(), true);
-		
-		/* ++++++++++++++ */
-		/* + ASP server + */
-		/* ++++++++++++++ */
-		store.setDefault(P_ASP_SERVER_MIN_PORT.getId(), ASPServerAdapter.DEFAULT_MIN_PORT);
-		store.setDefault(P_ASP_SERVER_MAX_PORT.getId(), ASPServerAdapter.DEFAULT_MAX_PORT);
-		store.setDefault(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), true);
-		store.setDefault(P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE.getId(), false);
-		store.setDefault(P_ASP_COMMUNICATION_SHOWN_IN_CONSOLE.getId(), false);
-		
-		/* +++++++++++++++++ */
-		/* + Editor Colors + */
-		/* +++++++++++++++++ */
-		preferences.setDefaultColor(COLOR_NORMAL_TEXT, BLACK);
-		preferences.setDefaultColor(COLOR_PLANTUML_NORMAL_TEXT, BLACK);
+        /* ++++++++++++ */
+        /* + Tooltips + */
+        /* ++++++++++++ */
+        store.setDefault(P_TOOLTIPS_ENABLED.getId(), true);
 
-		preferences.setDefaultColor(COLOR_ASCIIDOCTOR_HEADLINES, ASCIIDOC_HEADLINE_HTML);
+        /* +++++++++++ */
+        /* + Preview + */
+        /* +++++++++++ */
+        store.setDefault(P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT.getId(), PreviewLayout.VERTICAL.getId());
+        store.setDefault(P_EDITOR_TOC_LEVELS.getId(), 6);
+        store.setDefault(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS.getId(), 3);
+        store.setDefault(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED.getId(), false);// per default auto refresh is turned off
+        store.setDefault(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED.getId(), false);
+        store.setDefault(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS.getId(), "-r asciidoctor-diagram\n--no-header-footer\n");
+        store.setDefault(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT.getId(), true);
 
-		preferences.setDefaultColor(COLOR_TEXT_BLOCKS, CADET_BLUE);
-		preferences.setDefaultColor(COLOR_COMMENT, GREEN_JAVA);
+        /* ++++++++++++++ */
+        /* + ASP server + */
+        /* ++++++++++++++ */
+        store.setDefault(P_ASP_SERVER_MIN_PORT.getId(), ASPServerAdapter.DEFAULT_MIN_PORT);
+        store.setDefault(P_ASP_SERVER_MAX_PORT.getId(), ASPServerAdapter.DEFAULT_MAX_PORT);
+        store.setDefault(P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR.getId(), true);
+        store.setDefault(P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE.getId(), false);
+        store.setDefault(P_ASP_COMMUNICATION_SHOWN_IN_CONSOLE.getId(), false);
 
-		preferences.setDefaultColor(COLOR_ASCIIDOCTOR_COMMAND, MIDDLE_BLUE);
-		preferences.setDefaultColor(COLOR_KNOWN_VARIABLES, DARK_GRAY);
-		preferences.setDefaultColor(COLOR_TEXT_BOLD, BLACK);
-		preferences.setDefaultColor(COLOR_TEXT_ITALIC, BLACK);
+        /* +++++++++++++++++ */
+        /* + Editor Colors + */
+        /* +++++++++++++++++ */
+        preferences.setDefaultColor(COLOR_NORMAL_TEXT, BLACK);
+        preferences.setDefaultColor(COLOR_PLANTUML_NORMAL_TEXT, BLACK);
 
-		preferences.setDefaultColor(COLOR_DELIMITERS, LIGHT_THEME_LIGHT_BLUE);
+        preferences.setDefaultColor(COLOR_ASCIIDOCTOR_HEADLINES, ASCIIDOC_HEADLINE_HTML);
 
-		preferences.setDefaultColor(COLOR_PLANTUML_KEYWORD, KEYWORD_DEFAULT_PURPLE);
-		preferences.setDefaultColor(COLOR_PLANTUML_NOTE, CADET_BLUE);
-		preferences.setDefaultColor(COLOR_PLANTUML_COMMENT, GREEN_JAVA);
-		preferences.setDefaultColor(COLOR_PLANTUML_PREPROCESSOR, DARK_GRAY);
-		preferences.setDefaultColor(COLOR_PLANTUML_SKINPARAMETER, DARK_GRAY);
-		preferences.setDefaultColor(COLOR_PLANTUML_DIVIDER, DARK_GREEN);
-		preferences.setDefaultColor(COLOR_PLANTUML_ARROW, DARK_GREEN);
-		preferences.setDefaultColor(COLOR_PLANTUML_LABEL, BRIGHT_RED);
-		preferences.setDefaultColor(COLOR_PLANTUML_TYPE, KEYWORD_DEFAULT_PURPLE);
-		preferences.setDefaultColor(COLOR_PLANTUML_COLOR, DARK_BLUE);
-		preferences.setDefaultColor(COLOR_PLANTUML_DOUBLESTRING, ROYALBLUE);
+        preferences.setDefaultColor(COLOR_TEXT_BLOCKS, CADET_BLUE);
+        preferences.setDefaultColor(COLOR_COMMENT, GREEN_JAVA);
 
+        preferences.setDefaultColor(COLOR_ASCIIDOCTOR_COMMAND, MIDDLE_BLUE);
+        preferences.setDefaultColor(COLOR_KNOWN_VARIABLES, DARK_GRAY);
+        preferences.setDefaultColor(COLOR_TEXT_BOLD, BLACK);
+        preferences.setDefaultColor(COLOR_TEXT_ITALIC, BLACK);
 
-		/* ++++++++++++++ */
-		/* + Validation + */
-		/* ++++++++++++++ */
-		store.setDefault(VALIDATE_ERROR_LEVEL.getId(), AsciiDoctorEditorValidationErrorLevel.WARNING.getId());
-		store.setDefault(VALIDATE_INCLUDES.getId(),true);
-		store.setDefault(VALIDATE_IMAGES.getId(),true);
-		store.setDefault(VALIDATE_DIAGRAMS.getId(),true);
-		store.setDefault(VALIDATE_URLS.getId(),true);
-		
-		store.setDefault(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(),true);
-		
-		/* ++++++++++++++ */
-		/* + automatically create/update png file(s) in the same location as PlantumUML file(s) + */
-		/* ++++++++++++++ */
-		store.setDefault(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId(), false);
-		store.setDefault(AsciiDoctorPlantUMLEditorPreferenceConstants.P_PLANTUML_EDITOR_OUTPUT_FORMAT.getId(), PlantUMLOutputFormat.SVG.getAsciiDocFormatString());
+        preferences.setDefaultColor(COLOR_DELIMITERS, LIGHT_THEME_LIGHT_BLUE);
 
-		
-	}
+        preferences.setDefaultColor(COLOR_PLANTUML_KEYWORD, KEYWORD_DEFAULT_PURPLE);
+        preferences.setDefaultColor(COLOR_PLANTUML_NOTE, CADET_BLUE);
+        preferences.setDefaultColor(COLOR_PLANTUML_COMMENT, GREEN_JAVA);
+        preferences.setDefaultColor(COLOR_PLANTUML_PREPROCESSOR, DARK_GRAY);
+        preferences.setDefaultColor(COLOR_PLANTUML_SKINPARAMETER, DARK_GRAY);
+        preferences.setDefaultColor(COLOR_PLANTUML_DIVIDER, DARK_GREEN);
+        preferences.setDefaultColor(COLOR_PLANTUML_ARROW, DARK_GREEN);
+        preferences.setDefaultColor(COLOR_PLANTUML_LABEL, BRIGHT_RED);
+        preferences.setDefaultColor(COLOR_PLANTUML_TYPE, KEYWORD_DEFAULT_PURPLE);
+        preferences.setDefaultColor(COLOR_PLANTUML_COLOR, DARK_BLUE);
+        preferences.setDefaultColor(COLOR_PLANTUML_DOUBLESTRING, ROYALBLUE);
+
+        /* ++++++++++++++ */
+        /* + Validation + */
+        /* ++++++++++++++ */
+        store.setDefault(VALIDATE_ERROR_LEVEL.getId(), AsciiDoctorEditorValidationErrorLevel.WARNING.getId());
+        store.setDefault(VALIDATE_INCLUDES.getId(), true);
+        store.setDefault(VALIDATE_IMAGES.getId(), true);
+        store.setDefault(VALIDATE_DIAGRAMS.getId(), true);
+        store.setDefault(VALIDATE_URLS.getId(), true);
+
+        store.setDefault(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(), true);
+
+        /* ++++++++++++ */
+        /* + PlantUML +*/
+        /* ++++++++++++ */
+        store.setDefault(AsciiDoctorPlantUMLEditorPreferenceConstants.P_DEFAULT_ZOOM_LEVEL.getId(), ZoomLevel.LEVEL_100_PERCENT_TEXT);
+        
+        /* +++++++++++++++++++ */
+        /* + Temporary files +*/
+        /* +++++++++++++++++++ */
+        store.setDefault(AsciiDoctorEditorPreferenceConstants.P_DAYS_TO_KEEP_TEMPFILES.getId(), 2);
+    }
 
 }

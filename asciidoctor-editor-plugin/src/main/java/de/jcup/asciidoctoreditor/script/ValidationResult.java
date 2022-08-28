@@ -13,22 +13,22 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.script;
+package de.jcup.asciidoctoreditor.script;
 
 public interface ValidationResult {
-	
-	public enum Type{
-		ERROR, 
-		
-		WARNING
-	}
 
-	int getStart();
+    public enum Type {
+        ERROR,
 
-	int getEnd();
+        WARNING
+    }
 
-	String getMessage();
-	
-	Type getType();
-	
+    int getStart();
+
+    int getEnd();
+
+    String getMessage();
+
+    Type getType();
+
 }

@@ -1,0 +1,9 @@
+== Plugins overview
+
+
+=== Components
+There are some plugins and also external processes involved for running `asciidoctor editor`. 
+Here is an overview what is necessary and why.
+
+plantuml::shared/plugin-relations.puml[format="svg"] 
+

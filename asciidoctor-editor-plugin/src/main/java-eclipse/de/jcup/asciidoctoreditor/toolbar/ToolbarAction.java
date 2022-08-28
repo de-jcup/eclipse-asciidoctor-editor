@@ -23,13 +23,13 @@ import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public abstract class ToolbarAction extends Action {
 
-	protected final AsciiDoctorEditor asciiDoctorEditor;
+    protected final AsciiDoctorEditor asciiDoctorEditor;
 
-	public ToolbarAction(AsciiDoctorEditor asciiDoctorEditor) {
-		this.asciiDoctorEditor = asciiDoctorEditor;
-	}
-	
-	static ImageDescriptor createToolbarImageDescriptor(String name) {
-		return AsciiDoctorEditorUtil.createImageDescriptor("icons/toolbar/" + name);
-	}
+    public ToolbarAction(AsciiDoctorEditor asciiDoctorEditor) {
+        this.asciiDoctorEditor = asciiDoctorEditor;
+    }
+
+    static ImageDescriptor createToolbarImageDescriptor(String name) {
+        return AsciiDoctorEditorUtil.createImageDescriptor("icons/toolbar/" + name);
+    }
 }

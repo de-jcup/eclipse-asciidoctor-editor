@@ -29,68 +29,70 @@ import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class WaitForGeneratedFileAndShowInsideIternalPreviewRunner implements EnsureFileRunnable {
 
-	private final AsciiDoctorEditor asciiDoctorEditor;
-	private IProgressMonitor monitor;
+    private static final FinalPreviewFileResolver finalPreviewFileResolver = new FinalPreviewFileResolver();
+    private final AsciiDoctorEditor asciiDoctorEditor;
+    private IProgressMonitor monitor;
 
-	public WaitForGeneratedFileAndShowInsideIternalPreviewRunner(AsciiDoctorEditor asciiDoctorEditor, IProgressMonitor monitor) {
-		this.asciiDoctorEditor = asciiDoctorEditor;
-		this.monitor = monitor;
-	}
+    public WaitForGeneratedFileAndShowInsideIternalPreviewRunner(AsciiDoctorEditor asciiDoctorEditor, IProgressMonitor monitor) {
+        this.asciiDoctorEditor = asciiDoctorEditor;
+        this.monitor = monitor;
+    }
 
-	@Override
-	public void run() {
-		long start = System.currentTimeMillis();
-		boolean aquired = false;
-		try {
-			BrowserAccess browserAccess = asciiDoctorEditor.getBrowserAccess();
-            while (asciiDoctorEditor.isNotCanceled(monitor)
-					&& (getPreviewFile() == null || !getPreviewFile().exists())) {
-				if (System.currentTimeMillis() - start > 20000) {
-					// after 20 seconds there seems to be no chance to get
-					// the generated preview file back
-					browserAccess.safeBrowserSetText(
-							"<html><body><h3>Preview file generation timed out, so preview not available at:\n<pre>"+getPreviewFile()+"</pre></h3></body></html>");
-					return;
-				}
-				Thread.sleep(300);
-			}
-			aquired = asciiDoctorEditor.getOutputBuildSemaphore().tryAcquire(5, TimeUnit.SECONDS);
+    @Override
+    public void run() {
+        long start = System.currentTimeMillis();
+        boolean aquired = false;
+        try {
+            BrowserAccess browserAccess = asciiDoctorEditor.getBrowserAccess();
+            while (asciiDoctorEditor.isNotCanceled(monitor) && (getHTML5PreviewFile() == null || !getHTML5PreviewFile().exists())) {
+                if (System.currentTimeMillis() - start > 20000) {
+                    // after 20 seconds there seems to be no chance to get
+                    // the generated preview file back
+                    browserAccess.safeBrowserSetText("<html><body><h3>Preview file generation timed out, so preview not available at:\n<pre>" + getHTML5PreviewFile() + "</pre></h3></body></html>");
+                    return;
+                }
+                Thread.sleep(300);
+            }
+            aquired = asciiDoctorEditor.getOutputBuildSemaphore().tryAcquire(5, TimeUnit.SECONDS);
 
-			safeAsyncExec(() -> {
+            safeAsyncExec(() -> {
 
-				try {
-					URL url = getPreviewFile().toURI().toURL();
-					String foundURL = browserAccess.getUrl();
-					try {
-						URL formerURL = new URL(browserAccess.getUrl());
-						foundURL = formerURL.toExternalForm();
-					} catch (MalformedURLException e) {
-						/* ignore - about pages etc. */
-					}
-					String externalForm = url.toExternalForm();
-					if (!externalForm.equals(foundURL)) {
-						browserAccess.setUrl(externalForm);
-					} else {
-						browserAccess.refresh();
-					}
+                try {
+                    File interhalHTML5previewFile = getHTML5PreviewFile();
+                    File finalPreviewFile = finalPreviewFileResolver.resolvePreviewFileFromGeneratedHTMLFile(interhalHTML5previewFile, asciiDoctorEditor.getType());
+                    
+                    URL url = finalPreviewFile.toURI().toURL();
+                    String foundURL = browserAccess.getUrl();
+                    try {
+                        URL formerURL = new URL(browserAccess.getUrl());
+                        foundURL = formerURL.toExternalForm();
+                    } catch (MalformedURLException e) {
+                        /* ignore - about pages etc. */
+                    }
+                    String externalForm = url.toExternalForm();
+                    if (!externalForm.equals(foundURL)) {
+                        browserAccess.setUrl(externalForm);
+                    } else {
+                        browserAccess.refresh();
+                    }
 
-				} catch (MalformedURLException e) {
-					AsciiDoctorEditorUtil.logError("Was not able to use malformed URL", e);
-					browserAccess.safeBrowserSetText("<html><body><h3>URL malformed</h3></body></html>");
-				}
-			});
+                } catch (MalformedURLException e) {
+                    AsciiDoctorEditorUtil.logError("Was not able to use malformed URL", e);
+                    browserAccess.safeBrowserSetText("<html><body><h3>URL malformed</h3></body></html>");
+                }
+            });
 
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		} finally {
-			if (aquired == true) {
-				asciiDoctorEditor.getOutputBuildSemaphore().release();
-			}
-		}
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            if (aquired == true) {
+                asciiDoctorEditor.getOutputBuildSemaphore().release();
+            }
+        }
 
-	}
+    }
 
-    private File getPreviewFile() {
+    private File getHTML5PreviewFile() {
         return asciiDoctorEditor.getTemporaryInternalPreviewFile();
     }
 }

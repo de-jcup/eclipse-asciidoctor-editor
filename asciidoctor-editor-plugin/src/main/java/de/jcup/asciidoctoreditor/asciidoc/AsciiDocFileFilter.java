@@ -20,9 +20,20 @@ import java.io.FileFilter;
 
 public class AsciiDocFileFilter implements FileFilter {
 
+    /**
+     * File filter which accepts all files with wellknown Asciidoc file endings AND
+     * also every folder
+     */
+    public static final AsciiDocFileFilter ASCIIDOC_FILES_AND_FOLDERS = new AsciiDocFileFilter(true);
+    /**
+     * File filter which accepts all files with wellknown Asciidoc file endings, but
+     * nothing else (means also NO folders)
+     */
+    public static final AsciiDocFileFilter ASCIIDOC_FILES_ONLY = new AsciiDocFileFilter(false);
+
     private boolean acceptFolders;
 
-    public AsciiDocFileFilter(boolean acceptFolders) {
+    private AsciiDocFileFilter(boolean acceptFolders) {
         this.acceptFolders = acceptFolders;
     }
 
@@ -36,7 +47,7 @@ public class AsciiDocFileFilter implements FileFilter {
         if (acceptFolders && file.isDirectory()) {
             return true;
         }
-        if (!file.isFile()) {
+        if (file.isDirectory()) {
             return false;
         }
         if (!hasValidFileEnding(file)) {

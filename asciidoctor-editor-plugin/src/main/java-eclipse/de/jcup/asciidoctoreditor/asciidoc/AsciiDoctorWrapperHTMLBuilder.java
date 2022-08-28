@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jcup.asciidoctoreditor.PluginContentInstaller;
-import de.jcup.asciidoctoreditor.provider.AsciiDoctorProviderContext;
+import de.jcup.asciidoctoreditor.provider.AsciiDoctorWrapperContext;
 
 public class AsciiDoctorWrapperHTMLBuilder {
-private static final String BODY = "<body";
+    private static final String BODY = "<body";
 
-    private AsciiDoctorProviderContext context;
+    private AsciiDoctorWrapperContext context;
 
-    public AsciiDoctorWrapperHTMLBuilder(AsciiDoctorProviderContext context) {
+    public AsciiDoctorWrapperHTMLBuilder(AsciiDoctorWrapperContext context) {
         this.context = context;
     }
 
@@ -36,26 +36,29 @@ private static final String BODY = "<body";
         StringBuilder sb = new StringBuilder();
         int bodyIndex = origin.indexOf(BODY);
 
-        /* isAlreadyCompleteHTML... Asciidoctor 2.x does provide correct html. 1.5.4 did not ... , also installed one does not always return full html*/
-        boolean isAlreadyCompleteHTML = bodyIndex!=-1;
-        
+        /*
+         * isAlreadyCompleteHTML... Asciidoctor 2.x does provide correct html. 1.5.4 did
+         * not ... , also installed one does not always return full html
+         */
+        boolean isAlreadyCompleteHTML = bodyIndex != -1;
+
         String content = origin;
         if (isAlreadyCompleteHTML) {
             if (context.isUsingOnlyLocalResources()) {
-                int bodyEnd = origin.indexOf('>', bodyIndex+BODY.length());
-                content = content.substring(bodyEnd+1);
-                
+                int bodyEnd = origin.indexOf('>', bodyIndex + BODY.length());
+                content = content.substring(bodyEnd + 1);
+
             }
             if (context.isInternalPreview()) {
                 /* we add later the doScrollTo script - so we must remove the existing body */
-                int endBody= content.indexOf("</body>");
-                content = content.substring(0,endBody);
-                
+                int endBody = content.indexOf("</body>");
+                content = content.substring(0, endBody);
+
                 String prefixHTML = buildLocalPrefixHTML();
                 sb.append(prefixHTML);
             }
-        }else {
-            /* no body found - fallback to local resources (like earlier )*/
+        } else {
+            /* no body found - fallback to local resources (like earlier ) */
             String prefixHTML = buildLocalPrefixHTML();
             sb.append(prefixHTML);
         }
@@ -80,8 +83,7 @@ private static final String BODY = "<body";
         return sb.toString();
     }
 
-
-    private String buildLocalPrefixHTML(){
+    private String buildLocalPrefixHTML() {
 
         List<File> list = new ArrayList<>();
         File cssFolder = PluginContentInstaller.INSTANCE.getCSSFolder();

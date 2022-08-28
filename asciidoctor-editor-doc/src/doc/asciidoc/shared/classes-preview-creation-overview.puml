@@ -1,0 +1,106 @@
+@startuml
+'abstract        abstract
+'abstract class  "abstract class"
+'annotation      annotation
+'circle          circle
+'()              circle_short_form
+'class           class
+'diamond         diamond
+'<>              diamond_short_form
+'entity          entity
+'enum            enum
+'interface       interface
+
+hide empty methods
+hide empty fields
+'skinparam linetype ortho
+
+package de.jcup.asciidoctoreditor {
+    class AsciidoctorEditor {
+     
+        getWrapper():AsciiDoctorWrapper
+    }
+    
+     class AsciidoctorEditorActivator {
+        aspSupport: ASPSupport
+        getAspSupport()
+     }
+
+    class ASPSupport{
+        start()
+        stop()
+        getAspClient()
+        configurationChanged()
+    }
+    
+}
+
+package de.jcup.asciidoctoreditor.asciidoc{
+    class AsciiDoctorWrapper #aliceblue;line:blue;text:blue {
+        context:AsciiDoctorProviderContext
+        htmlBuilder:AsciiDoctorWrapperHTMLBuilder
+        
+        enrichHTML()
+        convert()
+    }
+    interface AsciidoctorAdapter{
+        convertFile()
+    }
+    
+    class AspAsciidoctorAdapter implements AsciidoctorAdapter 
+    class InstalledAsciidoctorAdapter implements AsciidoctorAdapter 
+    
+    class ASPServerAdapter
+    
+    class AsciiDoctorWrapperHTMLBuilder
+} 
+
+class AsciiDoctorEditorPreferences{
+}
+
+package de.jcup.asciidoctoreditor.asciidoc.provider {
+    class AsciiDoctorProviderContext{
+        getAsciidoctor(): AsciidoctorAdapter
+        setUseInstalled(boolean installed)
+    }
+    class EclipseAsciiDoctorAdapterProvider{
+        getAsciidoctor(boolean installed)
+    }
+}
+
+
+package de.jcup.asp.server.asciidoctorj.launcher { 
+    class ExternalProcessAsciidoctorJServerLauncher
+
+}
+
+package de.jcup.asp.client.*{
+    class AspClient
+}
+
+ASPServerAdapter --> ExternalProcessAsciidoctorJServerLauncher :uses
+
+AsciidoctorEditor --> AsciiDoctorWrapper #green;line.bold :knows and uses
+AsciidoctorEditor --> AsciiDoctorWrapperRegistry #green;line.bold :asks for wrapper
+AsciidoctorEditor --> AsciiDoctorWrapper : creates
+
+AsciiDoctorWrapper --> AsciiDoctorProviderContext #blue;line.bold;text:blue :creates context
+AsciiDoctorWrapper --> AsciiDoctorEditorPreferences #blue;line.bold;text:blue :reads 
+AsciiDoctorWrapper --> AsciidoctorAdapter #blue;line.bold;text:blue :uses to render 
+AsciiDoctorWrapper --> AsciiDoctorWrapperHTMLBuilder #blue;line.bold;text:blue :uses to adopt preview 
+
+AsciiDoctorProviderContext --> AsciidoctorAdapter: can resolve
+AspAsciidoctorAdapter --> ASPSupport :uses
+AspAsciidoctorAdapter --> AspClient  :uses
+ASPSupport --> AspClient: creates 
+ASPSupport --> ASPServerAdapter  
+AsciidoctorEditorActivator --> ASPSupport: creates
+
+EclipseAsciiDoctorAdapterProvider --> AspAsciidoctorAdapter #purple;text:purple :creates
+EclipseAsciiDoctorAdapterProvider --> InstalledAsciidoctorAdapter #purple;text:purple : creates
+AsciiDoctorProviderContext --> EclipseAsciiDoctorAdapterProvider: asks
+note top of AsciiDoctorWrapper : All communication of editor with asciidoctor \nis done by this wrapper only
+note bottom of ExternalProcessAsciidoctorJServerLauncher: will launch ASP server jar file\nin a new process\n
+note top of ASPServerAdapter: knows how to start/and stop ASP servers\nhandles output etc.
+note top of AsciiDoctorWrapperRegistry : Provides one wrapper per project.\nIf none exists, it will be created
+@enduml

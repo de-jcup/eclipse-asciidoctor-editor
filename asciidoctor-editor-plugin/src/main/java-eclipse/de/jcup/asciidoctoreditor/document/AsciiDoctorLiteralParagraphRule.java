@@ -170,8 +170,8 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
             if (!accepted) {
                 return Token.UNDEFINED;
             }
-        }else {
-            lineWithoutWhitespaces="";
+        } else {
+            lineWithoutWhitespaces = "";
         }
 
         /*

@@ -13,56 +13,56 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.document;
+package de.jcup.asciidoctoreditor.document;
 
 public enum AsciiDoctorPlantUMLDocumentIdentifiers implements AsciiDoctorDocumentIdentifier {
-	
-	PLANTUML_NOTE,
-	
-	PLANTUML_PREPROCESSOR,
-	
-	PLANTUML_KEYWORD,
-	
-	PLANTUML_COLOR,
-	
-	PLANTUML_SKINPARAMETER,
-	
-	PLANTUML_TYPE,
-	
-	PLANTUML_DOUBLE_STRING,
-	
-	PLANTUML_COMMENT,
 
-	PLANTUML_DIVIDER,
-	
-	PLANTUML_ARROW,
+    PLANTUML_NOTE,
 
-	PLANTUML_LABEL,
-	;
+    PLANTUML_PREPROCESSOR,
 
+    PLANTUML_KEYWORD,
 
-	@Override
-	public String getId() {
-		return name();
-	}
-	public static String[] allIdsToStringArray(){
-		return allIdsToStringArray(null);
-	}
-	public static String[] allIdsToStringArray(String additionalDefaultId){
-		AsciiDoctorPlantUMLDocumentIdentifiers[] values = values();
-		int size = values.length;
-		if (additionalDefaultId!=null){
-			size+=1;
-		}
-		String[] data = new String[size];
-		int pos=0;
-		if (additionalDefaultId!=null){
-			data[pos++]=additionalDefaultId;
-		}
-		for (AsciiDoctorPlantUMLDocumentIdentifiers d: values){
-			data[pos++]=d.getId();
-		}
-		return data;
-	}
+    PLANTUML_COLOR,
+
+    PLANTUML_SKINPARAMETER,
+
+    PLANTUML_TYPE,
+
+    PLANTUML_DOUBLE_STRING,
+
+    PLANTUML_COMMENT,
+
+    PLANTUML_DIVIDER,
+
+    PLANTUML_ARROW,
+
+    PLANTUML_LABEL,;
+
+    @Override
+    public String getId() {
+        return name();
+    }
+
+    public static String[] allIdsToStringArray() {
+        return allIdsToStringArray(null);
+    }
+
+    public static String[] allIdsToStringArray(String additionalDefaultId) {
+        AsciiDoctorPlantUMLDocumentIdentifiers[] values = values();
+        int size = values.length;
+        if (additionalDefaultId != null) {
+            size += 1;
+        }
+        String[] data = new String[size];
+        int pos = 0;
+        if (additionalDefaultId != null) {
+            data[pos++] = additionalDefaultId;
+        }
+        for (AsciiDoctorPlantUMLDocumentIdentifiers d : values) {
+            data[pos++] = d.getId();
+        }
+        return data;
+    }
 
 }

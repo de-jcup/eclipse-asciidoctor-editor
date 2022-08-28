@@ -25,23 +25,24 @@ import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalInfoProvider;
 import de.jcup.eclipse.commons.codeassist.ProposalProviderContentAssistSupport;
 
-public class DynamicDitaaContentAssistSupport extends ProposalProviderContentAssistSupport{
+public class DynamicDitaaContentAssistSupport extends ProposalProviderContentAssistSupport {
 
-    public DynamicDitaaContentAssistSupport(PluginContextProvider provider) {
-        super(provider, new AsciidocReferenceProposalSupport("ditaa::",new DiagramBaseParentResolver(),new DynamicDitaaEnabledResolver(),new CodeAssistFileFilter(".ditaa")));
-    }
+    private static final String DITAA_PREFIX = "ditaa::";
+
+    private CodeAssistReferencedFilePathDescriptionCalculator descriptionCalculator = new CodeAssistReferencedFilePathDescriptionCalculator(new DiagramRootParentFinder(),DITAA_PREFIX, '[', "Include ditaa file: ",
+            "Step furher into folder: ");
     
+    public DynamicDitaaContentAssistSupport(PluginContextProvider provider) {
+        super(provider, new AsciidocReferenceProposalSupport(DITAA_PREFIX, new DiagramBaseParentResolver(), new DynamicDitaaEnabledResolver(), new CodeAssistFileFilter(".ditaa")));
+    }
+
     @Override
     protected ProposalInfoProvider createProposalInfoBuilder() {
         return new ProposalInfoProvider() {
-            
+
             @Override
             public Object getProposalInfo(IProgressMonitor monitor, Object target) {
-                if (! (target instanceof String)){
-                    return null;
-                }
-                String word = (String) target;
-                return word;
+                return descriptionCalculator.calculateReferencedFilePathDescription(target);
             }
 
             @Override
@@ -51,13 +52,13 @@ public class DynamicDitaaContentAssistSupport extends ProposalProviderContentAss
         };
     }
 
-    private static class DynamicDitaaEnabledResolver implements EnableStateResolver{
+    private static class DynamicDitaaEnabledResolver implements EnableStateResolver {
 
         @Override
         public boolean isEnabled() {
             return AsciiDoctorEditorPreferences.getInstance().isDynamicCodeAssistForDitaaEnabled();
         }
-        
+
     }
 
 }

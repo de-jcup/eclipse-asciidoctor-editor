@@ -23,10 +23,10 @@ import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
 
 public class DocumentKeyWordsTest {
 
-	@Test
-	public void all_key_words_can_be_initialized() {
-		DocumentKeyWord[] results = DocumentKeyWords.getAll();
-		assertNotNull(results);
-	}
+    @Test
+    public void all_key_words_can_be_initialized() {
+        DocumentKeyWord[] results = DocumentKeyWords.getAll();
+        assertNotNull(results);
+    }
 
 }

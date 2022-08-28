@@ -42,172 +42,169 @@ import de.jcup.eclipse.commons.ui.ReducedBrowserInformationControl;
 
 public class AsciiDoctorTextHover implements ITextHover, ITextHoverExtension {
 
-	private static final WordEndDetector WHITE_SPACE_END_DETECTOR = new WhitespaceWordEndDetector();
-	private IInformationControlCreator creator;
-	private String bgColor;
-	private String fgColor;
-	private String commentColorWeb;
+    private static final WordEndDetector WHITE_SPACE_END_DETECTOR = new WhitespaceWordEndDetector();
+    private IInformationControlCreator creator;
+    private String bgColor;
+    private String fgColor;
+    private String commentColorWeb;
 
-	@Override
-	public IInformationControlCreator getHoverControlCreator() {
-		if (creator == null) {
-			creator = new GradleTextHoverControlCreator();
-		}
-		return creator;
-	}
+    @Override
+    public IInformationControlCreator getHoverControlCreator() {
+        if (creator == null) {
+            creator = new GradleTextHoverControlCreator();
+        }
+        return creator;
+    }
 
-	@Override
-	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-		AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
-		boolean tooltipsEnabled = preferences.getBooleanPreference(P_TOOLTIPS_ENABLED);
-		if (!tooltipsEnabled){
-			return null;
-		}
-		
-		if (bgColor == null || fgColor == null) {
+    @Override
+    public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
+        AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+        boolean tooltipsEnabled = preferences.getBooleanPreference(P_TOOLTIPS_ENABLED);
+        if (!tooltipsEnabled) {
+            return null;
+        }
 
-			StyledText textWidget = textViewer.getTextWidget();
-			if (textWidget != null) {
+        if (bgColor == null || fgColor == null) {
 
-				EclipseUtil.getSafeDisplay().syncExec(new Runnable() {
+            StyledText textWidget = textViewer.getTextWidget();
+            if (textWidget != null) {
 
-					@Override
-					public void run() {
-						bgColor = ColorUtil.convertToHexColor(textWidget.getBackground());
-						fgColor = ColorUtil.convertToHexColor(textWidget.getForeground());
-					}
-				});
-			}
+                EclipseUtil.getSafeDisplay().syncExec(new Runnable() {
 
-		}
-		if (commentColorWeb == null) {
-			commentColorWeb = preferences.getWebColor(AsciiDoctorEditorSyntaxColorPreferenceConstants.COLOR_COMMENT);
-		}
-		
-		IDocument document = textViewer.getDocument();
-		if (document == null) {
-			return "";
-		}
-		String text = document.get();
-		if (text == null) {
-			return "";
-		}
-		int offset = hoverRegion.getOffset();
-		String word = SimpleStringUtils.nextReducedVariableWord(text, offset,WHITE_SPACE_END_DETECTOR);
-		if (word.isEmpty()){
-			/* special case for headlines - reduction detector does remove "=" always */
-			String section = SimpleStringUtils.nextWord(text, offset, WHITE_SPACE_END_DETECTOR);
-			if (section.startsWith("=")){
-				StringBuilder sb = new StringBuilder();
-				for (char c: section.toCharArray()){
-					if (c=='='){
-						sb.append(c);
-					}else{
-						break;
-					}
-				}
-				word = sb.toString();
-			}
-		}
-		/* reduce words like include::xyz to 'include::' */
-		/* a part like :icons: will not be influenced */
-		int indexOf = word.indexOf("::");
-		if (indexOf!=-1){
-			word=word.substring(0,indexOf+2);
-		}
-		if (word.isEmpty()) {
-			return "";
-		}
+                    @Override
+                    public void run() {
+                        bgColor = ColorUtil.convertToHexColor(textWidget.getBackground());
+                        fgColor = ColorUtil.convertToHexColor(textWidget.getForeground());
+                    }
+                });
+            }
 
-		for (DocumentKeyWord keyword : DocumentKeyWords.getAll()) {
-			if (word.equals(keyword.getText())) {
-				return buildHoverInfo(keyword);
-			}
-		}
+        }
+        if (commentColorWeb == null) {
+            commentColorWeb = preferences.getWebColor(AsciiDoctorEditorSyntaxColorPreferenceConstants.COLOR_COMMENT);
+        }
 
-		return "";
-	}
+        IDocument document = textViewer.getDocument();
+        if (document == null) {
+            return "";
+        }
+        String text = document.get();
+        if (text == null) {
+            return "";
+        }
+        int offset = hoverRegion.getOffset();
+        String word = SimpleStringUtils.nextReducedVariableWord(text, offset, WHITE_SPACE_END_DETECTOR);
+        if (word.isEmpty()) {
+            /* special case for headlines - reduction detector does remove "=" always */
+            String section = SimpleStringUtils.nextWord(text, offset, WHITE_SPACE_END_DETECTOR);
+            if (section.startsWith("=")) {
+                StringBuilder sb = new StringBuilder();
+                for (char c : section.toCharArray()) {
+                    if (c == '=') {
+                        sb.append(c);
+                    } else {
+                        break;
+                    }
+                }
+                word = sb.toString();
+            }
+        }
+        /* reduce words like include::xyz to 'include::' */
+        /* a part like :icons: will not be influenced */
+        int indexOf = word.indexOf("::");
+        if (indexOf != -1) {
+            word = word.substring(0, indexOf + 2);
+        }
+        if (word.isEmpty()) {
+            return "";
+        }
 
-	private String buildHoverInfo(DocumentKeyWord keyword) {
-		String link = keyword.getLinkToDocumentation();
-		String tooltip = keyword.getTooltip();
+        for (DocumentKeyWord keyword : DocumentKeyWords.getAll()) {
+            if (word.equals(keyword.getText())) {
+                return buildHoverInfo(keyword);
+            }
+        }
 
-		if (isEmpty(tooltip) && isEmpty(link)) {
-			return "";
-		}
+        return "";
+    }
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("<html>");
-		sb.append("<head>");
-		sb.append("<style>");
-		sb.append(TooltipTextSupport.getTooltipCSS());
-		addCSStoBackgroundTheme(sb);
-		sb.append("</style>");
-		sb.append("</head>");
-		sb.append("<body>");
-		if (!isEmpty(link)) {
-			sb.append("Detailed information available at: <a href='" + link + "' target='_blank'>" + link
-					+ "</a><br><br>");
-		}
-		
-		sb.append("<u>Offline description:</u>");
-		if (isEmpty(tooltip)) {
-			sb.append("<b>Not available</b>");
-		} else {
-			if (TooltipTextSupport.isHTMLToolTip(tooltip)){
-				/* it's already a HTML variant - so just keep as is*/
-				sb.append(tooltip);
-			}else{
-				/* plain text */
-				sb.append("<pre class='preWrapEnabled'>");
-				sb.append(tooltip);
-				sb.append("</pre>");
-			}
-			
-		}
-		sb.append("</body>");
-		return sb.toString();
-	}
+    private String buildHoverInfo(DocumentKeyWord keyword) {
+        String link = keyword.getLinkToDocumentation();
+        String tooltip = keyword.getTooltip();
 
-	private void addCSStoBackgroundTheme(StringBuilder sb) {
-		if (bgColor==null){
-			return;
-		}
-		if (fgColor==null){
-			return;
-		}
-		sb.append("body {");
-		sb.append("background-color:").append(bgColor).append(";");
-		sb.append("color:").append(fgColor).append(";");
-		sb.append("}");
-		
-	}
+        if (isEmpty(tooltip) && isEmpty(link)) {
+            return "";
+        }
 
-	
-	
-	private boolean isEmpty(String string) {
-		if (string == null) {
-			return true;
-		}
-		return string.isEmpty();
-	}
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>");
+        sb.append("<head>");
+        sb.append("<style>");
+        sb.append(TooltipTextSupport.getTooltipCSS());
+        addCSStoBackgroundTheme(sb);
+        sb.append("</style>");
+        sb.append("</head>");
+        sb.append("<body>");
+        if (!isEmpty(link)) {
+            sb.append("Detailed information available at: <a href='" + link + "' target='_blank'>" + link + "</a><br><br>");
+        }
 
-	@Override
-	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
-		return new Region(offset, 0);
-	}
+        sb.append("<u>Offline description:</u>");
+        if (isEmpty(tooltip)) {
+            sb.append("<b>Not available</b>");
+        } else {
+            if (TooltipTextSupport.isHTMLToolTip(tooltip)) {
+                /* it's already a HTML variant - so just keep as is */
+                sb.append(tooltip);
+            } else {
+                /* plain text */
+                sb.append("<pre class='preWrapEnabled'>");
+                sb.append(tooltip);
+                sb.append("</pre>");
+            }
 
-	private class GradleTextHoverControlCreator implements IInformationControlCreator {
+        }
+        sb.append("</body>");
+        return sb.toString();
+    }
 
-		@Override
-		public IInformationControl createInformationControl(Shell parent) {
-			if (ReducedBrowserInformationControl.isAvailableFor(parent)) {
-				ReducedBrowserInformationControl control = new ReducedBrowserInformationControl(parent);
-				return control;
-			} else {
-				return new DefaultInformationControl(parent, true);
-			}
-		}
-	}
+    private void addCSStoBackgroundTheme(StringBuilder sb) {
+        if (bgColor == null) {
+            return;
+        }
+        if (fgColor == null) {
+            return;
+        }
+        sb.append("body {");
+        sb.append("background-color:").append(bgColor).append(";");
+        sb.append("color:").append(fgColor).append(";");
+        sb.append("}");
+
+    }
+
+    private boolean isEmpty(String string) {
+        if (string == null) {
+            return true;
+        }
+        return string.isEmpty();
+    }
+
+    @Override
+    public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
+        return new Region(offset, 0);
+    }
+
+    private class GradleTextHoverControlCreator implements IInformationControlCreator {
+
+        @Override
+        public IInformationControl createInformationControl(Shell parent) {
+            if (ReducedBrowserInformationControl.isAvailableFor(parent)) {
+                ReducedBrowserInformationControl control = new ReducedBrowserInformationControl(parent);
+                return control;
+            } else {
+                return new DefaultInformationControl(parent, true);
+            }
+        }
+    }
 
 }

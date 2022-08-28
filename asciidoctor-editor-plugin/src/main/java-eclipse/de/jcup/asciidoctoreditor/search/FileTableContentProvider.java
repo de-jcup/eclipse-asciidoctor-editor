@@ -14,20 +14,20 @@
  *
  */
 package de.jcup.asciidoctoreditor.search;
+
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.search.ui.text.Match;
 
 public class FileTableContentProvider implements IStructuredContentProvider {
 
-	private final Object[] EMPTY_ARR= new Object[0];
+    private final Object[] EMPTY_ARR = new Object[0];
 
-
-	public FileTableContentProvider(AsciidocSearchResultPage page) {
-	}
+    public FileTableContentProvider(AsciidocSearchResultPage page) {
+    }
 
     @Override
     public Object[] getElements(Object inputElement) {
-        
+
         if (inputElement instanceof AsciidocSearchResult) {
             AsciidocSearchResult result = (AsciidocSearchResult) inputElement;
             inputElement = result.getModel();

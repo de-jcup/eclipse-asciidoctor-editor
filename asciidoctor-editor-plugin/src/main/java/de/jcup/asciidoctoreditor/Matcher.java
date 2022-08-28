@@ -13,16 +13,17 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor;
 
 @AdaptedFromEGradle
 public interface Matcher<T> {
 
-	/**
-	 * Returns true when matcher matches
-	 * @param toMatch
-	 * @return <code>true</code> when matching
-	 */
-	public boolean matches(T toMatch) ;
+    /**
+     * Returns true when matcher matches
+     * 
+     * @param toMatch
+     * @return <code>true</code> when matching
+     */
+    public boolean matches(T toMatch);
 
 }

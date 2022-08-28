@@ -7,8 +7,8 @@ allprojects{
 	        }
 	}
 	repositories {
-		mavenLocal()
 		mavenCentral()
+		mavenLocal()
     }
 	
 	/* Custimization part - e.g. when you got special repositories

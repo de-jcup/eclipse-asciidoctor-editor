@@ -30,18 +30,20 @@ import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preferences.CustomEnvironmentEntrySupport;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
+import de.jcup.asp.api.asciidoc.AsciidocAttributes;
+import de.jcup.asp.api.asciidoc.AsciidocOptions;
 import de.jcup.asp.client.AspClientProgressMonitor;
 
 public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
-    
+
     @Override
-    public void convertFile(File editorFileOrNull, File asciiDocFile, Map<String, Object> options, AspClientProgressMonitor monitor) {
-        if (editorFileOrNull==null) {
-            AsciiDoctorConsoleUtil.output( "Installed asciidoctor: Processing content");
-        }else {
-            AsciiDoctorConsoleUtil.output( "Installed asciidoctor: Processing file:"+editorFileOrNull.getAbsolutePath());
+    public void convertFile(File editorFileOrNull, File asciiDocFile, AsciidocOptions options, AsciidocAttributes attributes, AspClientProgressMonitor monitor) {
+        if (editorFileOrNull == null) {
+            AsciiDoctorConsoleUtil.output("Installed asciidoctor: Processing content");
+        } else {
+            AsciiDoctorConsoleUtil.output("Installed asciidoctor: Processing file:" + editorFileOrNull.getAbsolutePath());
         }
-        List<String> commands = buildCommands(asciiDocFile, options);
+        List<String> commands = buildCommands(asciiDocFile, options, attributes);
         String commandLineString = createCommandLineString(commands);
         if (monitor.isCanceled()) {
             return;
@@ -77,9 +79,8 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
                 AsciiDoctorConsoleUtil.output("Exitcode:" + exitCode);
             }
             if (exitCode > 0) {
-                AsciiDoctorEclipseLogAdapter.INSTANCE
-                        .logWarn("Installed Asciidoctor rendering failed for '" + asciiDocFile.getName() + "'\n\nCommandLine was:\n" + commandLineString
-                                + "\n\nResulted in exitcode:" + exitCode + ", \nLast output:" + lineStringBuffer);
+                AsciiDoctorEclipseLogAdapter.INSTANCE.logWarn("Installed Asciidoctor rendering failed for '" + asciiDocFile.getName() + "'\n\nCommandLine was:\n" + commandLineString
+                        + "\n\nResulted in exitcode:" + exitCode + ", \nLast output:" + lineStringBuffer);
                 throw new InstalledAsciidoctorException("FAILED - Asciidoctor exitcode:" + exitCode + " - last output:" + lineStringBuffer);
 
             }
@@ -110,7 +111,7 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
         return commandLineString;
     }
 
-    protected List<String> buildCommands(File filename, Map<String, Object> options) {
+    private List<String> buildCommands(File asciiDocFile, AsciidocOptions options, AsciidocAttributes attributes2) {
 
         List<String> commands = new ArrayList<String>();
         if (OSUtil.isWindows()) {
@@ -122,8 +123,7 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
 
         String outDir = null;
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> attributes = (Map<String, String>) options.get("attributes");
+        Map<String, Object> attributes = attributes2.toMap();
         String baseDir = null;
         for (String key : attributes.keySet()) {
             Object value = attributes.get(key);
@@ -148,16 +148,17 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
             commands.add(attrib);
         }
 
-        Object obj_backend = options.get("backend");
-        if (obj_backend!=null) {
+        Map<String, Object> optionsMap = options.toMap();
+        Object obj_backend = optionsMap.get("backend");
+        if (obj_backend != null) {
             commands.add("-b");
             commands.add(obj_backend.toString());
         }
-        
+
         String argumentsForInstalledAsciidoctor = AsciiDoctorEditorPreferences.getInstance().getArgumentsForInstalledAsciidoctor();
         List<String> preferenceCLICommands = CLITextUtil.convertToList(argumentsForInstalledAsciidoctor);
         commands.addAll(preferenceCLICommands);
-        if (baseDir!=null){
+        if (baseDir != null) {
             commands.add("-B");
             commands.add(toWindowsSafeVariant(baseDir));
         }
@@ -166,7 +167,7 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
             commands.add(outDir);
         }
 
-        commands.add(toWindowsSafeVariant(filename.getAbsolutePath()));
+        commands.add(toWindowsSafeVariant(asciiDocFile.getAbsolutePath()));
         return commands;
     }
 
@@ -192,8 +193,5 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
         }
         return "\"" + command + "\"";
     }
-
-   
-
 
 }

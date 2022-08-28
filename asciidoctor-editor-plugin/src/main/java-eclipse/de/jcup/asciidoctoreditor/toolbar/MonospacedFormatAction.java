@@ -19,22 +19,22 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
-public class MonospacedFormatAction extends FormatTextAction{
-	
-	private static ImageDescriptor IMG_DESCRIPTOR_MONOSPACED = createToolbarImageDescriptor("format_monospaced.png");
+public class MonospacedFormatAction extends FormatTextAction {
 
-	public MonospacedFormatAction(AsciiDoctorEditor editor) {
-		super(editor, "Monospaced (Alt + x)", IMG_DESCRIPTOR_MONOSPACED);
-	}
+    private static ImageDescriptor IMG_DESCRIPTOR_MONOSPACED = createToolbarImageDescriptor("format_monospaced.png");
 
-	@Override
-	protected String formatPrefix() {
-		return "`";
-	}
+    public MonospacedFormatAction(AsciiDoctorEditor editor) {
+        super(editor, "Monospaced (Alt + x)", IMG_DESCRIPTOR_MONOSPACED);
+    }
 
-	@Override
-	protected String formatPostfix() {
-		return "`";
-	}
+    @Override
+    protected String formatPrefix() {
+        return "`";
+    }
+
+    @Override
+    protected String formatPostfix() {
+        return "`";
+    }
 
 }

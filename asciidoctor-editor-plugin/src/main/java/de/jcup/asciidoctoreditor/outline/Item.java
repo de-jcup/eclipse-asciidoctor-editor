@@ -18,7 +18,7 @@ package de.jcup.asciidoctoreditor.outline;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Item implements Comparable<Item>{
+public class Item implements Comparable<Item> {
 
     ItemType type;
     String name;
@@ -44,9 +44,10 @@ public class Item implements Comparable<Item>{
     public Item getParent() {
         return parent;
     }
-    
+
     /**
-     * @return file path (if element references an asciidoc file). The file path starts from base dir of editor!
+     * @return file path (if element references an asciidoc file). The file path
+     *         starts from base dir of editor!
      */
     public String getFilePathOrNull() {
         return filePath;
@@ -112,9 +113,9 @@ public class Item implements Comparable<Item>{
 
     @Override
     public int compareTo(Item o) {
-        if (o==null) {
+        if (o == null) {
             return -1;
         }
-        return getOffset()-o.getOffset();
+        return getOffset() - o.getOffset();
     }
 }

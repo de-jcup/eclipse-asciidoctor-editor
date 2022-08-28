@@ -13,11 +13,14 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor;
+package de.jcup.asciidoctoreditor;
 
 /**
- * Marker annotation to identify parts coming original from egradle (https://github.com/de-jcup/egradle). So if there are 
- * bugfixes in asciidoctor editor done the bugfixes should be applied to egradle as well. Not a very smart approach but..
+ * Marker annotation to identify parts coming original from egradle
+ * (https://github.com/de-jcup/egradle). So if there are bugfixes in asciidoctor
+ * editor done the bugfixes should be applied to egradle as well. Not a very
+ * smart approach but..
+ * 
  * @author albert
  *
  */

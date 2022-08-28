@@ -18,46 +18,40 @@ package de.jcup.asciidoctoreditor.preferences;
 import static de.jcup.asciidoctoreditor.preferences.AsciiDoctorPlantUMLEditorPreferenceConstants.*;
 import static de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil.*;
 
-import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLOutputFormat;
+import de.jcup.asciidoctoreditor.toolbar.ZoomLevel;
 import de.jcup.eclipse.commons.ui.preferences.ChangeableComboFieldEditor;
 
 public class AsciiDoctorPlantUMLEditorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	public AsciiDoctorPlantUMLEditorPreferencePage() {
-		super(GRID);
-		setPreferenceStore(getPreferences().getPreferenceStore());
-	}
-	
-	@Override
-	public void init(IWorkbench workbench) {
+    public AsciiDoctorPlantUMLEditorPreferencePage() {
+        super(GRID);
+        setPreferenceStore(getPreferences().getPreferenceStore());
+    }
 
-	}
+    @Override
+    public void init(IWorkbench workbench) {
 
-	@Override
-	protected void createFieldEditors() {
-		Composite parent = getFieldEditorParent();
-		BooleanFieldEditor storeDiagramsInproject = new BooleanFieldEditor(P_PLANTUML_EDITOR_STORE_DIAGRAMS_IN_PROJECT.getId(), "Store diagram images in project", parent);
-		storeDiagramsInproject.getDescriptionControl(parent).setToolTipText("When enabled generated diagrams will be stored in eclipse \nproject and parent folder is automatically refreshed.");
-		addField(storeDiagramsInproject);
-		
-		String labelText = "Output format";
-        PlantUMLOutputFormat[] allStyles = PlantUMLOutputFormat.values();
-        String[][] entryNamesAndValues= new String[allStyles.length][2];
-        int index=0;
-        for (PlantUMLOutputFormat style: allStyles) {
-            entryNamesAndValues[index++]=new String[] {
-                    style.name(),style.getAsciiDocFormatString()
-            };
+    }
+
+    @Override
+    protected void createFieldEditors() {
+        Composite parent = getFieldEditorParent();
+
+        String labelText = "Default zoom level";
+        String[] entries = ZoomLevel.DEFAULT_TEXT_ENTRIES;
+        String[][] entryNamesAndValues = new String[entries.length][2];
+        int index = 0;
+        for (String entry : entries) {
+            entryNamesAndValues[index++] = new String[] { entry, entry };
         }
-        ChangeableComboFieldEditor comboEditor = new ChangeableComboFieldEditor(P_PLANTUML_EDITOR_OUTPUT_FORMAT.getId(), labelText, entryNamesAndValues, parent);
+        ChangeableComboFieldEditor comboEditor = new ChangeableComboFieldEditor(P_DEFAULT_ZOOM_LEVEL.getId(), labelText, entryNamesAndValues, parent);
         addField(comboEditor);
 
-	}
+    }
 
 }

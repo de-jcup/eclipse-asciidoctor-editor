@@ -29,92 +29,93 @@ import de.jcup.asciidoctoreditor.document.keywords.AsciiDoctorAdmonitionParagrap
 
 public class InsertAdmonitionAction extends ToolbarAction implements IMenuCreator {
 
-	private Menu menu;
-	private AdmonitionViewSupport admonitionViewSupport = new AdmonitionViewSupport();
-	private AsciiDoctorAdmonitionParagraphKeyWords valueVisibleOnToolbar;
+    private Menu menu;
+    private AdmonitionViewSupport admonitionViewSupport = new AdmonitionViewSupport();
+    private AsciiDoctorAdmonitionParagraphKeyWords valueVisibleOnToolbar;
 
-	public InsertAdmonitionAction(AsciiDoctorEditor asciiDoctorEditor) {
-		super(asciiDoctorEditor);
-		valueVisibleOnToolbar = AsciiDoctorAdmonitionParagraphKeyWords.NOTE;
-		initUI();
-	}
+    public InsertAdmonitionAction(AsciiDoctorEditor asciiDoctorEditor) {
+        super(asciiDoctorEditor);
+        valueVisibleOnToolbar = AsciiDoctorAdmonitionParagraphKeyWords.NOTE;
+        initUI();
+    }
 
-	@Override
-	public void run() {
-		admonitionViewSupport.buildAction(valueVisibleOnToolbar).run();
-	}
+    @Override
+    public void run() {
+        admonitionViewSupport.buildAction(valueVisibleOnToolbar).run();
+    }
 
-	private void initUI() {
-		setMenuCreator(this);
-		initImageAndText();
-	}
+    private void initUI() {
+        setMenuCreator(this);
+        initImageAndText();
+    }
 
-	private void initImageAndText() {
-		setImageDescriptor(admonitionViewSupport.getDescriptor(valueVisibleOnToolbar));
-		setText(admonitionViewSupport.getText(valueVisibleOnToolbar));
-	}
+    private void initImageAndText() {
+        setImageDescriptor(admonitionViewSupport.getDescriptor(valueVisibleOnToolbar));
+        setText(admonitionViewSupport.getText(valueVisibleOnToolbar));
+    }
 
-	public void dispose() {
-		if (menu != null) {
-			menu.dispose();
-			menu = null;
-		}
-	}
+    public void dispose() {
+        if (menu != null) {
+            menu.dispose();
+            menu = null;
+        }
+    }
 
-	public Menu getMenu(Menu parent) {
-		return null;
-	}
+    public Menu getMenu(Menu parent) {
+        return null;
+    }
 
-	public Menu getMenu(Control parent) {
-		if (menu != null) {
-			menu.dispose();
-		}
-		menu = new Menu(parent);
-		for (AsciiDoctorAdmonitionParagraphKeyWords keyword: AsciiDoctorAdmonitionParagraphKeyWords.values()){
-			addActionToMenu(menu, admonitionViewSupport.buildAction(keyword));
-		}
-		return menu;
-	}
+    public Menu getMenu(Control parent) {
+        if (menu != null) {
+            menu.dispose();
+        }
+        menu = new Menu(parent);
+        for (AsciiDoctorAdmonitionParagraphKeyWords keyword : AsciiDoctorAdmonitionParagraphKeyWords.values()) {
+            addActionToMenu(menu, admonitionViewSupport.buildAction(keyword));
+        }
+        return menu;
+    }
 
-	protected void addActionToMenu(Menu parent, Action action) {
-		ActionContributionItem item = new ActionContributionItem(action);
-		item.fill(parent, -1);
-	}
+    protected void addActionToMenu(Menu parent, Action action) {
+        ActionContributionItem item = new ActionContributionItem(action);
+        item.fill(parent, -1);
+    }
 
-	/**
-	 * Common helper class to handle admonition parts
-	 * @author Albert Tregnaghi
-	 *
-	 */
-	private class AdmonitionViewSupport {
-	
-		private EnumMap<AsciiDoctorAdmonitionParagraphKeyWords, ImageDescriptor> imgMap = new EnumMap<>(
-				AsciiDoctorAdmonitionParagraphKeyWords.class);
-	
-		public AdmonitionViewSupport() {
-			for (AsciiDoctorAdmonitionParagraphKeyWords keyword : AsciiDoctorAdmonitionParagraphKeyWords.values()) {
-				String path = "admonition_" + keyword.name().toLowerCase() + ".png";
-				imgMap.put(keyword, createToolbarImageDescriptor(path));
-			}
-		}
-	
-		public ImageDescriptor getDescriptor(AsciiDoctorAdmonitionParagraphKeyWords keyword) {
-			return imgMap.get(keyword);
-		}
-	
-		public String getText(AsciiDoctorAdmonitionParagraphKeyWords keyword) {
-			return keyword.name();
-		}
-	
-		public Action buildAction(AsciiDoctorAdmonitionParagraphKeyWords keyword) {
-			Action action = new InsertTextAction(asciiDoctorEditor, getText(keyword), getDescriptor(keyword)) {
-	
-				@Override
-				public void run() {
-					super.run();
-					valueVisibleOnToolbar=keyword;
-					initImageAndText();
-				}
+    /**
+     * Common helper class to handle admonition parts
+     * 
+     * @author Albert Tregnaghi
+     *
+     */
+    private class AdmonitionViewSupport {
+
+        private EnumMap<AsciiDoctorAdmonitionParagraphKeyWords, ImageDescriptor> imgMap = new EnumMap<>(AsciiDoctorAdmonitionParagraphKeyWords.class);
+
+        public AdmonitionViewSupport() {
+            for (AsciiDoctorAdmonitionParagraphKeyWords keyword : AsciiDoctorAdmonitionParagraphKeyWords.values()) {
+                String path = "admonition_" + keyword.name().toLowerCase() + ".png";
+                imgMap.put(keyword, createToolbarImageDescriptor(path));
+            }
+        }
+
+        public ImageDescriptor getDescriptor(AsciiDoctorAdmonitionParagraphKeyWords keyword) {
+            return imgMap.get(keyword);
+        }
+
+        public String getText(AsciiDoctorAdmonitionParagraphKeyWords keyword) {
+            return keyword.name();
+        }
+
+        public Action buildAction(AsciiDoctorAdmonitionParagraphKeyWords keyword) {
+            Action action = new InsertTextAction(asciiDoctorEditor, getText(keyword), getDescriptor(keyword)) {
+
+                @Override
+                public void run() {
+                    super.run();
+                    valueVisibleOnToolbar = keyword;
+                    initImageAndText();
+                }
+
                 /* @formatter:off */
 				@Override
 				protected String getInsertText(InsertTextContext context) {
@@ -125,9 +126,9 @@ public class InsertAdmonitionAction extends ToolbarAction implements IMenuCreato
 					        + "====\n";
 				}
 				/* @formatter:on */
-			};
-			return action;
-		}
-	}
+            };
+            return action;
+        }
+    }
 
 }

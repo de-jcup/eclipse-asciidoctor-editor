@@ -13,10 +13,10 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.preferences;
+package de.jcup.asciidoctoreditor.preferences;
 
 public interface PreferenceIdentifiable {
-	
-	public String getId();
+
+    public String getId();
 
 }

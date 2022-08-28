@@ -15,79 +15,83 @@ package de.jcup.asciidoctoreditor.preferences;
  * and limitations under the License.
  *
  */
- 
 
 /**
  * Constant definitions for plug-in preferences
  */
-public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiable{
+public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiable {
 
-	
-	P_EDITOR_MATCHING_BRACKETS_ENABLED("matchingBrackets"),
-	P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION("highlightBracketAtCaretLocation"),
-	P_EDITOR_ENCLOSING_BRACKETS("enclosingBrackets"),
-	P_EDITOR_MATCHING_BRACKETS_COLOR("matchingBracketsColor"),
-	P_EDITOR_AUTO_CREATE_END_BRACKETSY("autoCreateEndBrackets"),
-	
-	@Deprecated// see 
-	P_USE_PREVIEW_IMAGEDIRECTORY("usePreviewImageDirectory"),
-	P_LINK_OUTLINE_WITH_EDITOR("linkOutlineWithEditor"),
-	P_LINK_EDITOR_WITH_PREVIEW("linkEditorWithPreview"),
+    P_EDITOR_MATCHING_BRACKETS_ENABLED("matchingBrackets"),
 
-	P_CODE_ASSIST_ADD_KEYWORDS("codeAssistAddsKeyWords"),
-	P_CODE_ASSIST_ADD_SIMPLEWORDS("codeAssistAddsSimpleWords"),
-	
-	P_TOOLTIPS_ENABLED("toolTipsEnabled"),
-	
-	P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT("newEditorPreviewLayout"),
-	
-	P_EDITOR_AUTOREFRESH_EXTERNAL_BROWSER_IN_SECONDS("autoRefreshExternalBrowserInSeconds"),
-	
-	P_EDITOR_TOC_LEVELS("tocLevels"),
-	
-	P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED("autoBuildForExternalPreviewEnabled"),
-	
-	P_USE_INSTALLED_ASCIIDOCTOR_ENABLED("useInstalledAsciidoctorEnabled"),
-	
-	P_INSTALLED_ASCIICDOCTOR_ARGUMENTS("installedAsciidoctorArguments"),
+    P_EDITOR_HIGHLIGHT_BRACKET_AT_CARET_LOCATION("highlightBracketAtCaretLocation"),
 
-	P_PATH_TO_INSTALLED_ASCIICDOCTOR("pathToInstalledAsciidoctor"),
-	
-	P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT("showConsoleOnErrorOutput"),
-	
-	P_ASP_SERVER_MIN_PORT("aspServerMinPort"), 
+    P_EDITOR_ENCLOSING_BRACKETS("enclosingBrackets"),
 
-	P_ASP_SERVER_MAX_PORT("aspServerMaxPort"), 
-	
-	P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR("aspLogsShownAsMarkerInEditor"),
-	
-	P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE("aspServerOutputShownInConsole"),
+    P_EDITOR_MATCHING_BRACKETS_COLOR("matchingBracketsColor"),
 
-	P_ASP_COMMUNICATION_SHOWN_IN_CONSOLE("aspCommunicationShownInConsole"),
-	
-	P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES("dynamicIncludeCodeAssistEnabled"), 
-	
-	P_CODE_ASSIST_DYNAMIC_FOR_IMAGES("dynamicImageCodeAssistEnabled"),
+    P_EDITOR_AUTO_CREATE_END_BRACKETSY("autoCreateEndBrackets"),
 
-	P_CODE_ASSIST_DYNAMIC_FOR_PLANTUML_MACRO("dynamicPlantumlMacroCodeAssistEnabled"),
-	
-	P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO("dynamicDitaaMacroCodeAssistEnabled"),
+    P_LINK_OUTLINE_WITH_EDITOR("linkOutlineWithEditor"),
 
-	P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH("pathToJavaBinaryForASPLaunch"), 
-	
-	P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT("outlineGroupingEnabledPerDefault"),
-	
-	P_AUTOCREATE_INITIAL_CONFIGFILE("autoCreateInitialAsciidocConfigFile"), 
-	
-	;
+    P_LINK_EDITOR_WITH_PREVIEW("linkEditorWithPreview"),
 
-	private String id;
+    P_CODE_ASSIST_ADD_KEYWORDS("codeAssistAddsKeyWords"),
 
-	private AsciiDoctorEditorPreferenceConstants(String id) {
-		this.id = id;
-	}
+    P_CODE_ASSIST_ADD_SIMPLEWORDS("codeAssistAddsSimpleWords"),
 
-	public String getId() {
-		return id;
-	}
+    P_TOOLTIPS_ENABLED("toolTipsEnabled"),
+
+    P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT("newEditorPreviewLayout"),
+
+    P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS("autoBuildRefreshExternalBrowserInSeconds"),
+
+    P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED("autoBuildForExternalPreviewEnabled"),
+
+    P_EDITOR_TOC_LEVELS("tocLevels"),
+
+    P_USE_INSTALLED_ASCIIDOCTOR_ENABLED("useInstalledAsciidoctorEnabled"),
+
+    P_INSTALLED_ASCIICDOCTOR_ARGUMENTS("installedAsciidoctorArguments"),
+
+    P_PATH_TO_INSTALLED_ASCIICDOCTOR("pathToInstalledAsciidoctor"),
+
+    P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT("showConsoleOnErrorOutput"),
+
+    P_ASP_SERVER_MIN_PORT("aspServerMinPort"),
+
+    P_ASP_SERVER_MAX_PORT("aspServerMaxPort"),
+
+    P_ASP_SERVER_LOGS_SHOWN_AS_MARKER_IN_EDITOR("aspLogsShownAsMarkerInEditor"),
+
+    P_ASP_SERVER_OUTPUT_SHOWN_IN_CONSOLE("aspServerOutputShownInConsole"),
+
+    P_ASP_COMMUNICATION_SHOWN_IN_CONSOLE("aspCommunicationShownInConsole"),
+
+    P_CODE_ASSIST_DYNAMIC_FOR_INCLUDES("dynamicIncludeCodeAssistEnabled"),
+
+    P_CODE_ASSIST_DYNAMIC_FOR_IMAGES("dynamicImageCodeAssistEnabled"),
+
+    P_CODE_ASSIST_DYNAMIC_FOR_PLANTUML_MACRO("dynamicPlantumlMacroCodeAssistEnabled"),
+
+    P_CODE_ASSIST_DYNAMIC_FOR_DITAA_MACRO("dynamicDitaaMacroCodeAssistEnabled"),
+
+    P_PATH_TO_JAVA_BINARY_FOR_ASP_LAUNCH("pathToJavaBinaryForASPLaunch"),
+
+    P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT("outlineGroupingEnabledPerDefault"),
+
+    P_AUTOCREATE_INITIAL_CONFIGFILE("autoCreateInitialAsciidocConfigFile"),
+
+    P_DAYS_TO_KEEP_TEMPFILES("daysToKeepTempFiles"),
+
+    ;
+
+    private String id;
+
+    private AsciiDoctorEditorPreferenceConstants(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

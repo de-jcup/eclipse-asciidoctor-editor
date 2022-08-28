@@ -15,74 +15,81 @@
  */
 package de.jcup.asciidoctoreditor.diagram.plantuml;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseWheelListener;
+import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
+import de.jcup.asciidoctoreditor.AsciidoctorEditorOutlineSupport;
 import de.jcup.asciidoctoreditor.ContentTransformer;
-import de.jcup.asciidoctoreditor.CopySupport;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.EditorType;
-import de.jcup.asciidoctoreditor.asciidoc.WrapperConvertData;
+import de.jcup.asciidoctoreditor.asciidoc.ConversionData;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLFileDocumentProvider;
 import de.jcup.asciidoctoreditor.document.AsciiDoctorPlantUMLTextFileDocumentProvider;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
-import de.jcup.asciidoctoreditor.script.AsciiDoctorMarker;
+import de.jcup.asciidoctoreditor.preview.BrowserAccess;
 import de.jcup.asciidoctoreditor.toolbar.AddErrorDebugAction;
-import de.jcup.asciidoctoreditor.toolbar.ChangeLayoutAction;
+import de.jcup.asciidoctoreditor.toolbar.ClearProjectCacheAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.JumpToTopOfAsciiDocViewAction;
-import de.jcup.asciidoctoreditor.toolbar.OpenInExternalBrowserAction;
+import de.jcup.asciidoctoreditor.toolbar.NewPlantUMLUseExampleBlockAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
-import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowPreviewVerticalInsideEditorAction;
+import de.jcup.asciidoctoreditor.toolbar.ZoomLevel;
+import de.jcup.asciidoctoreditor.toolbar.ZoomLevelContributionItem;
+import de.jcup.asciidoctoreditor.util.EclipseUtil;
 
 public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements PlantUMLDataProvider {
 
+    private static final double MAXIMUM_SCALE_FACTOR = 4.0;
+    private static final double MINIMUM_SCALE_FACTOR = 0.1;
+
     private static final AsciiDoctorPlantUMLFileDocumentProvider ASCII_DOCTOR_PLANT_UML_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLFileDocumentProvider();
     private static final AsciiDoctorPlantUMLTextFileDocumentProvider ASCII_DOCTOR_PLANT_UML_TEXT_FILE_DOCUMENT_PROVIDER = new AsciiDoctorPlantUMLTextFileDocumentProvider();
+    private double pumlScaleFactor;
+    private ZoomLevelContributionItem zoomLevelContributionItem;
 
-    private PlantUMLLocalIncludeHierarchySearch search = new PlantUMLLocalIncludeHierarchySearch();
-
-    public void beforeAsciidocConvert(WrapperConvertData data) {
-        /* we check if there is a need to copy some local includes to temp folder */
-        String text = getDocumentText();
-        File file = data.editorFileOrNull;
-        if (file==null) {
-            return;
-        }
-        File parentFile = file.getParentFile();
-        search.setBaseFolder(parentFile);
-
-        List<File> files = null;
-        try {
-            files = search.searchLocalIncludes(text);
-            
-        } catch (IOException e) {
-            warn("Include search problem: " + e.getMessage());
-            return;
-        }
-        CopySupport copySupport = new CopySupport(parentFile,getTemporaryExternalPreviewFile().getParentFile());
-        try {
-            copySupport.copyFilesToNewBase(files);
-        } catch (IOException e) {
-            warn("Failed to copy local includes to temp folder: " + e.getMessage());
-        }
-        
+    @Override
+    protected AsciidoctorEditorOutlineSupport createOutlineSupport() {
+        return new AsciidoctorPlantUMLEditorOutlineSupport(this);
     }
 
-    private void warn(String message) {
-        AsciiDoctorMarker error = new AsciiDoctorMarker(-1, -1, message);
-        int severity = IMarker.SEVERITY_WARNING;
-        AsciiDoctorEditorUtil.addAsciiDoctorMarker(this, 1, error, severity);
+    @Override
+    protected void createSashFormAndBrowserAccess() {
+        super.createSashFormAndBrowserAccess();
+    }
+
+    @Override
+    protected void initPreview(SashForm sashForm) {
+        String defaultZoomLevel = AsciiDoctorEditorPreferences.getInstance().getPlantUMLDefaultZoomLevelAsText();
+        Double defaultPercentageOrNull = ZoomLevel.calculatePercentagefromString(defaultZoomLevel);
+        
+        if (defaultPercentageOrNull==null) {
+            pumlScaleFactor = ZoomLevel.LEVEL_100_PERCENT_VALUE;
+        }else {
+            pumlScaleFactor = defaultPercentageOrNull; 
+        }
+        super.initPreview(sashForm);
+
+        PlantUMLPreviewMouseWheelAndKeyListener mouseWheelAndKeyListener = new PlantUMLPreviewMouseWheelAndKeyListener();
+        BrowserAccess browserAccess = getBrowserAccess();
+        
+        browserAccess.installMouseWheelListener(mouseWheelAndKeyListener);
+    }
+
+    public void beforeAsciidocConvert(ConversionData data) {
+        /* nothing special here */
     }
 
     @Override
@@ -105,18 +112,27 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 
         /* necessary for refresh */
         rebuildAction = new RebuildAsciiDocViewAction(this);
+        clearProjectCacheAction = new ClearProjectCacheAsciiDocViewAction(this);
 
-        IToolBarManager viewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-        viewToolBarManager.add(new ChangeLayoutAction(this));
-        viewToolBarManager.add(new RebuildAsciiDocViewAction(this));
-        viewToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
+        IToolBarManager previewToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        previewToolBarManager.add(new ShowPreviewVerticalInsideEditorAction(this));
+        previewToolBarManager.add(new ShowPreviewHorizontalInsideEditorAction(this));
+        previewToolBarManager.add(new ShowPreviewInExternalBrowserAction(this));
+        zoomLevelContributionItem = new ZoomLevelContributionItem(this);
+        previewToolBarManager.add(zoomLevelContributionItem);
 
         IToolBarManager otherToolBarManager = new ToolBarManager(coolBarManager.getStyle());
-        otherToolBarManager.add(new OpenInExternalBrowserAction(this));
+        otherToolBarManager.add(new JumpToTopOfAsciiDocViewAction(this));
+        otherToolBarManager.add(new NewPlantUMLUseExampleBlockAction(this));
+
+        IToolBarManager buildToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        buildToolBarManager.add(rebuildAction);
+        buildToolBarManager.add(clearProjectCacheAction);
 
         // Add to the cool bar manager
-        coolBarManager.add(new ToolBarContributionItem(viewToolBarManager, "asciiDocPlantUMLEditor.toolbar.view"));
+        coolBarManager.add(new ToolBarContributionItem(previewToolBarManager, "asciiDocPlantUMLEditor.toolbar.preview"));
         coolBarManager.add(new ToolBarContributionItem(otherToolBarManager, "asciiDocPlantUMLEditor.toolbar.other"));
+        coolBarManager.add(new ToolBarContributionItem(buildToolBarManager, "asciiDocPlantUMLEditor.toolbar.build"));
 
         if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
             IToolBarManager debugToolBar = new ToolBarManager(coolBarManager.getStyle());
@@ -147,7 +163,120 @@ public class AsciiDoctorPlantUMLEditor extends AsciiDoctorEditor implements Plan
 
     @Override
     public PlantUMLOutputFormat getOutputFormat() {
-        return AsciiDoctorEditorPreferences.getInstance().getPlantUMLOutputFormat();
+        return PlantUMLOutputFormat.SVG;
     }
 
+    @Override
+    public void updateScaleFactor(double percentage) {
+        updateScaleFactor(percentage, false);
+    }
+
+    private void updateScaleFactor(double percentage, boolean alwaysUpdateUI) {
+        double newPumlScaleFactor = ensureScaleFactorValid(percentage);
+        if (alwaysUpdateUI || newPumlScaleFactor != percentage) {
+            updateZoomLevelOnUI();
+        }
+        if (pumlScaleFactor == newPumlScaleFactor) {
+            return;
+        }
+        pumlScaleFactor = newPumlScaleFactor;
+
+        rebuild();
+    }
+
+    @Override
+    public double getScaleFactor() {
+        return pumlScaleFactor;
+    }
+
+    /**
+     * Ensures given scale factor is valid. If valid, the factor will be returned.
+     * If not, another(but valid) factor will be returned
+     * 
+     * @param scaleFactor
+     * @return valid factor
+     */
+    private double ensureScaleFactorValid(double scaleFactor) {
+        if (scaleFactor <= 0) {
+            scaleFactor = ZoomLevel.LEVEL_100_PERCENT_VALUE;
+        }
+        if (scaleFactor < MINIMUM_SCALE_FACTOR) {
+            scaleFactor = MINIMUM_SCALE_FACTOR;
+        }
+        if (scaleFactor > MAXIMUM_SCALE_FACTOR) {
+            scaleFactor = MAXIMUM_SCALE_FACTOR;
+        }
+        return scaleFactor;
+    }
+
+    private void updateZoomLevelOnUI() {
+        if (zoomLevelContributionItem == null) {
+            return;
+        }
+        EclipseUtil.safeAsyncExec(() -> zoomLevelContributionItem.updateZoomLevel(pumlScaleFactor));
+    }
+
+    private class PlantUMLPreviewMouseWheelAndKeyListener implements MouseWheelListener, Runnable {
+
+        private int lastEventTime;
+        private Object monitor = new Object();
+        private Thread updateThread;
+        private long lastMouseWheelChange;
+        
+        public void mouseScrolled(MouseEvent e) {
+            if ((e.stateMask & SWT.CTRL) == 0) {
+                /* not CTRL pressed, so ignore */
+                return;
+            }
+            boolean zoomIn = e.count > 0;
+            
+            handleZoomAction(e, zoomIn);
+        }
+
+        private void handleZoomAction(TypedEvent e, boolean zoomIn) {
+            /* with the next time check we avoid multiple events at same time */
+            if (e.time == lastEventTime) {
+                return;
+            }
+            lastMouseWheelChange = System.currentTimeMillis();
+            lastEventTime = e.time;
+            double newPumlScaleFactor = pumlScaleFactor;
+            if (zoomIn) {
+                newPumlScaleFactor = newPumlScaleFactor += 0.1;
+            } else {
+                newPumlScaleFactor = newPumlScaleFactor -= 0.1;
+            }
+            double ensured = ensureScaleFactorValid(newPumlScaleFactor);
+            
+            if (ensured != newPumlScaleFactor) {
+                /* not valid - so just do not change */
+                return;
+            }
+            pumlScaleFactor = newPumlScaleFactor;
+            updateZoomLevelOnUI();
+
+            synchronized (monitor) {
+                /* if no update thread currently running/existing, create a new one */
+                if (updateThread == null || !updateThread.isAlive()) {
+                    updateThread = new Thread(this, "puml-scale-update-delay");
+                    updateThread.start();
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            while (System.currentTimeMillis() - lastMouseWheelChange < 300) {
+                /* while we have changes - we wait until no more changes */
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            rebuild();
+        }
+
+      
+    }
 }

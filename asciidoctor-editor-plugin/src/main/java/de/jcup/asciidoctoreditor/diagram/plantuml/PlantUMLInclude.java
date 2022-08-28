@@ -22,6 +22,8 @@ public class PlantUMLInclude implements PlantUMLElement {
     private String location;
     private boolean local;
     private int lineNumber;
+    private int position;
+    private String line;
 
     public PlantUMLInclude(String location) {
         this.location = location;
@@ -48,9 +50,31 @@ public class PlantUMLInclude implements PlantUMLElement {
     public void setLineNumber(int lineNumber) {
         this.lineNumber = lineNumber;
     }
-    
+
     public int getLineNumber() {
         return lineNumber;
     }
 
+    public void setPosition(int pos) {
+        this.position = pos;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setLine(String line) {
+        this.line = line;
+    }
+
+    public String getLine() {
+        return line;
+    }
+
+    public int getLength() {
+        if (line == null) {
+            return 0;
+        }
+        return line.length();
+    }
 }

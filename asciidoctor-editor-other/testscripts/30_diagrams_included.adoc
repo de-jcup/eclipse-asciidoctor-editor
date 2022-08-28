@@ -1,0 +1,6 @@
+== Including via plantuml
+plantuml::diagrams/activity-diagram-4.puml[]
+
+== Including via ditaa
+ditaa::diagrams/diagram2.ditaa[]
+

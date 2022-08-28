@@ -16,17 +16,18 @@
 package de.jcup.asciidoctoreditor.provider;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileFilter;
+import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
+import de.jcup.asciidoctoreditor.diagram.plantuml.PlantUMLFileEndings;
 
 public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvider {
-    private static FileFilter ADOC_FILE_FILTER = new AsciiDocFileFilter(false);
+
     private Map<File, File> baseDirCache = new HashMap<>();
 
-    AsciiDoctorBaseDirectoryProvider(AsciiDoctorProviderContext context) {
+    AsciiDoctorBaseDirectoryProvider(AsciiDoctorWrapperContext context) {
         super(context);
     }
 
@@ -43,9 +44,9 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         return tempFolder;
     }
 
-    private File findBaseDirNotCached(File startFrom) {
+    private File findProjectBaseDirNotCached(File startFrom) {
         getContext().getLogAdapter().resetTimeDiff();
-        File file = resolveUnSaveBaseDir(startFrom);
+        File file = resolveUnSaveProjectBaseDir(startFrom);
         File tempFolder = getTempFolder();
         if (tempFolder.equals(file)) {
             /*
@@ -60,14 +61,18 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         return file;
     }
 
-    private File resolveUnSaveBaseDir(File dir) {
-        // very simple approach just go up until no longer any asciidoc files
-        // are found
-        // if no longer .adoc files assume this is the end and use directory
+    private File resolveUnSaveProjectBaseDir(File dir) {
+        // Simple approach: just go up until no longer any asciidoc files
+        // are found - accept no folders without .adoc files between.
+        // If somebody has an empty folder between, the workaround must be to define an
+        // empty .adoc file inside.
         if (dir == null) {
             return new File(".");// should not happen but fall back...
         }
         File parentFile = dir.getParentFile();
+        if (parentFile == null) {
+            return dir;
+        }
         if (getTempFolder().equals(parentFile)) {
             /*
              * when we come to our base temp folder this will be a stop at all - avoid
@@ -76,40 +81,59 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
             return dir;
         }
         if (containsADocFiles(parentFile)) {
-            return findBaseDirNotCached(parentFile);
+            return findProjectBaseDirNotCached(parentFile);
+        } else {
+            /* parent folder is empty */
+            return dir;
         }
-        return dir;
     }
 
-    private File findCachedBaseDirOrStartSearch(File startFrom) {
+    private File findCachedProjectBaseDirOrStartSearch(File startFrom) {
         if (startFrom == null) {
             throw new IllegalStateException("No start from defined - but must be!");
         }
-        File cachedBaseDir = baseDirCache.get(startFrom);
-        if (cachedBaseDir == null) {
-            cachedBaseDir = findBaseDirNotCached(startFrom);
-            baseDirCache.put(startFrom, cachedBaseDir);
+        File cachedProjectBaseDir = baseDirCache.get(startFrom);
+        if (cachedProjectBaseDir == null) {
+            cachedProjectBaseDir = findProjectBaseDirNotCached(startFrom);
+            baseDirCache.put(startFrom, cachedProjectBaseDir);
         }
-        return cachedBaseDir;
+        return cachedProjectBaseDir;
     }
-
+    
     private boolean containsADocFiles(File dir) {
         if (!dir.isDirectory()) {
             return false;
         }
-        File[] files = dir.listFiles(ADOC_FILE_FILTER);
+        File[] files = dir.listFiles(AsciiDocFileFilter.ASCIIDOC_FILES_ONLY);
         if (files.length == 0) {
             return false;
         }
         return true;
     }
 
-    public File findBaseDir() {
+    public File findProjectBaseDir() {
         File asciiDocFile = getContext().getAsciiDocFile();
-        if (asciiDocFile == null) {
-            throw new IllegalStateException("No asciidoc file set!");
+        File editorFileOrNull = getContext().getEditorFileOrNull();
+
+        /*
+         * in case of plantuml we use the parent folder as base directory. Avoids
+         * problems with includes!
+         */
+        if (PlantUMLFileEndings.isPlantUmlFile(editorFileOrNull)) {
+            return failSafeEditorFileParent(editorFileOrNull);
         }
-        return findCachedBaseDirOrStartSearch(asciiDocFile.getParentFile());
+        if (asciiDocFile == null) {
+            return failSafeEditorFileParent(editorFileOrNull);
+        }
+        
+        return findCachedProjectBaseDirOrStartSearch(asciiDocFile.getParentFile());
+    }
+    
+    private File failSafeEditorFileParent(File editorFileOrNull) {
+        if (editorFileOrNull==null) {
+            return AsciiDocFileUtils.getEditorRootTempFolder();
+        }
+        return editorFileOrNull.getParentFile();
     }
 
     public void reset() {

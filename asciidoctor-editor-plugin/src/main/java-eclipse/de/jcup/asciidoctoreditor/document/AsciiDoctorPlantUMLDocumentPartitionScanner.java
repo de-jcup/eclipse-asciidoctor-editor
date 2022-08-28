@@ -28,7 +28,6 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
-import de.jcup.asciidoctoreditor.document.keywords.PlantUMLArrowKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLColorDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLKeywordDocumentKeywords;
 import de.jcup.asciidoctoreditor.document.keywords.PlantUMLMissingKeywordDocumentKeywords;
@@ -72,7 +71,6 @@ public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartit
         rules.add(new SingleLineRule("@enduml", "", preprocessor, (char) -1, true));
         rules.add(new SingleLineRule(":", "", label, (char) -1, true));
 
-        
         buildWordRules(rules, color, PlantUMLColorDocumentKeywords.values());
         rules.add(new HashColorRule(color));
         buildWordRules(rules, keyword, PlantUMLKeywordDocumentKeywords.values());
@@ -80,8 +78,8 @@ public class AsciiDoctorPlantUMLDocumentPartitionScanner extends RuleBasedPartit
         buildWordRules(rules, preprocessor, PlantUMLPreprocessorDocumentKeywords.values());
         buildWordRules(rules, skinparameter, PlantUMLSkinparameterDocumentKeywords.values());
         buildWordRules(rules, type, PlantUMLTypeDocumentKeywords.values());
-        
-        buildWordRules(rules, arrow, PlantUMLArrowKeywords.values());
+
+        rules.add(new PlantUMLArrowRule(arrow));
 
         setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
     }

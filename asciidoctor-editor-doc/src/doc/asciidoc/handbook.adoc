@@ -1,46 +1,60 @@
-== Handbook
+include::config.adoc[]
+= Handbook
+Target audience: Plugin user
 
-=== Asciidoc configfiles
+== Asciidoc configfiles
 
-==== Adopted from intellij plugin
+=== Adopted from intellij plugin
 The intellij plugin supports project specific configuration files 
 (see https://intellij-asciidoc-plugin.ahus1.de/docs/users-guide/features/advanced/asciidoctorconfig-file.html) 
 It's a very clever approach, because it's possible to fine tune IDE behaviour.
 
 
-==== Why was this adopted/necessary?
+=== Why was this adopted/necessary?
 Inside the Eclipse asciidoctor Plugin the same feature is now available. 
 It was was reused, to enable teams where IntellIJ and Eclipse is used both to have one common
 config file. But this does also solve many problems inside eclipse plugin when it comes to 
-images and their location!
+images and their locations!
 
 NOTE: For more details about the feature and the origin spec from intellij please 
 visit https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/314 
 
 
-==== File names
+=== File names
 
 The config files can be:
 
  * `.asciidoctorconfig` (origin filename but does not handle ifndef etc.)
  * `.asciidoctorconfig.adoc` This will work the same way like `.asciidoctorconfig` but supports preprocessor macros like ifndef
 
-==== Locations
+=== Locations
 Every project folder can contain such a configuration file which is
 accepted by IDE. 
 
-==== Purpose
+=== Purpose
 Inside these files we can set attributes. The files are hierarchical and are cummulated, but
 the nearest config file wins.
 
-==== Special attributes
-- `asciidoctorconfig` is a synthetic attribute, injected automatically by IDE. It contains the location of the nearest configuration file
+=== Special attributes
+- `asciidoctorconfigdir` is a synthetic attribute, injected automatically by IDE. It contains the location of the nearest configuration file
 
-==== Example
+=== Options
+It is also possible to set some options by the configuration file as well:
+[options="header"]
+|===
+|Option   |Descripiton   
+//----------------------
+|base_dir |change the base_dir used for rendering +
+For example:
+`:base_dir: {asciidoctorconfigdir}` would change the base directory to the current asciidoctor config file path
+|===
+
+
+=== Example
 Here an example were we define some variables and also set the imagesdir, so we need no
 relative pathes etc.
 
-===== Structure
+==== Structure
 Let's assume following situation:
 ----
 
@@ -62,7 +76,7 @@ Let's assume following situation:
 
 ----
 
-===== Two config files
+==== Two config files
 Inside `testproject/asciidoc/.asciidoctorconfig.adoc` we have:
 
 [source,asciidoc] 
@@ -89,7 +103,7 @@ Inside `testproject/asciidoc/folder3/.asciidoctorconfig.adoc` we have:
 <3> This redefines the `imagesdir` attribute and overwrites
     `testproject/asciidoc/.asciidoctorconfig.adoc` setup
 
-===== 3 Asciidoc files, all same content but different behaviour/output
+==== 3 Asciidoc files, all same content but different behaviour/output
 So having `test1.adoc`, `test2.adoc` and also `test3.adoc` all containing 
 
 [source,asciidoc]

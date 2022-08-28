@@ -27,9 +27,9 @@ public class AbsolutePathPatternFactory {
         Path folder = wrapper.getTempFolder();
         return createRemoveAbsolutePathPattern(folder);
     }
-    
+
     public Pattern createRemoveAbsolutePathToBaseFolderPattern(AsciiDoctorWrapper wrapper) {
-        Path folder = wrapper.getContext().getBaseDir().toPath();
+        Path folder = wrapper.getBaseDir();
         return createRemoveAbsolutePathPattern(folder);
     }
 
@@ -44,7 +44,7 @@ public class AbsolutePathPatternFactory {
         }
         return Pattern.compile(Pattern.quote(path));
     }
-    
+
     private boolean isWindowsOS() {
         String osName = System.getProperty("os.name");
         return osName != null && osName.toLowerCase().contains("windows");

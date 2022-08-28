@@ -1,0 +1,8 @@
+== Test
+
+
+plantuml::../../../../diagram1.plantuml[]
+
+
+include::../../../child-from-empty-subfolder/again-empty-subfolder/contentfolder/
+

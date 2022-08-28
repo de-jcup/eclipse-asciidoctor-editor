@@ -67,8 +67,8 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
         getEditor().validate();
 
         boolean rebuildEnabled = true;
-        boolean internalPreview2 = getEditor().isInternalPreview();
-        if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !internalPreview2) {
+        boolean editorIsInInternalPreviewMode = getEditor().isInternalPreview();
+        if (BuildAsciiDocMode.NOT_WHEN_EXTERNAL_PREVIEW_DISABLED == mode && !editorIsInInternalPreviewMode) {
             rebuildEnabled = AsciiDoctorEditorPreferences.getInstance().isAutoBuildEnabledForExternalPreview();
         }
         if (!rebuildEnabled) {
@@ -102,12 +102,12 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
 
     public static void showInitializingInfo(AsciiDoctorEditor editor) {
         BrowserAccess browserAccess = editor.getBrowserAccess();
-        
+
         if (previewFileURL == null) {
             /* we only need this one time */
             previewFileURL = "";
 
-            File previewInitializingFile = new File(editor.getWrapper().getAddonsFolder(), "html/initialize/preview_initializing.html");
+            File previewInitializingFile = new File(editor.getAddonsFolder(), "html/initialize/preview_initializing.html");
             if (previewInitializingFile.exists()) {
                 try {
                     previewFileURL = previewInitializingFile.toURI().toURL().toExternalForm();
@@ -116,10 +116,10 @@ public class AsciiDoctorEditorBuildSupport extends AbstractAsciiDoctorEditorSupp
                 }
             }
         }
-        
+
         if (previewFileURL.equals("")) {
             browserAccess.safeBrowserSetText(INITIALIZE_FALLBACK_HTML);
-        }else {
+        } else {
             browserAccess.setUrl(previewFileURL);
         }
     }

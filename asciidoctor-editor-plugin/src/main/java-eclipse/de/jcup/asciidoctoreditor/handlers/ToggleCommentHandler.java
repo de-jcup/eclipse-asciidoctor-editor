@@ -13,16 +13,15 @@
  * and limitations under the License.
  *
  */
- package de.jcup.asciidoctoreditor.handlers;
+package de.jcup.asciidoctoreditor.handlers;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 
-public class ToggleCommentHandler extends AbstractAsciiDoctorEditorHandler{
+public class ToggleCommentHandler extends AbstractAsciiDoctorEditorHandler {
 
-	@Override
-	protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
-		asciidoctorEditor.getCommentSupport().toggleComment();
-	}
-
+    @Override
+    protected void executeOnAsciiDoctorEditor(AsciiDoctorEditor asciidoctorEditor) {
+        asciidoctorEditor.getCommentSupport().toggleComment();
+    }
 
 }

@@ -36,57 +36,54 @@ import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	public AsciiDoctorEditorSyntaxColorPreferencePage() {
-		setPreferenceStore(AsciiDoctorEditorUtil.getPreferences().getPreferenceStore());
-	}
-	
-	@Override
-	public void init(IWorkbench workbench) {
-		
-	}
+    public AsciiDoctorEditorSyntaxColorPreferencePage() {
+        setPreferenceStore(AsciiDoctorEditorUtil.getPreferences().getPreferenceStore());
+    }
 
-	@Override
-	protected void createFieldEditors() {
-		Composite parent = getFieldEditorParent();
-		Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap = new HashMap<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor>();
-		for (AsciiDoctorEditorSyntaxColorPreferenceConstants colorIdentifier: AsciiDoctorEditorSyntaxColorPreferenceConstants.values()){
-			ColorFieldEditor editor = new ColorFieldEditor(colorIdentifier.getId(), colorIdentifier.getLabelText(), parent);
-			editorMap.put(colorIdentifier, editor);
-			addField(editor);
-		}
-		addDarkThemeDefaultsButton(parent, editorMap);
-	}
+    @Override
+    public void init(IWorkbench workbench) {
 
-	
-	private void addDarkThemeDefaultsButton(Composite parent,
-			Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap) {
-		Button restoreDarkThemeColorsButton= new Button(parent,  SWT.PUSH);
-		restoreDarkThemeColorsButton.setText("Restore Defaults for Dark Theme");
-		restoreDarkThemeColorsButton.setToolTipText("Same as 'Restore Defaults' but for dark themes.\n Editor makes just a suggestion, you still have to apply or cancel the settings.");
-		restoreDarkThemeColorsButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
+    }
 
-				/* editor colors */
-			    changeColor(editorMap, COLOR_ASCIIDOCTOR_HEADLINES, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_HEADLINE);
-				changeColor(editorMap, COLOR_NORMAL_TEXT, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_TEXT);
-				changeColor(editorMap, COLOR_TEXT_BLOCKS, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_BLOCK_TEXT);
+    @Override
+    protected void createFieldEditors() {
+        Composite parent = getFieldEditorParent();
+        Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap = new HashMap<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor>();
+        for (AsciiDoctorEditorSyntaxColorPreferenceConstants colorIdentifier : AsciiDoctorEditorSyntaxColorPreferenceConstants.values()) {
+            ColorFieldEditor editor = new ColorFieldEditor(colorIdentifier.getId(), colorIdentifier.getLabelText(), parent);
+            editorMap.put(colorIdentifier, editor);
+            addField(editor);
+        }
+        addDarkThemeDefaultsButton(parent, editorMap);
+    }
 
-				changeColor(editorMap, COLOR_TEXT_BOLD, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_TEXT_BOLD);
-				changeColor(editorMap, COLOR_TEXT_ITALIC, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_TEXT_ITALIC);
-				
-				changeColor(editorMap, COLOR_COMMENT, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_COMMENTS);
-				changeColor(editorMap, COLOR_ASCIIDOCTOR_COMMAND, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_COMMANDS);
-				changeColor(editorMap, COLOR_KNOWN_VARIABLES, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_KNOWN_VARIABLES);
-				changeColor(editorMap, COLOR_DELIMITERS, AsciiDoctorEditorColorConstants.LIGHT_THEME_LIGHT_BLUE);
-			}
+    private void addDarkThemeDefaultsButton(Composite parent, Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap) {
+        Button restoreDarkThemeColorsButton = new Button(parent, SWT.PUSH);
+        restoreDarkThemeColorsButton.setText("Restore Defaults for Dark Theme");
+        restoreDarkThemeColorsButton.setToolTipText("Same as 'Restore Defaults' but for dark themes.\n Editor makes just a suggestion, you still have to apply or cancel the settings.");
+        restoreDarkThemeColorsButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
 
-			private void changeColor(Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap,
-					AsciiDoctorEditorSyntaxColorPreferenceConstants colorId, RGB rgb) {
-				editorMap.get(colorId).getColorSelector().setColorValue(rgb);
-			}
-			
-		});
-	}
-	
+                /* editor colors */
+                changeColor(editorMap, COLOR_ASCIIDOCTOR_HEADLINES, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_HEADLINE);
+                changeColor(editorMap, COLOR_NORMAL_TEXT, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_TEXT);
+                changeColor(editorMap, COLOR_TEXT_BLOCKS, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_BLOCK_TEXT);
+
+                changeColor(editorMap, COLOR_TEXT_BOLD, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_TEXT_BOLD);
+                changeColor(editorMap, COLOR_TEXT_ITALIC, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_TEXT_ITALIC);
+
+                changeColor(editorMap, COLOR_COMMENT, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_COMMENTS);
+                changeColor(editorMap, COLOR_ASCIIDOCTOR_COMMAND, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_COMMANDS);
+                changeColor(editorMap, COLOR_KNOWN_VARIABLES, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_KNOWN_VARIABLES);
+                changeColor(editorMap, COLOR_DELIMITERS, AsciiDoctorEditorColorConstants.LIGHT_THEME_LIGHT_BLUE);
+            }
+
+            private void changeColor(Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap, AsciiDoctorEditorSyntaxColorPreferenceConstants colorId, RGB rgb) {
+                editorMap.get(colorId).getColorSelector().setColorValue(rgb);
+            }
+
+        });
+    }
+
 }
