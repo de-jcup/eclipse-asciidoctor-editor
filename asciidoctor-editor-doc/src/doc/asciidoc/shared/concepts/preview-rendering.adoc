@@ -60,9 +60,8 @@ folder content.
 
 ==== Same origin problems with images (no longer a problem)
 
-This was some times ago a problem but not any longer
-
-By using always absolute pathes, this works in 
+To avoid same origin problems with relative paths we use for preview rendering always absolute 
+pahtes. This works well with 
 
 Linux
 - Chrome Version 90.0.4430.93 (Official Build) for Linux Mint (64-bit)
@@ -72,105 +71,7 @@ Windows 10
 - Chrome
 - Firefox
 
-Formerly to avoid same origin problems the <img src parts inside generated HTML are inspected
+Formerly to avoid same origin problems the `<img src="./..">` parts inside generated HTML are inspected
 and the necessary images were copied.
 
-But this is no longer necessary.
-If it will be necessary again, a good way will be to
-create flat image names (sha256_filename) inside "img" and 
-replace all absolute pathes from project with tmp folderpendants.
-
-_(But hopefully this will never be necessary again, because it slows down...)_    
-
-===== Output Structure
-
-Example:
-  
-[source,bash]       
-----
-
-/myproject/
-    .classpath
-    /images2/
-        image2.jpg
-    /src/doc/asciidoc
-        images1/
-          image1.jpg
-        test1.adoc
-        test2.adoc
-
-----       
-
-The asciidoc document `test1.adoc` looks like this:
-
-[source,asiidoc]
-----
-==== Show a picture 
-
-image::./images1.jpg[]
-----
-
-The asciidoc document `test2.adoc` looks like this:
-
-[source,asiidoc]
-----
-:imagesdir: ./../../../images2
-
-==== Show a picture 
-
-image::images2.jpg[]
-----
-
-       
-*What is the output?*
-
-
-Or: images out dir <=> new transformed dir!
-      
-----
-
-/tmp/asciidoctor-editor-gen/
-    /myproject_6414940450661
-        /img/          
-            d23232323_diagram1.png
-            d23232323_diagram2.svg
-     1234asdfsdfsf_test1_hidden_editor_file.adoc
-     1234asdfsdfsf_test1_internal.httml
-     52323safdsdfs_test2.hidden_editor_file.adoc
-     52323safdsdfs_test2_internal.httml
-----       
-
-So we must always 
-- convert relative pathes inside imagesdir to absolute ones
-  (just check images dir attribute before rendering. check if starting
-   with ./ if so, convert to absolute path before calling asciidoctor)
-- fetch absolute image pathes from generated HTML
-- create a new (flat) corresponding file 
-- copy to the flat locaton
-- change html to use flat variant
-    
-Advantages:
-- imagesoutdir (`asciidoctor-diagrams`)  and `imagesdir` are same and there are no
-  unwanted (genarated) diagram images inside the eclipse project
-- one file for same image (no accidently duplicated files because of relative file pathes)
-- 
-       
-       
-       
-Or: images out dir tmp, use absolute pathes (linux: firefox + chromium works without same origin problems)
-so no image copy necessary, we only change html. 
-
-every file not found in html output, we change to imageoutputdir...      
-----
-
-/tmp/asciidoctor-editor-gen/
-    /myproject_6414940450661
-        /images_outdir          
-            diag__image1.jpg
-            diag__image2.jpg
-     1234asdfsdfsf_test1_hidden_editor_file.adoc
-     1234asdfsdfsf_test1_internal.httml
-     52323safdsdfs_test2.hidden_editor_file.adoc
-     52323safdsdfs_test2_internal.httml
-
-----     
+But this is no longer necessary when using the aboslute paths.
