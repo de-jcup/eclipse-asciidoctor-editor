@@ -40,7 +40,7 @@ import de.jcup.asp.client.AspClientProgressMonitor;
 import de.jcup.eclipse.commons.EclipseResourceHelper;
 
 public class AspAsciidoctorAdapter implements AsciidoctorAdapter {
-
+	
     @Override
     public void convertFile(File editorFileOrNull, File asciiDocFile, AsciidocOptions options, AsciidocAttributes attributes, AspClientProgressMonitor monitor) {
         try {

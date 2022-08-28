@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="de.jcup.asciidoctoreditor.feature">
+      <category name="de.jcup.asciidoctoreditor"/>
+   </feature>
+   <feature id="de.jcup.asciidoctoreditor.asplauncher">
+      <category name="de.jcup.asciidoctoreditor"/>
+   </feature>
+   <feature id="de.jcup.asciidoctoreditor.aspserver">
+      <category name="de.jcup.asciidoctoreditor"/>
+   </feature>
+   <category-def name="de.jcup.asciidoctoreditor" label="Asciidoctor Editor"/>
+</site>

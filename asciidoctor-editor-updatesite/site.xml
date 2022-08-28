@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description name="Asciidoctor Editor Update Site" url="https://dl.bintray.com/de-jcup/asciidoctoreditor">
+  <description name="Asciidoctor Editor Update Site" url="https://de-jcup.github.io/update-site-eclipse-asciidoctor-editor/update-site/">
       This update site contains feature and plugins of Asciidoctor Editor
    </description>
    <feature url="features/de.jcup.asciidoctor.converter_1.1.0.jar" id="de.jcup.asciidoctor.converter" version="1.1.0">

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Asciidoctor Editor
 Bundle-SymbolicName: de.jcup.asciidoctoreditor;singleton:=true
-Bundle-Version: 2.7.0
+Bundle-Version: 2.9.0
 Bundle-Activator: de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator
 Bundle-Vendor: Albert Tregnaghi
 Require-Bundle: org.eclipse.ui,
@@ -17,20 +17,20 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.core.expressions,
  org.eclipse.ui.console,
- de.jcup.asciidoctoreditor.libs,
  de.jcup.asciidoctoreditor.css,
- org.eclipse.search;bundle-version="3.11.400",
+ org.eclipse.search,
  org.eclipse.ltk.ui.refactoring,
- org.eclipse.ltk.core.refactoring;bundle-version="3.9.200"
+ org.eclipse.ltk.core.refactoring,
+ eclipse-commons;bundle-version="1.0.0",
+ org.apache.commons.commons-io;bundle-version="2.7.0",
+ wrapped.de.jcup.asp.asp-core;bundle-version="1.4.1",
+ wrapped.de.jcup.asp.asp-client-java;bundle-version="1.4.1",
+ wrapped.de.jcup.asp.asp-api;bundle-version="1.4.1",
+ wrapped.de.jcup.asp.asp-server-asciidoctorj-launcher;bundle-version="1.4.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui,
  org.eclipse.ui.texteditor.spelling,
  org.eclipse.ui.texteditor.templates
-Export-Package: de.jcup.asciidoctoreditor,
- de.jcup.asciidoctoreditor.outline
-Bundle-ClassPath: .,
- lib/de-jcup-eclipse-commons.jar,
- lib/commons-io-2.6.jar,
- lib/asp-server-asciidoctorj-launcher-dist.jar
+Bundle-ClassPath: .
 Automatic-Module-Name: de.jcup.asciidoctoreditor

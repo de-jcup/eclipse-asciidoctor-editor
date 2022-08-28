@@ -37,20 +37,4 @@ There exists a gradle task `installLibraries` which copied libraries from `ascii
 So we were able to define library dependencies inside `build.gradle` and to install the into the plugins. 
 
 
-=== Maven Tycho build
-The new build mechanism will be done with `Maven Tycho`.
-see https://github.com/de-jcup/eclipse-asciidoctor-editor/issues/371
-
-It will have many benefits:
-
-- no binary artifacts inside git repository (lib folder) +
-  _(This will be possible by using an eclipse target project, which now can handle maven dependencies to "normal"
-   libraries from maven-central as well!)_
-- no longer a separation of Eclipse and common parts necessary
-- release builds can be full automated
-- ci builds will test eclipse unit tests as well 
-
-[CAUTION]
-====
-Currently the `Maven` build is still under development and not 100% final. See former mentioned GitHub issue for current situation.
-====
+include::build/maven-build.adoc[]
