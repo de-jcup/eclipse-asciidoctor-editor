@@ -15,6 +15,7 @@
  */
 package de.jcup.asciidoctoreditor.preferences;
 
+import de.jcup.asciidoctoreditor.KeyValue;
 import de.jcup.eclipse.commons.preferences.AbstractPreferenceValueConverter;
 
 public class KeyValueConverter extends AbstractPreferenceValueConverter<KeyValue> {

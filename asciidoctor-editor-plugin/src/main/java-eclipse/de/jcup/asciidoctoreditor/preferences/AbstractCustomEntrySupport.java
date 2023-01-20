@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import de.jcup.asciidoctoreditor.CustomEntrySupport;
+import de.jcup.asciidoctoreditor.KeyValue;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 
 public abstract class AbstractCustomEntrySupport implements CustomEntrySupport {

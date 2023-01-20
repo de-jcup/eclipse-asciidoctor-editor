@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.asciidoctoreditor.preferences;
+package de.jcup.asciidoctoreditor;
 
 import java.util.Objects;
 

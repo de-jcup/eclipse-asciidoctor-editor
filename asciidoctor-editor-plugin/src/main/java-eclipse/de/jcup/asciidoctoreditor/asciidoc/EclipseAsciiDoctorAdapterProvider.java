@@ -15,6 +15,8 @@
  */
 package de.jcup.asciidoctoreditor.asciidoc;
 
+import de.jcup.asciidoctoreditor.CustomEntrySupport;
+import de.jcup.asciidoctoreditor.preferences.CustomAttributesEntrySupport;
 import de.jcup.asciidoctoreditor.provider.AsciiDoctorAdapterProvider;
 
 public class EclipseAsciiDoctorAdapterProvider implements AsciiDoctorAdapterProvider {
@@ -36,5 +38,9 @@ public class EclipseAsciiDoctorAdapterProvider implements AsciiDoctorAdapterProv
         } else {
             return asciidoctorServerProtocollClient;
         }
+    }
+    
+    public CustomEntrySupport getCustomAttributesEntrySupport() {
+        return CustomAttributesEntrySupport.DEFAULT;
     }
 }

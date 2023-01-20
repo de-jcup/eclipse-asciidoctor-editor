@@ -15,10 +15,13 @@
  */
 package de.jcup.asciidoctoreditor.provider;
 
+import de.jcup.asciidoctoreditor.CustomEntrySupport;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 
 public interface AsciiDoctorAdapterProvider {
 
     AsciidoctorAdapter getAsciiDoctor(boolean installed);
+    
+    CustomEntrySupport getCustomAttributesEntrySupport();
 
 }

@@ -1,4 +1,4 @@
-package de.jcup.asciidoctoreditor.preferences;
+package de.jcup.asciidoctoreditor;
 
 import java.util.List;
 import java.util.Map;

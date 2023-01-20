@@ -21,8 +21,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.jcup.asciidoctoreditor.CustomEntrySupport;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
-import de.jcup.asciidoctoreditor.preferences.CustomAttributesEntrySupport;
 import de.jcup.asp.api.asciidoc.AsciidocAttributes;
 import de.jcup.asp.api.asciidoc.AsciidocAttributesBuilder;
 
@@ -84,7 +84,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
         attrBuilder.customAttribute("imagesoutdir", target.getAbsolutePath());
 
         /* finally handle custom entries from preferences */
-        CustomAttributesEntrySupport attributesSupport = CustomAttributesEntrySupport.DEFAULT;
+        CustomEntrySupport attributesSupport = getContext().getProvider().getCustomAttributesEntrySupport();
         if ( attributesSupport.areCustomEntriesEnabled()) {
             Map<String, String> customAttributesFromPreferences = attributesSupport.fetchConfiguredEntriesAsMap();
             for (String customAttributeKey: customAttributesFromPreferences.keySet()) {
@@ -104,7 +104,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
             cachedAttributes = resolveAttributes();
         }
         
-        CustomAttributesEntrySupport attributesSupport = CustomAttributesEntrySupport.DEFAULT;
+        CustomEntrySupport attributesSupport = getContext().getProvider().getCustomAttributesEntrySupport();
         if (! attributesSupport.areCustomEntriesEnabled()) {
             return cachedAttributes;
         }

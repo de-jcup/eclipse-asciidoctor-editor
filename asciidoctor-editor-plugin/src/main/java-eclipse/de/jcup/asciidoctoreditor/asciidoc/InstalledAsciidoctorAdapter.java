@@ -24,11 +24,11 @@ import java.util.concurrent.TimeUnit;
 
 import de.jcup.asciidoctoreditor.AsciiDoctorEclipseLogAdapter;
 import de.jcup.asciidoctoreditor.CLITextUtil;
+import de.jcup.asciidoctoreditor.CustomEntrySupport;
 import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
 import de.jcup.asciidoctoreditor.OSUtil;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
-import de.jcup.asciidoctoreditor.preferences.CustomEntrySupport;
 import de.jcup.asciidoctoreditor.preferences.CustomEnvironmentEntrySupport;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.asp.api.asciidoc.AsciidocAttributes;

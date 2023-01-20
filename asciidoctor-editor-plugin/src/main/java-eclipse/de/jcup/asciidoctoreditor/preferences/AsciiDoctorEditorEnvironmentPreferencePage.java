@@ -17,6 +17,7 @@ package de.jcup.asciidoctoreditor.preferences;
 
 import de.jcup.asciidoctoreditor.ASPSupport;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditorActivator;
+import de.jcup.asciidoctoreditor.CustomEntrySupport;
 
 public class AsciiDoctorEditorEnvironmentPreferencePage extends AbstractAsciiDoctorEditorCustomEntriesPreferencePage {
 

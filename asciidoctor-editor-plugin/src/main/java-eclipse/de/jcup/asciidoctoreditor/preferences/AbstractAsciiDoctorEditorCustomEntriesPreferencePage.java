@@ -59,6 +59,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import de.jcup.asciidoctoreditor.CustomEntrySupport;
+import de.jcup.asciidoctoreditor.KeyValue;
 import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.eclipse.commons.ui.SWTFactory;
 
