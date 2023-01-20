@@ -30,6 +30,7 @@ import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.template.AsciidoctorEditorTemplateSupportConfig;
 import de.jcup.asciidoctoreditor.ui.ColorManager;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 import de.jcup.eclipse.commons.resource.EclipseResourceInputStreamProvider;
@@ -75,7 +76,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
         super.start(context);
 
         cleanupTempFolder();
-        
+
         getAspSupport().start();
         plugin = this;
         taskSupportProvider.getTodoTaskSupport().install();
@@ -87,15 +88,21 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
         getAspSupport().stop();
         taskSupportProvider.getTodoTaskSupport().uninstall();
         colorManager.dispose();
-        
+
         cleanupTempFolder();
-        
+
         super.stop(context);
     }
 
-    private void cleanupTempFolder() throws IOException {
-        
-        AsciiDocFileUtils.deleteEmptyFoldersAndTempFilesOlderThanDaysAnd(AsciiDoctorEditorPreferences.getInstance().getDaysToKeepTempFiles());
+    private void cleanupTempFolder() {
+        try {
+            int daysToKeepTempFiles = AsciiDoctorEditorPreferences.getInstance().getDaysToKeepTempFiles();
+
+            AsciiDocFileUtils.deleteEmptyFoldersAndTempFilesOlderThanDaysAnd(daysToKeepTempFiles);
+            
+        } catch (IOException e) {
+            AsciiDoctorEditorUtil.logError("Was not able to cleanup temp folder", e);
+        }
     }
 
     /**
