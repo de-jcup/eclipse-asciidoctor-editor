@@ -70,7 +70,9 @@ public class NewLinkInsertAction extends InsertTextAction {
 
     @Override
     protected void beforeInsert(InsertTextContext context) {
-        NewLinkDialog dialog = new NewLinkDialog(EclipseUtil.getActiveWorkbenchShell());
+        String initialLinText = context.selectedText;
+        
+        NewLinkDialog dialog = new NewLinkDialog(EclipseUtil.getActiveWorkbenchShell(), initialLinText);
         int result = dialog.open();
         if (result == Window.CANCEL) {
             context.canceled = true;

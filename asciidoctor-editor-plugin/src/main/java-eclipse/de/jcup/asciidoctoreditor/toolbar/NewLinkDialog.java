@@ -44,8 +44,9 @@ public class NewLinkDialog extends TitleAreaDialog {
 
     private LinkType linkType;
 
-    public NewLinkDialog(Shell parentShell) {
+    public NewLinkDialog(Shell parentShell, String initialLinkText) {
         super(parentShell);
+        this.linkText=initialLinkText;
     }
 
     @Override
@@ -102,6 +103,9 @@ public class NewLinkDialog extends TitleAreaDialog {
 
         txtLinkText = new Text(container, SWT.BORDER);
         txtLinkText.setLayoutData(data);
+        if (linkText!=null) {
+            txtLinkText.setText(linkText);
+        }
     }
 
     private void createTargetTextFields(Composite container) {
