@@ -222,6 +222,10 @@ public class AsciiDoctorEditorPreferences {
     public boolean isUsingInstalledAsciidoctor() {
         return getBooleanPreference(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED);
     }
+    
+    public void setUseInstalledAsciidoctor(boolean useInstalled) {
+        setBooleanPreference(P_USE_INSTALLED_ASCIIDOCTOR_ENABLED, useInstalled);
+    }
 
     public String getArgumentsForInstalledAsciidoctor() {
         return getStringPreference(P_INSTALLED_ASCIICDOCTOR_ARGUMENTS);

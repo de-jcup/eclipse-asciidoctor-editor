@@ -17,8 +17,14 @@ package de.jcup.asciidoctoreditor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
@@ -36,19 +42,44 @@ import de.jcup.eclipse.commons.EclipseResourceHelper;
 public class PluginContentInstaller {
     private static final String CSS = "css";
     private static final String ADDONS = "addons";
+
+    @Deprecated
     private static final String LIBS = "libs";
+    private static final String ASP_SERVER_DISTRO_FOLDER = "asp-server";
     private static final String CSS_PLUGIN_ID = "de.jcup.asciidoctoreditor.css";
-    private static final String LIBS_PLUGIN_ID = "de.jcup.asciidoctoreditor.libs";
+    private static final String ASP_SERVER_DIST_VERSION = "1.4.1";
     public static final PluginContentInstaller INSTANCE = new PluginContentInstaller();
 
     private PluginContentInstaller() {
 
     }
 
-    public File getLibsFolder() {
-        String versionName = getLibVersionName();
-        return ensureLibsAreAvailable(versionName);
+    public File getOrDownloadASPServerDistroFile(IProgressMonitor progressMonitor) throws Exception {
+        String versionName = getASPServerDistributionVersionName();
+
+        File aspServerDistroFolder = getHomeSubSubFolder(ASP_SERVER_DISTRO_FOLDER);
+        String fileName = "asp-server-asciidoctorj-" + versionName + "-dist.jar";
+
+        File aspServerFileName = new File(aspServerDistroFolder, fileName);
+        if (aspServerFileName.exists()) {
+            return aspServerFileName;
+        }
+        String urlAsString = "https://repo1.maven.org/maven2/de/jcup/asp/asp-server-asciidoctorj/" + versionName + "/" + fileName;
+        
+        runWithTimeout(()-> HttpDownloadUtility.downloadFile(urlAsString, aspServerFileName, progressMonitor),1);
+        return aspServerFileName;
     }
+    
+    public static <T> T runWithTimeout(Callable<T> task, int seconds) throws Exception{
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<T> future = executor.submit(task);
+        T result = future.get(seconds, TimeUnit.SECONDS);
+        executor.shutdown();
+        return result;
+    }
+
+
+    
 
     public File getAddonsFolder() {
         return ensureEditorAddonsAreAvailable();
@@ -58,8 +89,8 @@ public class PluginContentInstaller {
         return getPluginVersion(AsciiDoctorEditorActivator.PLUGIN_ID);
     }
 
-    private String getLibVersionName() {
-        return getPluginVersion(LIBS_PLUGIN_ID);
+    private String getASPServerDistributionVersionName() {
+        return ASP_SERVER_DIST_VERSION;
     }
 
     private String getPluginVersion(String pluginId) {
@@ -88,23 +119,6 @@ public class PluginContentInstaller {
                 copyFolderOrFail(targetVersionCSSfolder, CSS, CSS_PLUGIN_ID);
             } catch (IOException e) {
                 throw new IllegalStateException("Not able to install CSS files from css plugin", e);
-            }
-
-        }
-        return targetVersionCSSfolder;
-    }
-
-    private File ensureLibsAreAvailable(String versionName) {
-        File libsFolder = getHomeSubSubFolder(LIBS);
-
-        File targetVersionCSSfolder = new File(libsFolder, versionName);
-        if (!targetVersionCSSfolder.exists()) {
-            targetVersionCSSfolder.mkdirs();
-
-            try {
-                copyFolderOrFail(targetVersionCSSfolder, LIBS, LIBS_PLUGIN_ID);
-            } catch (IOException e) {
-                throw new IllegalStateException("Not able to install Server files from libs plugin", e);
             }
 
         }

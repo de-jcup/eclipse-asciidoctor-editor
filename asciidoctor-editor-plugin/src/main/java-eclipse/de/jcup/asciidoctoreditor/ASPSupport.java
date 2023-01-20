@@ -18,16 +18,20 @@ package de.jcup.asciidoctoreditor;
 import java.io.File;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
+
 import de.jcup.asciidoctoreditor.asciidoc.ASPServerAdapter;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.preferences.CustomEnvironmentEntrySupport;
+import de.jcup.asciidoctoreditor.util.AsciiDoctorEditorUtil;
 import de.jcup.asp.client.AspClient;
 
 public class ASPSupport {
 
     private InstalledJavaBinaryPathResolver installedBinaryPathResolver;
-    
+
     private ASPServerAdapter aspServerAdapter;
 
     private boolean aspServerStarted;
@@ -58,7 +62,7 @@ public class ASPSupport {
 
     public AspClient getAspClient() {
         if (!aspServerStarted) {
-            startStopASPServerOnDemandInOwnThread();
+            startStopASPServerOnDemandInOwnJob();
         }
         waitForServerAvailable(new FallbackRestartHandler());
 
@@ -70,11 +74,11 @@ public class ASPSupport {
      * Called by preference page
      */
     public void configurationChanged() {
-        startStopASPServerOnDemandInOwnThread();
+        startStopASPServerOnDemandInOwnJob();
 
     }
 
-    private void internalUpdateASPServerStart() {
+    private void internalUpdateASPServerStart(IProgressMonitor progressMonitor) {
         AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
 
         boolean usesInstalledAsciidoctor = preferences.isUsingInstalledAsciidoctor();
@@ -100,12 +104,29 @@ public class ASPSupport {
             AsciiDoctorConsoleUtil.output(">> Stop running ASP server at port " + aspServerAdapter.getPort());
             aspServerAdapter.stopServer();
         }
-        File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
-        File aspServer = new File(aspFolder, "asp-server-asciidoctorj-dist.jar");
+        File aspServer = null;
+        try {
+            aspServer = PluginContentInstaller.INSTANCE.getOrDownloadASPServerDistroFile(progressMonitor);
+
+        } catch (Exception e) {
+            AsciiDoctorEditorUtil.logError("ASP server distro download/installation failed! Please check your network access and try again.", e);
+            return;
+        }
+        if (aspServer == null || !aspServer.exists()) {
+            if (progressMonitor.isCanceled()) {
+                /* canceled by user - so we change the preferences to use native */
+                AsciiDoctorEditorUtil.logInfo("ASP server distro download canceled by user. So changed preferences to use native for next build. Please refresh.");
+                preferences.setUseInstalledAsciidoctor(true);
+                return;
+            } else {
+                AsciiDoctorEditorUtil.logWarning("ASP server distro download/installation was not possible! Please check your network access and try again.");
+                return;
+            }
+        }
 
         String pathToJavaBinary = preferences.getPathToJavaBinaryForASPLaunch();
-        
-        if (pathToJavaBinary==null || pathToJavaBinary.isEmpty()) {
+
+        if (pathToJavaBinary == null || pathToJavaBinary.isEmpty()) {
             pathToJavaBinary = installedBinaryPathResolver.resolvePathToJavaBinary();
         }
         aspServerAdapter.setPathToJavaBinary(pathToJavaBinary);
@@ -129,11 +150,13 @@ public class ASPSupport {
         return !aspServerAdapter.isAlive();
     }
 
-    private void startStopASPServerOnDemandInOwnThread() {
+    private void startStopASPServerOnDemandInOwnJob() {
         aspServerStarted = true;
 
-        Thread t = new Thread(() -> internalUpdateASPServerStart(), "Update ASP server start");
-        t.start();
+        Job job = Job.create("Update ASP server start", (progressMonitor) -> {
+            internalUpdateASPServerStart(progressMonitor);
+        });
+        job.schedule();
     }
 
     private void waitForServerAvailable(ServerNotAvailableHandler notAvailableHandler) {

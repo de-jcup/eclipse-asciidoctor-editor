@@ -42,7 +42,7 @@ public class PresentationSupport implements IPresentationDamager, IPresentationR
 
         fDefaultTextAttribute = defaultTextAttribute;
     }
-
+    
     @Override
     public void setDocument(IDocument document) {
         fDocument = document;

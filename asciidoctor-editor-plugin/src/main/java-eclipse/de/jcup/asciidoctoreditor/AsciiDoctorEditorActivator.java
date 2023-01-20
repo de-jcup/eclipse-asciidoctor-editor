@@ -16,15 +16,24 @@
 package de.jcup.asciidoctoreditor;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.ui.console.IConsolePageParticipant;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -54,7 +63,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     private AsciiDoctorEditorTaskTagsSupportProvider taskSupportProvider;
 
     private ASPSupport aspSupport;
-
+    
     public AsciiDoctorEditorActivator() {
         colorManager = new ColorManager();
         aspSupport = new ASPSupport();
@@ -70,6 +79,66 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     public ASPSupport getAspSupport() {
         return aspSupport;
     }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public Proxy getProxy(URI uri) {
+            BundleContext context = getBundle().getBundleContext();
+            ServiceTracker<IProxyService, ?> proxyTracker;
+            proxyTracker = new ServiceTracker(context, IProxyService.class, null);
+            proxyTracker.open();
+        
+            IProxyService proxyService = (IProxyService) proxyTracker.getService();
+            IProxyData[] proxyDataForHost = proxyService.select(uri);
+            Set<String> propertyList = new LinkedHashSet<>();
+
+            
+        Proxy proxy = null;
+        for (IProxyData data : proxyDataForHost) {
+            String host = data.getHost();
+            if (host == null) {
+                continue;
+            }
+            String type = data.getType();
+
+            if (type == null) {
+                continue;
+            }
+            type=type.toLowerCase();
+            int port = data.getPort();
+
+            if (data.isRequiresAuthentication()) {
+                String userid = data.getUserId();
+                String pwd = data.getPassword();
+            }
+            Type proxyType = null;
+            if (type.startsWith("http")) {
+                proxyType=Type.HTTP;
+            }else if (type.startsWith("socks")) {
+                proxyType=Type.SOCKS;
+            }else {
+                proxyType=Type.DIRECT;
+            }
+            proxy = new Proxy(proxyType,InetSocketAddress.createUnresolved(checkHost(host), port));
+            
+            break;
+
+        }
+        proxyTracker.close();
+        if (proxy==null) {
+            proxy = Proxy.NO_PROXY;
+        }
+        return proxy;
+    }
+    
+    private static String checkHost(String h) {
+        if (h != null) {
+            if (h.indexOf('\n') > -1) {
+                throw new IllegalStateException("Illegal character in host");
+            }
+        }
+        return h;
+    }
+    
 
     public void start(BundleContext context) throws Exception {
         super.start(context);
@@ -79,6 +148,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
         getAspSupport().start();
         plugin = this;
         taskSupportProvider.getTodoTaskSupport().install();
+        
 
     }
 
@@ -86,6 +156,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
         plugin = null;
         getAspSupport().stop();
         taskSupportProvider.getTodoTaskSupport().uninstall();
+        
         colorManager.dispose();
         
         cleanupTempFolder();
