@@ -121,17 +121,31 @@ public class AsciiDoctorWrapperContext {
     }
 
     protected void init() {
-        logAdapter.resetTimeDiff();
+        boolean debugLoggingEnabled = EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED;
+        
+        if (debugLoggingEnabled) {
+            logAdapter.resetTimeDiff();
+        }
         attributesProvider = register(new AsciiDoctorAttributesProvider(this));
-        logAdapter.logTimeDiff("time to create attributes provider");
+        if (debugLoggingEnabled) {
+            logAdapter.logTimeDiff("time to create attributes provider");
+        }
         imageProvider = register(new AsciiDoctorImageProvider(this));
-        logAdapter.logTimeDiff("time to create images provider");
+        if (debugLoggingEnabled) {
+            logAdapter.logTimeDiff("time to create images provider");
+        }
         optionsProvider = register(new AsciiDoctorOptionsProvider(this));
-        logAdapter.logTimeDiff("time to create options provider");
+        if (debugLoggingEnabled) {
+            logAdapter.logTimeDiff("time to create options provider");
+        }
         baseDirProvider = register(new AsciiDoctorBaseDirectoryProvider(this));
-        logAdapter.logTimeDiff("time to create base dir provider");
+        if (debugLoggingEnabled) {
+            logAdapter.logTimeDiff("time to create base dir provider");
+        }
         diagramProvider = register(new AsciiDoctorDiagramProvider(this));
-        logAdapter.logTimeDiff("time to create diagram provider");
+        if (debugLoggingEnabled) {
+            logAdapter.logTimeDiff("time to create diagram provider");
+        }
     }
 
     public void setOutputFolder(Path outputFolder) {
@@ -178,8 +192,8 @@ public class AsciiDoctorWrapperContext {
 
     public File getBaseDir() {
         if (baseDir == null) {
-            
-            Map<String, Object> attributes = getAttributesProvider().getCachedAttributes();
+
+            Map<String, Object> attributes = getAttributesProvider().getCachedAttributesOverridenByCustomAttributesFromPreferences();
             Object baseDirFromAttributesObj = attributes.get(AsciidocOption.BASEDIR.getKey());
             if (baseDirFromAttributesObj instanceof String) {
                 String baseDirFromAttributes = baseDirFromAttributesObj.toString();

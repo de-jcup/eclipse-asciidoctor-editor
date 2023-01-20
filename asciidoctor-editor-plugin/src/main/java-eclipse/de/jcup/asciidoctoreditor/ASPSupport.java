@@ -27,7 +27,7 @@ import de.jcup.asp.client.AspClient;
 public class ASPSupport {
 
     private InstalledJavaBinaryPathResolver installedBinaryPathResolver;
-    
+
     private ASPServerAdapter aspServerAdapter;
 
     private boolean aspServerStarted;
@@ -100,12 +100,13 @@ public class ASPSupport {
             AsciiDoctorConsoleUtil.output(">> Stop running ASP server at port " + aspServerAdapter.getPort());
             aspServerAdapter.stopServer();
         }
+
         File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();
         File aspServer = new File(aspFolder, "asp-server-asciidoctorj-dist.jar");
 
         String pathToJavaBinary = preferences.getPathToJavaBinaryForASPLaunch();
-        
-        if (pathToJavaBinary==null || pathToJavaBinary.isEmpty()) {
+
+        if (pathToJavaBinary == null || pathToJavaBinary.isEmpty()) {
             pathToJavaBinary = installedBinaryPathResolver.resolvePathToJavaBinary();
         }
         aspServerAdapter.setPathToJavaBinary(pathToJavaBinary);
@@ -116,8 +117,8 @@ public class ASPSupport {
         aspServerAdapter.setLogAdapter(AsciiDoctorEclipseLogAdapter.INSTANCE);
 
         Map<String, String> customEnvEntries = null;
-        if (CustomEnvironmentEntrySupport.DEFAULT.areCustomEnvironmentEntriesEnabled()) {
-            customEnvEntries = CustomEnvironmentEntrySupport.DEFAULT.fetchConfiguredEnvironmentEntriesAsMap();
+        if (CustomEnvironmentEntrySupport.DEFAULT.areCustomEntriesEnabled()) {
+            customEnvEntries = CustomEnvironmentEntrySupport.DEFAULT.fetchConfiguredEntriesAsMap();
         }
         aspServerAdapter.setCustomEnvironmentEntries(customEnvEntries);
 

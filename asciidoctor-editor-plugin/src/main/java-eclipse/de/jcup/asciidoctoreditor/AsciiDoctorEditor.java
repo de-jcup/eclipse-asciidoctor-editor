@@ -134,6 +134,7 @@ import de.jcup.asciidoctoreditor.toolbar.NewCodeBlockInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewCrossReferenceMarkerInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewLinkInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
+import de.jcup.asciidoctoreditor.toolbar.OpenAsciidoctorEditorSettingsAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
@@ -989,9 +990,13 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         IToolBarManager outputToolBarManager = new ToolBarManager(coolBarManager.getStyle());
         outputToolBarManager.add(new CreatePDFAction(this));
         outputToolBarManager.add(new CreateOverviewAction(this));
+        
+        IToolBarManager settingsToolBarManager = new ToolBarManager(coolBarManager.getStyle());
+        settingsToolBarManager.add(new OpenAsciidoctorEditorSettingsAction(this));
 
         // Add to the cool bar manager
         coolBarManager.add(new ToolBarContributionItem(previewToolBarManager, "asciiDocEditor.toolbar.preview"));
+        coolBarManager.add(new ToolBarContributionItem(settingsToolBarManager, "asciiDocEditor.toolbar.settings"));
         coolBarManager.add(new ToolBarContributionItem(stylingToolBarManager, "asciiDocEditor.toolbar.style"));
         coolBarManager.add(new ToolBarContributionItem(insertToolberManager, "asciiDocEditor.toolbar.insert"));
         coolBarManager.add(new ToolBarContributionItem(viewToolBarManager, "asciiDocEditor.toolbar.view"));

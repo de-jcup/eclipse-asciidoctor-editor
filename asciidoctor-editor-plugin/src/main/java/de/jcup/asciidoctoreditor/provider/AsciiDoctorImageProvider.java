@@ -18,6 +18,8 @@ package de.jcup.asciidoctoreditor.provider;
 import java.io.File;
 import java.util.Map;
 
+import de.jcup.asciidoctoreditor.EclipseDevelopmentSettings;
+
 public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider {
     private String cachedSourceImagesPath;
 
@@ -33,9 +35,14 @@ public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider {
     }
 
     protected String resolveImagesDirPath(File baseDir) {
-        getContext().getLogAdapter().resetTimeDiff();
+        boolean debugLoggingEnabled = EclipseDevelopmentSettings.DEBUG_LOGGING_ENABLED;
+        
+        if (debugLoggingEnabled) {
+            getContext().getLogAdapter().resetTimeDiff();
+        }
+        
         AsciiDoctorAttributesProvider attributesProvider = getContext().getAttributesProvider();
-        Map<String, Object> cachedAttributes = attributesProvider.getCachedAttributes();
+        Map<String, Object> cachedAttributes = attributesProvider.getCachedAttributesOverridenByCustomAttributesFromPreferences();
         Object imagesDir = cachedAttributes.get("imagesdir");
 
         String imagesDirPath = null;
@@ -52,7 +59,10 @@ public class AsciiDoctorImageProvider extends AbstractAsciiDoctorProvider {
              */
             imagesDirPath = baseDir.getAbsolutePath();
         }
-        getContext().getLogAdapter().logTimeDiff("resolveImagesDirPath, baseDir:" + baseDir);
+        
+        if (debugLoggingEnabled) {
+            getContext().getLogAdapter().logTimeDiff("resolveImagesDirPath, baseDir:" + baseDir);
+        }
         return imagesDirPath;
     }
 

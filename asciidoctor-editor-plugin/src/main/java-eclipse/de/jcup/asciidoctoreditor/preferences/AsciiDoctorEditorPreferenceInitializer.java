@@ -145,6 +145,14 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
         /* + Temporary files +*/
         /* +++++++++++++++++++ */
         store.setDefault(AsciiDoctorEditorPreferenceConstants.P_DAYS_TO_KEEP_TEMPFILES.getId(), 2);
+        
+
+        /* +++++++++ */
+        /* + Other +*/
+        /* +++++++++ */
+        store.setDefault(AsciiDoctorEditorPreferenceConstants.P_CUSTOM_ATTRIBUTES_ENABLED.getId(),true);
+        store.setDefault(AsciiDoctorEditorPreferenceConstants.P_CUSTOM_ENV_ENTRIES_ENABLED.getId(),true);
+        
     }
 
 }

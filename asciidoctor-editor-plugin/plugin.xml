@@ -57,7 +57,14 @@
         id="asciidoctoreditor.preferences.keyword.cache"
         label="tmp">
      </keyword>
-    
+     <keyword
+        id="asciidoctoreditor.preferences.keyword.environment"
+        label="environment">
+     </keyword>
+     <keyword
+        id="asciidoctoreditor.preferences.keyword.attributes"
+        label="attributes">
+     </keyword>
    </extension>
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          CONTENT TYPE                                -->
@@ -649,6 +656,21 @@
          category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
           <keywordReference
                id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.environment">
+         </keywordReference>
+      </page>
+       <page
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorAttributesPreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorAttributesPreferencePage"
+         name="Attributes"
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
+          <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.attributes">
          </keywordReference>
       </page>
       <page

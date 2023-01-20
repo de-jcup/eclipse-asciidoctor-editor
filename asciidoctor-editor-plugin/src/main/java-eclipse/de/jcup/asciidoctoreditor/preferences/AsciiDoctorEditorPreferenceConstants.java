@@ -81,7 +81,16 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 
     P_AUTOCREATE_INITIAL_CONFIGFILE("autoCreateInitialAsciidocConfigFile"),
 
-    P_DAYS_TO_KEEP_TEMPFILES("daysToKeepTempFiles"),
+    P_DAYS_TO_KEEP_TEMPFILES("daysToKeepTempFiles"), 
+    
+    P_CUSTOM_ENV_ENTRIES_DATA("customEnviromentEntriesData"),
+    
+    P_CUSTOM_ENV_ENTRIES_ENABLED("customEnviromentEntriesEnabled"),
+    
+    P_CUSTOM_ATTRIBUTES_DATA("customAttributesData"),
+    
+    P_CUSTOM_ATTRIBUTES_ENABLED("customAttributesEnabled"),
+    
 
     ;
 

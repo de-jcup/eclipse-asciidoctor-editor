@@ -18,10 +18,11 @@ package de.jcup.asciidoctoreditor.provider;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
+import de.jcup.asciidoctoreditor.preferences.CustomAttributesEntrySupport;
 import de.jcup.asp.api.asciidoc.AsciidocAttributes;
 import de.jcup.asp.api.asciidoc.AsciidocAttributesBuilder;
 
@@ -63,7 +64,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
         String outputFolderAbsolutePath = createAbsolutePath(getOutputFolder());
         attrBuilder.customAttribute("outdir", outputFolderAbsolutePath);
         /* if imagesdir is relative, convert to absolute */
-        Object imagesDir = getCachedAttributes().get("imagesdir");
+        Object imagesDir = getCachedAttributesOverridenByCustomAttributesFromPreferences().get("imagesdir");
         if (imagesDir instanceof String) {
             String imagesDirString = (String) imagesDir;
             if (imagesDirString.startsWith(".")) {
@@ -77,18 +78,44 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
             }
         }
 
+        
         /* handle output directory */
         File target = new File(outputFolderAbsolutePath, IMAGE_OUTPUT_DIR_NAME);
         attrBuilder.customAttribute("imagesoutdir", target.getAbsolutePath());
 
+        /* finally handle custom entries from preferences */
+        CustomAttributesEntrySupport attributesSupport = CustomAttributesEntrySupport.DEFAULT;
+        if ( attributesSupport.areCustomEntriesEnabled()) {
+            Map<String, String> customAttributesFromPreferences = attributesSupport.fetchConfiguredEntriesAsMap();
+            for (String customAttributeKey: customAttributesFromPreferences.keySet()) {
+                String customAttributevalue = customAttributesFromPreferences.get(customAttributeKey);
+                attrBuilder.customAttribute(customAttributeKey, customAttributevalue);
+            }
+        }
         return attrBuilder.build();
     }
 
-    protected Map<String, Object> getCachedAttributes() {
+    /**
+     * 
+     * @return cached attributes (but still overriden with custom parts from preferences!)
+     */
+    protected Map<String, Object> getCachedAttributesOverridenByCustomAttributesFromPreferences() {
         if (cachedAttributes == null) {
             cachedAttributes = resolveAttributes();
         }
-        return cachedAttributes;
+        
+        CustomAttributesEntrySupport attributesSupport = CustomAttributesEntrySupport.DEFAULT;
+        if (! attributesSupport.areCustomEntriesEnabled()) {
+            return cachedAttributes;
+        }
+        
+        /* overwrite with custom attributes configured in preferences */
+        Map<String, String> configuredEntries = attributesSupport.fetchConfiguredEntriesAsMap();
+        Map<String, Object> combined = new HashMap<String, Object>(cachedAttributes);
+        combined.putAll(configuredEntries);
+
+        return combined;
+        
     }
 
     protected Map<String, Object> resolveAttributes() {
@@ -98,10 +125,13 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
 
         // now we have to apply the parts from config file as well:
         AsciiDocConfigFileSupport support = getContext().getConfigFileSupport();
+        Map<String, Object> resolved = null;
         if (support==null) {
-            return Collections.emptyMap();
+            resolved = new HashMap<String, Object>(map);
+        }else {
+            resolved = support.calculateResolvedMap(map, getContext().getConfigFiles());
         }
-        return support.calculateResolvedMap(map, getContext().getConfigFiles());
+        return resolved;
     }
 
     protected String createAbsolutePath(Path path) {

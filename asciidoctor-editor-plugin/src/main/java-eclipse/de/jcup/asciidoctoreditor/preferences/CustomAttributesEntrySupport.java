@@ -15,16 +15,18 @@
  */
 package de.jcup.asciidoctoreditor.preferences;
 
-public class CustomEnvironmentEntrySupport extends AbstractCustomEntrySupport {
+public class CustomAttributesEntrySupport extends AbstractCustomEntrySupport{
 
-    public static final CustomEnvironmentEntrySupport DEFAULT = new CustomEnvironmentEntrySupport();
-
+    public static final CustomAttributesEntrySupport DEFAULT = new CustomAttributesEntrySupport();
+    
     protected String getCustomEntriesDataKey() {
-        return AsciiDoctorEditorPreferenceConstants.P_CUSTOM_ENV_ENTRIES_DATA.getId();
+        return AsciiDoctorEditorPreferenceConstants.P_CUSTOM_ATTRIBUTES_DATA.getId();
     }
 
     protected String getCustomEntriesEnabledKey() {
-        return AsciiDoctorEditorPreferenceConstants.P_CUSTOM_ENV_ENTRIES_ENABLED.getId();
+        return AsciiDoctorEditorPreferenceConstants.P_CUSTOM_ATTRIBUTES_ENABLED.getId();
     }
+
+
 
 }
