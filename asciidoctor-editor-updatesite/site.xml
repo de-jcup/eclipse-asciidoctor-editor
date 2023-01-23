@@ -31,6 +31,9 @@
       <category name="category.asciidoctoreditor.stable"/>
    </feature>
    <feature url="features/de.jcup.asciidoctoreditor_3.0.0.jar" id="de.jcup.asciidoctoreditor" version="3.0.0">
+      <category name="category.asciidoctoreditor.unstable"/>
+   </feature>
+   <feature url="features/de.jcup.asciidoctoreditor_3.0.1.jar" id="de.jcup.asciidoctoreditor" version="3.0.1">
       <category name="category.asciidoctoreditor.stable"/>
    </feature>
    <category-def name="category.asciidoctoreditor.stable" label="Stable">
