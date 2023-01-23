@@ -136,6 +136,7 @@ import de.jcup.asciidoctoreditor.toolbar.NewLinkInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.NewTableInsertAction;
 import de.jcup.asciidoctoreditor.toolbar.OpenAsciidoctorEditorSettingsAction;
 import de.jcup.asciidoctoreditor.toolbar.RebuildAsciiDocViewAction;
+import de.jcup.asciidoctoreditor.toolbar.ShowEditorDumpDebugAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewHorizontalInsideEditorAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewInExternalBrowserAction;
 import de.jcup.asciidoctoreditor.toolbar.ShowPreviewVerticalInsideEditorAction;
@@ -1006,6 +1007,7 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         if (EclipseDevelopmentSettings.DEBUG_TOOLBAR_ENABLED) {
             IToolBarManager debugToolBar = new ToolBarManager(coolBarManager.getStyle());
             debugToolBar.add(new AddErrorDebugAction(this));
+            debugToolBar.add(new ShowEditorDumpDebugAction(this));
             coolBarManager.add(new ToolBarContributionItem(debugToolBar, "asciiDocEditor.toolbar.debug"));
         }
 
@@ -1503,6 +1505,20 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     public void updateScaleFactor(double percentage) {
         /* do nothing per default*/
+    }
+
+    public String createDump() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Editor dump\n");
+        sb.append("***********\n");
+        sb.append("Editor id:").append(getEditorId()).append("\n");
+        
+        sb.append("\n");
+        sb.append("Wrapper dump\n");
+        sb.append("************\n");
+        sb.append(wrapper.createDump());
+        
+        return sb.toString();
     }
 
 }

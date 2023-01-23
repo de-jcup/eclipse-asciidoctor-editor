@@ -42,6 +42,8 @@ import de.jcup.asciidoctoreditor.LogAdapter;
 import de.jcup.asciidoctoreditor.PluginContentInstaller;
 import de.jcup.asciidoctoreditor.TemporaryFileType;
 import de.jcup.asciidoctoreditor.UniqueIdProvider;
+import de.jcup.asciidoctoreditor.asciidoc.debug.AsciidocFileDebugInfoCollector;
+import de.jcup.asciidoctoreditor.asciidoc.debug.VarContentDumper;
 import de.jcup.asciidoctoreditor.console.AsciiDoctorConsoleUtil;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferenceConstants;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
@@ -441,4 +443,31 @@ public class AsciiDoctorWrapper {
         return getContext().getTargetPDFFileOrNull();
     }
 
+    public String createDump() {
+        StringBuilder sb = new StringBuilder();
+
+        VarContentDumper dump = new VarContentDumper();
+        dump.add("OutputFolder", getOutputFolder());
+        dump.add("BaseDir", getBaseDir());
+        dump.add("DiagramRootDir", getDiagramProvider().getDiagramRootDirectory());
+        dump.add("CachedSourceImagesPath", getImageProvider().getCachedSourceImagesPath());
+        dump.add("Attributes", getContext().getAttributesProvider().createAttributes().toMap());
+        dump.addNewLine();
+
+        dump.add("FileToRender", getFileToRender());
+        sb.append("Wrapper variables:\n");
+        sb.append("------------------\n");
+        sb.append(dump.toString());
+
+        sb.append("\n");
+        sb.append("Simple file walkthrough:\n");
+        sb.append("------------------------\n");
+
+        AsciidocFileDebugInfoCollector infoCollector = new AsciidocFileDebugInfoCollector();
+        infoCollector.setBaseDir(getBaseDir());
+        infoCollector.collect(getFileToRender());
+        sb.append(infoCollector.createDump());
+        
+        return sb.toString();
+    }
 }
