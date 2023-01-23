@@ -121,7 +121,7 @@ public class AsciiDoctorAttributesProvider extends AbstractAsciiDoctorProvider {
     protected Map<String, Object> resolveAttributes() {
         AsciiDoctorWrapperContext context = getContext();
 
-        Map<String, Object> map = getContext().getAsciiDoctor().resolveAttributes(context.getAsciiDocFile());
+        Map<String, Object> map = getContext().getAsciiDoctor().resolveAttributes(context.getEditorFileOrNull());
 
         // now we have to apply the parts from config file as well:
         AsciiDocConfigFileSupport support = getContext().getConfigFileSupport();

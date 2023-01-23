@@ -55,7 +55,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
         File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder1/");
 
         /* prepare */
-        when(context.getAsciiDocFile()).thenReturn(file);
+        when(context.getEditorFileOrNull()).thenReturn(file);
         
         /* execute */
         File baseDir = providerToTest.findProjectBaseDir();
@@ -72,7 +72,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
         expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/");
 
         /* prepare */
-        when(context.getAsciiDocFile()).thenReturn(file);
+        when(context.getEditorFileOrNull()).thenReturn(file);
         
         /* execute */
         baseDir = providerToTest.findProjectBaseDir();
@@ -90,7 +90,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject1/mydoc1/subfolder1");
 
 		/* prepare */
-		when(context.getAsciiDocFile()).thenReturn(file);
+		when(context.getEditorFileOrNull()).thenReturn(file);
 		
 		/* execute */
 		File baseDir = providerToTest.findProjectBaseDir();
@@ -107,7 +107,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
         File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject3/subfolder2/subfolder3-no-adocfile/subfolder4");
 
         /* prepare */
-        when(context.getAsciiDocFile()).thenReturn(file);
+        when(context.getEditorFileOrNull()).thenReturn(file);
         
         /* execute */
         File baseDir = providerToTest.findProjectBaseDir();
@@ -124,7 +124,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		File expectedbaseDir = ensuredTestFile("src/test/resources/basedirtesting/testproject1/mydoc1/subfolder1");
 
 		/* prepare */
-		when(context.getAsciiDocFile()).thenReturn(file);
+		when(context.getEditorFileOrNull()).thenReturn(file);
 		
 		/* execute */
 		File baseDir = providerToTest.findProjectBaseDir();
@@ -146,7 +146,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		expectedException.expect(IllegalStateException.class);
 		
 		/* prepare */
-		when(context.getAsciiDocFile()).thenReturn(file);
+		when(context.getEditorFileOrNull()).thenReturn(file);
 		
 		/* execute */
 		providerToTest.findProjectBaseDir();
@@ -162,7 +162,7 @@ public class AsciiDoctorBaseDirectoryProviderTest {
 		File file = AsciiDocFileUtils.createTempFileForConvertedContent(null, uniqueIdProvider,"junit_testcase_temporary_file_for_issue_97.xyz");
 		
 		/* prepare */
-		when(context.getAsciiDocFile()).thenReturn(file);
+		when(context.getEditorFileOrNull()).thenReturn(file);
 		
 		/* execute */
 		File baseDir = providerToTest.findProjectBaseDir();

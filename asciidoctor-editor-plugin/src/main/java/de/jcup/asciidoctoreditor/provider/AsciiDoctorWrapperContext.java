@@ -34,7 +34,6 @@ import de.jcup.asp.api.asciidoc.AsciidocOption;
 public class AsciiDoctorWrapperContext {
 
     private LogAdapter logAdapter;
-    private File asciiDocFile;
     /**
      * Base dir used for asciidoctor rendering - is either the project base dir, or
      * a configured directory by a asciidoctorconfig file using "base_dir" option
@@ -157,7 +156,6 @@ public class AsciiDoctorWrapperContext {
      * recalculated on next rendering time fo editor content
      */
     public void resetCaches() {
-        this.asciiDocFile = null;
         this.baseDir = null;
         this.projectBaseDir = null;
         this.outputFolder = null;
@@ -219,10 +217,6 @@ public class AsciiDoctorWrapperContext {
 
     public LogAdapter getLogAdapter() {
         return logAdapter;
-    }
-
-    public File getAsciiDocFile() {
-        return asciiDocFile;
     }
 
     public void setUseInstalled(boolean usingInstalledAsciidoctor) {

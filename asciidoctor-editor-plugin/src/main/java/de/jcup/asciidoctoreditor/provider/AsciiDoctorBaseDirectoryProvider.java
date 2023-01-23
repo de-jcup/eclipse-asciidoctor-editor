@@ -112,9 +112,11 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
     }
 
     public File findProjectBaseDir() {
-        File asciiDocFile = getContext().getAsciiDocFile();
         File editorFileOrNull = getContext().getEditorFileOrNull();
 
+        if (editorFileOrNull == null) {
+            return failSafeEditorFileParent(editorFileOrNull);
+        }
         /*
          * in case of plantuml we use the parent folder as base directory. Avoids
          * problems with includes!
@@ -122,11 +124,8 @@ public class AsciiDoctorBaseDirectoryProvider extends AbstractAsciiDoctorProvide
         if (PlantUMLFileEndings.isPlantUmlFile(editorFileOrNull)) {
             return failSafeEditorFileParent(editorFileOrNull);
         }
-        if (asciiDocFile == null) {
-            return failSafeEditorFileParent(editorFileOrNull);
-        }
         
-        return findCachedProjectBaseDirOrStartSearch(asciiDocFile.getParentFile());
+        return findCachedProjectBaseDirOrStartSearch(editorFileOrNull.getParentFile());
     }
     
     private File failSafeEditorFileParent(File editorFileOrNull) {
