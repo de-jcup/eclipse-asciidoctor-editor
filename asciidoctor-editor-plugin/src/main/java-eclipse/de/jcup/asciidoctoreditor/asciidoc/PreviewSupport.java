@@ -29,7 +29,7 @@ public interface PreviewSupport {
 
     File getTempFileFor(File fileToConvertIntoHTML, UniqueIdProvider editorId, TemporaryFileType origin);
 
-    String enrichHTML(String asciiDocHtml, int refreshAutomaticallyInSeconds);
+    String enrichHTML(String asciiDocHtml, boolean autoRefreshEnabled, int refreshAutomaticallyInSeconds);
 
     Path getProjectTempFolder();
 

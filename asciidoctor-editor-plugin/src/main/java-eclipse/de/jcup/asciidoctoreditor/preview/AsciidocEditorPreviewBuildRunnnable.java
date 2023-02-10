@@ -315,10 +315,12 @@ class AsciidocEditorPreviewBuildRunnnable implements ICoreRunnable {
     private File enrichPreviewHTMLAndWriteToDisk(IProgressMonitor monitor, PreviewSupport previewSupport, String asciiDocHtml) {
         String previewHTML;
         if (internalPreview) {
-            previewHTML = previewSupport.enrichHTML(asciiDocHtml, 0);
+            previewHTML = previewSupport.enrichHTML(asciiDocHtml, false, -1);
         } else {
-            int refreshAutomaticallyInSeconds = AsciiDoctorEditorPreferences.getInstance().getAutoRefreshInSecondsForExternalBrowser();
-            previewHTML = previewSupport.enrichHTML(asciiDocHtml, refreshAutomaticallyInSeconds);
+            AsciiDoctorEditorPreferences preferences = AsciiDoctorEditorPreferences.getInstance();
+            boolean autoRefreshEnabled = preferences.isAutoRefreshEnabledForExternalPreview();
+            int refreshAutomaticallyInSeconds = preferences.getAutoRefreshInSecondsForExternalBrowser();
+            previewHTML = previewSupport.enrichHTML(asciiDocHtml, autoRefreshEnabled, refreshAutomaticallyInSeconds);
         }
 
         return writePreviewHTMLFile(monitor, previewHTML);

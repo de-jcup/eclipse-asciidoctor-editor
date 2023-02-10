@@ -107,6 +107,7 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         baseComposite = createComposite();
 
         createUIGroup(baseComposite);
+        createSpacer(baseComposite);
         createExternalPreviewParts(baseComposite);
     }
 
@@ -158,6 +159,8 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         BooleanFieldEditor tocVisibleOnNewEditors = new BooleanFieldEditor(P_TOC_VISIBLE_ON_NEW_EDITORS_PER_DEFAULT .getId(), "TOC visible per default", devNull);
         tocVisibleOnNewEditors.getDescriptionControl(devNull).setToolTipText("When enabled the TOC (table of content) is automatically visible per default on new editor instances");
         addField(tocVisibleOnNewEditors);
+        
+        createSpacer(uiComposite);
 
         devNull = new Composite(uiComposite, SWT.NONE);
         BooleanFieldEditor autoConfigFileCreationEnabled = new BooleanFieldEditor(P_AUTOCREATE_INITIAL_CONFIGFILE.getId(), "Enable initial config file auto creation", devNull);
@@ -184,21 +187,28 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         externalPreviewGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         Composite devNull1 = new Composite(externalPreviewGroup, SWT.NONE);
-        AccessibleBooleanFieldEditor autobuildForExternalPreviewEnabled = new AccessibleBooleanFieldEditor(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED.getId(), "Auto build for external preview",
+        AccessibleBooleanFieldEditor autobuildForExternalPreviewEnabled = new AccessibleBooleanFieldEditor(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED.getId(), "Build always external preview",
                 devNull1);
         autobuildForExternalPreviewEnabled.getDescriptionControl(devNull1)
                 .setToolTipText("When enabled the asciidoctor integration will be called on every change in document. As done in internal previews.\n\n"
                         + "If disabled only a click to 'refresh' or 'show in external browser' buttons inside the toolbar will rebuild the document.\n\n");
         addField(autobuildForExternalPreviewEnabled);
+        
+        Composite devNull3 = new Composite(externalPreviewGroup, SWT.NONE);
+        AccessibleBooleanFieldEditor autorefreshEnabled = new AccessibleBooleanFieldEditor(P_EDITOR_EXTERNAL_PREVIEW_AUTOREFRESH_ENABLED.getId(), "Auto refresh enabled",
+                devNull3);
+        autorefreshEnabled.getDescriptionControl(devNull3)
+        .setToolTipText("When enabled the external preview will be automatically refreshed in given interval");
+        addField(autorefreshEnabled);
 
         Composite devNull2 = new Composite(externalPreviewGroup, SWT.NONE);
-        IntegerFieldEditor autorefreshSeconds = new IntegerFieldEditor(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS.getId(), "Auto refresh in external preview (in seconds)", devNull2);
-        autorefreshSeconds.setValidRange(0, 30);
+        IntegerFieldEditor autorefreshSeconds = new IntegerFieldEditor(P_EDITOR_EXTERNAL_PREVIEW_AUTOREFRESH_IN_SECONDS.getId(), "Auto refresh interval (in seconds)", devNull2);
+        autorefreshSeconds.setValidRange(1, 30);
         autorefreshSeconds.setTextLimit(2);
-        autorefreshSeconds.getLabelControl(devNull2).setToolTipText("0 will turn off auto refresh for external previews.\n\nIf auto build has been disabled, this value will be ignored!");
+        autorefreshSeconds.getLabelControl(devNull2).setToolTipText("If auto refresh has been disabled, this value will be ignored!");
         addField(autorefreshSeconds);
 
-        createDependency(autobuildForExternalPreviewEnabled.getChangeControl(devNull1), autorefreshSeconds.getTextControl(devNull2));
+        createDependency(autorefreshEnabled.getChangeControl(devNull3), autorefreshSeconds.getTextControl(devNull2));
     }
 
     @Override

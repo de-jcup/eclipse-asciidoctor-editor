@@ -412,11 +412,12 @@ public class AsciiDoctorWrapper {
      * Enrich given HTML with CSS and additional javascript
      * 
      * @param html
+     * @param autoRefreshEnabled 
      * @param refreshAutomaticallyInSeconds
      * @return
      */
-    public String enrichHTML(String html, int refreshAutomaticallyInSeconds) {
-        return htmlBuilder.buildHTMLWithCSS(html, refreshAutomaticallyInSeconds);
+    public String enrichHTML(String html, boolean autoRefreshEnabled, int refreshAutomaticallyInSeconds) {
+        return htmlBuilder.buildHTMLWithCSS(html, autoRefreshEnabled, refreshAutomaticallyInSeconds);
     }
 
     public Path getOutputFolder() {

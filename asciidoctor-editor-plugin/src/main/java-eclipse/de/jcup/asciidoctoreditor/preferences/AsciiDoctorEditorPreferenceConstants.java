@@ -43,7 +43,9 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
 
     P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT("newEditorPreviewLayout"),
 
-    P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS("autoBuildRefreshExternalBrowserInSeconds"),
+    P_EDITOR_EXTERNAL_PREVIEW_AUTOREFRESH_IN_SECONDS("externalPreviewAutorefreshInSeconds"),
+    
+    P_EDITOR_EXTERNAL_PREVIEW_AUTOREFRESH_ENABLED("externalPreviewAutorefresEnabled"),
 
     P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED("autoBuildForExternalPreviewEnabled"),
 

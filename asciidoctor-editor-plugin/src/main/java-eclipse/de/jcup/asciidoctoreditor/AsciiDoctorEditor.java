@@ -1455,8 +1455,8 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
         }
 
         @Override
-        public String enrichHTML(String html, int refreshAutomaticallyInSeconds) {
-            return getWrapper().enrichHTML(html, refreshAutomaticallyInSeconds);
+        public String enrichHTML(String html, boolean autoRefreshEnabled, int refreshAutomaticallyInSeconds) {
+            return getWrapper().enrichHTML(html, autoRefreshEnabled, refreshAutomaticallyInSeconds);
         }
 
         @Override

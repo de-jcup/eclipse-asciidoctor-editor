@@ -32,7 +32,7 @@ public class AsciiDoctorWrapperHTMLBuilder {
         this.context = context;
     }
 
-    public String buildHTMLWithCSS(String origin, int refreshAutomaticallyInSeconds) {
+    public String buildHTMLWithCSS(String origin, boolean autoRefreshEnabled, int refreshAutomaticallyInSeconds) {
         StringBuilder sb = new StringBuilder();
         int bodyIndex = origin.indexOf(BODY);
 
@@ -64,7 +64,7 @@ public class AsciiDoctorWrapperHTMLBuilder {
         }
 
         sb.append(content);
-        if (!context.isInternalPreview() && refreshAutomaticallyInSeconds > 0) {
+        if (autoRefreshEnabled) {
             sb.append("<script blockType=\"text/javascript\">pageloadEvery(" + refreshAutomaticallyInSeconds * 1000 + ");</script>");
         }
         if (context.isInternalPreview()) {

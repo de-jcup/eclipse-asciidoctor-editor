@@ -194,21 +194,19 @@ public class AsciiDoctorEditorPreferences {
     public boolean isAutoBuildEnabledForExternalPreview() {
         return getBooleanPreference(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED);
     }
+    
+    public boolean isAutoRefreshEnabledForExternalPreview() {
+        return getBooleanPreference(P_EDITOR_EXTERNAL_PREVIEW_AUTOREFRESH_ENABLED);
+    }
+
+    public int getAutoRefreshInSecondsForExternalBrowser() {
+        return getPreferenceStore().getInt(P_EDITOR_EXTERNAL_PREVIEW_AUTOREFRESH_IN_SECONDS.getId());
+    }
 
     public IPreferenceStore getPreferenceStore() {
         return store;
     }
 
-    public int getAutoRefreshInSecondsForExternalBrowser() {
-        if (!isAutoBuildEnabledForExternalPreview()) {
-            /*
-             * when disabled auto build a refresh does not make any sense... so always
-             * return 0 seconds
-             */
-            return 0;
-        }
-        return getPreferenceStore().getInt(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_REFRESH_IN_SECONDS.getId());
-    }
 
     public PreviewLayout getInitialLayoutModeForNewEditors() {
         String layoutMode = getStringPreference(AsciiDoctorEditorPreferenceConstants.P_EDITOR_NEWEDITOR_PREVIEW_LAYOUT);
