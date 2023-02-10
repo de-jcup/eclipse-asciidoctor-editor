@@ -56,7 +56,7 @@ public class ShowEditorDumpDebugAction extends ToolbarAction implements DebugAct
     }
 
     private void initText() {
-        setText("Add an error");
+        setText("Create editor dump");
     }
 
 }
