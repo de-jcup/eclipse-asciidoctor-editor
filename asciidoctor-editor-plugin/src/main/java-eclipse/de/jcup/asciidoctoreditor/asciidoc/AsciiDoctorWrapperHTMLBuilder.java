@@ -56,6 +56,23 @@ public class AsciiDoctorWrapperHTMLBuilder {
 
                 String prefixHTML = buildLocalPrefixHTML();
                 sb.append(prefixHTML);
+            }else {
+                if (autoRefreshEnabled && !context.isUsingOnlyLocalResources()) {
+                    String headEnd = "</head>";
+                    int headIndex = content.indexOf(headEnd);
+                    if (headIndex!=-1) {
+                        String before = content.substring(0,headIndex-1);
+                        
+                        String after = content.substring(headIndex+headEnd.length());
+                        StringBuilder sb1= new StringBuilder();
+                        sb1.append(before);
+                        sb1.append(createLinkToFile(createFileToAutoRefreshJavascript()));
+                        sb1.append(after);
+                        
+                        content = sb1.toString();
+                        
+                    }
+                }
             }
         } else {
             /* no body found - fallback to local resources (like earlier ) */
@@ -87,14 +104,13 @@ public class AsciiDoctorWrapperHTMLBuilder {
 
         List<File> list = new ArrayList<>();
         File cssFolder = PluginContentInstaller.INSTANCE.getCSSFolder();
-        File addonsFolder = PluginContentInstaller.INSTANCE.getAddonsFolder();
 
         list.add(new File(cssFolder, "/font-awesome/css/font-awesome.min.css"));
         list.add(new File(cssFolder, "/dejavu/dejavu.css"));
         list.add(new File(cssFolder, "/MathJax/MathJax.js"));
         list.add(new File(cssFolder, "/default.css"));
         list.add(new File(cssFolder, "/coderay.css"));
-        list.add(new File(addonsFolder, "/javascript/document-autorefresh.js"));
+        list.add(createFileToAutoRefreshJavascript());
 
         StringBuilder prefixSb = new StringBuilder();
         prefixSb.append("<html>\n");
@@ -116,6 +132,12 @@ public class AsciiDoctorWrapperHTMLBuilder {
             prefixSb.append("class=\"article\" style=\"margin-left:10px\">");
         }
         return prefixSb.toString();
+    }
+
+    private File createFileToAutoRefreshJavascript() {
+        File addonsFolder = PluginContentInstaller.INSTANCE.getAddonsFolder();
+        String scriptType=context.isTOCVisible() ? "-with-TOC" :"";
+        return new File(addonsFolder, "/javascript/document-autorefresh"+scriptType+".js");
     }
 
     protected String createLinkToFile(File file) {

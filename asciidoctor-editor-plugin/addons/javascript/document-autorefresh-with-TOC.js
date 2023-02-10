@@ -1,28 +1,32 @@
-function tocDisabledReload() {
+function tocEnabledReload() {
 	currentlocation = window.location.href;
 	baseLocation = window.location.href.split(/[?#]/)[0];
 	
-	storeBodyPos();
+	storePosition();
 	
 	if (currentlocation == baseLocation) {
 		location.reload(true)
 	} else {
+		/* happens on TOC enabled and link to ancher was used, 
+		 * we switch back to baselocation and set cursor location to 
+		 * former scroll pos of body, so its okay again*/
 		window.location.href=baseLocation
 	}
 }
 
-function storeBodyPos(){
-	var bodyElement = document.getElementsByTagName("body")[0];
+
+function storePosition(){
+	const html = document.documentElement;
 	if (typeof sessionStorage == "undefined"){
 		// means we got an old browser or not the right to store... so we use
 		// old school a cookie...
-		document.cookie = bodyElement.scrollTop
+		document.cookie = html.scrollTop
 	}else{
-		sessionStorage.scrollTop =  bodyElement.scrollTop
+		sessionStorage.scrollTop =  html.scrollTop
 	}
 }
 
-function readBodyPos(){
+function readPosition(){
 	if (typeof sessionStorage == "undefined"){
 		// means we got an old browser or not the right to store... so we use
 		// old school a cookie...
@@ -34,12 +38,13 @@ function readBodyPos(){
 
 function pageloadEvery(t) {
 	
-	pos = readBodyPos();
+    // restore position
+	pos = readPosition();
 	
-	if (typeof pos != "undefined"){
-		var bodyElement = document.getElementsByTagName("body")[0];
-		bodyElement.scrollTop=pos;
+	if (typeof pos != "undefined") {
+		const html = document.documentElement;
+		html.scrollTop=pos;
 	}
-	setTimeout('tocDisabledReload()', t);
+	setTimeout('tocEnabledReload()', t);
 	
 }
