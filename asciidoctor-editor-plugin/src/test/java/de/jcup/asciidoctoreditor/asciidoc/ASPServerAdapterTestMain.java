@@ -24,10 +24,10 @@ public class ASPServerAdapterTestMain {
         adapter.startServer();
 
         Thread.sleep(10000);
-        adapter.stopServer();
+        adapter.stopServer(false);
         adapter.startServer();
         Thread.sleep(10000);
-        adapter.stopServer();
+        adapter.stopServer(false);
 
     }
 

@@ -187,10 +187,10 @@ public class ASPServerAdapter {
      * @return <code>true</code> when server shutdown was successful,
      *         <code>false</code> when server was already not running
      */
-    public boolean stopServer() {
+    public boolean stopServer(boolean withOutput) {
         if (launcher != null) {
             boolean stopDone = launcher.stopServer();
-            if (stopDone) {
+            if (withOutput && stopDone) {
                 consoleOutput(">> ASP Server stop triggered.");
                 waitForServerNoLongerAlive();
                 consoleOutput(">> ASP Server stop done.");

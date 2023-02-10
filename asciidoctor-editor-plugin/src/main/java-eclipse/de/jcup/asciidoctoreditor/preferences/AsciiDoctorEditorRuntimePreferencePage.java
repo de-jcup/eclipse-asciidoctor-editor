@@ -270,7 +270,7 @@ public class AsciiDoctorEditorRuntimePreferencePage extends FieldEditorPreferenc
 
             @Override
             public void widgetSelected(SelectionEvent event) {
-                boolean stopped = AsciiDoctorEditorActivator.getDefault().getAspSupport().stop();
+                boolean stopped = AsciiDoctorEditorActivator.getDefault().getAspSupport().stop(true);
                 if (stopped) {
                     MessageDialog.openInformation(getShell(), "ASP server shutdown", "Server has been stopped!");
                 } else {

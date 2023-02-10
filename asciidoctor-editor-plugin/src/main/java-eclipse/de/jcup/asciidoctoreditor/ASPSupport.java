@@ -41,17 +41,22 @@ public class ASPSupport {
      * Initial start - is called by plugin activator
      */
     public void start() {
-
+        Runtime.getRuntime().addShutdownHook(new Thread("asp-shutdown-hook") {
+            public void run() {
+                // stop ASP - without UI output (already disposed...)
+                ASPSupport.this.stop(false);
+            }
+        });
     }
 
     /**
-     * Shutdown - called by plugin activator on plugin stop, or also in preferences
+     * Shutdown - called by JMV shutdown or also in preferences
      * 
      * @return <code>true</code> when server has been stopped, <code>false</code>
      *         when stop was not possible (e.g. when no server instance was running)
      */
-    public boolean stop() {
-        boolean stopped = aspServerAdapter.stopServer();
+    public boolean stop(boolean withOutput) {
+        boolean stopped = aspServerAdapter.stopServer(withOutput);
         aspServerStarted = false;
         return stopped;
     }
@@ -83,7 +88,7 @@ public class ASPSupport {
             if (aspServerAdapter.isServerStarted()) {
                 /* shutdown running instance */
                 AsciiDoctorConsoleUtil.output(">> Stopping ASP server because using now installed asciidoctor");
-                aspServerAdapter.stopServer();
+                aspServerAdapter.stopServer(true);
             }
             /*
              * we are done - using installed Asciidoctor instance we have do not need to
@@ -98,7 +103,7 @@ public class ASPSupport {
 
         if (aspServerAdapter.isAlive()) {
             AsciiDoctorConsoleUtil.output(">> Stop running ASP server at port " + aspServerAdapter.getPort());
-            aspServerAdapter.stopServer();
+            aspServerAdapter.stopServer(true);
         }
 
         File aspFolder = PluginContentInstaller.INSTANCE.getLibsFolder();

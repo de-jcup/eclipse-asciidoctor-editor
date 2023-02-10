@@ -85,7 +85,7 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
 
     public void stop(BundleContext context) throws Exception {
         plugin = null;
-        getAspSupport().stop();
+//        getAspSupport().stop();
         taskSupportProvider.getTodoTaskSupport().uninstall();
         colorManager.dispose();
 
