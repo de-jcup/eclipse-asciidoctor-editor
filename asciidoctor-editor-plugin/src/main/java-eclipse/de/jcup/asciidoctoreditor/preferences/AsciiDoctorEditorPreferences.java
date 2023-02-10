@@ -317,4 +317,8 @@ public class AsciiDoctorEditorPreferences {
         return getStringPreference(AsciiDoctorPlantUMLEditorPreferenceConstants.P_DEFAULT_ZOOM_LEVEL);
     }
 
+    public boolean getTocVisibleOnNewEditorsPerDefault() {
+        return getBooleanPreference(AsciiDoctorEditorPreferenceConstants.P_TOC_VISIBLE_ON_NEW_EDITORS_PER_DEFAULT);
+    }
+
 }

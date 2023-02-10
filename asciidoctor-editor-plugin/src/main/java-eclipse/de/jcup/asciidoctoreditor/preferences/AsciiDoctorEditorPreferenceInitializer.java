@@ -135,6 +135,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
         store.setDefault(VALIDATE_URLS.getId(), true);
 
         store.setDefault(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(), true);
+        store.setDefault(P_TOC_VISIBLE_ON_NEW_EDITORS_PER_DEFAULT.getId(), false);
 
         /* ++++++++++++ */
         /* + PlantUML +*/

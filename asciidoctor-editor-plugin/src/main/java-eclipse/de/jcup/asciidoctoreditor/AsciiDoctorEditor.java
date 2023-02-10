@@ -230,6 +230,9 @@ public class AsciiDoctorEditor extends TextEditor implements StatusMessageSuppor
 
     public AsciiDoctorEditor() {
         wrapper = new AsciiDoctorWrapper(this, AsciiDoctorEclipseLogAdapter.INSTANCE);
+        
+        boolean tocVisible = getPreferences().getTocVisibleOnNewEditorsPerDefault();
+        wrapper.setTocVisible(tocVisible);
 
         outlineSupport = createOutlineSupport();
         buildSupport = new AsciiDoctorEditorBuildSupport(this);

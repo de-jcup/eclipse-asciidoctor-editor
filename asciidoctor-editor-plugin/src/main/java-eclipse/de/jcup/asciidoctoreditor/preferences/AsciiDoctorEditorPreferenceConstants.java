@@ -89,7 +89,9 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
     
     P_CUSTOM_ATTRIBUTES_DATA("customAttributesData"),
     
-    P_CUSTOM_ATTRIBUTES_ENABLED("customAttributesEnabled"),
+    P_CUSTOM_ATTRIBUTES_ENABLED("customAttributesEnabled"), 
+    
+    P_TOC_VISIBLE_ON_NEW_EDITORS_PER_DEFAULT("tocVisibleOnNewEditorsPerDefault"),
     
 
     ;

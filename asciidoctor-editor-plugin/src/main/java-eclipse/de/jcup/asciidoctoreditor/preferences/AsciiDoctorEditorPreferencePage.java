@@ -153,6 +153,11 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         tocLevels.getLabelControl(devNull).setToolTipText("0 keeps defaults from asciidoctor, other will set the wanted depth for TOC on preview only!");
 
         addField(tocLevels);
+        
+        devNull = new Composite(uiComposite, SWT.NONE);
+        BooleanFieldEditor tocVisibleOnNewEditors = new BooleanFieldEditor(P_TOC_VISIBLE_ON_NEW_EDITORS_PER_DEFAULT .getId(), "TOC visible per default", devNull);
+        tocVisibleOnNewEditors.getDescriptionControl(devNull).setToolTipText("When enabled the TOC (table of content) is automatically visible per default on new editor instances");
+        addField(tocVisibleOnNewEditors);
 
         devNull = new Composite(uiComposite, SWT.NONE);
         BooleanFieldEditor autoConfigFileCreationEnabled = new BooleanFieldEditor(P_AUTOCREATE_INITIAL_CONFIGFILE.getId(), "Enable initial config file auto creation", devNull);
