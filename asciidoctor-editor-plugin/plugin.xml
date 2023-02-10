@@ -22,6 +22,23 @@
    		label="editor">
      </keyword>
      <keyword
+        id="asciidoctoreditor.preferences.keyword.runtime"
+        label="runtime">
+     </keyword>
+       <keyword
+        id="asciidoctoreditor.preferences.keyword.asp"
+        label="asp">
+     </keyword>
+       <keyword
+        id="asciidoctoreditor.preferences.keyword.asciidoc"
+        label="asciidoc">
+     </keyword>
+       <keyword
+        id="asciidoctoreditor.preferences.keyword.install"
+        label="install">
+     </keyword>
+     
+     <keyword
    		id="asciidoctoreditor.preferences.keyword.validation"
    		label="validation">
      </keyword>
@@ -584,6 +601,31 @@
          </keywordReference>
       </page>
       <page
+         id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorRuntimePreferencePage"
+         class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorRuntimePreferencePage"
+         name="Asciidoc runtime"
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage"
+         >
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoctor">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.editor">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.runtime">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asp">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.asciidoc">
+         </keywordReference>
+         <keywordReference
+               id="asciidoctoreditor.preferences.keyword.install">
+         </keywordReference>
+      </page>
+      <page
          id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorSyntaxColorPreferencePage"
          class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorSyntaxColorPreferencePage"
          name="Syntax coloring"
@@ -653,7 +695,7 @@
          id="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEnvironmentPreferencePage"
          class="de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorEnvironmentPreferencePage"
          name="Environment"
-         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorEditorPreferencePage">
+         category="asciidoctoreditor.eclipse.preferences.AsciiDoctorEditorRuntimePreferencePage">
           <keywordReference
                id="asciidoctoreditor.preferences.keyword.asciidoctor">
          </keywordReference>
