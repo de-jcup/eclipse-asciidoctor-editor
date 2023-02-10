@@ -25,6 +25,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorAttributesPreferencePage;
 import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorEnvironmentPreferencePage;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 public class OpenAsciidoctorEditorSettingsAction extends ToolbarAction {
@@ -38,26 +39,38 @@ public class OpenAsciidoctorEditorSettingsAction extends ToolbarAction {
 
     @Override
     public void run() {
-        // see https://wiki.eclipse.org/FAQ_How_do_I_launch_the_preference_page_that_belongs_to_my_plug-in%3F
+        // see
+        // https://wiki.eclipse.org/FAQ_How_do_I_launch_the_preference_page_that_belongs_to_my_plug-in%3F
         // be aware that titles must be dei
         PreferenceManager preferenceManager = new PreferenceManager();
-        
-        IPreferencePage page1 = new AsciiDoctorEditorAttributesPreferencePage();
+
+        AsciiDoctorEditorAttributesPreferencePage page1 = new AsciiDoctorEditorAttributesPreferencePage();
         page1.setTitle("Asciidoc attributes");
         IPreferenceNode node1 = new PreferenceNode("page1", page1);
-        
+
         IPreferencePage page2 = new AsciiDoctorEditorEnvironmentPreferencePage();
         page2.setTitle("Asciidoc environment");
         IPreferenceNode node2 = new PreferenceNode("page2", page2);
-        
+
         preferenceManager.addToRoot(node1);
         preferenceManager.addToRoot(node2);
-        
+
         PreferenceDialog dialog = new PreferenceDialog(EclipseUtil.getActiveWorkbenchShell(), preferenceManager);
         dialog.create();
         dialog.setSelectedNode("page1");
         dialog.setMessage(page1.getTitle());
         dialog.open();
+
+        if (page1.hasChanged()) {
+            // always clear the cache - e.g. for overview rendering
+            this.asciiDoctorEditor.resetCache();
+            
+            // update the preview if necessary
+            boolean autoBuildForExternalPreview = AsciiDoctorEditorPreferences.getInstance().isAutoBuildEnabledForExternalPreview();
+            if (asciiDoctorEditor.isInternalPreview() || autoBuildForExternalPreview) {
+                asciiDoctorEditor.rebuild();
+            }
+        }
     }
 
     private void initUI() {

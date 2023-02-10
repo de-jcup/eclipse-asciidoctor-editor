@@ -17,6 +17,8 @@ package de.jcup.asciidoctoreditor.preferences;
 
 public class AsciiDoctorEditorAttributesPreferencePage extends AbstractAsciiDoctorEditorCustomEntriesPreferencePage {
 
+    private boolean hasChanged;
+
     public AsciiDoctorEditorAttributesPreferencePage() {
         setDescription("Setup custom asciidoc attribute entries used for rendering.\n\nExisting attribute definitions from origin documents will be overriden!");
         setTitle("Asciidoc attributes"); // for programmatic part only (normal preferences dialog uses data from plugin.xml)
@@ -35,8 +37,14 @@ public class AsciiDoctorEditorAttributesPreferencePage extends AbstractAsciiDoct
 
             customAttributesEntrySupport.setCustomEntriesEnabled(customEntriesEnabled);
             customAttributesEntrySupport.setCustomEntries(definitionWorkingCopy);
+            
+            hasChanged=true;
         }
         return super.performOk();
+    }
+    
+    public boolean hasChanged() {
+        return hasChanged;
     }
 
     protected CustomAttributesEntrySupport getSupport() {
