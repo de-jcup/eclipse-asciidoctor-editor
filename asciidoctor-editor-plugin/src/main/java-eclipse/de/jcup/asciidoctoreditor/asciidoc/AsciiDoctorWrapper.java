@@ -208,10 +208,7 @@ public class AsciiDoctorWrapper {
 
     private void initProviderContext(AsciiDoctorWrapperContext context, ConversionData data, File configRoot) throws IOException {
         File asciiDocFile = data.getAsciiDocFile();
-
-        if (configRoot != null) {
-            context.initConfigFileSupportAndSetConfigRoot(configRoot);
-        }
+        context.setConfigRoot(configRoot);
 
         List<AsciidoctorConfigFile> configFiles = initConfigFileSupport(context, asciiDocFile);
 
@@ -246,7 +243,7 @@ public class AsciiDoctorWrapper {
              * asciidoc files ... we create the hidden file which references the origin one
              */
             File createdHiddenEditorFile = AsciiDocFileUtils.createHiddenEditorFile(logAdapter, asciiDocFile, data.getEditorId(), context.getBaseDir(), getTempFolder(), configFiles,
-                    context.getConfigRoot().getAbsolutePath());
+                    context.resolveRootLocation().getAbsolutePath());
             context.setFileToRender(createdHiddenEditorFile);
         } else {
             /* PlantUML, ditaa files ... */

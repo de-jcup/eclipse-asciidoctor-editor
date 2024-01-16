@@ -29,9 +29,10 @@ import de.jcup.asciidoctoreditor.asciidoc.AsciiDocConfigFileSupport;
 import de.jcup.asciidoctoreditor.asciidoc.AsciiDocFileUtils;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorAdapter;
 import de.jcup.asciidoctoreditor.asciidoc.AsciidoctorConfigFile;
+import de.jcup.asciidoctoreditor.asciidoc.RootLocationProvider;
 import de.jcup.asp.api.asciidoc.AsciidocOption;
 
-public class AsciiDoctorWrapperContext {
+public class AsciiDoctorWrapperContext implements RootLocationProvider {
 
     private LogAdapter logAdapter;
     /**
@@ -79,7 +80,7 @@ public class AsciiDoctorWrapperContext {
         }
         this.logAdapter = logAdapter;
         this.provider = provider;
-
+        this.configFileSupport = new AsciiDocConfigFileSupport(this);
         init();
     }
 
@@ -206,13 +207,8 @@ public class AsciiDoctorWrapperContext {
         return baseDir;
     }
 
-    public void initConfigFileSupportAndSetConfigRoot(File configRoot) {
-        if (configRoot == null) {
-            configRoot = getBaseDir();
-        }
-
+    public void setConfigRoot(File configRoot) {
         this.configRoot = configRoot;
-        this.configFileSupport = new AsciiDocConfigFileSupport(configRoot.toPath());
     }
 
     public LogAdapter getLogAdapter() {
@@ -319,8 +315,20 @@ public class AsciiDoctorWrapperContext {
         return configFiles;
     }
 
-    public File getConfigRoot() {
+    /**
+     * Resolves root location. If config root is null, the base directory will be used as fallback
+     * @return root location, never <code>null</code>
+     */
+    public File resolveRootLocation() {
+        if (configRoot == null) {
+            return getBaseDir();
+        }
         return configRoot;
+    }
+
+    @Override
+    public Path getRootLocation() {
+        return resolveRootLocation().toPath();
     }
 
 }

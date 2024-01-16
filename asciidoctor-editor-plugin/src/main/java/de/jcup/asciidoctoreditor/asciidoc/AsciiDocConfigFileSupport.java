@@ -38,18 +38,32 @@ public class AsciiDocConfigFileSupport {
     public static final String FILENAME_ASCIIDOCTORCONFIG = ".asciidoctorconfig";
     public static final String FILENAME_ASCIIDOCTORCONFIG_ADOC = FILENAME_ASCIIDOCTORCONFIG + ".adoc";
     private LogHandler logHandler;
-    private Path rootFolder;
 
     private boolean autoCreateConfig;
 
     private Runnable autoCreateCallback;
 
-    public AsciiDocConfigFileSupport(Path rootFolder) {
-        this(null, rootFolder);
+    private RootLocationProvider pathProvider;
+
+    public AsciiDocConfigFileSupport(RootLocationProvider pathProvider) {
+        this(null, pathProvider);
+    }
+
+    public AsciiDocConfigFileSupport(LogHandler logHandler, RootLocationProvider pathProvider) {
+        if (pathProvider == null) {
+            throw new IllegalArgumentException("root path provider may not be null!");
+        }
+        this.pathProvider = pathProvider;
+
+        if (logHandler == null) {
+            this.logHandler = new PrintStreamLogHandler();
+        } else {
+            this.logHandler = logHandler;
+        }
     }
 
     public Path getRootFolder() {
-        return rootFolder;
+        return pathProvider.getRootLocation();
     }
 
     /**
@@ -65,20 +79,7 @@ public class AsciiDocConfigFileSupport {
     public void setAutoCreateConfigCallback(Runnable r) {
         this.autoCreateCallback = r;
     }
-
-    public AsciiDocConfigFileSupport(LogHandler logHandler, Path rootFolder) {
-        if (rootFolder == null) {
-            throw new IllegalArgumentException("root folder may not be null!");
-        }
-        this.rootFolder = rootFolder;
-
-        if (logHandler == null) {
-            this.logHandler = new PrintStreamLogHandler();
-        } else {
-            this.logHandler = logHandler;
-        }
-    }
-
+    
     /**
      * Collects configuration files - when auto create is enabled, a configuraiton
      * at root level will be created when no other config has been found.
@@ -102,7 +103,7 @@ public class AsciiDocConfigFileSupport {
 
     private List<AsciidoctorConfigFile> handleAutoCreateOfMissingConfig() {
         if (autoCreateConfig) {
-            File file = new File(rootFolder.toFile(), FILENAME_ASCIIDOCTORCONFIG_ADOC);
+            File file = new File(getRootFolder().toFile(), FILENAME_ASCIIDOCTORCONFIG_ADOC);
             Path targetPath = file.toPath();
 
             if (!file.exists()) {
@@ -154,7 +155,7 @@ public class AsciiDocConfigFileSupport {
 
         private ReverseFileWalker() {
             filesFound = new ArrayList<>();
-            rootPathFile = rootFolder.toFile();
+            rootPathFile = getRootFolder().toFile();
         }
 
         public void walk(Path file) {
