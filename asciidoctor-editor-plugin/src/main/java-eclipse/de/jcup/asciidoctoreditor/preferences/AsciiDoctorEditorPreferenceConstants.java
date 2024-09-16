@@ -34,7 +34,9 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
     P_LINK_OUTLINE_WITH_EDITOR("linkOutlineWithEditor"),
 
     P_LINK_EDITOR_WITH_PREVIEW("linkEditorWithPreview"),
-
+    
+    P_LINK_BETWEEN_EDITOR_AND_PREVIEW_USES_TEXT_SELECTION_AS_FALLBACK("linkEditorAndPreviewUsesTextSelectionAsFallback"),
+    
     P_CODE_ASSIST_ADD_KEYWORDS("codeAssistAddsKeyWords"),
 
     P_CODE_ASSIST_ADD_SIMPLEWORDS("codeAssistAddsSimpleWords"),
@@ -58,6 +60,7 @@ public enum AsciiDoctorEditorPreferenceConstants implements PreferenceIdentifiab
     P_PATH_TO_INSTALLED_ASCIICDOCTOR("pathToInstalledAsciidoctor"),
 
     P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT("showConsoleOnErrorOutput"),
+    
 
     P_ASP_SERVER_MIN_PORT("aspServerMinPort"),
 

@@ -24,6 +24,7 @@ import org.eclipse.swt.events.MouseEvent;
 import de.jcup.asciidoctoreditor.AsciiDoctorEditor;
 import de.jcup.asciidoctoreditor.outline.Item;
 import de.jcup.asciidoctoreditor.outline.ItemType;
+import de.jcup.asciidoctoreditor.preferences.AsciiDoctorEditorPreferences;
 import de.jcup.asciidoctoreditor.script.AsciidoctorTextSelectable;
 
 /**
@@ -52,11 +53,44 @@ public class ScrollSynchronizer {
         public void mouseUp(MouseEvent e) {
             String javascript = "var element=document.elementFromPoint(" + e.x + "," + e.y + ");" + "if (element!=null){ return element.getAttribute('id')} else {return null};";
             String elementId = editor.getBrowserAccess().safeBrowserEvaluateJavascript(javascript);
+            if (elementId != null) {
+                onMouseClickInBrowser(elementId);
+                return;
+            }
+            if (!AsciiDoctorEditorPreferences.getInstance().isLinkEditorWithPreviewUsingTextSelectionAsFallback()) {
+                return;
+            }
+            // not a click to a defined element (e.g. headline) inside the browser
+            // so we try to find the text
+            javascript = "var element=document.elementFromPoint(" + e.x + "," + e.y + ");" + "if (element!=null){ return element.textContent} else {return null};";
+            String browserText = editor.getBrowserAccess().safeBrowserEvaluateJavascript(javascript);
+            if (browserText == null) {
+                return;
+            }
+            String textToSearch = browserText;
+            String editorText = editor.getDocumentText();
+            int loopcount = 0;
+            int maxTextLoopCount = 1000;
 
-            onMouseClickInBrowser(elementId);
+            int pos = -1;
+            do {
+                if (textToSearch.length() < 2) {
+                    break;
+                }
+                pos = editorText.indexOf(textToSearch);
+                if (pos == -1) {
+                    textToSearch = textToSearch.substring(0, textToSearch.length() - 2);
+                }
+            } while (loopcount < maxTextLoopCount && pos == -1);
+
+            if (pos == -1) {
+                return;
+            }
+            editor.selectAndReveal(pos, textToSearch.length());
+
         }
     }
-    
+
     private void onMouseClickInBrowser(String elementId) {
         if (!editor.getPreferences().isLinkEditorWithPreviewEnabled()) {
             return;
@@ -87,14 +121,15 @@ public class ScrollSynchronizer {
             return;
         }
         Item item = editor.getItemAt(caretOffset);
-        if (item == null) {
-            return;
+        if (item != null) {
+            if (DEBUG_LOGGING_ENABLED) {
+                INSTANCE.logInfo("Editor caret moved to item:" + item);
+            }
+            handleScrollToHeadlineIfPossible(item);
+            handleScrollToAnchorIfPossible(item);
         }
-        if (DEBUG_LOGGING_ENABLED) {
-            INSTANCE.logInfo("Editor caret moved to item:" + item);
-        }
-        handleScrollToHeadlineIfPossible(item);
-        handleScrollToAnchorIfPossible(item);
+        // we do not synch here automatically with editor - reason: Only when the 
+        // file is saved, the preview is rendered with new values and could be searched
     }
 
     private void handleScrollToHeadlineIfPossible(Item item) {

@@ -173,6 +173,11 @@ public class AsciiDoctorEditorPreferencePage extends FieldEditorPreferencePage i
         linkEditorWithPreviewEnabled.getDescriptionControl(devNull)
                 .setToolTipText("When enabled editor caret movements are scrolled in internal preview.\n" + "This works only in some situations e.g. when cursor moves to a headline");
         addField(linkEditorWithPreviewEnabled);
+        
+        BooleanFieldEditor synchTextSelectionsEnabled = new BooleanFieldEditor(P_LINK_BETWEEN_EDITOR_AND_PREVIEW_USES_TEXT_SELECTION_AS_FALLBACK.getId(), "Linking uses text selections for unknown elements", devNull);
+        synchTextSelectionsEnabled.getDescriptionControl(devNull)
+        .setToolTipText("When linking is enabled and this field as well, clicking to preview text parts having no element, will select the first matching text element inside the editor as fallback mechanism.");
+        addField(synchTextSelectionsEnabled);
 
         BooleanFieldEditor groupOutlineEnabledPerDefault = new BooleanFieldEditor(P_OUTLINE_GROUPING_ENABLED_PER_DEFAULT.getId(), "Show outline grouped per default", devNull);
         groupOutlineEnabledPerDefault.getDescriptionControl(devNull).setToolTipText(

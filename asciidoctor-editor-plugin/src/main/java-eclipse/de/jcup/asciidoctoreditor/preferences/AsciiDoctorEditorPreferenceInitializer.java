@@ -44,6 +44,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
 
         /* Preview */
         store.setDefault(P_LINK_EDITOR_WITH_PREVIEW.getId(), true);
+        store.setDefault(P_LINK_BETWEEN_EDITOR_AND_PREVIEW_USES_TEXT_SELECTION_AS_FALLBACK.getId(), true);
 
         /* ++++++++++++ */
         /* + Brackets + */

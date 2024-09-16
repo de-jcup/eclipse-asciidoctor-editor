@@ -190,6 +190,9 @@ public class AsciiDoctorEditorPreferences {
     public boolean isLinkEditorWithPreviewEnabled() {
         return getBooleanPreference(P_LINK_EDITOR_WITH_PREVIEW);
     }
+    public boolean isLinkEditorWithPreviewUsingTextSelectionAsFallback() {
+        return getBooleanPreference(P_LINK_BETWEEN_EDITOR_AND_PREVIEW_USES_TEXT_SELECTION_AS_FALLBACK);
+    }
 
     public boolean isAutoBuildEnabledForExternalPreview() {
         return getBooleanPreference(P_EDITOR_AUTOBUILD_FOR_EXTERNAL_PREVIEW_ENABLED);
@@ -228,7 +231,7 @@ public class AsciiDoctorEditorPreferences {
     public boolean isConsoleAlwaysShownOnError() {
         return getBooleanPreference(P_SHOW_ASCIIDOC_CONSOLE_ON_ERROR_OUTPUT);
     }
-
+    
     public String getPathToInstalledAsciidoctor() {
         return getStringPreference(AsciiDoctorEditorPreferenceConstants.P_PATH_TO_INSTALLED_ASCIICDOCTOR);
     }
