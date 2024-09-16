@@ -22,6 +22,7 @@ import org.eclipse.core.filebuffers.FileBuffers;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
@@ -52,7 +53,7 @@ public class AsciiDoctorEditorUtil {
 
     private static UnpersistedMarkerHelper validationMarkerHelper = new UnpersistedMarkerHelper("de.jcup.asciidoctoreditor.script.problem");
     private static UnpersistedMarkerHelper aspMarkerHelper = new UnpersistedMarkerHelper("de.jcup.asciidoctoreditor.asp.marker");
-    
+
     public static AsciiDoctorEditorPreferences getPreferences() {
         return AsciiDoctorEditorPreferences.getInstance();
     }
@@ -189,8 +190,14 @@ public class AsciiDoctorEditorUtil {
     }
 
     private static ILog getLog() {
-        ILog log = AsciiDoctorEditorActivator.getDefault().getLog();
-        return log;
+        AsciiDoctorEditorActivator activator = AsciiDoctorEditorActivator.getDefault();
+        if (activator != null) {
+            return activator.getLog();
+        }
+
+        // Fallback necessary (can happen on plugin starts). The resources plugin should
+        // be loaded before and should be available
+        return ResourcesPlugin.getPlugin().getLog();
     }
 
     public static void openFileInExternalBrowser(File tempAdFile) {
