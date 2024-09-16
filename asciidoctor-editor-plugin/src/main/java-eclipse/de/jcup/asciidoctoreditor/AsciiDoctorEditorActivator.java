@@ -75,21 +75,21 @@ public class AsciiDoctorEditorActivator extends AbstractUIPlugin implements Plug
     public void start(BundleContext context) throws Exception {
         super.start(context);
 
-        cleanupTempFolder();
-
         getAspSupport().start();
         plugin = this;
+        cleanupTempFolder();
         taskSupportProvider.getTodoTaskSupport().install();
 
     }
 
     public void stop(BundleContext context) throws Exception {
+        cleanupTempFolder();
         plugin = null;
 //        getAspSupport().stop();
         taskSupportProvider.getTodoTaskSupport().uninstall();
         colorManager.dispose();
 
-        cleanupTempFolder();
+        
 
         super.stop(context);
     }
