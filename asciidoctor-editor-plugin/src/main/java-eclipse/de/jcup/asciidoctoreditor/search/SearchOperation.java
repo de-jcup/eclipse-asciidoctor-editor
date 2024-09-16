@@ -82,6 +82,12 @@ public class SearchOperation /* extends WorkspaceModifyOperation */ implements I
         if (inspectFile == null) {
             return;
         }
+        
+        if (!inspectFile.exists()) {
+            // if the file is no longer existing, just ignore and prevent a IO exception
+            return;
+        }
+        
         AsciidocSearchResultModel model = result.getModel();
         ResourceElement resourceElement = null;
         try {
