@@ -112,6 +112,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
         preferences.setDefaultColor(COLOR_KNOWN_VARIABLES, DARK_GRAY);
         preferences.setDefaultColor(COLOR_TEXT_BOLD, BLACK);
         preferences.setDefaultColor(COLOR_TEXT_ITALIC, BLACK);
+        preferences.setDefaultColor(COLOR_LIST_CHARACTERS, DARK_GRAY);
 
         preferences.setDefaultColor(COLOR_DELIMITERS, LIGHT_THEME_LIGHT_BLUE);
 
@@ -126,6 +127,7 @@ public class AsciiDoctorEditorPreferenceInitializer extends AbstractPreferenceIn
         preferences.setDefaultColor(COLOR_PLANTUML_TYPE, KEYWORD_DEFAULT_PURPLE);
         preferences.setDefaultColor(COLOR_PLANTUML_COLOR, DARK_BLUE);
         preferences.setDefaultColor(COLOR_PLANTUML_DOUBLESTRING, ROYALBLUE);
+        
 
         /* ++++++++++++++ */
         /* + Validation + */

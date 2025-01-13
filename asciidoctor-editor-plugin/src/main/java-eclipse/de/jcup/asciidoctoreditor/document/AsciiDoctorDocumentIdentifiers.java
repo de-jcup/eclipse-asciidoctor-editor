@@ -40,6 +40,8 @@ public enum AsciiDoctorDocumentIdentifiers implements AsciiDoctorDocumentIdentif
     HEADLINE,
     
     BLOCK_TITLE,
+    
+    LIST_CHARACTER,
 
     DELIMITERS,
 

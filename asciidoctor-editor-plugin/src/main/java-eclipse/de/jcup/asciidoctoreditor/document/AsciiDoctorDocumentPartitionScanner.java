@@ -46,7 +46,8 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
         IToken includeKeyword = createToken(INCLUDE_KEYWORD);
         IToken asciidoctorCommand = createToken(ASCIIDOCTOR_COMMAND);
         IToken headline = createToken(HEADLINE);
-        IToken title = createToken(TITLE);
+        IToken blockTitle = createToken(BLOCK_TITLE);
+        IToken listEntry = createToken(LIST_CHARACTER);
         IToken delimiters = createToken(DELIMITERS);
 
         List<IPredicateRule> rules = new ArrayList<>();
@@ -81,6 +82,11 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
         rules.add(new AsciiDoctorFormattedTextRule("*", "*", boldText));
         rules.add(new AsciiDoctorFormattedTextRule("_", "_", italicText));
         
+        rules.add(new AsciiDoctorCharacterPinPointRule('-', listEntry));
+        rules.add(new AsciiDoctorCharacterPinPointRule('.', listEntry));
+        rules.add(new AsciiDoctorCharacterPinPointRule('*', listEntry));
+        rules.add(new AsciiDoctorCharacterPinPointRule("**".toCharArray(), listEntry) );
+        rules.add(new AsciiDoctorCharacterPinPointRule("***".toCharArray(), listEntry) );
 
         rules.add(new SingleLineRule("<<", ">>", hyperlink, (char) -1, true));
         rules.add(new SingleLineRule("xref:", "]", hyperlink, (char) -1, true));
@@ -91,12 +97,13 @@ public class AsciiDoctorDocumentPartitionScanner extends RuleBasedPartitionScann
         rules.add(new AsciiDoctorLineStartsWithRule(":", ":", false, knownVariables));
         rules.add(new SingleLineRule("{", "}", knownVariables, (char) -1, true));
 
+        // https://docs.asciidoctor.org/asciidoc/latest/blocks/delimited/
         rules.add(new AsciiDoctorLineContainsOnlyRule("....", delimiters)); // delimiter, delimited block
         rules.add(new AsciiDoctorLineContainsOnlyRule("====", delimiters)); // delimiter admonition block syntax
         rules.add(new AsciiDoctorLineContainsOnlyRule("****", delimiters)); // delimiter,delimited example
         
         // block titles: see https://docs.asciidoctor.org/asciidoc/latest/blocks/add-title/
-        AsciiDoctorLineStartsWithRule blockTitleRule = new AsciiDoctorLineStartsWithRule(".", title);
+        AsciiDoctorLineStartsWithRule blockTitleRule = new AsciiDoctorLineStartsWithRule(".", blockTitle);
         blockTitleRule.setSpaceAfterStartForbidden(true); // we do not want ". list item" but only ".my-title"
         rules.add(blockTitleRule); // title
         
