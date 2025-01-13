@@ -77,6 +77,8 @@ public class AsciiDoctorEditorSyntaxColorPreferencePage extends FieldEditorPrefe
                 changeColor(editorMap, COLOR_ASCIIDOCTOR_COMMAND, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_COMMANDS);
                 changeColor(editorMap, COLOR_KNOWN_VARIABLES, AsciiDoctorEditorColorConstants.DARKTHEME_DEFAULT_KNOWN_VARIABLES);
                 changeColor(editorMap, COLOR_DELIMITERS, AsciiDoctorEditorColorConstants.LIGHT_THEME_LIGHT_BLUE);
+                
+                changeColor(editorMap, COLOR_LIST_CHARACTERS, AsciiDoctorEditorColorConstants.DARK_THEME_LIGHT_BLUE);
             }
 
             private void changeColor(Map<AsciiDoctorEditorSyntaxColorPreferenceConstants, ColorFieldEditor> editorMap, AsciiDoctorEditorSyntaxColorPreferenceConstants colorId, RGB rgb) {

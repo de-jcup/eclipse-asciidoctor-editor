@@ -25,6 +25,7 @@ public class EndlessLoopPreventer {
     }
 
     /**
+     * Increments internal loop count and assert maximum is not reachd 
      * @throws EndlessLoopException when endless loop detected
      */
     public void assertNoEndlessLoop() {
