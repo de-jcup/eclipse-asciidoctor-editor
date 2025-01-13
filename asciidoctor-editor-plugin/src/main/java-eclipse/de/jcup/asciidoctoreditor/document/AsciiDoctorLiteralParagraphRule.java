@@ -162,7 +162,6 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
             lineWithoutWhitespaces = (lineBeforeWithoutWhitespaces == null ? "" : lineBeforeWithoutWhitespaces.toString());
             accepted = accepted || lineWithoutWhitespaces.isEmpty();
             accepted = accepted || lineWithoutWhitespaces.startsWith("=");
-            accepted = accepted || lineWithoutWhitespaces.startsWith(".");
             accepted = accepted || lineWithoutWhitespaces.startsWith("****");
 
             counter.cleanup(scanner); // we move every time complete back to start

@@ -29,6 +29,7 @@ public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
     private char[] endsWith;
     private boolean multiLines;
     private boolean mustHaveWhitespaceAfter;
+    private boolean spaceAfterStartForbidden;
 
     public AsciiDoctorLineStartsWithRule(String startsWith, IToken token) {
         this(startsWith, false, token);
@@ -48,6 +49,10 @@ public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
         this.startsWith = startsWith.toCharArray();
         this.endsWith = endsWith == null ? new char[0] : endsWith.toCharArray();
         this.mustHaveWhitespaceAfter = mustHaveWhitespaceAfter;
+    }
+    
+    public void setSpaceAfterStartForbidden(boolean spaceAfterStartForbidden) {
+        this.spaceAfterStartForbidden = spaceAfterStartForbidden;
     }
 
     @Override
@@ -98,6 +103,12 @@ public class AsciiDoctorLineStartsWithRule implements IPredicateRule {
                 return resetScannerAndReturnUndefined(scanner, count);
             }
         }
+        if (spaceAfterStartForbidden) {
+            if (isTerminatedByWhitespaceOrEOF(scanner)) {
+                return resetScannerAndReturnUndefined(scanner, count);
+            }
+        }
+        
         EndlessLoopPreventer preventer = new EndlessLoopPreventer(100000);
 
         boolean noEndsWithScanNecessary = endsWith.length == 0;
