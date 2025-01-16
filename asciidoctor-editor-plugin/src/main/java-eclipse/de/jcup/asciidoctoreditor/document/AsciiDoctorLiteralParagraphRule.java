@@ -178,6 +178,7 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
          */
         EndlessLoopPreventer preventer = new EndlessLoopPreventer(100000);
         StringBuilder lineBuilder = new StringBuilder();
+        int lastChar = 0;
         do {
             if (lineWithoutWhitespaces.isEmpty() && lineBuilder.toString().trim().startsWith("1. ")) {
                 counter.cleanup(scanner);
@@ -191,14 +192,19 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
                 return successToken;
             }
             if (follow == '\n' || follow == '\r') {
-                boolean fetchedLineBeforeIsEmpty = lineBuilder.length() == 0;
+            	boolean isChar2OfWinLineBreak = (follow == '\n' && lastChar == '\r');
+            	
+            	// ignore second character of Windows line break CRLF
+            	if (!isChar2OfWinLineBreak) {
+                    boolean fetchedLineBeforeIsEmpty = lineBuilder.length() == 0;
 
-                if (fetchedLineBeforeIsEmpty) {
-                    /* end of literal detected */
-                    return successToken;// return directly access token
-                } else {
-                    /* start new line building */
-                    lineBuilder = new StringBuilder();
+                    if (fetchedLineBeforeIsEmpty) {
+                        /* end of literal detected */
+                        return successToken;// return directly access token
+                    } else {
+                        /* start new line building */
+                        lineBuilder = new StringBuilder();
+                    }
                 }
             } else {
                 if (lineBuilder.length() > 0 || !Character.isWhitespace(follow)) {
@@ -206,6 +212,7 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
                 }
             }
             preventer.assertNoEndlessLoop();
+            lastChar = follow;
         } while (true);
 
     }
