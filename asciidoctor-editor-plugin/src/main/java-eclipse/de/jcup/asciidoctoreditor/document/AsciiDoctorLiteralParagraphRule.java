@@ -196,7 +196,7 @@ public class AsciiDoctorLiteralParagraphRule implements IPredicateRule {
             	
             	// ignore second character of Windows line break CRLF
             	if (!isChar2OfWinLineBreak) {
-	                boolean fetchedLineBeforeIsEmpty = lineBuilder.length() == 0;
+                    boolean fetchedLineBeforeIsEmpty = lineBuilder.length() == 0;
 
                     if (fetchedLineBeforeIsEmpty) {
                         /* end of literal detected */
