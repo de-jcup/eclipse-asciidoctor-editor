@@ -26,6 +26,22 @@ import de.jcup.asciidoctoreditor.provider.AsciiDoctorWrapperContext;
 public class AsciiDoctorWrapperHTMLBuilder {
     private static final String BODY = "<body";
 
+    /*
+     * Configuration to load for the bundled MathJax installation.
+     *
+     * Without a "config" parameter MathJax 2 initializes without any input or
+     * output jax and does not typeset anything - formulas stay visible as raw
+     * LaTeX source in the preview.
+     *
+     * TeX-MML-AM_HTMLorMML is the configuration the bundled installation
+     * actually ships. It is a MathJax 2.6.0 reduced with minify-mathjax and
+     * contains neither TeX-MML-AM_CHTML (the one Asciidoctor itself requests)
+     * nor the CommonHTML output. See minify.cfg in
+     * asciidoctor-editor-css/css/MathJax, which documents exactly this
+     * parameter.
+     */
+    private static final String MATHJAX_CONFIG_QUERY = "?config=TeX-MML-AM_HTMLorMML";
+
     private AsciiDoctorWrapperContext context;
 
     public AsciiDoctorWrapperHTMLBuilder(AsciiDoctorWrapperContext context) {
@@ -102,15 +118,15 @@ public class AsciiDoctorWrapperHTMLBuilder {
 
     private String buildLocalPrefixHTML() {
 
-        List<File> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         File cssFolder = PluginContentInstaller.INSTANCE.getCSSFolder();
 
-        list.add(new File(cssFolder, "/font-awesome/css/font-awesome.min.css"));
-        list.add(new File(cssFolder, "/dejavu/dejavu.css"));
-        list.add(new File(cssFolder, "/MathJax/MathJax.js"));
-        list.add(new File(cssFolder, "/default.css"));
-        list.add(new File(cssFolder, "/coderay.css"));
-        list.add(createFileToAutoRefreshJavascript());
+        list.add(createLinkToFile(new File(cssFolder, "/font-awesome/css/font-awesome.min.css")));
+        list.add(createLinkToFile(new File(cssFolder, "/dejavu/dejavu.css")));
+        list.add(createLinkToFile(new File(cssFolder, "/MathJax/MathJax.js"), MATHJAX_CONFIG_QUERY));
+        list.add(createLinkToFile(new File(cssFolder, "/default.css")));
+        list.add(createLinkToFile(new File(cssFolder, "/coderay.css")));
+        list.add(createLinkToFile(createFileToAutoRefreshJavascript()));
 
         StringBuilder prefixSb = new StringBuilder();
         prefixSb.append("<html>\n");
@@ -120,8 +136,8 @@ public class AsciiDoctorWrapperHTMLBuilder {
         prefixSb.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
         prefixSb.append("  <meta name=\"generator\" content=\"Eclipse Asciidoctor Editor\">\n");
         prefixSb.append("  <title>AsciiDoctor Editor temporary output</title>\n");
-        for (File file : list) {
-            prefixSb.append(createLinkToFile(file));
+        for (String link : list) {
+            prefixSb.append(link);
         }
         prefixSb.append("</head>\n");
 
@@ -141,16 +157,34 @@ public class AsciiDoctorWrapperHTMLBuilder {
     }
 
     protected String createLinkToFile(File file) {
+        return createLinkToFile(file, null);
+    }
+
+    /**
+     * Creates the link or script tag for the given file.
+     *
+     * @param file  file to link to
+     * @param query optional query string appended to the resulting URL, e.g.
+     *              "?config=..." - may be <code>null</code>.
+     *              <p>
+     *              The query has to be appended here and must not be part of the
+     *              file name: the URL is built with {@link File#toURI()}, which
+     *              would encode the question mark, and the ".js" detection below
+     *              would no longer match either.
+     * @return html tag
+     */
+    protected String createLinkToFile(File file, String query) {
         String pathToFile;
         try {
             pathToFile = file.toURI().toURL().toExternalForm();
         } catch (MalformedURLException e) {
             pathToFile = file.getAbsolutePath();
         }
+        String suffix = query == null ? "" : query;
         if (pathToFile.endsWith(".js")) {
-            return "<script blockType=\"text/javascript\" src=\"" + pathToFile + "\"></script>\n";
+            return "<script blockType=\"text/javascript\" src=\"" + pathToFile + suffix + "\"></script>\n";
         }
-        return "<link rel=\"stylesheet\" href=\"" + pathToFile + "\">\n";
+        return "<link rel=\"stylesheet\" href=\"" + pathToFile + suffix + "\">\n";
     }
 
 }
