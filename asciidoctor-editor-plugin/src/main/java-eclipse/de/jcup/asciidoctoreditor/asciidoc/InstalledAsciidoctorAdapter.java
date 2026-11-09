@@ -37,6 +37,8 @@ import de.jcup.asp.client.AspClientProgressMonitor;
 
 public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
 
+    private static final char[] WINDOWS_CHARS_NEEDING_QUOTES = { ' ', '\t', '&', '|', '<', '>', '^', '(', ')' };
+
     @Override
     public void convertFile(File editorFileOrNull, File asciiDocFile, AsciidocOptions options, AsciidocAttributes attributes, AspClientProgressMonitor monitor) {
         if (editorFileOrNull == null) {
@@ -141,12 +143,11 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
                 continue;
             }
             commands.add("-a");
-            String safeValue = toWindowsSafeVariant(value);
             if (key.equals("outdir")) {
-                outDir = safeValue;
+                outDir = v;
             }
-            attrib += "=" + safeValue;
-            commands.add(attrib);
+            attrib += "=" + v;
+            commands.add(toWindowsSafeVariant(attrib));
         }
 
         Map<String, Object> optionsMap = options.toMap();
@@ -165,7 +166,7 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
         }
         if (outDir != null) {
             commands.add("-D");
-            commands.add(outDir);
+            commands.add(toWindowsSafeVariant(outDir));
         }
 
         commands.add(toWindowsSafeVariant(asciiDocFile.getAbsolutePath()));
@@ -186,13 +187,28 @@ public class InstalledAsciidoctorAdapter implements AsciidoctorAdapter {
         return callPath;
     }
 
-    private String toWindowsSafeVariant(Object obj) {
-        String command = "" + obj;
-        boolean windowsPath = command.indexOf('\\') != -1;
-        if (!windowsPath) {
-            return command;
+    private String toWindowsSafeVariant(String argument) {
+        if (!OSUtil.isWindows()) {
+            return argument;
         }
-        return "\"" + command + "\"";
+        if (argument.isEmpty() || argument.indexOf('"') != -1) {
+            return argument;
+        }
+        boolean quotesNecessary = false;
+        for (char special : WINDOWS_CHARS_NEEDING_QUOTES) {
+            if (argument.indexOf(special) != -1) {
+                quotesNecessary = true;
+                break;
+            }
+        }
+        if (!quotesNecessary) {
+            return argument;
+        }
+        String content = argument;
+        while (content.endsWith("\\")) {
+            content = content.substring(0, content.length() - 1);
+        }
+        return "\"" + content + "\"";
     }
 
 }
