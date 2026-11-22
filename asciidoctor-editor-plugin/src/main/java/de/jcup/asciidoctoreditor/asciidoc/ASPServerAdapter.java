@@ -16,6 +16,7 @@
 package de.jcup.asciidoctoreditor.asciidoc;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.Map;
 import java.util.Objects;
@@ -169,7 +170,7 @@ public class ASPServerAdapter {
     private int getFreePortToUse(int minPort, int maxPort) {
         for (int triedPort = minPort; triedPort <= maxPort; triedPort++) {
             try {
-                ServerSocket socket = new ServerSocket(triedPort);
+                ServerSocket socket = new ServerSocket(triedPort, 0, InetAddress.getLoopbackAddress());
                 socket.close();
                 // able to open a server socket on port p, so it will be possible for ASP server
                 // as well - so we use this port;
